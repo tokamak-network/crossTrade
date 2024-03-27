@@ -18,7 +18,6 @@ contract L2FastWithdrawProxy is Proxy, L2FastWithdrawStorage {
         crossDomainMessenger = _crossDomainMessenger;
         l1fastWithdrawContract = _l1fastWithdraw;
         LEGACY_ERC20_ETH = _legacyERC20;
-        enteringToken[_legacyERC20] = _l1legacyERC20;
-        checkToken[_l1legacyERC20][_legacyERC20] = true;
+        LEGACY_l1token = _l1legacyERC20;
     }
 }
