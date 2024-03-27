@@ -28,7 +28,7 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         external
         onlyOwner
     {
-        enteringToken[_l2token] = address(0);
+        // enteringToken[_l2token] = address(0);
         checkToken[_l1token][_l2token] = false;
     }
 
