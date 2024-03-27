@@ -20,27 +20,27 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
     //=======external========
 
-    function registerToken(
-        address _l1token,
-        address _l2token
-    )
-        external
-        onlyOwner
-    {
-        enteringToken[_l2token] = _l1token;
-        checkToken[_l1token][_l2token] = true;
-    }
+    // function registerToken(
+    //     address _l1token,
+    //     address _l2token
+    // )
+    //     external
+    //     onlyOwner
+    // {
+    //     enteringToken[_l2token] = _l1token;
+    //     checkToken[_l1token][_l2token] = true;
+    // }
 
-    function deleteToken(
-        address _l1token,
-        address _l2token
-    )
-        external
-        onlyOwner
-    {
-        // enteringToken[_l2token] = address(0);
-        checkToken[_l1token][_l2token] = false;
-    }
+    // function deleteToken(
+    //     address _l1token,
+    //     address _l2token
+    // )
+    //     external
+    //     onlyOwner
+    // {
+    //     // enteringToken[_l2token] = address(0);
+    //     checkToken[_l1token][_l2token] = false;
+    // }
 
     function requestFW(
         address _l2token,
@@ -52,8 +52,6 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         payable
         onlyEOA
     {
-        address l1Token = ILegacyMintableERC20(_l2token).l1Token();
-        require(_l1token == l1Token, "FW: The l1Token address is incorrect");
         // address l1token = enteringToken[_l2token];
         // require(checkToken[l1token][_l2token], "not entering token");
         
@@ -61,6 +59,7 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
         dealData[salecount] = RequestData({
             l2token: _l2token,
+            l1token: _l1token,
             seller: msg.sender,
             buyer: msg.sender,
             sellAmount: _amount,
@@ -69,9 +68,12 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         });
 
         if (dealData[salecount].l2token == LEGACY_ERC20_ETH) {
+            require(_l1token == LEGACY_l1token, "FW: l1Token address is incorrect");
             require(msg.value == _amount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
         } else {
+            address l1Token = ILegacyMintableERC20(_l2token).l1Token();
+            require(_l1token == l1Token, "FW: The l1Token address is incorrect");
             //need to approve
             IERC20(dealData[salecount].l2token).safeTransferFrom(msg.sender,address(this),dealData[salecount].sellAmount);
         }
