@@ -5,7 +5,7 @@ import "../libraries/SafeERC20.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
-import { ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
+import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 
 contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
