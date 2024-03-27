@@ -5,10 +5,20 @@ import "../libraries/SafeERC20.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
+import { ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 
 contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
     using SafeERC20 for IERC20;
+
+    //=======modifier========
+
+    modifier onlyEOA() {
+        require(!_isContract(msg.sender), "L2FW: function can only be called from an EOA");
+        _;
+    }
+
+    //=======external========
 
     function registerToken(
         address _l1token,
@@ -34,14 +44,18 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
     function requestFW(
         address _l2token,
+        address _l1token,
         uint256 _amount,
         uint256 _minAmount
     )
         external
         payable
+        onlyEOA
     {
-        address l1token = enteringToken[_l2token];
-        require(checkToken[l1token][_l2token], "not entering token");
+        address l1Token = ILegacyMintableERC20(_l2token).l1Token();
+        require(_l1token == l1Token, "FW: The l1Token address is incorrect");
+        // address l1token = enteringToken[_l2token];
+        // require(checkToken[l1token][_l2token], "not entering token");
         
         ++salecount;
 
@@ -55,6 +69,7 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         });
 
         if (dealData[salecount].l2token == LEGACY_ERC20_ETH) {
+            require(msg.value == _amount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
         } else {
             //need to approve
@@ -85,5 +100,11 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         } else {
             IERC20(dealData[_salecount].l2token).safeTransfer(msg.sender,dealData[_salecount].sellAmount);
         }
+    }
+
+    //=======internal========
+
+    function _isContract(address account) internal view returns (bool) {
+        return account.code.length > 0;
     }
 }
