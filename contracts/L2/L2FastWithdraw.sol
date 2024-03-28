@@ -79,12 +79,26 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         }
     }
     
-    function buyFW(
-
+    function claimFW(
+        address _from,
+        address _to,
+        uint256 _amount,
+        uint256 _saleCount
     )
         external
+        payable
     {
-
+        require(dealData[_saleCount].seller == _to, "not match the seller");
+        require(dealData[_saleCount].minAmount <= _amount, "need to over minAmount");
+        dealData[_saleCount].buyer = _from;
+        dealData[_saleCount].buyAmount = _amount;
+        
+        if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
+            (bool sent, ) = payable(_from).call{value: dealData[_saleCount].sellAmount}("");
+            require(sent, "claim fail");
+        } else {
+            IERC20(dealData[_saleCount].l2token).safeTransferFrom(address(this),_from,dealData[_saleCount].sellAmount);
+        }
     }
 
     function cancelFW(
