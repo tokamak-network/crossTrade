@@ -9,4 +9,12 @@ interface IL1CrossDomainMessenger {
         uint32 _minGasLimit
     )
         external;
+
+    function sendMessage(
+        address _target, 
+        bytes calldata _message, 
+        uint32 _minGasLimit
+    ) 
+        external 
+        payable;
 }

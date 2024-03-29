@@ -22,6 +22,7 @@ contract L1FastWithdraw is AccessibleCommon, L1FastWithdrawStorage {
         external
         payable
     {
+        //need the check cancel or editing (L1FW)
         bytes memory message;
 
         message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
@@ -41,13 +42,28 @@ contract L1FastWithdraw is AccessibleCommon, L1FastWithdrawStorage {
 
         //need to approve
         IERC20(_l1token).safeTransferFrom(msg.sender, _to, _amount);
-
-        IL1CrossDomainMessenger(crossDomainMessenger).sendNativeTokenMessage(
+        
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
-            0, 
             message, 
             _minGasLimit
         );
+    }
+
+    function cancelFW(
+
+    )
+        external
+    {
+
+    }
+
+    function editFW(
+
+    )  
+        external
+    {
+
     }
 
 }

@@ -7,6 +7,8 @@ import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 
+import "hardhat/console.sol";
+
 contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
     using SafeERC20 for IERC20;
@@ -44,9 +46,8 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
 
     function requestFW(
         address _l2token,
-        address _l1token,
-        uint256 _amount,
-        uint256 _minAmount
+        uint256 _totalAmount,
+        uint256 _fwAmount
     )
         external
         payable
@@ -57,26 +58,21 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         
         ++salecount;
 
-        dealData[salecount] = RequestData({
-            l2token: _l2token,
-            l1token: _l1token,
-            seller: msg.sender,
-            buyer: msg.sender,
-            sellAmount: _amount,
-            minAmount: _minAmount,
-            buyAmount: 0
-        });
-
         if (dealData[salecount].l2token == LEGACY_ERC20_ETH) {
-            require(_l1token == LEGACY_l1token, "FW: l1Token address is incorrect");
-            require(msg.value == _amount, "FW: nativeTON need amount");
+            require(msg.value == _totalAmount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
         } else {
-            address l1Token = ILegacyMintableERC20(_l2token).l1Token();
-            require(_l1token == l1Token, "FW: The l1Token address is incorrect");
             //need to approve
-            IERC20(dealData[salecount].l2token).safeTransferFrom(msg.sender,address(this),dealData[salecount].sellAmount);
+            IERC20(dealData[salecount].l2token).safeTransferFrom(msg.sender,address(this),dealData[salecount].totalAmount);
         }
+
+        dealData[salecount] = RequestData({
+            l2token: _l2token,
+            requester: msg.sender,
+            provider: address(0),
+            totalAmount: _totalAmount,
+            fwAmount: _fwAmount
+        });
     }
     
     function claimFW(
@@ -88,16 +84,17 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         external
         payable
     {
-        require(dealData[_saleCount].seller == _to, "not match the seller");
-        require(dealData[_saleCount].minAmount <= _amount, "need to over minAmount");
-        dealData[_saleCount].buyer = _from;
-        dealData[_saleCount].buyAmount = _amount;
-        
+        console.log("msg.sender: ", msg.sender);
+        require(dealData[_saleCount].requester == _to, "not match the seller");
+        require(dealData[_saleCount].fwAmount <= _amount, "need to over minAmount");
+        dealData[_saleCount].provider = _from;
+        dealData[_saleCount].fwAmount = _amount;
+
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
-            (bool sent, ) = payable(_from).call{value: dealData[_saleCount].sellAmount}("");
+            (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
             require(sent, "claim fail");
         } else {
-            IERC20(dealData[_saleCount].l2token).safeTransferFrom(address(this),_from,dealData[_saleCount].sellAmount);
+            IERC20(dealData[_saleCount].l2token).safeTransferFrom(address(this),_from,dealData[_saleCount].totalAmount);
         }
     }
 
@@ -107,14 +104,28 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         external
         payable
     {
-        require(dealData[_salecount].seller == dealData[_salecount].buyer && dealData[_salecount].buyAmount == 0, "already been sold");
-        require(dealData[_salecount].seller == msg.sender, "your not seller");
+        require(dealData[_salecount].requester == dealData[_salecount].provider && dealData[_salecount].fwAmount == 0, "already been sold");
+        require(dealData[_salecount].requester == msg.sender, "your not seller");
         
         if (dealData[_salecount].l2token == LEGACY_ERC20_ETH) {
-            (bool sent, ) = payable(msg.sender).call{value: dealData[_salecount].sellAmount}("");
+            (bool sent, ) = payable(msg.sender).call{value: dealData[_salecount].totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
-            IERC20(dealData[_salecount].l2token).safeTransfer(msg.sender,dealData[_salecount].sellAmount);
+            IERC20(dealData[_salecount].l2token).safeTransfer(msg.sender,dealData[_salecount].totalAmount);
+        }
+    }
+
+    function getL1token(
+        address _l2token
+    )
+        external
+        view
+        returns (address l1Token) 
+    {
+        if (_l2token == LEGACY_ERC20_ETH) {
+            return l1Token = LEGACY_l1token;
+        } else {
+            return l1Token = ILegacyMintableERC20(_l2token).l1Token();
         }
     }
 

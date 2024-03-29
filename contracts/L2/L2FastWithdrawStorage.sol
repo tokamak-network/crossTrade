@@ -4,12 +4,10 @@ pragma solidity 0.8.20;
 contract L2FastWithdrawStorage {
     struct RequestData {
         address l2token;
-        address l1token;
-        address seller;
-        address buyer;
-        uint256 sellAmount;
-        uint256 minAmount;
-        uint256 buyAmount;
+        address requester;
+        address provider;
+        uint256 totalAmount;
+        uint256 fwAmount;
     }
 
     address public crossDomainMessenger;
