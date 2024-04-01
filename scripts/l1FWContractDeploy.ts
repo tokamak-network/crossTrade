@@ -5,16 +5,21 @@ async function main() {
 
   const L1FastWithdrawProxyDep = await ethers.getContractFactory("L1FastWithdrawProxy");
   let L1FastWithdrawProxy = await L1FastWithdrawProxyDep.deploy();
-  await L1FastWithdrawProxy.deployed();
-  console.log('L1FastWithdrawProxy' , L1FastWithdrawProxy.address)
+  console.log('L1FastWithdrawProxy' , L1FastWithdrawProxy.target)
 
   const L1FastWithdrawLogicDep = await ethers.getContractFactory("L1FastWithdraw");
   let L1FastWithdrawLogic = await L1FastWithdrawLogicDep.deploy();
-  await L1FastWithdrawLogic.deployed();
-  console.log('L1FastWithdrawLogic' , L1FastWithdrawLogic.address)
+  console.log('L1FastWithdrawLogic' , L1FastWithdrawLogic.target)
 
+  const L1FastWithdrawProxyLogic = new ethers.Contract(
+    predeploys.OptimismMintableERC20Factory,
+    OptimismMintableERC20TokenFactoryABI.abi,
+    l2Wallet
+  ) 
+  
   await (await L1FastWithdrawProxy.upgradeTo(
-    L1FastWithdrawLogic.address)).wait()
+    L1FastWithdrawLogic.target)).wait()
+  console.log("1")
 
   let imp2 = await L1FastWithdrawProxy.implementation()
   console.log('check upgradeAddress : ', imp2)
