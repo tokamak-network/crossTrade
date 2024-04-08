@@ -4,10 +4,14 @@ import {
 } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { Signer, BytesLike, Provider, ContractRunner, parseUnits } from 'ethers'
-import { StaticJsonRpcProvider } from '@ethersproject/providers'
-import { Wallet } from '@ethersproject/wallet'
+// import { task, types } from 'hardhat/config'
+// import { HardhatRuntimeEnvironment } from 'hardhat/types'
+// import '@nomiclabs/hardhat-ethers'
+// import 'hardhat-deploy'
+// import { ethers } from "hardhat";
+import { BytesLike, ethers } from 'ethers'
+
+import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
 import L1FastWithdrawProxy_ABI from "../artifacts/contracts/L1/L1FastWithdrawProxy.sol/L1FastWithdrawProxy.json"
 import L1FastWithdraw_ABI from "../artifacts/contracts/L1/L1FastWithdraw.sol/L1FastWithdraw.json"
 import Proxy_ABI from "../artifacts/contracts/proxy/Proxy.sol/Proxy.json"
@@ -17,22 +21,37 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
+
+
 describe("FWBasicTest", function () {
-  
+  let network = "devnetL1"
+  let deployedAddress = require('./data/deployed.'+network+'.json');
+  let predeployedAddress = require('./data/predeployed.'+network+'.json');
+
   const privateKey = process.env.PRIVATE_KEY as BytesLike
-  const l1Provider = new StaticJsonRpcProvider(
+  const privateKey2 = process.env.PRIVATE_KEY2 as BytesLike
+
+  const l1Provider = new ethers.providers.StaticJsonRpcProvider(
     process.env.L1_URL
   )
-  const l2Provider = new StaticJsonRpcProvider(
+  const l2Provider = new ethers.providers.StaticJsonRpcProvider(
     process.env.L2_URL
   )
-  const l1Wallet = new Wallet(privateKey, l1Provider)
+  const l1Wallet = new ethers.Wallet(privateKey, l1Provider)
   console.log('l1Wallet :', l1Wallet.address)
-  const l2Wallet = new Wallet(privateKey, l2Provider)
-  console.log('l2Wallet :', l2Wallet.address)
+  const l1user1 = new ethers.Wallet(privateKey2, l1Provider)
+  console.log('l1user1 :', l1user1.address)
+  const l2Wallet = new ethers.Wallet(privateKey, l2Provider)
+  // console.log('l2Wallet :', l2Wallet.address)
+  const l2user1 = new ethers.Wallet(privateKey2, l2Provider)
 
-  const oneETH = parseUnits('1', 18)
-  const twoETH = parseUnits('2', 18)
+  const oneETH = ethers.utils.parseUnits('1', 18)
+  const twoETH = ethers.utils.parseUnits('2', 18)
+  const threeETH = ethers.utils.parseUnits('3', 18)
+  // const fourETH = ethers.utils.parseUnits('4', 18)
+  const fiveETH = ethers.utils.parseUnits('5', 18)
+
+  const zeroAddr = '0x'.padEnd(42, '0')
 
   // let L1FastWithdrawLogicDep : any;
   let L1FastWithdrawLogic : any;
@@ -40,10 +59,86 @@ describe("FWBasicTest", function () {
   // let L1FastWithdrawProxyDep : any;
   let L1FastWithdrawProxy : any;
   
-  let deployer : Signer;
+  let deployer : any;
+
+  let nativeTokenAddr = "0x75fE809aE1C4A66c27a0239F147d0cc5710a104A"
+
+  const l2CrossDomainMessengerAddr = '0x4200000000000000000000000000000000000007'
+  let l1Contracts : any;
+  let bridges : any;
+  let messenger : any;
+
+  let l2NativeToken = process.env.NATIVE_TOKEN || ''
+  let addressManager = process.env.ADDRESS_MANAGER || ''
+  let l1CrossDomainMessenger = process.env.L1_CROSS_DOMAIN_MESSENGER || ''
+  let l1StandardBridge = process.env.L1_STANDARD_BRIDGE || ''
+  let optimismPortal = process.env.OPTIMISM_PORTAL || ''
+  let l2OutputOracle = process.env.L2_OUTPUT_ORACLE || ''
+
+  let l1ChainId : any;
+  let l2ChainId : any;
   
   before('create fixture loader', async () => {
-    [deployer] = await ethers.getSigners();
+    // [deployer] = await ethers.getSigners();
+
+    l1ChainId = (await l1Provider.getNetwork()).chainId
+    l2ChainId = (await l2Provider.getNetwork()).chainId
+    if (l2NativeToken === '') {
+      l2NativeToken = deployedAddress.L2NativeToken
+    }
+  
+    if (addressManager === '') {
+      addressManager = deployedAddress.AddressManager
+    }
+  
+    if (l1CrossDomainMessenger === '') {
+      l1CrossDomainMessenger = deployedAddress.L1CrossDomainMessengerProxy
+    }
+  
+    if (l1StandardBridge === '') {
+      l1StandardBridge = deployedAddress.L1StandardBridgeProxy
+    }
+  
+    if (optimismPortal === '') {
+      optimismPortal = deployedAddress.OptimismPortalProxy
+    }
+  
+    if (l2OutputOracle === '') {
+      l2OutputOracle = deployedAddress.L2OutputOracleProxy
+    }
+
+    l1Contracts = {
+      StateCommitmentChain: zeroAddr,
+      CanonicalTransactionChain: zeroAddr,
+      BondManager: zeroAddr,
+      AddressManager: addressManager,
+      L1CrossDomainMessenger: l1CrossDomainMessenger,
+      L1StandardBridge: l1StandardBridge,
+      OptimismPortal: optimismPortal,
+      L2OutputOracle: l2OutputOracle,
+    }
+    console.log(l1Contracts)
+
+    bridges = {
+      NativeToken: {
+        l1Bridge: l1Contracts.L1StandardBridge,
+        l2Bridge: predeployedAddress.L2StandardBridge,
+        Adapter: NativeTokenBridgeAdapter,
+      },
+    }
+
+    messenger = new CrossChainMessenger({
+      bedrock: true,
+      contracts: {
+        l1: l1Contracts,
+      },
+      bridges,
+      l1ChainId,
+      l2ChainId,
+      l1SignerOrProvider: l1Wallet,
+      l2SignerOrProvider: l2Wallet,
+    })
+  
   })
 
   describe("deployContract", () => {
@@ -51,31 +146,34 @@ describe("FWBasicTest", function () {
       const L1FastWithdrawLogicDep = new ethers.ContractFactory(
         L1FastWithdraw_ABI.abi,
         L1FastWithdraw_ABI.bytecode,
-        deployer
+        l1Wallet
       )
 
       L1FastWithdrawLogic = await L1FastWithdrawLogicDep.deploy()
-      console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.target);
+      await L1FastWithdrawLogic.deployed()
+
+      console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
     })
 
     it("L1FastWithdrawLogic", async () => {
       const L1FastWithdrawProxyDep = new ethers.ContractFactory(
         L1FastWithdrawProxy_ABI.abi,
         L1FastWithdrawProxy_ABI.bytecode,
-        deployer
+        l1Wallet
       )
 
       L1FastWithdrawProxy = await L1FastWithdrawProxyDep.deploy()
-      console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.target);
+      await L1FastWithdrawProxy.deployed()
+      console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
     })
 
-    it("upgradeTo", async () => {
+    it("L1FastWithdrawProxy upgradeTo", async () => {
       let l1FastProxy = new ethers.Contract(
-        L1FastWithdrawProxy.target,
+        L1FastWithdrawProxy.address,
         Proxy_ABI.abi,
-        deployer
+        l1Wallet
       )
-      await l1FastProxy.upgradeTo(L1FastWithdrawLogic.target)
+      await (await l1FastProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
       let imp2 = await l1FastProxy.implementation()
       console.log('check upgradeAddress : ', imp2)
       console.log('upgradeTo done')
