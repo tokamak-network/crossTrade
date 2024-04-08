@@ -14,6 +14,8 @@ import { BytesLike, ethers } from 'ethers'
 import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
 import L1FastWithdrawProxy_ABI from "../artifacts/contracts/L1/L1FastWithdrawProxy.sol/L1FastWithdrawProxy.json"
 import L1FastWithdraw_ABI from "../artifacts/contracts/L1/L1FastWithdraw.sol/L1FastWithdraw.json"
+import L2FastWithdrawProxy_ABI from "../artifacts/contracts/L2/L2FastWithdrawProxy.sol/L2FastWithdrawProxy.json"
+import L2FastWithdraw_ABI from "../artifacts/contracts/L2/L2FastWithdraw.sol/L2FastWithdraw.json"
 import Proxy_ABI from "../artifacts/contracts/proxy/Proxy.sol/Proxy.json"
 
 
@@ -27,6 +29,62 @@ describe("FWBasicTest", function () {
   let network = "devnetL1"
   let deployedAddress = require('./data/deployed.'+network+'.json');
   let predeployedAddress = require('./data/predeployed.'+network+'.json');
+
+  const erc20ABI = [
+    {
+      inputs: [
+        { internalType: 'address', name: '_spender', type: 'address' },
+        { internalType: 'uint256', name: '_value', type: 'uint256' },
+      ],
+      name: 'approve',
+      outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      constant: true,
+      inputs: [{ name: '_owner', type: 'address' }],
+      name: 'balanceOf',
+      outputs: [{ name: 'balance', type: 'uint256' }],
+      type: 'function',
+    },
+    {
+      inputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
+      name: 'faucet',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'from',
+          type: 'address'
+        },
+        {
+          internalType: 'address',
+          name: 'to',
+          type: 'address'
+        },
+        {
+          internalType: 'uint256',
+          name: 'amount',
+          type: 'uint256'
+        }
+      ],
+      name: 'transferFrom',
+      outputs: [
+        {
+          internalType: 'bool',
+          name: '',
+          type: 'bool'
+        }
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+  ]
 
   const privateKey = process.env.PRIVATE_KEY as BytesLike
   const privateKey2 = process.env.PRIVATE_KEY2 as BytesLike
@@ -55,9 +113,14 @@ describe("FWBasicTest", function () {
 
   // let L1FastWithdrawLogicDep : any;
   let L1FastWithdrawLogic : any;
-
-  // let L1FastWithdrawProxyDep : any;
   let L1FastWithdrawProxy : any;
+  let L1FastWithdrawContract : any;
+
+  // let L2FastWithdrawProxyDep : any;
+  let L2FastWithdrawLogic : any;
+  let L2FastWithdrawProxy : any;
+  let L2FastWithdrawContract : any;
+
   
   let deployer : any;
 
@@ -77,6 +140,8 @@ describe("FWBasicTest", function () {
 
   let l1ChainId : any;
   let l2ChainId : any;
+
+  let l2NativeTokenContract : any;
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -117,7 +182,7 @@ describe("FWBasicTest", function () {
       OptimismPortal: optimismPortal,
       L2OutputOracle: l2OutputOracle,
     }
-    console.log(l1Contracts)
+    // console.log(l1Contracts)
 
     bridges = {
       NativeToken: {
@@ -142,6 +207,31 @@ describe("FWBasicTest", function () {
   })
 
   describe("deployContract", () => {
+    it("l2NativeTokenContract", async () => {
+      l2NativeTokenContract = new ethers.Contract(
+        l2NativeToken,
+        erc20ABI,
+        l1Wallet
+      )
+
+      let tx = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      console.log('TON balance in L1(Wallet):', Number(tx.toString()))
+      tx = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+      console.log('TON balance in L1(user1):', Number(tx.toString()))
+      let l1Balance = await l1Wallet.getBalance()
+      console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
+      let l2Balance = await l2Wallet.getBalance()
+      console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
+      l1Balance = await l1user1.getBalance()
+      console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
+      l2Balance = await l2user1.getBalance()
+      console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
+    })
+    
     it("L1FastWithdrawLogic", async () => {
       const L1FastWithdrawLogicDep = new ethers.ContractFactory(
         L1FastWithdraw_ABI.abi,
@@ -155,7 +245,7 @@ describe("FWBasicTest", function () {
       console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
     })
 
-    it("L1FastWithdrawLogic", async () => {
+    it("L1FastWithdrawProxy", async () => {
       const L1FastWithdrawProxyDep = new ethers.ContractFactory(
         L1FastWithdrawProxy_ABI.abi,
         L1FastWithdrawProxy_ABI.bytecode,
@@ -168,15 +258,84 @@ describe("FWBasicTest", function () {
     })
 
     it("L1FastWithdrawProxy upgradeTo", async () => {
-      let l1FastProxy = new ethers.Contract(
-        L1FastWithdrawProxy.address,
-        Proxy_ABI.abi,
-        l1Wallet
-      )
-      await (await l1FastProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
-      let imp2 = await l1FastProxy.implementation()
+      await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
+      let imp2 = await L1FastWithdrawProxy.implementation()
       console.log('check upgradeAddress : ', imp2)
       console.log('upgradeTo done')
+    })
+
+    it("set L1FastWithdraw", async () => {
+      L1FastWithdrawContract = new ethers.Contract(
+        L1FastWithdrawProxy.address,
+        L1FastWithdraw_ABI.abi,
+        l1Wallet
+      )
+    })
+
+    it("L2FastWithdrawLogic", async () => {
+      const L2FastWithdrawLogicDep = new ethers.ContractFactory(
+        L2FastWithdraw_ABI.abi,
+        L2FastWithdraw_ABI.bytecode,
+        l2Wallet
+      )
+
+      L2FastWithdrawLogic = await L2FastWithdrawLogicDep.deploy()
+      await L2FastWithdrawLogic.deployed()
+
+      console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
+    })
+
+    it("L2FastWithdrawProxy", async () => {
+      const L2FastWithdrawProxyDep = new ethers.ContractFactory(
+        L2FastWithdrawProxy_ABI.abi,
+        L2FastWithdrawProxy_ABI.bytecode,
+        l2Wallet
+      )
+
+      L2FastWithdrawProxy = await L2FastWithdrawProxyDep.deploy()
+      await L2FastWithdrawProxy.deployed()
+      console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
+    })
+
+    it("L2FastWithdrawProxy upgradeTo", async () => {
+      await (await L2FastWithdrawProxy.upgradeTo(L2FastWithdrawLogic.address)).wait();
+      let imp2 = await L2FastWithdrawProxy.implementation()
+      console.log('check upgradeAddress : ', imp2)
+      console.log('upgradeTo done')
+    })
+
+    it("set L2FastWithdraw", async () => {
+      L2FastWithdrawContract = new ethers.Contract(
+        L2FastWithdrawProxy.address,
+        L2FastWithdraw_ABI.abi,
+        l2Wallet
+      )
+    })
+
+    it("L1FastWithdraw initialize", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
+        l1Contracts.L1CrossDomainMessenger,
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address
+      )).wait()
+
+      const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
+      console.log('checkL1Inform :', checkL1Inform) 
+      console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
+    })
+
+    it("L2FastWithdraw initialize", async () => {
+      await (await L2FastWithdrawProxy.connect(l2Wallet).initialize(
+        l2CrossDomainMessengerAddr,
+        L1FastWithdrawContract.address,
+        predeployedAddress.LegacyERC20ETH,
+        l2NativeTokenContract.address
+      )).wait();
+    
+      const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
+      console.log("checkL2Inform :", checkL2Inform)
+      console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
     })
   });
 

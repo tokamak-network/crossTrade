@@ -12,7 +12,7 @@ async function main() {
   console.log('L1FastWithdrawLogic' , L1FastWithdrawLogic.target)
 
   const L1FastWithdrawProxyLogic = new ethers.Contract(
-    predeploys.OptimismMintableERC20Factory,
+    L1FastWithdrawProxy.target,
     OptimismMintableERC20TokenFactoryABI.abi,
     l2Wallet
   ) 
