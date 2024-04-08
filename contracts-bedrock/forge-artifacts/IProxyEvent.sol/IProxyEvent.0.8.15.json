@@ -1,0 +1,435 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "impl",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "alive",
+          "type": "bool"
+        }
+      ],
+      "name": "SetAliveImplementation",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "impl",
+          "type": "address"
+        }
+      ],
+      "name": "SetSelectorImplementation",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
+      "name": "Upgraded",
+      "type": "event"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"name\":\"SetAliveImplementation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes4\",\"name\":\"selector\",\"type\":\"bytes4\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"name\":\"SetSelectorImplementation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"IProxyEvent\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/IProxyEvent.sol\":\"IProxyEvent\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/interfaces/IProxyEvent.sol\":{\"keccak256\":\"0xa1ff842a23f0994fe9e1990d682442c64df982a338e571803269fef7a0e548ac\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://f9e34054ffb053890e9ad207058e6c6f1720d0a0dc8d097accb53917a90e753f\",\"dweb:/ipfs/QmRJqn49jNiD8AkAZmvBzHNdt1wumsbsmCn2xGzmf7HMUY\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "bool",
+              "name": "alive",
+              "type": "bool",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "SetAliveImplementation",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "selector",
+              "type": "bytes4",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "SetSelectorImplementation",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "Upgraded",
+          "anonymous": false
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/interfaces/IProxyEvent.sol": "IProxyEvent"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/interfaces/IProxyEvent.sol": {
+        "keccak256": "0xa1ff842a23f0994fe9e1990d682442c64df982a338e571803269fef7a0e548ac",
+        "urls": [
+          "bzz-raw://f9e34054ffb053890e9ad207058e6c6f1720d0a0dc8d097accb53917a90e753f",
+          "dweb:/ipfs/QmRJqn49jNiD8AkAZmvBzHNdt1wumsbsmCn2xGzmf7HMUY"
+        ],
+        "license": "Unlicense"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "title": "IProxyEvent"
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/IProxyEvent.sol",
+    "id": 986,
+    "exportedSymbols": {
+      "IProxyEvent": [
+        985
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "37:284:13",
+    "nodes": [
+      {
+        "id": 967,
+        "nodeType": "PragmaDirective",
+        "src": "37:24:13",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 985,
+        "nodeType": "ContractDefinition",
+        "src": "87:233:13",
+        "nodes": [
+          {
+            "id": 972,
+            "nodeType": "EventDefinition",
+            "src": "116:47:13",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "bc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b",
+            "name": "Upgraded",
+            "nameLocation": "122:8:13",
+            "parameters": {
+              "id": 971,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 970,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "implementation",
+                  "nameLocation": "147:14:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 972,
+                  "src": "131:30:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 969,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "131:7:13",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "130:32:13"
+            }
+          },
+          {
+            "id": 978,
+            "nodeType": "EventDefinition",
+            "src": "169:63:13",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "72558d9bfba4210f9ef095c782589484151f6d90f7a81bb3cb9b33efc695d324",
+            "name": "SetAliveImplementation",
+            "nameLocation": "175:22:13",
+            "parameters": {
+              "id": 977,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 974,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "impl",
+                  "nameLocation": "214:4:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 978,
+                  "src": "198:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 973,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "198:7:13",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 976,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "alive",
+                  "nameLocation": "225:5:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 978,
+                  "src": "220:10:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 975,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "220:4:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "197:34:13"
+            }
+          },
+          {
+            "id": 984,
+            "nodeType": "EventDefinition",
+            "src": "237:79:13",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "14ebc1c32aa68f4d766e89f3e546cee249f7df25183fc10ab1568d91c2ce9b7b",
+            "name": "SetSelectorImplementation",
+            "nameLocation": "243:25:13",
+            "parameters": {
+              "id": 983,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 980,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "selector",
+                  "nameLocation": "284:8:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 984,
+                  "src": "269:23:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 979,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "269:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 982,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "impl",
+                  "nameLocation": "310:4:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 984,
+                  "src": "294:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 981,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "294:7:13",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "268:47:13"
+            }
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IProxyEvent",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 968,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:23:13",
+          "text": "@title IProxyEvent"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          985
+        ],
+        "name": "IProxyEvent",
+        "nameLocation": "97:11:13",
+        "scope": 986,
+        "usedErrors": []
+      }
+    ],
+    "license": "Unlicense"
+  },
+  "id": 13
+}

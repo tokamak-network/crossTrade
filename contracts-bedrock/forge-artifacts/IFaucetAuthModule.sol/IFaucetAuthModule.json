@@ -1,0 +1,443 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address payable",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "nonce",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct Faucet.DripParameters",
+          "name": "_params",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_proof",
+          "type": "bytes"
+        }
+      ],
+      "name": "verify",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "verify((address,bytes32),bytes32,bytes)": "f5431ffa"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"address payable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"nonce\",\"type\":\"bytes32\"}],\"internalType\":\"struct Faucet.DripParameters\",\"name\":\"_params\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"_proof\",\"type\":\"bytes\"}],\"name\":\"verify\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"verify((address,bytes32),bytes32,bytes)\":{\"params\":{\"_id\":\"Authentication ID to verify.\",\"_params\":\"Drip parameters to verify.\",\"_proof\":\"Authentication proof to verify.\"},\"returns\":{\"_0\":\"valid_ True if the drip parameters are valid.\"}}},\"title\":\"IFaucetAuthModule\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"verify((address,bytes32),bytes32,bytes)\":{\"notice\":\"Verifies that the given drip parameters are valid.\"}},\"notice\":\"Interface for faucet authentication modules.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/periphery/faucet/authmodules/IFaucetAuthModule.sol\":\"IFaucetAuthModule\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/periphery/faucet/Faucet.sol\":{\"keccak256\":\"0x82331800d9a28e4e9ea46939fded26e5d76371c9eddfffacd630313a6f8ff5bb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://04490faba2d3b9a68c678536e12717339adb5c4d6947c3a2d0e881a98026f727\",\"dweb:/ipfs/Qmbi8x84Lo2Y3CE1Azjif1GifVqFYvuhEzEDc6jXrRMnrS\"]},\"src/periphery/faucet/authmodules/IFaucetAuthModule.sol\":{\"keccak256\":\"0x1ae04232fda8aa0ae4fced4af75032bed7020576126cf04bd53ecb329673276d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8a74059bfdfb5d091d7e3966e1e4157c20f97b4dc29b62a4a66e82d433fac850\",\"dweb:/ipfs/QmetdNihkTcus9YupsexJU7U3LSDM1EUAuVoNTH1Bebsjf\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "struct Faucet.DripParameters",
+              "name": "_params",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "address payable",
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "nonce",
+                  "type": "bytes32"
+                }
+              ]
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_id",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_proof",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "verify",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "verify((address,bytes32),bytes32,bytes)": {
+            "params": {
+              "_id": "Authentication ID to verify.",
+              "_params": "Drip parameters to verify.",
+              "_proof": "Authentication proof to verify."
+            },
+            "returns": {
+              "_0": "valid_ True if the drip parameters are valid."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "verify((address,bytes32),bytes32,bytes)": {
+            "notice": "Verifies that the given drip parameters are valid."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/periphery/faucet/authmodules/IFaucetAuthModule.sol": "IFaucetAuthModule"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/periphery/faucet/Faucet.sol": {
+        "keccak256": "0x82331800d9a28e4e9ea46939fded26e5d76371c9eddfffacd630313a6f8ff5bb",
+        "urls": [
+          "bzz-raw://04490faba2d3b9a68c678536e12717339adb5c4d6947c3a2d0e881a98026f727",
+          "dweb:/ipfs/Qmbi8x84Lo2Y3CE1Azjif1GifVqFYvuhEzEDc6jXrRMnrS"
+        ],
+        "license": "MIT"
+      },
+      "src/periphery/faucet/authmodules/IFaucetAuthModule.sol": {
+        "keccak256": "0x1ae04232fda8aa0ae4fced4af75032bed7020576126cf04bd53ecb329673276d",
+        "urls": [
+          "bzz-raw://8a74059bfdfb5d091d7e3966e1e4157c20f97b4dc29b62a4a66e82d433fac850",
+          "dweb:/ipfs/QmetdNihkTcus9YupsexJU7U3LSDM1EUAuVoNTH1Bebsjf"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "verify((address,bytes32),bytes32,bytes)": {
+        "notice": "Verifies that the given drip parameters are valid."
+      }
+    },
+    "notice": "Interface for faucet authentication modules."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "verify((address,bytes32),bytes32,bytes)": {
+        "params": {
+          "_id": "Authentication ID to verify.",
+          "_params": "Drip parameters to verify.",
+          "_proof": "Authentication proof to verify."
+        },
+        "returns": {
+          "_0": "valid_ True if the drip parameters are valid."
+        }
+      }
+    },
+    "title": "IFaucetAuthModule"
+  },
+  "ast": {
+    "absolutePath": "src/periphery/faucet/authmodules/IFaucetAuthModule.sol",
+    "id": 79435,
+    "exportedSymbols": {
+      "Faucet": [
+        79329
+      ],
+      "IFaucetAuthModule": [
+        79434
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:647:195",
+    "nodes": [
+      {
+        "id": 79417,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:195",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 79419,
+        "nodeType": "ImportDirective",
+        "src": "57:39:195",
+        "nodes": [],
+        "absolutePath": "src/periphery/faucet/Faucet.sol",
+        "file": "../Faucet.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 79435,
+        "sourceUnit": 79330,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 79418,
+              "name": "Faucet",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 79329,
+              "src": "66:6:195",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 79434,
+        "nodeType": "ContractDefinition",
+        "src": "185:493:195",
+        "nodes": [
+          {
+            "id": 79433,
+            "nodeType": "FunctionDefinition",
+            "src": "505:171:195",
+            "nodes": [],
+            "documentation": {
+              "id": 79421,
+              "nodeType": "StructuredDocumentation",
+              "src": "219:281:195",
+              "text": "@notice Verifies that the given drip parameters are valid.\n @param _params Drip parameters to verify.\n @param _id     Authentication ID to verify.\n @param _proof  Authentication proof to verify.\n @return valid_ True if the drip parameters are valid."
+            },
+            "functionSelector": "f5431ffa",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nameLocation": "514:6:195",
+            "parameters": {
+              "id": 79429,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79424,
+                  "mutability": "mutable",
+                  "name": "_params",
+                  "nameLocation": "559:7:195",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 79433,
+                  "src": "530:36:195",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_DripParameters_$79094_memory_ptr",
+                    "typeString": "struct Faucet.DripParameters"
+                  },
+                  "typeName": {
+                    "id": 79423,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 79422,
+                      "name": "Faucet.DripParameters",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 79094,
+                      "src": "530:21:195"
+                    },
+                    "referencedDeclaration": 79094,
+                    "src": "530:21:195",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_DripParameters_$79094_storage_ptr",
+                      "typeString": "struct Faucet.DripParameters"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 79426,
+                  "mutability": "mutable",
+                  "name": "_id",
+                  "nameLocation": "584:3:195",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 79433,
+                  "src": "576:11:195",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 79425,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "576:7:195",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 79428,
+                  "mutability": "mutable",
+                  "name": "_proof",
+                  "nameLocation": "610:6:195",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 79433,
+                  "src": "597:19:195",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 79427,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "597:5:195",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "520:102:195"
+            },
+            "returnParameters": {
+              "id": 79432,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79431,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 79433,
+                  "src": "670:4:195",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 79430,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "670:4:195",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "669:6:195"
+            },
+            "scope": 79434,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IFaucetAuthModule",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 79420,
+          "nodeType": "StructuredDocumentation",
+          "src": "98:87:195",
+          "text": "@title  IFaucetAuthModule\n @notice Interface for faucet authentication modules."
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          79434
+        ],
+        "name": "IFaucetAuthModule",
+        "nameLocation": "195:17:195",
+        "scope": 79435,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 195
+}

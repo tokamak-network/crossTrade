@@ -1,0 +1,2300 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_upgrader",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_governanceToken",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "DENOMINATOR",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MINT_CAP",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MINT_PERIOD",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "governanceToken",
+      "outputs": [
+        {
+          "internalType": "contract GovernanceToken",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "mintPermittedAfter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newMintManager",
+          "type": "address"
+        }
+      ],
+      "name": "upgrade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60a060405234801561001057600080fd5b50604051610aa3380380610aa383398101604081905261002f91610199565b61003833610053565b610041826100a3565b6001600160a01b0316608052506101cc565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6100ab610121565b6001600160a01b0381166101155760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084015b60405180910390fd5b61011e81610053565b50565b6000546001600160a01b0316331461017b5760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015260640161010c565b565b80516001600160a01b038116811461019457600080fd5b919050565b600080604083850312156101ac57600080fd5b6101b58361017d565b91506101c36020840161017d565b90509250929050565b6080516108a76101fc6000396000818161018101528181610298015281816103a0015261052c01526108a76000f3fe608060405234801561001057600080fd5b50600436106100bd5760003560e01c80638da5cb5b1161007657806398f1312e1161005b57806398f1312e14610161578063f2fde38b14610169578063f96dae0a1461017c57600080fd5b80638da5cb5b14610119578063918f86741461015857600080fd5b806340c10f19116100a757806340c10f19146100f3578063715018a61461010657806383ea6e971461010e57600080fd5b8062f8900c146100c25780630900f010146100de575b600080fd5b6100cb60015481565b6040519081526020015b60405180910390f35b6100f16100ec366004610776565b6101a3565b005b6100f1610101366004610798565b6102f7565b6100f161058c565b6100cb6301e1338081565b60005473ffffffffffffffffffffffffffffffffffffffff165b60405173ffffffffffffffffffffffffffffffffffffffff90911681526020016100d5565b6100cb6103e881565b6100cb601481565b6100f1610177366004610776565b6105a0565b6101337f000000000000000000000000000000000000000000000000000000000000000081565b6101ab610657565b73ffffffffffffffffffffffffffffffffffffffff8116610253576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603460248201527f4d696e744d616e616765723a206d696e74206d616e616765722063616e6e6f7460448201527f20626520746865207a65726f206164647265737300000000000000000000000060648201526084015b60405180910390fd5b6040517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff82811660048301527f0000000000000000000000000000000000000000000000000000000000000000169063f2fde38b90602401600060405180830381600087803b1580156102dc57600080fd5b505af11580156102f0573d6000803e3d6000fd5b5050505050565b6102ff610657565b600154156104cf57426001541115610399576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602660248201527f4d696e744d616e616765723a206d696e74696e67206e6f74207065726d69747460448201527f6564207965740000000000000000000000000000000000000000000000000000606482015260840161024a565b6103e860147f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa158015610409573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061042d91906107c2565b610437919061080a565b6104419190610847565b8111156104cf576040517f08c379a0000000000000000000000000000000000000000000000000000000008152602060048201526024808201527f4d696e744d616e616765723a206d696e7420616d6f756e74206578636565647360448201527f2063617000000000000000000000000000000000000000000000000000000000606482015260840161024a565b6104dd6301e1338042610882565b6001556040517f40c10f1900000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8381166004830152602482018390527f000000000000000000000000000000000000000000000000000000000000000016906340c10f1990604401600060405180830381600087803b15801561057057600080fd5b505af1158015610584573d6000803e3d6000fd5b505050505050565b610594610657565b61059e60006106d8565b565b6105a8610657565b73ffffffffffffffffffffffffffffffffffffffff811661064b576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201527f6464726573730000000000000000000000000000000000000000000000000000606482015260840161024a565b610654816106d8565b50565b60005473ffffffffffffffffffffffffffffffffffffffff16331461059e576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015260640161024a565b6000805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff0000000000000000000000000000000000000000831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b803573ffffffffffffffffffffffffffffffffffffffff8116811461077157600080fd5b919050565b60006020828403121561078857600080fd5b6107918261074d565b9392505050565b600080604083850312156107ab57600080fd5b6107b48361074d565b946020939093013593505050565b6000602082840312156107d457600080fd5b5051919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b6000817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0483118215151615610842576108426107db565b500290565b60008261087d577f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b500490565b60008219821115610895576108956107db565b50019056fea164736f6c634300080f000a",
+    "sourceMap": "526:2216:127:-:0;;;1444:163;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;936:32:23;719:10:41;936:18:23;:32::i;:::-;1511:28:127;1529:9;1511:17;:28::i;:::-;-1:-1:-1;;;;;1549:51:127;;;-1:-1:-1;526:2216:127;;2433:187:23;2506:16;2525:6;;-1:-1:-1;;;;;2541:17:23;;;-1:-1:-1;;;;;;2541:17:23;;;;;;2573:40;;2525:6;;;;;;;2573:40;;2506:16;2573:40;2496:124;2433:187;:::o;2081:198::-;1094:13;:11;:13::i;:::-;-1:-1:-1;;;;;2169:22:23;::::1;2161:73;;;::::0;-1:-1:-1;;;2161:73:23;;696:2:215;2161:73:23::1;::::0;::::1;678:21:215::0;735:2;715:18;;;708:30;774:34;754:18;;;747:62;-1:-1:-1;;;825:18:215;;;818:36;871:19;;2161:73:23::1;;;;;;;;;2244:28;2263:8:::0;2244:18:::1;:28::i;:::-;2081:198:::0;:::o;1359:130::-;1247:7;1273:6;-1:-1:-1;;;;;1273:6:23;719:10:41;1422:23:23;1414:68;;;;-1:-1:-1;;;1414:68:23;;1103:2:215;1414:68:23;;;1085:21:215;;;1122:18;;;1115:30;1181:34;1161:18;;;1154:62;1233:18;;1414:68:23;901:356:215;1414:68:23;1359:130::o;14:177:215:-;93:13;;-1:-1:-1;;;;;135:31:215;;125:42;;115:70;;181:1;178;171:12;115:70;14:177;;;:::o;196:293::-;275:6;283;336:2;324:9;315:7;311:23;307:32;304:52;;;352:1;349;342:12;304:52;375:40;405:9;375:40;:::i;:::-;365:50;;434:49;479:2;468:9;464:18;434:49;:::i;:::-;424:59;;196:293;;;;;:::o;901:356::-;526:2216:127;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100bd5760003560e01c80638da5cb5b1161007657806398f1312e1161005b57806398f1312e14610161578063f2fde38b14610169578063f96dae0a1461017c57600080fd5b80638da5cb5b14610119578063918f86741461015857600080fd5b806340c10f19116100a757806340c10f19146100f3578063715018a61461010657806383ea6e971461010e57600080fd5b8062f8900c146100c25780630900f010146100de575b600080fd5b6100cb60015481565b6040519081526020015b60405180910390f35b6100f16100ec366004610776565b6101a3565b005b6100f1610101366004610798565b6102f7565b6100f161058c565b6100cb6301e1338081565b60005473ffffffffffffffffffffffffffffffffffffffff165b60405173ffffffffffffffffffffffffffffffffffffffff90911681526020016100d5565b6100cb6103e881565b6100cb601481565b6100f1610177366004610776565b6105a0565b6101337f000000000000000000000000000000000000000000000000000000000000000081565b6101ab610657565b73ffffffffffffffffffffffffffffffffffffffff8116610253576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603460248201527f4d696e744d616e616765723a206d696e74206d616e616765722063616e6e6f7460448201527f20626520746865207a65726f206164647265737300000000000000000000000060648201526084015b60405180910390fd5b6040517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff82811660048301527f0000000000000000000000000000000000000000000000000000000000000000169063f2fde38b90602401600060405180830381600087803b1580156102dc57600080fd5b505af11580156102f0573d6000803e3d6000fd5b5050505050565b6102ff610657565b600154156104cf57426001541115610399576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602660248201527f4d696e744d616e616765723a206d696e74696e67206e6f74207065726d69747460448201527f6564207965740000000000000000000000000000000000000000000000000000606482015260840161024a565b6103e860147f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa158015610409573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061042d91906107c2565b610437919061080a565b6104419190610847565b8111156104cf576040517f08c379a0000000000000000000000000000000000000000000000000000000008152602060048201526024808201527f4d696e744d616e616765723a206d696e7420616d6f756e74206578636565647360448201527f2063617000000000000000000000000000000000000000000000000000000000606482015260840161024a565b6104dd6301e1338042610882565b6001556040517f40c10f1900000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8381166004830152602482018390527f000000000000000000000000000000000000000000000000000000000000000016906340c10f1990604401600060405180830381600087803b15801561057057600080fd5b505af1158015610584573d6000803e3d6000fd5b505050505050565b610594610657565b61059e60006106d8565b565b6105a8610657565b73ffffffffffffffffffffffffffffffffffffffff811661064b576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201527f6464726573730000000000000000000000000000000000000000000000000000606482015260840161024a565b610654816106d8565b50565b60005473ffffffffffffffffffffffffffffffffffffffff16331461059e576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015260640161024a565b6000805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff0000000000000000000000000000000000000000831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b803573ffffffffffffffffffffffffffffffffffffffff8116811461077157600080fd5b919050565b60006020828403121561078857600080fd5b6107918261074d565b9392505050565b600080604083850312156107ab57600080fd5b6107b48361074d565b946020939093013593505050565b6000602082840312156107d457600080fd5b5051919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b6000817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0483118215151615610842576108426107db565b500290565b60008261087d577f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b500490565b60008219821115610895576108956107db565b50019056fea164736f6c634300080f000a",
+    "sourceMap": "526:2216:127:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1204:33;;;;;;;;;160:25:215;;;148:2;133:18;1204:33:127;;;;;;;;2509:231;;;;;;:::i;:::-;;:::i;:::-;;1851:510;;;;;;:::i;:::-;;:::i;1831:101:23:-;;;:::i;1105:46:127:-;;1143:8;1105:46;;1201:85:23;1247:7;1273:6;;;1201:85;;;1023:42:215;1011:55;;;993:74;;981:2;966:18;1201:85:23;847:226:215;932:42:127;;970:4;932:42;;825:37;;860:2;825:37;;2081:198:23;;;;;;:::i;:::-;;:::i;637:48:127:-;;;;;2509:231;1094:13:23;:11;:13::i;:::-;2586:29:127::1;::::0;::::1;2578:94;;;::::0;::::1;::::0;;1536:2:215;2578:94:127::1;::::0;::::1;1518:21:215::0;1575:2;1555:18;;;1548:30;1614:34;1594:18;;;1587:62;1685:22;1665:18;;;1658:50;1725:19;;2578:94:127::1;;;;;;;;;2683:50;::::0;;;;:33:::1;1011:55:215::0;;;2683:50:127::1;::::0;::::1;993:74:215::0;2683:15:127::1;:33;::::0;::::1;::::0;966:18:215;;2683:50:127::1;;;;;;;;;;;;;;;;;::::0;::::1;;;;;;;;;;;;::::0;::::1;;;;;;;;;2509:231:::0;:::o;1851:510::-;1094:13:23;:11;:13::i;:::-;1931:18:127::1;::::0;:22;1927:318:::1;;1999:15;1977:18;;:37;;1969:88;;;::::0;::::1;::::0;;1957:2:215;1969:88:127::1;::::0;::::1;1939:21:215::0;1996:2;1976:18;;;1969:30;2035:34;2015:18;;;2008:62;2106:8;2086:18;;;2079:36;2132:19;;1969:88:127::1;1755:402:215::0;1969:88:127::1;970:4;860:2;2109:15;:27;;;:29;;;;;;;;;;;;;;;;;;;;;;;;;;;;::::0;::::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;:40;;;;:::i;:::-;2108:56;;;;:::i;:::-;2097:7;:67;;2072:162;;;::::0;::::1;::::0;;3254:2:215;2072:162:127::1;::::0;::::1;3236:21:215::0;3293:2;3273:18;;;3266:30;3332:34;3312:18;;;3305:62;3403:6;3383:18;;;3376:34;3427:19;;2072:162:127::1;3052:400:215::0;2072:162:127::1;2276:29;1143:8;2276:15;:29;:::i;:::-;2255:18;:50:::0;2315:39:::1;::::0;;;;:20:::1;3782:55:215::0;;;2315:39:127::1;::::0;::::1;3764:74:215::0;3854:18;;;3847:34;;;2315:15:127::1;:20;::::0;::::1;::::0;3737:18:215;;2315:39:127::1;;;;;;;;;;;;;;;;;::::0;::::1;;;;;;;;;;;;::::0;::::1;;;;;;;;;1851:510:::0;;:::o;1831:101:23:-;1094:13;:11;:13::i;:::-;1895:30:::1;1922:1;1895:18;:30::i;:::-;1831:101::o:0;2081:198::-;1094:13;:11;:13::i;:::-;2169:22:::1;::::0;::::1;2161:73;;;::::0;::::1;::::0;;4094:2:215;2161:73:23::1;::::0;::::1;4076:21:215::0;4133:2;4113:18;;;4106:30;4172:34;4152:18;;;4145:62;4243:8;4223:18;;;4216:36;4269:19;;2161:73:23::1;3892:402:215::0;2161:73:23::1;2244:28;2263:8;2244:18;:28::i;:::-;2081:198:::0;:::o;1359:130::-;1247:7;1273:6;1422:23;1273:6;719:10:41;1422:23:23;1414:68;;;;;;;4501:2:215;1414:68:23;;;4483:21:215;;;4520:18;;;4513:30;4579:34;4559:18;;;4552:62;4631:18;;1414:68:23;4299:356:215;2433:187:23;2506:16;2525:6;;;2541:17;;;;;;;;;;2573:40;;2525:6;;;;;;;2573:40;;2506:16;2573:40;2496:124;2433:187;:::o;196:196:215:-;264:20;;324:42;313:54;;303:65;;293:93;;382:1;379;372:12;293:93;196:196;;;:::o;397:186::-;456:6;509:2;497:9;488:7;484:23;480:32;477:52;;;525:1;522;515:12;477:52;548:29;567:9;548:29;:::i;:::-;538:39;397:186;-1:-1:-1;;;397:186:215:o;588:254::-;656:6;664;717:2;705:9;696:7;692:23;688:32;685:52;;;733:1;730;723:12;685:52;756:29;775:9;756:29;:::i;:::-;746:39;832:2;817:18;;;;804:32;;-1:-1:-1;;;588:254:215:o;2162:184::-;2232:6;2285:2;2273:9;2264:7;2260:23;2256:32;2253:52;;;2301:1;2298;2291:12;2253:52;-1:-1:-1;2324:16:215;;2162:184;-1:-1:-1;2162:184:215:o;2351:::-;2403:77;2400:1;2393:88;2500:4;2497:1;2490:15;2524:4;2521:1;2514:15;2540:228;2580:7;2706:1;2638:66;2634:74;2631:1;2628:81;2623:1;2616:9;2609:17;2605:105;2602:131;;;2713:18;;:::i;:::-;-1:-1:-1;2753:9:215;;2540:228::o;2773:274::-;2813:1;2839;2829:189;;2874:77;2871:1;2864:88;2975:4;2972:1;2965:15;3003:4;3000:1;2993:15;2829:189;-1:-1:-1;3032:9:215;;2773:274::o;3457:128::-;3497:3;3528:1;3524:6;3521:1;3518:13;3515:39;;;3534:18;;:::i;:::-;-1:-1:-1;3570:9:215;;3457:128::o",
+    "linkReferences": {},
+    "immutableReferences": {
+      "65876": [
+        {
+          "start": 385,
+          "length": 32
+        },
+        {
+          "start": 664,
+          "length": 32
+        },
+        {
+          "start": 928,
+          "length": 32
+        },
+        {
+          "start": 1324,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "methodIdentifiers": {
+    "DENOMINATOR()": "918f8674",
+    "MINT_CAP()": "98f1312e",
+    "MINT_PERIOD()": "83ea6e97",
+    "governanceToken()": "f96dae0a",
+    "mint(address,uint256)": "40c10f19",
+    "mintPermittedAfter()": "00f8900c",
+    "owner()": "8da5cb5b",
+    "renounceOwnership()": "715018a6",
+    "transferOwnership(address)": "f2fde38b",
+    "upgrade(address)": "0900f010"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_upgrader\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_governanceToken\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DENOMINATOR\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MINT_CAP\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MINT_PERIOD\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"governanceToken\",\"outputs\":[{\"internalType\":\"contract GovernanceToken\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"mintPermittedAfter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newMintManager\",\"type\":\"address\"}],\"name\":\"upgrade\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_governanceToken\":\"The governance token this contract can mint tokens of.\",\"_upgrader\":\"The owner of this contract.\"}},\"mint(address,uint256)\":{\"params\":{\"_account\":\"The account receiving minted tokens.\",\"_amount\":\"The amount of tokens to mint.\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"upgrade(address)\":{\"params\":{\"_newMintManager\":\"The MintManager to upgrade to.\"}}},\"title\":\"MintManager\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"DENOMINATOR()\":{\"notice\":\"The number of decimals for the MINT_CAP.\"},\"MINT_CAP()\":{\"notice\":\"The amount of tokens that can be minted per year.         The value is a fixed point number with 4 decimals.\"},\"MINT_PERIOD()\":{\"notice\":\"The amount of time that must pass before the MINT_CAP number of tokens can         be minted again.\"},\"constructor\":{\"notice\":\"Constructs the MintManager contract.\"},\"governanceToken()\":{\"notice\":\"The GovernanceToken that the MintManager can mint tokens\"},\"mint(address,uint256)\":{\"notice\":\"Only the token owner is allowed to mint a certain amount of the         governance token per year.\"},\"mintPermittedAfter()\":{\"notice\":\"Tracks the time of last mint.\"},\"upgrade(address)\":{\"notice\":\"Upgrade the owner of the governance token to a new MintManager.\"}},\"notice\":\"Set as `owner` of the governance token and responsible for the token inflation         schedule. Contract acts as the token \\\"mint manager\\\" with permission to the `mint`         function only. Currently permitted to mint once per year of up to 2% of the total         token supply. Upgradable to allow changes in the inflation schedule.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/governance/MintManager.sol\":\"MintManager\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"lib/openzeppelin-contracts/contracts/access/Ownable.sol\":{\"keccak256\":\"0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2\",\"dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y\"]},\"lib/openzeppelin-contracts/contracts/governance/utils/IVotes.sol\":{\"keccak256\":\"0xf5324a55ee9c0b4a840ea57c055ac9d046f88986ceef567e1cf68113e46a79c0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f41fe2bddc33c17ccccfc25379b1869354e9ee62d8b28d2acc95229eeba37a86\",\"dweb:/ipfs/Qmb6SF2XL2uSvH6k5JSjtx4Xoqz41ACkhdAhtbW1Yh3RiY\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0\",\"dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol\":{\"keccak256\":\"0x0d19410453cda55960a818e02bd7c18952a5c8fe7a3036e81f0d599f34487a7b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4c0f62d3d5bef22b5ca00cc3903e7de6152cb68d2d22401a463f373cda54c00f\",\"dweb:/ipfs/QmSfzjZux7LC7NW2f7rjCXTHeFMUCWERqDkhpCTBy7kxTe\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Votes.sol\":{\"keccak256\":\"0x7fd2492be0468be4662081ee25cde38a31e4a0ceca0fed10160462389013910f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://10c660ba772feee0fcb29319b15b328b429cd020079786e8d00992159f4b7b4e\",\"dweb:/ipfs/QmTjnb1FLbjHkgSZ7qcRZnNSwmZnobBpkJ9UWSc1SkVqhU\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-ERC20Permit.sol\":{\"keccak256\":\"0x07536242e24ee7067295d32c08e495a33e605f3c52f8ee4ec3bdcb7a351313d2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://01f99dbf2ce567a64a03fc4d38b76d64d52bf1a2302922971446b1cf777220ec\",\"dweb:/ipfs/QmSiotbcG2KMuXfbKyKTcHu9ujBp67jmbULJyYLDpsrpC1\"]},\"lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol\":{\"keccak256\":\"0xf41ca991f30855bf80ffd11e9347856a517b977f0a6c2d52e6421a99b7840329\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b2717fd2bdac99daa960a6de500754ea1b932093c946388c381da48658234b95\",\"dweb:/ipfs/QmP6QVMn6UeA3ByahyJbYQr5M6coHKBKsf3ySZSfbyA8R7\"]},\"lib/openzeppelin-contracts/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"lib/openzeppelin-contracts/contracts/utils/Counters.sol\":{\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee\",\"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu\"]},\"lib/openzeppelin-contracts/contracts/utils/Strings.sol\":{\"keccak256\":\"0xaf159a8b1923ad2a26d516089bceca9bdeaeacd04be50983ea00ba63070f08a3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6f2cf1c531122bc7ca96b8c8db6a60deae60441e5223065e792553d4849b5638\",\"dweb:/ipfs/QmPBdJmBBABMDCfyDjCbdxgiqRavgiSL88SYPGibgbPas9\"]},\"lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol\":{\"keccak256\":\"0xdb7f5c28fc61cda0bd8ab60ce288e206b791643bcd3ba464a70cbec18895a2f5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bf52bdf22a33263f5ca6227a35faeac3b81e7d2c692fbcc6a079d488710c5900\",\"dweb:/ipfs/QmcmsjkP4yq3UhiJbvyzwufaY2EKh1zhHaRK8ATag2cpD2\"]},\"lib/openzeppelin-contracts/contracts/utils/cryptography/draft-EIP712.sol\":{\"keccak256\":\"0x6688fad58b9ec0286d40fa957152e575d5d8bd4c3aa80985efdb11b44f776ae7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8bc00ab7f133cdaafd212a5cc6a16c8d37319721105d130c8e5af0c4e8f170ba\",\"dweb:/ipfs/QmVmf6LVMfFiEkvKYLzSv3bGHzymEW93AcUuFrNUdY3NtT\"]},\"lib/openzeppelin-contracts/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xd15c3e400531f00203839159b2b8e7209c5158b35618f570c695b7e47f12e9f0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b600b852e0597aa69989cc263111f02097e2827edc1bdc70306303e3af5e9929\",\"dweb:/ipfs/QmU4WfM28A1nDqghuuGeFmN3CnVrk6opWtiF65K4vhFPeC\"]},\"lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol\":{\"keccak256\":\"0x02686c31ccb9ee77a299fa5f47327af5271f251a707a0e24f321957166ff0434\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cb562d8ae1da31249ca0d8553df9f89ef4c3c110a018c4449dde68ae30e51ec1\",\"dweb:/ipfs/QmUwxjtTUYB89ymeV46TZPmTsGnYrKNcgTHk7MQA1MG3hj\"]},\"src/governance/GovernanceToken.sol\":{\"keccak256\":\"0x9d774076abfd38800314a0a7c561f139b48693c55d2aaf2542c3f52d6ae5cc0c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ded163f642339496684466b9a7ea0498b50f183f05b89a9f30491d20db334bea\",\"dweb:/ipfs/QmSMaYCj5qx7H7sQgVG6S2nCgAEjPHskfTRUwV9qboPda5\"]},\"src/governance/MintManager.sol\":{\"keccak256\":\"0x6e4d54e1823917217937b763d2fa1107d29e0523b3463239fcbe5648ee31f8c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f63f35c5b1aa7e555b49cbdb7459c865c23d6be71f86a4231fdbbb3e99b69270\",\"dweb:/ipfs/QmSwETFSSaD27ED1dafPp9YNch66DA9tFMeBcToT3GpQS5\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_upgrader",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_governanceToken",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "DENOMINATOR",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "MINT_CAP",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "MINT_PERIOD",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "governanceToken",
+          "outputs": [
+            {
+              "internalType": "contract GovernanceToken",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_account",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "mint"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "mintPermittedAfter",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceOwnership"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_newMintManager",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "upgrade"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": {
+            "params": {
+              "_governanceToken": "The governance token this contract can mint tokens of.",
+              "_upgrader": "The owner of this contract."
+            }
+          },
+          "mint(address,uint256)": {
+            "params": {
+              "_account": "The account receiving minted tokens.",
+              "_amount": "The amount of tokens to mint."
+            }
+          },
+          "owner()": {
+            "details": "Returns the address of the current owner."
+          },
+          "renounceOwnership()": {
+            "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+          },
+          "transferOwnership(address)": {
+            "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+          },
+          "upgrade(address)": {
+            "params": {
+              "_newMintManager": "The MintManager to upgrade to."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "DENOMINATOR()": {
+            "notice": "The number of decimals for the MINT_CAP."
+          },
+          "MINT_CAP()": {
+            "notice": "The amount of tokens that can be minted per year.         The value is a fixed point number with 4 decimals."
+          },
+          "MINT_PERIOD()": {
+            "notice": "The amount of time that must pass before the MINT_CAP number of tokens can         be minted again."
+          },
+          "constructor": {
+            "notice": "Constructs the MintManager contract."
+          },
+          "governanceToken()": {
+            "notice": "The GovernanceToken that the MintManager can mint tokens"
+          },
+          "mint(address,uint256)": {
+            "notice": "Only the token owner is allowed to mint a certain amount of the         governance token per year."
+          },
+          "mintPermittedAfter()": {
+            "notice": "Tracks the time of last mint."
+          },
+          "upgrade(address)": {
+            "notice": "Upgrade the owner of the governance token to a new MintManager."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/governance/MintManager.sol": "MintManager"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "lib/openzeppelin-contracts/contracts/access/Ownable.sol": {
+        "keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+        "urls": [
+          "bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+          "dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/governance/utils/IVotes.sol": {
+        "keccak256": "0xf5324a55ee9c0b4a840ea57c055ac9d046f88986ceef567e1cf68113e46a79c0",
+        "urls": [
+          "bzz-raw://f41fe2bddc33c17ccccfc25379b1869354e9ee62d8b28d2acc95229eeba37a86",
+          "dweb:/ipfs/Qmb6SF2XL2uSvH6k5JSjtx4Xoqz41ACkhdAhtbW1Yh3RiY"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238",
+        "urls": [
+          "bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0",
+          "dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+        "urls": [
+          "bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+          "dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol": {
+        "keccak256": "0x0d19410453cda55960a818e02bd7c18952a5c8fe7a3036e81f0d599f34487a7b",
+        "urls": [
+          "bzz-raw://4c0f62d3d5bef22b5ca00cc3903e7de6152cb68d2d22401a463f373cda54c00f",
+          "dweb:/ipfs/QmSfzjZux7LC7NW2f7rjCXTHeFMUCWERqDkhpCTBy7kxTe"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Votes.sol": {
+        "keccak256": "0x7fd2492be0468be4662081ee25cde38a31e4a0ceca0fed10160462389013910f",
+        "urls": [
+          "bzz-raw://10c660ba772feee0fcb29319b15b328b429cd020079786e8d00992159f4b7b4e",
+          "dweb:/ipfs/QmTjnb1FLbjHkgSZ7qcRZnNSwmZnobBpkJ9UWSc1SkVqhU"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-ERC20Permit.sol": {
+        "keccak256": "0x07536242e24ee7067295d32c08e495a33e605f3c52f8ee4ec3bdcb7a351313d2",
+        "urls": [
+          "bzz-raw://01f99dbf2ce567a64a03fc4d38b76d64d52bf1a2302922971446b1cf777220ec",
+          "dweb:/ipfs/QmSiotbcG2KMuXfbKyKTcHu9ujBp67jmbULJyYLDpsrpC1"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-IERC20Permit.sol": {
+        "keccak256": "0xf41ca991f30855bf80ffd11e9347856a517b977f0a6c2d52e6421a99b7840329",
+        "urls": [
+          "bzz-raw://b2717fd2bdac99daa960a6de500754ea1b932093c946388c381da48658234b95",
+          "dweb:/ipfs/QmP6QVMn6UeA3ByahyJbYQr5M6coHKBKsf3ySZSfbyA8R7"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/Counters.sol": {
+        "keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+        "urls": [
+          "bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+          "dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/Strings.sol": {
+        "keccak256": "0xaf159a8b1923ad2a26d516089bceca9bdeaeacd04be50983ea00ba63070f08a3",
+        "urls": [
+          "bzz-raw://6f2cf1c531122bc7ca96b8c8db6a60deae60441e5223065e792553d4849b5638",
+          "dweb:/ipfs/QmPBdJmBBABMDCfyDjCbdxgiqRavgiSL88SYPGibgbPas9"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol": {
+        "keccak256": "0xdb7f5c28fc61cda0bd8ab60ce288e206b791643bcd3ba464a70cbec18895a2f5",
+        "urls": [
+          "bzz-raw://bf52bdf22a33263f5ca6227a35faeac3b81e7d2c692fbcc6a079d488710c5900",
+          "dweb:/ipfs/QmcmsjkP4yq3UhiJbvyzwufaY2EKh1zhHaRK8ATag2cpD2"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/cryptography/draft-EIP712.sol": {
+        "keccak256": "0x6688fad58b9ec0286d40fa957152e575d5d8bd4c3aa80985efdb11b44f776ae7",
+        "urls": [
+          "bzz-raw://8bc00ab7f133cdaafd212a5cc6a16c8d37319721105d130c8e5af0c4e8f170ba",
+          "dweb:/ipfs/QmVmf6LVMfFiEkvKYLzSv3bGHzymEW93AcUuFrNUdY3NtT"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/math/Math.sol": {
+        "keccak256": "0xd15c3e400531f00203839159b2b8e7209c5158b35618f570c695b7e47f12e9f0",
+        "urls": [
+          "bzz-raw://b600b852e0597aa69989cc263111f02097e2827edc1bdc70306303e3af5e9929",
+          "dweb:/ipfs/QmU4WfM28A1nDqghuuGeFmN3CnVrk6opWtiF65K4vhFPeC"
+        ],
+        "license": "MIT"
+      },
+      "lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol": {
+        "keccak256": "0x02686c31ccb9ee77a299fa5f47327af5271f251a707a0e24f321957166ff0434",
+        "urls": [
+          "bzz-raw://cb562d8ae1da31249ca0d8553df9f89ef4c3c110a018c4449dde68ae30e51ec1",
+          "dweb:/ipfs/QmUwxjtTUYB89ymeV46TZPmTsGnYrKNcgTHk7MQA1MG3hj"
+        ],
+        "license": "MIT"
+      },
+      "src/governance/GovernanceToken.sol": {
+        "keccak256": "0x9d774076abfd38800314a0a7c561f139b48693c55d2aaf2542c3f52d6ae5cc0c",
+        "urls": [
+          "bzz-raw://ded163f642339496684466b9a7ea0498b50f183f05b89a9f30491d20db334bea",
+          "dweb:/ipfs/QmSMaYCj5qx7H7sQgVG6S2nCgAEjPHskfTRUwV9qboPda5"
+        ],
+        "license": "MIT"
+      },
+      "src/governance/MintManager.sol": {
+        "keccak256": "0x6e4d54e1823917217937b763d2fa1107d29e0523b3463239fcbe5648ee31f8c1",
+        "urls": [
+          "bzz-raw://f63f35c5b1aa7e555b49cbdb7459c865c23d6be71f86a4231fdbbb3e99b69270",
+          "dweb:/ipfs/QmSwETFSSaD27ED1dafPp9YNch66DA9tFMeBcToT3GpQS5"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 29973,
+        "contract": "src/governance/MintManager.sol:MintManager",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 65891,
+        "contract": "src/governance/MintManager.sol:MintManager",
+        "label": "mintPermittedAfter",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "DENOMINATOR()": {
+        "notice": "The number of decimals for the MINT_CAP."
+      },
+      "MINT_CAP()": {
+        "notice": "The amount of tokens that can be minted per year.         The value is a fixed point number with 4 decimals."
+      },
+      "MINT_PERIOD()": {
+        "notice": "The amount of time that must pass before the MINT_CAP number of tokens can         be minted again."
+      },
+      "constructor": {
+        "notice": "Constructs the MintManager contract."
+      },
+      "governanceToken()": {
+        "notice": "The GovernanceToken that the MintManager can mint tokens"
+      },
+      "mint(address,uint256)": {
+        "notice": "Only the token owner is allowed to mint a certain amount of the         governance token per year."
+      },
+      "mintPermittedAfter()": {
+        "notice": "Tracks the time of last mint."
+      },
+      "upgrade(address)": {
+        "notice": "Upgrade the owner of the governance token to a new MintManager."
+      }
+    },
+    "notice": "Set as `owner` of the governance token and responsible for the token inflation         schedule. Contract acts as the token \"mint manager\" with permission to the `mint`         function only. Currently permitted to mint once per year of up to 2% of the total         token supply. Upgradable to allow changes in the inflation schedule."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "params": {
+          "_governanceToken": "The governance token this contract can mint tokens of.",
+          "_upgrader": "The owner of this contract."
+        }
+      },
+      "mint(address,uint256)": {
+        "params": {
+          "_account": "The account receiving minted tokens.",
+          "_amount": "The amount of tokens to mint."
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "upgrade(address)": {
+        "params": {
+          "_newMintManager": "The MintManager to upgrade to."
+        }
+      }
+    },
+    "title": "MintManager"
+  },
+  "ast": {
+    "absolutePath": "src/governance/MintManager.sol",
+    "id": 65989,
+    "exportedSymbols": {
+      "Context": [
+        33880
+      ],
+      "Counters": [
+        33954
+      ],
+      "ECDSA": [
+        34568
+      ],
+      "EIP712": [
+        34722
+      ],
+      "ERC20": [
+        30893
+      ],
+      "ERC20Burnable": [
+        31015
+      ],
+      "ERC20Permit": [
+        31849
+      ],
+      "ERC20Votes": [
+        31652
+      ],
+      "GovernanceToken": [
+        65865
+      ],
+      "IERC20": [
+        30971
+      ],
+      "IERC20Metadata": [
+        31677
+      ],
+      "IERC20Permit": [
+        31885
+      ],
+      "IVotes": [
+        30156
+      ],
+      "Math": [
+        35456
+      ],
+      "MintManager": [
+        65988
+      ],
+      "Ownable": [
+        30078
+      ],
+      "SafeCast": [
+        37307
+      ],
+      "Strings": [
+        34180
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2711:127",
+    "nodes": [
+      {
+        "id": 65867,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:127",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 65868,
+        "nodeType": "ImportDirective",
+        "src": "57:52:127",
+        "nodes": [],
+        "absolutePath": "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
+        "file": "@openzeppelin/contracts/access/Ownable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 65989,
+        "sourceUnit": 30079,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 65869,
+        "nodeType": "ImportDirective",
+        "src": "110:31:127",
+        "nodes": [],
+        "absolutePath": "src/governance/GovernanceToken.sol",
+        "file": "./GovernanceToken.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 65989,
+        "sourceUnit": 65866,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 65988,
+        "nodeType": "ContractDefinition",
+        "src": "526:2216:127",
+        "nodes": [
+          {
+            "id": 65876,
+            "nodeType": "VariableDeclaration",
+            "src": "637:48:127",
+            "nodes": [],
+            "constant": false,
+            "documentation": {
+              "id": 65873,
+              "nodeType": "StructuredDocumentation",
+              "src": "564:68:127",
+              "text": "@notice The GovernanceToken that the MintManager can mint tokens"
+            },
+            "functionSelector": "f96dae0a",
+            "mutability": "immutable",
+            "name": "governanceToken",
+            "nameLocation": "670:15:127",
+            "scope": 65988,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+              "typeString": "contract GovernanceToken"
+            },
+            "typeName": {
+              "id": 65875,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 65874,
+                "name": "GovernanceToken",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 65865,
+                "src": "637:15:127"
+              },
+              "referencedDeclaration": 65865,
+              "src": "637:15:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                "typeString": "contract GovernanceToken"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 65880,
+            "nodeType": "VariableDeclaration",
+            "src": "825:37:127",
+            "nodes": [],
+            "constant": true,
+            "documentation": {
+              "id": 65877,
+              "nodeType": "StructuredDocumentation",
+              "src": "692:128:127",
+              "text": "@notice The amount of tokens that can be minted per year.\n         The value is a fixed point number with 4 decimals."
+            },
+            "functionSelector": "98f1312e",
+            "mutability": "constant",
+            "name": "MINT_CAP",
+            "nameLocation": "849:8:127",
+            "scope": 65988,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 65878,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "825:7:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "3230",
+              "id": 65879,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "860:2:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_20_by_1",
+                "typeString": "int_const 20"
+              },
+              "value": "20"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 65884,
+            "nodeType": "VariableDeclaration",
+            "src": "932:42:127",
+            "nodes": [],
+            "constant": true,
+            "documentation": {
+              "id": 65881,
+              "nodeType": "StructuredDocumentation",
+              "src": "875:52:127",
+              "text": "@notice The number of decimals for the MINT_CAP."
+            },
+            "functionSelector": "918f8674",
+            "mutability": "constant",
+            "name": "DENOMINATOR",
+            "nameLocation": "956:11:127",
+            "scope": 65988,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 65882,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "932:7:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "31303030",
+              "id": 65883,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "970:4:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1000_by_1",
+                "typeString": "int_const 1000"
+              },
+              "value": "1000"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 65888,
+            "nodeType": "VariableDeclaration",
+            "src": "1105:46:127",
+            "nodes": [],
+            "constant": true,
+            "documentation": {
+              "id": 65885,
+              "nodeType": "StructuredDocumentation",
+              "src": "981:119:127",
+              "text": "@notice The amount of time that must pass before the MINT_CAP number of tokens can\n         be minted again."
+            },
+            "functionSelector": "83ea6e97",
+            "mutability": "constant",
+            "name": "MINT_PERIOD",
+            "nameLocation": "1129:11:127",
+            "scope": 65988,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 65886,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1105:7:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "333635",
+              "id": 65887,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "1143:8:127",
+              "subdenomination": "days",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_31536000_by_1",
+                "typeString": "int_const 31536000"
+              },
+              "value": "365"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 65891,
+            "nodeType": "VariableDeclaration",
+            "src": "1204:33:127",
+            "nodes": [],
+            "constant": false,
+            "documentation": {
+              "id": 65889,
+              "nodeType": "StructuredDocumentation",
+              "src": "1158:41:127",
+              "text": "@notice Tracks the time of last mint."
+            },
+            "functionSelector": "00f8900c",
+            "mutability": "mutable",
+            "name": "mintPermittedAfter",
+            "nameLocation": "1219:18:127",
+            "scope": 65988,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 65890,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1204:7:127",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 65910,
+            "nodeType": "FunctionDefinition",
+            "src": "1444:163:127",
+            "nodes": [],
+            "body": {
+              "id": 65909,
+              "nodeType": "Block",
+              "src": "1501:106:127",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 65900,
+                        "name": "_upgrader",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65894,
+                        "src": "1529:9:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "id": 65899,
+                      "name": "transferOwnership",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 30057,
+                      "src": "1511:17:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address)"
+                      }
+                    },
+                    "id": 65901,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1511:28:127",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 65902,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1511:28:127"
+                },
+                {
+                  "expression": {
+                    "id": 65907,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 65903,
+                      "name": "governanceToken",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 65876,
+                      "src": "1549:15:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                        "typeString": "contract GovernanceToken"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "id": 65905,
+                          "name": "_governanceToken",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 65896,
+                          "src": "1583:16:127",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 65904,
+                        "name": "GovernanceToken",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65865,
+                        "src": "1567:15:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_GovernanceToken_$65865_$",
+                          "typeString": "type(contract GovernanceToken)"
+                        }
+                      },
+                      "id": 65906,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1567:33:127",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                        "typeString": "contract GovernanceToken"
+                      }
+                    },
+                    "src": "1549:51:127",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                      "typeString": "contract GovernanceToken"
+                    }
+                  },
+                  "id": 65908,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1549:51:127"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 65892,
+              "nodeType": "StructuredDocumentation",
+              "src": "1244:195:127",
+              "text": "@notice Constructs the MintManager contract.\n @param _upgrader        The owner of this contract.\n @param _governanceToken The governance token this contract can mint tokens of."
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 65897,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 65894,
+                  "mutability": "mutable",
+                  "name": "_upgrader",
+                  "nameLocation": "1464:9:127",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 65910,
+                  "src": "1456:17:127",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 65893,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1456:7:127",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 65896,
+                  "mutability": "mutable",
+                  "name": "_governanceToken",
+                  "nameLocation": "1483:16:127",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 65910,
+                  "src": "1475:24:127",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 65895,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1475:7:127",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1455:45:127"
+            },
+            "returnParameters": {
+              "id": 65898,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1501:0:127"
+            },
+            "scope": 65988,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 65962,
+            "nodeType": "FunctionDefinition",
+            "src": "1851:510:127",
+            "nodes": [],
+            "body": {
+              "id": 65961,
+              "nodeType": "Block",
+              "src": "1917:444:127",
+              "nodes": [],
+              "statements": [
+                {
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 65922,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "id": 65920,
+                      "name": "mintPermittedAfter",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 65891,
+                      "src": "1931:18:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": ">",
+                    "rightExpression": {
+                      "hexValue": "30",
+                      "id": 65921,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1952:1:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "src": "1931:22:127",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 65946,
+                  "nodeType": "IfStatement",
+                  "src": "1927:318:127",
+                  "trueBody": {
+                    "id": 65945,
+                    "nodeType": "Block",
+                    "src": "1955:290:127",
+                    "statements": [
+                      {
+                        "expression": {
+                          "arguments": [
+                            {
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 65927,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "id": 65924,
+                                "name": "mintPermittedAfter",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 65891,
+                                "src": "1977:18:127",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": "<=",
+                              "rightExpression": {
+                                "expression": {
+                                  "id": 65925,
+                                  "name": "block",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": -4,
+                                  "src": "1999:5:127",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_magic_block",
+                                    "typeString": "block"
+                                  }
+                                },
+                                "id": 65926,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "timestamp",
+                                "nodeType": "MemberAccess",
+                                "src": "1999:15:127",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "1977:37:127",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "hexValue": "4d696e744d616e616765723a206d696e74696e67206e6f74207065726d697474656420796574",
+                              "id": 65928,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "2016:40:127",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_ed43c2a83892479548197c48f7c4213c03b2354f78ec9c21406fb18697f084c5",
+                                "typeString": "literal_string \"MintManager: minting not permitted yet\""
+                              },
+                              "value": "MintManager: minting not permitted yet"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_ed43c2a83892479548197c48f7c4213c03b2354f78ec9c21406fb18697f084c5",
+                                "typeString": "literal_string \"MintManager: minting not permitted yet\""
+                              }
+                            ],
+                            "id": 65923,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              -18,
+                              -18
+                            ],
+                            "referencedDeclaration": -18,
+                            "src": "1969:7:127",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 65929,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "1969:88:127",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 65930,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1969:88:127"
+                      },
+                      {
+                        "expression": {
+                          "arguments": [
+                            {
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 65941,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "id": 65932,
+                                "name": "_amount",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 65915,
+                                "src": "2097:7:127",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": "<=",
+                              "rightExpression": {
+                                "commonType": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                },
+                                "id": 65940,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "leftExpression": {
+                                  "components": [
+                                    {
+                                      "commonType": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                      },
+                                      "id": 65937,
+                                      "isConstant": false,
+                                      "isLValue": false,
+                                      "isPure": false,
+                                      "lValueRequested": false,
+                                      "leftExpression": {
+                                        "arguments": [],
+                                        "expression": {
+                                          "argumentTypes": [],
+                                          "expression": {
+                                            "id": 65933,
+                                            "name": "governanceToken",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 65876,
+                                            "src": "2109:15:127",
+                                            "typeDescriptions": {
+                                              "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                                              "typeString": "contract GovernanceToken"
+                                            }
+                                          },
+                                          "id": 65934,
+                                          "isConstant": false,
+                                          "isLValue": false,
+                                          "isPure": false,
+                                          "lValueRequested": false,
+                                          "memberName": "totalSupply",
+                                          "nodeType": "MemberAccess",
+                                          "referencedDeclaration": 30392,
+                                          "src": "2109:27:127",
+                                          "typeDescriptions": {
+                                            "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
+                                            "typeString": "function () view external returns (uint256)"
+                                          }
+                                        },
+                                        "id": 65935,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "2109:29:127",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                          "typeIdentifier": "t_uint256",
+                                          "typeString": "uint256"
+                                        }
+                                      },
+                                      "nodeType": "BinaryOperation",
+                                      "operator": "*",
+                                      "rightExpression": {
+                                        "id": 65936,
+                                        "name": "MINT_CAP",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 65880,
+                                        "src": "2141:8:127",
+                                        "typeDescriptions": {
+                                          "typeIdentifier": "t_uint256",
+                                          "typeString": "uint256"
+                                        }
+                                      },
+                                      "src": "2109:40:127",
+                                      "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                      }
+                                    }
+                                  ],
+                                  "id": 65938,
+                                  "isConstant": false,
+                                  "isInlineArray": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "nodeType": "TupleExpression",
+                                  "src": "2108:42:127",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                  }
+                                },
+                                "nodeType": "BinaryOperation",
+                                "operator": "/",
+                                "rightExpression": {
+                                  "id": 65939,
+                                  "name": "DENOMINATOR",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 65884,
+                                  "src": "2153:11:127",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                  }
+                                },
+                                "src": "2108:56:127",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "2097:67:127",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "hexValue": "4d696e744d616e616765723a206d696e7420616d6f756e74206578636565647320636170",
+                              "id": 65942,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "2182:38:127",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_b1fe0756dee1270bfc1b3ef8747653370e523e11090116418f975ae012f3e664",
+                                "typeString": "literal_string \"MintManager: mint amount exceeds cap\""
+                              },
+                              "value": "MintManager: mint amount exceeds cap"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_b1fe0756dee1270bfc1b3ef8747653370e523e11090116418f975ae012f3e664",
+                                "typeString": "literal_string \"MintManager: mint amount exceeds cap\""
+                              }
+                            ],
+                            "id": 65931,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              -18,
+                              -18
+                            ],
+                            "referencedDeclaration": -18,
+                            "src": "2072:7:127",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 65943,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "2072:162:127",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 65944,
+                        "nodeType": "ExpressionStatement",
+                        "src": "2072:162:127"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "id": 65952,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 65947,
+                      "name": "mintPermittedAfter",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 65891,
+                      "src": "2255:18:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 65951,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "expression": {
+                          "id": 65948,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -4,
+                          "src": "2276:5:127",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 65949,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "timestamp",
+                        "nodeType": "MemberAccess",
+                        "src": "2276:15:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "+",
+                      "rightExpression": {
+                        "id": 65950,
+                        "name": "MINT_PERIOD",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65888,
+                        "src": "2294:11:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "src": "2276:29:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "2255:50:127",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 65953,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2255:50:127"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 65957,
+                        "name": "_account",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65913,
+                        "src": "2336:8:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "id": 65958,
+                        "name": "_amount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65915,
+                        "src": "2346:7:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "expression": {
+                        "id": 65954,
+                        "name": "governanceToken",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65876,
+                        "src": "2315:15:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                          "typeString": "contract GovernanceToken"
+                        }
+                      },
+                      "id": 65956,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "mint",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 65804,
+                      "src": "2315:20:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$__$",
+                        "typeString": "function (address,uint256) external"
+                      }
+                    },
+                    "id": 65959,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2315:39:127",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 65960,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2315:39:127"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 65911,
+              "nodeType": "StructuredDocumentation",
+              "src": "1613:233:127",
+              "text": "@notice Only the token owner is allowed to mint a certain amount of the\n         governance token per year.\n @param _account The account receiving minted tokens.\n @param _amount  The amount of tokens to mint."
+            },
+            "functionSelector": "40c10f19",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "id": 65918,
+                "kind": "modifierInvocation",
+                "modifierName": {
+                  "id": 65917,
+                  "name": "onlyOwner",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 29997,
+                  "src": "1907:9:127"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "1907:9:127"
+              }
+            ],
+            "name": "mint",
+            "nameLocation": "1860:4:127",
+            "parameters": {
+              "id": 65916,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 65913,
+                  "mutability": "mutable",
+                  "name": "_account",
+                  "nameLocation": "1873:8:127",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 65962,
+                  "src": "1865:16:127",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 65912,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1865:7:127",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 65915,
+                  "mutability": "mutable",
+                  "name": "_amount",
+                  "nameLocation": "1891:7:127",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 65962,
+                  "src": "1883:15:127",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 65914,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1883:7:127",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1864:35:127"
+            },
+            "returnParameters": {
+              "id": 65919,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1917:0:127"
+            },
+            "scope": 65988,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 65987,
+            "nodeType": "FunctionDefinition",
+            "src": "2509:231:127",
+            "nodes": [],
+            "body": {
+              "id": 65986,
+              "nodeType": "Block",
+              "src": "2568:172:127",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 65976,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "id": 65971,
+                          "name": "_newMintManager",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 65965,
+                          "src": "2586:15:127",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "!=",
+                        "rightExpression": {
+                          "arguments": [
+                            {
+                              "hexValue": "30",
+                              "id": 65974,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "number",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "2613:1:127",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              },
+                              "value": "0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              }
+                            ],
+                            "id": 65973,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "lValueRequested": false,
+                            "nodeType": "ElementaryTypeNameExpression",
+                            "src": "2605:7:127",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_address_$",
+                              "typeString": "type(address)"
+                            },
+                            "typeName": {
+                              "id": 65972,
+                              "name": "address",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "2605:7:127",
+                              "typeDescriptions": {}
+                            }
+                          },
+                          "id": 65975,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "typeConversion",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "2605:10:127",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "2586:29:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "4d696e744d616e616765723a206d696e74206d616e616765722063616e6e6f7420626520746865207a65726f2061646472657373",
+                        "id": 65977,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2617:54:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_a056f93899cd0eb99dec635c5c4cd6e387941a849c02175214cfb36a374f56e5",
+                          "typeString": "literal_string \"MintManager: mint manager cannot be the zero address\""
+                        },
+                        "value": "MintManager: mint manager cannot be the zero address"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_a056f93899cd0eb99dec635c5c4cd6e387941a849c02175214cfb36a374f56e5",
+                          "typeString": "literal_string \"MintManager: mint manager cannot be the zero address\""
+                        }
+                      ],
+                      "id": 65970,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -18,
+                        -18
+                      ],
+                      "referencedDeclaration": -18,
+                      "src": "2578:7:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 65978,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2578:94:127",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 65979,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2578:94:127"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 65983,
+                        "name": "_newMintManager",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65965,
+                        "src": "2717:15:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "id": 65980,
+                        "name": "governanceToken",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 65876,
+                        "src": "2683:15:127",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_GovernanceToken_$65865",
+                          "typeString": "contract GovernanceToken"
+                        }
+                      },
+                      "id": 65982,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transferOwnership",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 30057,
+                      "src": "2683:33:127",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 65984,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2683:50:127",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 65985,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2683:50:127"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 65963,
+              "nodeType": "StructuredDocumentation",
+              "src": "2367:137:127",
+              "text": "@notice Upgrade the owner of the governance token to a new MintManager.\n @param _newMintManager The MintManager to upgrade to."
+            },
+            "functionSelector": "0900f010",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "id": 65968,
+                "kind": "modifierInvocation",
+                "modifierName": {
+                  "id": 65967,
+                  "name": "onlyOwner",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 29997,
+                  "src": "2558:9:127"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "2558:9:127"
+              }
+            ],
+            "name": "upgrade",
+            "nameLocation": "2518:7:127",
+            "parameters": {
+              "id": 65966,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 65965,
+                  "mutability": "mutable",
+                  "name": "_newMintManager",
+                  "nameLocation": "2534:15:127",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 65987,
+                  "src": "2526:23:127",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 65964,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2526:7:127",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2525:25:127"
+            },
+            "returnParameters": {
+              "id": 65969,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2568:0:127"
+            },
+            "scope": 65988,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 65871,
+              "name": "Ownable",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 30078,
+              "src": "550:7:127"
+            },
+            "id": 65872,
+            "nodeType": "InheritanceSpecifier",
+            "src": "550:7:127"
+          }
+        ],
+        "canonicalName": "MintManager",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 65870,
+          "nodeType": "StructuredDocumentation",
+          "src": "143:383:127",
+          "text": "@title MintManager\n @notice Set as `owner` of the governance token and responsible for the token inflation\n         schedule. Contract acts as the token \"mint manager\" with permission to the `mint`\n         function only. Currently permitted to mint once per year of up to 2% of the total\n         token supply. Upgradable to allow changes in the inflation schedule."
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          65988,
+          30078,
+          33880
+        ],
+        "name": "MintManager",
+        "nameLocation": "535:11:127",
+        "scope": 65989,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 127
+}

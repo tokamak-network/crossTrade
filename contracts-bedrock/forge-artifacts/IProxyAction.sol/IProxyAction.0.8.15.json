@@ -1,0 +1,1014 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "_selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "getSelectorImplementation2",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "impl",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "implementation2",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newImplementation",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "_alive",
+          "type": "bool"
+        }
+      ],
+      "name": "setAliveImplementation2",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newImplementation",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_alive",
+          "type": "bool"
+        }
+      ],
+      "name": "setImplementation2",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "_pause",
+          "type": "bool"
+        }
+      ],
+      "name": "setProxyPause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4[]",
+          "name": "_selectors",
+          "type": "bytes4[]"
+        },
+        {
+          "internalType": "address",
+          "name": "_imp",
+          "type": "address"
+        }
+      ],
+      "name": "setSelectorImplementations2",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getSelectorImplementation2(bytes4)": "8d4fdb40",
+    "implementation2(uint256)": "8b8f4a65",
+    "setAliveImplementation2(address,bool)": "5cc797d8",
+    "setImplementation2(address,uint256,bool)": "7cd5f663",
+    "setProxyPause(bool)": "7cb00d25",
+    "setSelectorImplementations2(bytes4[],address)": "4a5df50f"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"_selector\",\"type\":\"bytes4\"}],\"name\":\"getSelectorImplementation2\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_index\",\"type\":\"uint256\"}],\"name\":\"implementation2\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_alive\",\"type\":\"bool\"}],\"name\":\"setAliveImplementation2\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_index\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_alive\",\"type\":\"bool\"}],\"name\":\"setImplementation2\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_pause\",\"type\":\"bool\"}],\"name\":\"setProxyPause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4[]\",\"name\":\"_selectors\",\"type\":\"bytes4[]\"},{\"internalType\":\"address\",\"name\":\"_imp\",\"type\":\"address\"}],\"name\":\"setSelectorImplementations2\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"getSelectorImplementation2(bytes4)\":{\"details\":\"view implementation address of selector of function\",\"params\":{\"_selector\":\"selector of function\"},\"returns\":{\"impl\":\"address of the implementation\"}},\"implementation2(uint256)\":{\"details\":\"view implementation address of the proxy[index]\",\"params\":{\"_index\":\"index of proxy\"},\"returns\":{\"_0\":\"address of the implementation\"}},\"setAliveImplementation2(address,bool)\":{\"details\":\"set alive status of implementation\",\"params\":{\"_alive\":\"alive status\",\"newImplementation\":\"Address of the new implementation.\"}},\"setImplementation2(address,uint256,bool)\":{\"details\":\"set the implementation address and status of the proxy[index]\",\"params\":{\"_alive\":\"_alive\",\"_index\":\"index\",\"newImplementation\":\"Address of the new implementation.\"}},\"setProxyPause(bool)\":{\"params\":{\"_pause\":\"true:pause or false:resume\"}},\"setSelectorImplementations2(bytes4[],address)\":{\"details\":\"set selectors of Implementation\",\"params\":{\"_imp\":\"implementation address\",\"_selectors\":\"being added selectors\"}}},\"title\":\"IProxyAction\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"setProxyPause(bool)\":{\"notice\":\"Set pause state\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/IProxyAction.sol\":\"IProxyAction\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/interfaces/IProxyAction.sol\":{\"keccak256\":\"0x61f21cfa77f574b96e520e0d3d3367b3d67c9186327acd05f336eb3e83004e4d\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://b7b545e1084292c519ef76496dc00df57afe401ce8bae5561b6a13bdf7007890\",\"dweb:/ipfs/QmQFuck62f8984ht1Ca22PbUtWtZz4LJFUak2ro1qGu6hi\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "_selector",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getSelectorImplementation2",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "implementation2",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "_alive",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setAliveImplementation2"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_alive",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setImplementation2"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bool",
+              "name": "_pause",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setProxyPause"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4[]",
+              "name": "_selectors",
+              "type": "bytes4[]"
+            },
+            {
+              "internalType": "address",
+              "name": "_imp",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setSelectorImplementations2"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "getSelectorImplementation2(bytes4)": {
+            "details": "view implementation address of selector of function",
+            "params": {
+              "_selector": "selector of function"
+            },
+            "returns": {
+              "impl": "address of the implementation"
+            }
+          },
+          "implementation2(uint256)": {
+            "details": "view implementation address of the proxy[index]",
+            "params": {
+              "_index": "index of proxy"
+            },
+            "returns": {
+              "_0": "address of the implementation"
+            }
+          },
+          "setAliveImplementation2(address,bool)": {
+            "details": "set alive status of implementation",
+            "params": {
+              "_alive": "alive status",
+              "newImplementation": "Address of the new implementation."
+            }
+          },
+          "setImplementation2(address,uint256,bool)": {
+            "details": "set the implementation address and status of the proxy[index]",
+            "params": {
+              "_alive": "_alive",
+              "_index": "index",
+              "newImplementation": "Address of the new implementation."
+            }
+          },
+          "setProxyPause(bool)": {
+            "params": {
+              "_pause": "true:pause or false:resume"
+            }
+          },
+          "setSelectorImplementations2(bytes4[],address)": {
+            "details": "set selectors of Implementation",
+            "params": {
+              "_imp": "implementation address",
+              "_selectors": "being added selectors"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "setProxyPause(bool)": {
+            "notice": "Set pause state"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/interfaces/IProxyAction.sol": "IProxyAction"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/interfaces/IProxyAction.sol": {
+        "keccak256": "0x61f21cfa77f574b96e520e0d3d3367b3d67c9186327acd05f336eb3e83004e4d",
+        "urls": [
+          "bzz-raw://b7b545e1084292c519ef76496dc00df57afe401ce8bae5561b6a13bdf7007890",
+          "dweb:/ipfs/QmQFuck62f8984ht1Ca22PbUtWtZz4LJFUak2ro1qGu6hi"
+        ],
+        "license": "Unlicense"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "setProxyPause(bool)": {
+        "notice": "Set pause state"
+      }
+    }
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "getSelectorImplementation2(bytes4)": {
+        "details": "view implementation address of selector of function",
+        "params": {
+          "_selector": "selector of function"
+        },
+        "returns": {
+          "impl": "address of the implementation"
+        }
+      },
+      "implementation2(uint256)": {
+        "details": "view implementation address of the proxy[index]",
+        "params": {
+          "_index": "index of proxy"
+        },
+        "returns": {
+          "_0": "address of the implementation"
+        }
+      },
+      "setAliveImplementation2(address,bool)": {
+        "details": "set alive status of implementation",
+        "params": {
+          "_alive": "alive status",
+          "newImplementation": "Address of the new implementation."
+        }
+      },
+      "setImplementation2(address,uint256,bool)": {
+        "details": "set the implementation address and status of the proxy[index]",
+        "params": {
+          "_alive": "_alive",
+          "_index": "index",
+          "newImplementation": "Address of the new implementation."
+        }
+      },
+      "setProxyPause(bool)": {
+        "params": {
+          "_pause": "true:pause or false:resume"
+        }
+      },
+      "setSelectorImplementations2(bytes4[],address)": {
+        "details": "set selectors of Implementation",
+        "params": {
+          "_imp": "implementation address",
+          "_selectors": "being added selectors"
+        }
+      }
+    },
+    "title": "IProxyAction"
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/IProxyAction.sol",
+    "id": 966,
+    "exportedSymbols": {
+      "IProxyAction": [
+        965
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "37:1593:12",
+    "nodes": [
+      {
+        "id": 914,
+        "nodeType": "PragmaDirective",
+        "src": "37:24:12",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 965,
+        "nodeType": "ContractDefinition",
+        "src": "88:1540:12",
+        "nodes": [
+          {
+            "id": 925,
+            "nodeType": "FunctionDefinition",
+            "src": "318:123:12",
+            "nodes": [],
+            "documentation": {
+              "id": 916,
+              "nodeType": "StructuredDocumentation",
+              "src": "118:195:12",
+              "text": "@dev set the implementation address and status of the proxy[index]\n @param newImplementation Address of the new implementation.\n @param _index index\n @param _alive _alive"
+            },
+            "functionSelector": "7cd5f663",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setImplementation2",
+            "nameLocation": "327:18:12",
+            "parameters": {
+              "id": 923,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 918,
+                  "mutability": "mutable",
+                  "name": "newImplementation",
+                  "nameLocation": "363:17:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 925,
+                  "src": "355:25:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 917,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "355:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 920,
+                  "mutability": "mutable",
+                  "name": "_index",
+                  "nameLocation": "398:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 925,
+                  "src": "390:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 919,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "390:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 922,
+                  "mutability": "mutable",
+                  "name": "_alive",
+                  "nameLocation": "419:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 925,
+                  "src": "414:11:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 921,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "414:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "345:86:12"
+            },
+            "returnParameters": {
+              "id": 924,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "440:0:12"
+            },
+            "scope": 965,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 933,
+            "nodeType": "FunctionDefinition",
+            "src": "599:90:12",
+            "nodes": [],
+            "documentation": {
+              "id": 926,
+              "nodeType": "StructuredDocumentation",
+              "src": "448:146:12",
+              "text": "@dev set alive status of implementation\n @param newImplementation Address of the new implementation.\n @param _alive alive status"
+            },
+            "functionSelector": "5cc797d8",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setAliveImplementation2",
+            "nameLocation": "608:23:12",
+            "parameters": {
+              "id": 931,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 928,
+                  "mutability": "mutable",
+                  "name": "newImplementation",
+                  "nameLocation": "640:17:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 933,
+                  "src": "632:25:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 927,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "632:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 930,
+                  "mutability": "mutable",
+                  "name": "_alive",
+                  "nameLocation": "664:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 933,
+                  "src": "659:11:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 929,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "659:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "631:40:12"
+            },
+            "returnParameters": {
+              "id": 932,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "688:0:12"
+            },
+            "scope": 965,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 942,
+            "nodeType": "FunctionDefinition",
+            "src": "832:114:12",
+            "nodes": [],
+            "documentation": {
+              "id": 934,
+              "nodeType": "StructuredDocumentation",
+              "src": "696:131:12",
+              "text": "@dev set selectors of Implementation\n @param _selectors being added selectors\n @param _imp implementation address"
+            },
+            "functionSelector": "4a5df50f",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setSelectorImplementations2",
+            "nameLocation": "841:27:12",
+            "parameters": {
+              "id": 940,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 937,
+                  "mutability": "mutable",
+                  "name": "_selectors",
+                  "nameLocation": "896:10:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 942,
+                  "src": "878:28:12",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes4_$dyn_calldata_ptr",
+                    "typeString": "bytes4[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 935,
+                      "name": "bytes4",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "878:6:12",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes4",
+                        "typeString": "bytes4"
+                      }
+                    },
+                    "id": 936,
+                    "nodeType": "ArrayTypeName",
+                    "src": "878:8:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes4_$dyn_storage_ptr",
+                      "typeString": "bytes4[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 939,
+                  "mutability": "mutable",
+                  "name": "_imp",
+                  "nameLocation": "924:4:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 942,
+                  "src": "916:12:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 938,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "916:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "868:66:12"
+            },
+            "returnParameters": {
+              "id": 941,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "945:0:12"
+            },
+            "scope": 965,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 948,
+            "nodeType": "FunctionDefinition",
+            "src": "1054:46:12",
+            "nodes": [],
+            "documentation": {
+              "id": 943,
+              "nodeType": "StructuredDocumentation",
+              "src": "973:76:12",
+              "text": "@notice Set pause state\n @param _pause true:pause or false:resume"
+            },
+            "functionSelector": "7cb00d25",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setProxyPause",
+            "nameLocation": "1063:13:12",
+            "parameters": {
+              "id": 946,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 945,
+                  "mutability": "mutable",
+                  "name": "_pause",
+                  "nameLocation": "1082:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 948,
+                  "src": "1077:11:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 944,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1077:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1076:13:12"
+            },
+            "returnParameters": {
+              "id": 947,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1099:0:12"
+            },
+            "scope": 965,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 956,
+            "nodeType": "FunctionDefinition",
+            "src": "1286:115:12",
+            "nodes": [],
+            "documentation": {
+              "id": 949,
+              "nodeType": "StructuredDocumentation",
+              "src": "1124:157:12",
+              "text": "@dev view implementation address of selector of function\n @param _selector selector of function\n @return impl address of the implementation"
+            },
+            "functionSelector": "8d4fdb40",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSelectorImplementation2",
+            "nameLocation": "1295:26:12",
+            "parameters": {
+              "id": 952,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 951,
+                  "mutability": "mutable",
+                  "name": "_selector",
+                  "nameLocation": "1329:9:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 956,
+                  "src": "1322:16:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 950,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1322:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1321:18:12"
+            },
+            "returnParameters": {
+              "id": 955,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 954,
+                  "mutability": "mutable",
+                  "name": "impl",
+                  "nameLocation": "1395:4:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 956,
+                  "src": "1387:12:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 953,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1387:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1386:14:12"
+            },
+            "scope": 965,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 964,
+            "nodeType": "FunctionDefinition",
+            "src": "1552:74:12",
+            "nodes": [],
+            "documentation": {
+              "id": 957,
+              "nodeType": "StructuredDocumentation",
+              "src": "1408:139:12",
+              "text": "@dev view implementation address of the proxy[index]\n @param _index index of proxy\n @return address of the implementation"
+            },
+            "functionSelector": "8b8f4a65",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "implementation2",
+            "nameLocation": "1561:15:12",
+            "parameters": {
+              "id": 960,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 959,
+                  "mutability": "mutable",
+                  "name": "_index",
+                  "nameLocation": "1585:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 964,
+                  "src": "1577:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 958,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1577:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1576:16:12"
+            },
+            "returnParameters": {
+              "id": 963,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 962,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 964,
+                  "src": "1616:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 961,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1616:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1615:9:12"
+            },
+            "scope": 965,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IProxyAction",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 915,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:24:12",
+          "text": "@title IProxyAction"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          965
+        ],
+        "name": "IProxyAction",
+        "nameLocation": "98:12:12",
+        "scope": 966,
+        "usedErrors": []
+      }
+    ],
+    "license": "Unlicense"
+  },
+  "id": 12
+}

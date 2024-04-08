@@ -1,0 +1,2023 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "BlockHashNotPresent",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "blockNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "Hash",
+          "name": "blockHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "Timestamp",
+          "name": "childTimestamp",
+          "type": "uint64"
+        }
+      ],
+      "name": "Checkpoint",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "checkpoint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "blockNumber_",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_blockNumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "load",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "Hash",
+              "name": "hash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "Timestamp",
+              "name": "childTimestamp",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct BlockOracle.BlockInfo",
+          "name": "blockInfo_",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506102e7806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c806354fd4d501461004657806399d548aa14610098578063c2c4c5c1146100d0575b600080fd5b6100826040518060400160405280600581526020017f302e302e3100000000000000000000000000000000000000000000000000000081525081565b60405161008f9190610210565b60405180910390f35b6100ab6100a6366004610283565b6100e6565b604080518251815260209283015167ffffffffffffffff16928101929092520161008f565b6100d8610165565b60405190815260200161008f565b604080518082018252600080825260209182018190528381528082528281208351808501909452805480855260019091015467ffffffffffffffff169284019290925203610160576040517f37cf270500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b919050565b600061017260014361029c565b60408051808201825282408082524267ffffffffffffffff81811660208086018281526000898152918290528782209651875551600190960180547fffffffffffffffffffffffffffffffffffffffffffffffff000000000000000016969093169590951790915593519495509093909291849186917fb67ff58b33060fd371a35ae2d9f1c3cdaec9b8197969f6efe2594a1ff4ba68c691a4505090565b600060208083528351808285015260005b8181101561023d57858101830151858201604001528201610221565b8181111561024f576000604083870101525b50601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016929092016040019392505050565b60006020828403121561029557600080fd5b5035919050565b6000828210156102d5577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea164736f6c634300080f000a",
+    "sourceMap": "305:1944:97:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c806354fd4d501461004657806399d548aa14610098578063c2c4c5c1146100d0575b600080fd5b6100826040518060400160405280600581526020017f302e302e3100000000000000000000000000000000000000000000000000000081525081565b60405161008f9190610210565b60405180910390f35b6100ab6100a6366004610283565b6100e6565b604080518251815260209283015167ffffffffffffffff16928101929092520161008f565b6100d8610165565b60405190815260200161008f565b604080518082018252600080825260209182018190528381528082528281208351808501909452805480855260019091015467ffffffffffffffff169284019290925203610160576040517f37cf270500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b919050565b600061017260014361029c565b60408051808201825282408082524267ffffffffffffffff81811660208086018281526000898152918290528782209651875551600190960180547fffffffffffffffffffffffffffffffffffffffffffffffff000000000000000016969093169590951790915593519495509093909291849186917fb67ff58b33060fd371a35ae2d9f1c3cdaec9b8197969f6efe2594a1ff4ba68c691a4505090565b600060208083528351808285015260005b8181101561023d57858101830151858201604001528201610221565b8181111561024f576000604083870101525b50601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016929092016040019392505050565b60006020828403121561029557600080fd5b5035919050565b6000828210156102d5577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea164736f6c634300080f000a",
+    "sourceMap": "305:1944:97:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;853:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;1210:215;;;;;;:::i;:::-;;:::i;:::-;;;;1080:13:156;;1062:32;;1154:4;1142:17;;;1136:24;1162:18;1132:49;1110:20;;;1103:79;;;;1035:18;1210:215:97;860:328:156;1632:615:97;;;:::i;:::-;;;1339:25:156;;;1327:2;1312:18;1632:615:97;1193:177:156;1210:215:97;-1:-1:-1;;;;;;;;;;;;;;;;;;;1321:20:97;;;;;;;;;1308:33;;;;;;;;;;;;;;;;;;;;;;;;;;;1355;1351:67;;1397:21;;;;;;;;;;;;;;1351:67;1210:215;;;:::o;1632:615::-;1672:20;1924:16;1939:1;1924:12;:16;:::i;:::-;2111:62;;;;;;;;1977:23;;2111:62;;;2060:15;2111:62;;;;;;;;;;;-1:-1:-1;2088:20:97;;;;;;;;;;:85;;;;;;;;;;;;;;;;;;;;;;;;2189:51;;1977:23;;-1:-1:-1;1977:23:97;;2060:15;;2111:62;1977:23;;;;2189:51;;;1694:553;;1632:615;:::o;14:656:156:-;126:4;155:2;184;173:9;166:21;216:6;210:13;259:6;254:2;243:9;239:18;232:34;284:1;294:140;308:6;305:1;302:13;294:140;;;403:14;;;399:23;;393:30;369:17;;;388:2;365:26;358:66;323:10;;294:140;;;452:6;449:1;446:13;443:91;;;522:1;517:2;508:6;497:9;493:22;489:31;482:42;443:91;-1:-1:-1;586:2:156;574:15;591:66;570:88;555:104;;;;661:2;551:113;;14:656;-1:-1:-1;;;14:656:156:o;675:180::-;734:6;787:2;775:9;766:7;762:23;758:32;755:52;;;803:1;800;793:12;755:52;-1:-1:-1;826:23:156;;675:180;-1:-1:-1;675:180:156:o;1375:279::-;1415:4;1443:1;1440;1437:8;1434:188;;;1478:77;1475:1;1468:88;1579:4;1576:1;1569:15;1607:4;1604:1;1597:15;1434:188;-1:-1:-1;1639:9:156;;1375:279::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "checkpoint()": "c2c4c5c1",
+    "load(uint256)": "99d548aa",
+    "version()": "54fd4d50"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"BlockHashNotPresent\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"Hash\",\"name\":\"blockHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"Timestamp\",\"name\":\"childTimestamp\",\"type\":\"uint64\"}],\"name\":\"Checkpoint\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"checkpoint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber_\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_blockNumber\",\"type\":\"uint256\"}],\"name\":\"load\",\"outputs\":[{\"components\":[{\"internalType\":\"Hash\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"Timestamp\",\"name\":\"childTimestamp\",\"type\":\"uint64\"}],\"internalType\":\"struct BlockOracle.BlockInfo\",\"name\":\"blockInfo_\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"checkpoint()\":{\"returns\":{\"blockNumber_\":\"The block number that was checkpointed, which is always                      `block.number - 1`.\"}},\"load(uint256)\":{\"params\":{\"_blockNumber\":\"The block number to load the block hash and timestamp for.\"},\"returns\":{\"blockInfo_\":\"The block hash and timestamp for the given block number.\"}}},\"stateVariables\":{\"version\":{\"custom:semver\":\"0.0.1\"}},\"title\":\"BlockOracle\",\"version\":1},\"userdoc\":{\"errors\":{\"BlockHashNotPresent()\":[{\"notice\":\"Thrown when a block hash is attempted to be loaded that has not been stored.\"}]},\"events\":{\"Checkpoint(uint256,bytes32,uint64)\":{\"notice\":\"Emitted when a block is checkpointed.\"}},\"kind\":\"user\",\"methods\":{\"checkpoint()\":{\"notice\":\"Stores a block hash for the previous block number.\"},\"load(uint256)\":{\"notice\":\"Loads a block hash for a given block number, assuming that the block number         has been stored in the oracle.\"},\"version()\":{\"notice\":\"Semantic version.\"}},\"notice\":\"Stores a map of block numbers => block hashes for use in dispute resolution\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/dispute/BlockOracle.sol\":\"BlockOracle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/dispute/BlockOracle.sol\":{\"keccak256\":\"0x2ab47226bc30d4bd33b6cac7ae60dfa053cbd6539fc0857fd8787d583a8fd68d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d9790254415c0bacf491914c69eacae2a06d5f9a97a6378200c2bd1e0ddfca8f\",\"dweb:/ipfs/QmZStZ4rZcctPzo72BefUKaAzmNNX5u3zXvUf16HwKkWL6\"]},\"src/dispute/interfaces/IBondManager.sol\":{\"keccak256\":\"0x31db84bf7a701125719c0bdaed316c8ec3d32e774a70b9bac3045d3ed272da8b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://35ef3970234b9a2d85ca800c5257398fd92a6959b0daa088b402a493ebf18d88\",\"dweb:/ipfs/QmWr1ZCBjRJPTUWyNcDv3G2Jb72cYG2p4rQA55WuUPUjao\"]},\"src/dispute/interfaces/IDisputeGame.sol\":{\"keccak256\":\"0xd9cebb758474716504ba281e8c9e007ead5be676a835729c236afec47dfb1e7f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fba945be8dbca576b6765fccc5fe8e31109562b0f2e9f943fc8b6c65fffc9829\",\"dweb:/ipfs/QmTWcBnmMhb3odqu2kkJbKZK7HNeiE7SvfD9tjKv8F4qWF\"]},\"src/dispute/interfaces/IInitializable.sol\":{\"keccak256\":\"0xf021b03c9e887e227102b037595e0917b76546e796bec7aa4fdced61090267ce\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bcfbad382815e37355b7cc318fa333b9b5b08223d4315951fd0881430ab8d3df\",\"dweb:/ipfs/QmRng31WWpYeApQUcXJXhSdqL797drdtBwvUD6D9giCyy2\"]},\"src/dispute/lib/LibClock.sol\":{\"keccak256\":\"0x4599b150b8a3d53a9db22698666320e62261765e3ad5b58105bc93097b1a4690\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0ab2d277fd4607510a5cafb91235a0fc3e47c3c0cdb45b2c185188ce888a1c5\",\"dweb:/ipfs/QmQ2bM3YmZCbN8uhKigSBh6j9VKrfxg61tjihwY7fdpARs\"]},\"src/dispute/lib/LibGameId.sol\":{\"keccak256\":\"0xa61b8562def4834607b733240e8eb4f924a75250df45852c9af1aea628f6b58d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2853075b45f634db083ea5f495f0cb9c28eb2401e2c18fd5fb7bce2500ed78ad\",\"dweb:/ipfs/QmaJpEg5z6tZ3niZY6N3f8AZ89FRnUVZJHNUDs66sq97j6\"]},\"src/dispute/lib/LibHashing.sol\":{\"keccak256\":\"0x5a072cd028094eee55acb84ed8d08d7422b1fb46658b7e043e916781530a383b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b67e54f1318f1fd67b28b16c6861a56e27217c26a12aaea5c446e2ec53143920\",\"dweb:/ipfs/QmVLSTP3PwXzRkR3A4qV9fjZhca9v8J1EnEYuVGUsSirAq\"]},\"src/dispute/lib/LibPosition.sol\":{\"keccak256\":\"0xf85659fff6f178903482bc12b9e908440dca33fbcda2258b1a665d1746a03c33\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e51fb85a9f43c1b50c601d2e5cf343874ce3cb28d7823bea3f1ba5f23c28a9e\",\"dweb:/ipfs/QmcWQZsARwq6cfstzmCw8GnueH3QAkaPgdRpi7guQpKB6Q\"]},\"src/libraries/DisputeErrors.sol\":{\"keccak256\":\"0x2f9f090414125ee22bacf5926f8631445136385827f29764614920dcfbabc51a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b6d3b4b75fcb09d24e58b0187280fd2ff95e397d2a0bac8365800292616e106b\",\"dweb:/ipfs/QmSb2gBm8Us7gJ4xJgPveq9x8w18DDuWYcNWxo3vCph5iW\"]},\"src/libraries/DisputeTypes.sol\":{\"keccak256\":\"0x23c8fbebc8a9fbe0b170ce45405cec5ec9bd71380d0e30f0a07144f420e9fdf0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9fa6ad5d232e12fe7c575b86b00ff4164a0539bb017c0c7efea94d5a96013e05\",\"dweb:/ipfs/QmXoPqtjX4wJhikz7zjK7QQgjEB59ikxgPgM9wCBfJQbTE\"]},\"src/universal/ISemver.sol\":{\"keccak256\":\"0xba34562a8026f59886d2e07d1d58d90b9691d00e0788c6263cef6c22740cab44\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0826f998632f83c103c3085bf2e872db79a69022b6d2e0444c83a64ca5283c2a\",\"dweb:/ipfs/QmcJ7PNqkAfKqbjFGRordtAg1v9DvcBSKvdTkVvciLyvQR\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "BlockHashNotPresent"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "Hash",
+              "name": "blockHash",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "Timestamp",
+              "name": "childTimestamp",
+              "type": "uint64",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "Checkpoint",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "checkpoint",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber_",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_blockNumber",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "load",
+          "outputs": [
+            {
+              "internalType": "struct BlockOracle.BlockInfo",
+              "name": "blockInfo_",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "Hash",
+                  "name": "hash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "Timestamp",
+                  "name": "childTimestamp",
+                  "type": "uint64"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "version",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "checkpoint()": {
+            "returns": {
+              "blockNumber_": "The block number that was checkpointed, which is always                      `block.number - 1`."
+            }
+          },
+          "load(uint256)": {
+            "params": {
+              "_blockNumber": "The block number to load the block hash and timestamp for."
+            },
+            "returns": {
+              "blockInfo_": "The block hash and timestamp for the given block number."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "checkpoint()": {
+            "notice": "Stores a block hash for the previous block number."
+          },
+          "load(uint256)": {
+            "notice": "Loads a block hash for a given block number, assuming that the block number         has been stored in the oracle."
+          },
+          "version()": {
+            "notice": "Semantic version."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/dispute/BlockOracle.sol": "BlockOracle"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/dispute/BlockOracle.sol": {
+        "keccak256": "0x2ab47226bc30d4bd33b6cac7ae60dfa053cbd6539fc0857fd8787d583a8fd68d",
+        "urls": [
+          "bzz-raw://d9790254415c0bacf491914c69eacae2a06d5f9a97a6378200c2bd1e0ddfca8f",
+          "dweb:/ipfs/QmZStZ4rZcctPzo72BefUKaAzmNNX5u3zXvUf16HwKkWL6"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/interfaces/IBondManager.sol": {
+        "keccak256": "0x31db84bf7a701125719c0bdaed316c8ec3d32e774a70b9bac3045d3ed272da8b",
+        "urls": [
+          "bzz-raw://35ef3970234b9a2d85ca800c5257398fd92a6959b0daa088b402a493ebf18d88",
+          "dweb:/ipfs/QmWr1ZCBjRJPTUWyNcDv3G2Jb72cYG2p4rQA55WuUPUjao"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/interfaces/IDisputeGame.sol": {
+        "keccak256": "0xd9cebb758474716504ba281e8c9e007ead5be676a835729c236afec47dfb1e7f",
+        "urls": [
+          "bzz-raw://fba945be8dbca576b6765fccc5fe8e31109562b0f2e9f943fc8b6c65fffc9829",
+          "dweb:/ipfs/QmTWcBnmMhb3odqu2kkJbKZK7HNeiE7SvfD9tjKv8F4qWF"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/interfaces/IInitializable.sol": {
+        "keccak256": "0xf021b03c9e887e227102b037595e0917b76546e796bec7aa4fdced61090267ce",
+        "urls": [
+          "bzz-raw://bcfbad382815e37355b7cc318fa333b9b5b08223d4315951fd0881430ab8d3df",
+          "dweb:/ipfs/QmRng31WWpYeApQUcXJXhSdqL797drdtBwvUD6D9giCyy2"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/lib/LibClock.sol": {
+        "keccak256": "0x4599b150b8a3d53a9db22698666320e62261765e3ad5b58105bc93097b1a4690",
+        "urls": [
+          "bzz-raw://a0ab2d277fd4607510a5cafb91235a0fc3e47c3c0cdb45b2c185188ce888a1c5",
+          "dweb:/ipfs/QmQ2bM3YmZCbN8uhKigSBh6j9VKrfxg61tjihwY7fdpARs"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/lib/LibGameId.sol": {
+        "keccak256": "0xa61b8562def4834607b733240e8eb4f924a75250df45852c9af1aea628f6b58d",
+        "urls": [
+          "bzz-raw://2853075b45f634db083ea5f495f0cb9c28eb2401e2c18fd5fb7bce2500ed78ad",
+          "dweb:/ipfs/QmaJpEg5z6tZ3niZY6N3f8AZ89FRnUVZJHNUDs66sq97j6"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/lib/LibHashing.sol": {
+        "keccak256": "0x5a072cd028094eee55acb84ed8d08d7422b1fb46658b7e043e916781530a383b",
+        "urls": [
+          "bzz-raw://b67e54f1318f1fd67b28b16c6861a56e27217c26a12aaea5c446e2ec53143920",
+          "dweb:/ipfs/QmVLSTP3PwXzRkR3A4qV9fjZhca9v8J1EnEYuVGUsSirAq"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/lib/LibPosition.sol": {
+        "keccak256": "0xf85659fff6f178903482bc12b9e908440dca33fbcda2258b1a665d1746a03c33",
+        "urls": [
+          "bzz-raw://0e51fb85a9f43c1b50c601d2e5cf343874ce3cb28d7823bea3f1ba5f23c28a9e",
+          "dweb:/ipfs/QmcWQZsARwq6cfstzmCw8GnueH3QAkaPgdRpi7guQpKB6Q"
+        ],
+        "license": "MIT"
+      },
+      "src/libraries/DisputeErrors.sol": {
+        "keccak256": "0x2f9f090414125ee22bacf5926f8631445136385827f29764614920dcfbabc51a",
+        "urls": [
+          "bzz-raw://b6d3b4b75fcb09d24e58b0187280fd2ff95e397d2a0bac8365800292616e106b",
+          "dweb:/ipfs/QmSb2gBm8Us7gJ4xJgPveq9x8w18DDuWYcNWxo3vCph5iW"
+        ],
+        "license": "MIT"
+      },
+      "src/libraries/DisputeTypes.sol": {
+        "keccak256": "0x23c8fbebc8a9fbe0b170ce45405cec5ec9bd71380d0e30f0a07144f420e9fdf0",
+        "urls": [
+          "bzz-raw://9fa6ad5d232e12fe7c575b86b00ff4164a0539bb017c0c7efea94d5a96013e05",
+          "dweb:/ipfs/QmXoPqtjX4wJhikz7zjK7QQgjEB59ikxgPgM9wCBfJQbTE"
+        ],
+        "license": "MIT"
+      },
+      "src/universal/ISemver.sol": {
+        "keccak256": "0xba34562a8026f59886d2e07d1d58d90b9691d00e0788c6263cef6c22740cab44",
+        "urls": [
+          "bzz-raw://0826f998632f83c103c3085bf2e872db79a69022b6d2e0444c83a64ca5283c2a",
+          "dweb:/ipfs/QmcJ7PNqkAfKqbjFGRordtAg1v9DvcBSKvdTkVvciLyvQR"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 56455,
+        "contract": "src/dispute/BlockOracle.sol:BlockOracle",
+        "label": "blocks",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_uint256,t_struct(BlockInfo)56438_storage)"
+      }
+    ],
+    "types": {
+      "t_mapping(t_uint256,t_struct(BlockInfo)56438_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct BlockOracle.BlockInfo)",
+        "numberOfBytes": "32",
+        "value": "t_struct(BlockInfo)56438_storage"
+      },
+      "t_struct(BlockInfo)56438_storage": {
+        "encoding": "inplace",
+        "label": "struct BlockOracle.BlockInfo",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "astId": 56434,
+            "contract": "src/dispute/BlockOracle.sol:BlockOracle",
+            "label": "hash",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_userDefinedValueType(Hash)60195"
+          },
+          {
+            "astId": 56437,
+            "contract": "src/dispute/BlockOracle.sol:BlockOracle",
+            "label": "childTimestamp",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_userDefinedValueType(Timestamp)60203"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_userDefinedValueType(Hash)60195": {
+        "encoding": "inplace",
+        "label": "Hash",
+        "numberOfBytes": "32"
+      },
+      "t_userDefinedValueType(Timestamp)60203": {
+        "encoding": "inplace",
+        "label": "Timestamp",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "checkpoint()": {
+        "notice": "Stores a block hash for the previous block number."
+      },
+      "load(uint256)": {
+        "notice": "Loads a block hash for a given block number, assuming that the block number         has been stored in the oracle."
+      },
+      "version()": {
+        "notice": "Semantic version."
+      }
+    },
+    "events": {
+      "Checkpoint(uint256,bytes32,uint64)": {
+        "notice": "Emitted when a block is checkpointed."
+      }
+    },
+    "errors": {
+      "BlockHashNotPresent()": [
+        {
+          "notice": "Thrown when a block hash is attempted to be loaded that has not been stored."
+        }
+      ]
+    },
+    "notice": "Stores a map of block numbers => block hashes for use in dispute resolution"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "checkpoint()": {
+        "returns": {
+          "blockNumber_": "The block number that was checkpointed, which is always                      `block.number - 1`."
+        }
+      },
+      "load(uint256)": {
+        "params": {
+          "_blockNumber": "The block number to load the block hash and timestamp for."
+        },
+        "returns": {
+          "blockInfo_": "The block hash and timestamp for the given block number."
+        }
+      }
+    },
+    "title": "BlockOracle"
+  },
+  "ast": {
+    "absolutePath": "src/dispute/BlockOracle.sol",
+    "id": 56539,
+    "exportedSymbols": {
+      "AlreadyChallenged": [
+        60158
+      ],
+      "BlockHashNotPresent": [
+        60167
+      ],
+      "BlockNumberOOB": [
+        60164
+      ],
+      "BlockOracle": [
+        56538
+      ],
+      "BondAmount": [
+        60201
+      ],
+      "BondTooLow": [
+        60110
+      ],
+      "CannotDefendRootClaim": [
+        60113
+      ],
+      "Claim": [
+        60197
+      ],
+      "ClaimAlreadyExists": [
+        60116
+      ],
+      "ClaimAlreadyResolved": [
+        60152
+      ],
+      "ClaimHash": [
+        60199
+      ],
+      "Clock": [
+        60209
+      ],
+      "ClockNotExpired": [
+        60128
+      ],
+      "ClockTimeExceeded": [
+        60125
+      ],
+      "Duration": [
+        60205
+      ],
+      "GameAlreadyExists": [
+        60101
+      ],
+      "GameDepthExceeded": [
+        60131
+      ],
+      "GameId": [
+        60207
+      ],
+      "GameNotInProgress": [
+        60122
+      ],
+      "GameStatus": [
+        60219
+      ],
+      "GameType": [
+        60213
+      ],
+      "GameTypes": [
+        60245
+      ],
+      "Hash": [
+        60195
+      ],
+      "ISemver": [
+        64010
+      ],
+      "InvalidClaim": [
+        60119
+      ],
+      "InvalidLocalIdent": [
+        60146
+      ],
+      "InvalidParent": [
+        60134
+      ],
+      "InvalidPrestate": [
+        60137
+      ],
+      "InvalidSignature": [
+        60155
+      ],
+      "L1HeadTooOld": [
+        60143
+      ],
+      "LibClock": [
+        58439
+      ],
+      "LibGameId": [
+        58481
+      ],
+      "LibHashing": [
+        58503
+      ],
+      "LibPosition": [
+        58661
+      ],
+      "NoImplementation": [
+        60095
+      ],
+      "NotOwner": [
+        60161
+      ],
+      "OutOfOrderResolution": [
+        60149
+      ],
+      "Position": [
+        60211
+      ],
+      "Timestamp": [
+        60203
+      ],
+      "UnexpectedRootClaim": [
+        60107
+      ],
+      "VMStatus": [
+        60215
+      ],
+      "VMStatuses": [
+        60279
+      ],
+      "ValidStep": [
+        60140
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2218:97",
+    "nodes": [
+      {
+        "id": 56424,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:97",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 56425,
+        "nodeType": "ImportDirective",
+        "src": "57:40:97",
+        "nodes": [],
+        "absolutePath": "src/libraries/DisputeTypes.sol",
+        "file": "src/libraries/DisputeTypes.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 56539,
+        "sourceUnit": 60280,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 56426,
+        "nodeType": "ImportDirective",
+        "src": "98:41:97",
+        "nodes": [],
+        "absolutePath": "src/libraries/DisputeErrors.sol",
+        "file": "src/libraries/DisputeErrors.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 56539,
+        "sourceUnit": 60168,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 56428,
+        "nodeType": "ImportDirective",
+        "src": "140:52:97",
+        "nodes": [],
+        "absolutePath": "src/universal/ISemver.sol",
+        "file": "src/universal/ISemver.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 56539,
+        "sourceUnit": 64011,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 56427,
+              "name": "ISemver",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 64010,
+              "src": "149:7:97",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 56538,
+        "nodeType": "ContractDefinition",
+        "src": "305:1944:97",
+        "nodes": [
+          {
+            "id": 56438,
+            "nodeType": "StructDefinition",
+            "src": "425:77:97",
+            "nodes": [],
+            "canonicalName": "BlockOracle.BlockInfo",
+            "members": [
+              {
+                "constant": false,
+                "id": 56434,
+                "mutability": "mutable",
+                "name": "hash",
+                "nameLocation": "457:4:97",
+                "nodeType": "VariableDeclaration",
+                "scope": 56438,
+                "src": "452:9:97",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                  "typeString": "Hash"
+                },
+                "typeName": {
+                  "id": 56433,
+                  "nodeType": "UserDefinedTypeName",
+                  "pathNode": {
+                    "id": 56432,
+                    "name": "Hash",
+                    "nodeType": "IdentifierPath",
+                    "referencedDeclaration": 60195,
+                    "src": "452:4:97"
+                  },
+                  "referencedDeclaration": 60195,
+                  "src": "452:4:97",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                    "typeString": "Hash"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 56437,
+                "mutability": "mutable",
+                "name": "childTimestamp",
+                "nameLocation": "481:14:97",
+                "nodeType": "VariableDeclaration",
+                "scope": 56438,
+                "src": "471:24:97",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                  "typeString": "Timestamp"
+                },
+                "typeName": {
+                  "id": 56436,
+                  "nodeType": "UserDefinedTypeName",
+                  "pathNode": {
+                    "id": 56435,
+                    "name": "Timestamp",
+                    "nodeType": "IdentifierPath",
+                    "referencedDeclaration": 60203,
+                    "src": "471:9:97"
+                  },
+                  "referencedDeclaration": 60203,
+                  "src": "471:9:97",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                    "typeString": "Timestamp"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "BlockInfo",
+            "nameLocation": "432:9:97",
+            "scope": 56538,
+            "visibility": "public"
+          },
+          {
+            "id": 56449,
+            "nodeType": "EventDefinition",
+            "src": "562:104:97",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 56439,
+              "nodeType": "StructuredDocumentation",
+              "src": "508:49:97",
+              "text": "@notice Emitted when a block is checkpointed."
+            },
+            "eventSelector": "b67ff58b33060fd371a35ae2d9f1c3cdaec9b8197969f6efe2594a1ff4ba68c6",
+            "name": "Checkpoint",
+            "nameLocation": "568:10:97",
+            "parameters": {
+              "id": 56448,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56441,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "blockNumber",
+                  "nameLocation": "595:11:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56449,
+                  "src": "579:27:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56440,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "579:7:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56444,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "blockHash",
+                  "nameLocation": "621:9:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56449,
+                  "src": "608:22:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                    "typeString": "Hash"
+                  },
+                  "typeName": {
+                    "id": 56443,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 56442,
+                      "name": "Hash",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 60195,
+                      "src": "608:4:97"
+                    },
+                    "referencedDeclaration": 60195,
+                    "src": "608:4:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                      "typeString": "Hash"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56447,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "childTimestamp",
+                  "nameLocation": "650:14:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56449,
+                  "src": "632:32:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                    "typeString": "Timestamp"
+                  },
+                  "typeName": {
+                    "id": 56446,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 56445,
+                      "name": "Timestamp",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 60203,
+                      "src": "632:9:97"
+                    },
+                    "referencedDeclaration": 60203,
+                    "src": "632:9:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                      "typeString": "Timestamp"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "578:87:97"
+            }
+          },
+          {
+            "id": 56455,
+            "nodeType": "VariableDeclaration",
+            "src": "738:45:97",
+            "nodes": [],
+            "constant": false,
+            "documentation": {
+              "id": 56450,
+              "nodeType": "StructuredDocumentation",
+              "src": "672:61:97",
+              "text": "@notice Maps block numbers to block hashes and timestamps"
+            },
+            "mutability": "mutable",
+            "name": "blocks",
+            "nameLocation": "777:6:97",
+            "scope": 56538,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_BlockInfo_$56438_storage_$",
+              "typeString": "mapping(uint256 => struct BlockOracle.BlockInfo)"
+            },
+            "typeName": {
+              "id": 56454,
+              "keyType": {
+                "id": 56451,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "746:7:97",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "738:29:97",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_BlockInfo_$56438_storage_$",
+                "typeString": "mapping(uint256 => struct BlockOracle.BlockInfo)"
+              },
+              "valueType": {
+                "id": 56453,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 56452,
+                  "name": "BlockInfo",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 56438,
+                  "src": "757:9:97"
+                },
+                "referencedDeclaration": 56438,
+                "src": "757:9:97",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_BlockInfo_$56438_storage_ptr",
+                  "typeString": "struct BlockOracle.BlockInfo"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "id": 56459,
+            "nodeType": "VariableDeclaration",
+            "src": "853:40:97",
+            "nodes": [],
+            "baseFunctions": [
+              64009
+            ],
+            "constant": true,
+            "documentation": {
+              "id": 56456,
+              "nodeType": "StructuredDocumentation",
+              "src": "790:58:97",
+              "text": "@notice Semantic version.\n @custom:semver 0.0.1"
+            },
+            "functionSelector": "54fd4d50",
+            "mutability": "constant",
+            "name": "version",
+            "nameLocation": "876:7:97",
+            "scope": 56538,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_memory_ptr",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 56457,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "853:6:97",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": {
+              "hexValue": "302e302e31",
+              "id": 56458,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "886:7:97",
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_ae209a0b48f21c054280f2455d32cf309387644879d9acbd8ffc199163811885",
+                "typeString": "literal_string \"0.0.1\""
+              },
+              "value": "0.0.1"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 56486,
+            "nodeType": "FunctionDefinition",
+            "src": "1210:215:97",
+            "nodes": [],
+            "body": {
+              "id": 56485,
+              "nodeType": "Block",
+              "src": "1298:127:97",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 56472,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 56468,
+                      "name": "blockInfo_",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 56466,
+                      "src": "1308:10:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BlockInfo_$56438_memory_ptr",
+                        "typeString": "struct BlockOracle.BlockInfo memory"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "baseExpression": {
+                        "id": 56469,
+                        "name": "blocks",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56455,
+                        "src": "1321:6:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_BlockInfo_$56438_storage_$",
+                          "typeString": "mapping(uint256 => struct BlockOracle.BlockInfo storage ref)"
+                        }
+                      },
+                      "id": 56471,
+                      "indexExpression": {
+                        "id": 56470,
+                        "name": "_blockNumber",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56462,
+                        "src": "1328:12:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "1321:20:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BlockInfo_$56438_storage",
+                        "typeString": "struct BlockOracle.BlockInfo storage ref"
+                      }
+                    },
+                    "src": "1308:33:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_BlockInfo_$56438_memory_ptr",
+                      "typeString": "struct BlockOracle.BlockInfo memory"
+                    }
+                  },
+                  "id": 56473,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1308:33:97"
+                },
+                {
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    },
+                    "id": 56480,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "arguments": [
+                        {
+                          "expression": {
+                            "id": 56476,
+                            "name": "blockInfo_",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 56466,
+                            "src": "1367:10:97",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_struct$_BlockInfo_$56438_memory_ptr",
+                              "typeString": "struct BlockOracle.BlockInfo memory"
+                            }
+                          },
+                          "id": 56477,
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "hash",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 56434,
+                          "src": "1367:15:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                            "typeString": "Hash"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                            "typeString": "Hash"
+                          }
+                        ],
+                        "expression": {
+                          "id": 56474,
+                          "name": "Hash",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 60195,
+                          "src": "1355:4:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_userDefinedValueType$_Hash_$60195_$",
+                            "typeString": "type(Hash)"
+                          }
+                        },
+                        "id": 56475,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "unwrap",
+                        "nodeType": "MemberAccess",
+                        "src": "1355:11:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_unwrap_pure$_t_userDefinedValueType$_Hash_$60195_$returns$_t_bytes32_$",
+                          "typeString": "function (Hash) pure returns (bytes32)"
+                        }
+                      },
+                      "id": 56478,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1355:28:97",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "hexValue": "30",
+                      "id": 56479,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1387:1:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "src": "1355:33:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 56484,
+                  "nodeType": "IfStatement",
+                  "src": "1351:67:97",
+                  "trueBody": {
+                    "errorCall": {
+                      "arguments": [],
+                      "expression": {
+                        "argumentTypes": [],
+                        "id": 56481,
+                        "name": "BlockHashNotPresent",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 60167,
+                        "src": "1397:19:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_error_pure$__$returns$__$",
+                          "typeString": "function () pure"
+                        }
+                      },
+                      "id": 56482,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1397:21:97",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$",
+                        "typeString": "tuple()"
+                      }
+                    },
+                    "id": 56483,
+                    "nodeType": "RevertStatement",
+                    "src": "1390:28:97"
+                  }
+                }
+              ]
+            },
+            "documentation": {
+              "id": 56460,
+              "nodeType": "StructuredDocumentation",
+              "src": "900:305:97",
+              "text": "@notice Loads a block hash for a given block number, assuming that the block number\n         has been stored in the oracle.\n @param _blockNumber The block number to load the block hash and timestamp for.\n @return blockInfo_ The block hash and timestamp for the given block number."
+            },
+            "functionSelector": "99d548aa",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "load",
+            "nameLocation": "1219:4:97",
+            "parameters": {
+              "id": 56463,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56462,
+                  "mutability": "mutable",
+                  "name": "_blockNumber",
+                  "nameLocation": "1232:12:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56486,
+                  "src": "1224:20:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56461,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1224:7:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1223:22:97"
+            },
+            "returnParameters": {
+              "id": 56467,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56466,
+                  "mutability": "mutable",
+                  "name": "blockInfo_",
+                  "nameLocation": "1286:10:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56486,
+                  "src": "1269:27:97",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_BlockInfo_$56438_memory_ptr",
+                    "typeString": "struct BlockOracle.BlockInfo"
+                  },
+                  "typeName": {
+                    "id": 56465,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 56464,
+                      "name": "BlockInfo",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 56438,
+                      "src": "1269:9:97"
+                    },
+                    "referencedDeclaration": 56438,
+                    "src": "1269:9:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_BlockInfo_$56438_storage_ptr",
+                      "typeString": "struct BlockOracle.BlockInfo"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1268:29:97"
+            },
+            "scope": 56538,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 56537,
+            "nodeType": "FunctionDefinition",
+            "src": "1632:615:97",
+            "nodes": [],
+            "body": {
+              "id": 56536,
+              "nodeType": "Block",
+              "src": "1694:553:97",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 56497,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 56492,
+                      "name": "blockNumber_",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 56490,
+                      "src": "1909:12:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 56496,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "expression": {
+                          "id": 56493,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -4,
+                          "src": "1924:5:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 56494,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "number",
+                        "nodeType": "MemberAccess",
+                        "src": "1924:12:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "-",
+                      "rightExpression": {
+                        "hexValue": "31",
+                        "id": 56495,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "1939:1:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_1_by_1",
+                          "typeString": "int_const 1"
+                        },
+                        "value": "1"
+                      },
+                      "src": "1924:16:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1909:31:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 56498,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1909:31:97"
+                },
+                {
+                  "assignments": [
+                    56501
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 56501,
+                      "mutability": "mutable",
+                      "name": "blockHash",
+                      "nameLocation": "1955:9:97",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 56536,
+                      "src": "1950:14:97",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                        "typeString": "Hash"
+                      },
+                      "typeName": {
+                        "id": 56500,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 56499,
+                          "name": "Hash",
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 60195,
+                          "src": "1950:4:97"
+                        },
+                        "referencedDeclaration": 60195,
+                        "src": "1950:4:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                          "typeString": "Hash"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 56508,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "id": 56505,
+                            "name": "blockNumber_",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 56490,
+                            "src": "1987:12:97",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "id": 56504,
+                          "name": "blockhash",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -5,
+                          "src": "1977:9:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_blockhash_view$_t_uint256_$returns$_t_bytes32_$",
+                            "typeString": "function (uint256) view returns (bytes32)"
+                          }
+                        },
+                        "id": 56506,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1977:23:97",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "expression": {
+                        "id": 56502,
+                        "name": "Hash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 60195,
+                        "src": "1967:4:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_userDefinedValueType$_Hash_$60195_$",
+                          "typeString": "type(Hash)"
+                        }
+                      },
+                      "id": 56503,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "wrap",
+                      "nodeType": "MemberAccess",
+                      "src": "1967:9:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_wrap_pure$_t_bytes32_$returns$_t_userDefinedValueType$_Hash_$60195_$",
+                        "typeString": "function (bytes32) pure returns (Hash)"
+                      }
+                    },
+                    "id": 56507,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1967:34:97",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                      "typeString": "Hash"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1950:51:97"
+                },
+                {
+                  "assignments": [
+                    56511
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 56511,
+                      "mutability": "mutable",
+                      "name": "childTimestamp",
+                      "nameLocation": "2021:14:97",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 56536,
+                      "src": "2011:24:97",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                        "typeString": "Timestamp"
+                      },
+                      "typeName": {
+                        "id": 56510,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 56509,
+                          "name": "Timestamp",
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 60203,
+                          "src": "2011:9:97"
+                        },
+                        "referencedDeclaration": 60203,
+                        "src": "2011:9:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                          "typeString": "Timestamp"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 56520,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "expression": {
+                              "id": 56516,
+                              "name": "block",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": -4,
+                              "src": "2060:5:97",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_block",
+                                "typeString": "block"
+                              }
+                            },
+                            "id": 56517,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "timestamp",
+                            "nodeType": "MemberAccess",
+                            "src": "2060:15:97",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "id": 56515,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "ElementaryTypeNameExpression",
+                          "src": "2053:6:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_uint64_$",
+                            "typeString": "type(uint64)"
+                          },
+                          "typeName": {
+                            "id": 56514,
+                            "name": "uint64",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "2053:6:97",
+                            "typeDescriptions": {}
+                          }
+                        },
+                        "id": 56518,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "2053:23:97",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint64",
+                          "typeString": "uint64"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint64",
+                          "typeString": "uint64"
+                        }
+                      ],
+                      "expression": {
+                        "id": 56512,
+                        "name": "Timestamp",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 60203,
+                        "src": "2038:9:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_userDefinedValueType$_Timestamp_$60203_$",
+                          "typeString": "type(Timestamp)"
+                        }
+                      },
+                      "id": 56513,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "wrap",
+                      "nodeType": "MemberAccess",
+                      "src": "2038:14:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_wrap_pure$_t_uint64_$returns$_t_userDefinedValueType$_Timestamp_$60203_$",
+                        "typeString": "function (uint64) pure returns (Timestamp)"
+                      }
+                    },
+                    "id": 56519,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2038:39:97",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                      "typeString": "Timestamp"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "2011:66:97"
+                },
+                {
+                  "expression": {
+                    "id": 56528,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "baseExpression": {
+                        "id": 56521,
+                        "name": "blocks",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56455,
+                        "src": "2088:6:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_BlockInfo_$56438_storage_$",
+                          "typeString": "mapping(uint256 => struct BlockOracle.BlockInfo storage ref)"
+                        }
+                      },
+                      "id": 56523,
+                      "indexExpression": {
+                        "id": 56522,
+                        "name": "blockNumber_",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56490,
+                        "src": "2095:12:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "IndexAccess",
+                      "src": "2088:20:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BlockInfo_$56438_storage",
+                        "typeString": "struct BlockOracle.BlockInfo storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "id": 56525,
+                          "name": "blockHash",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 56501,
+                          "src": "2129:9:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                            "typeString": "Hash"
+                          }
+                        },
+                        {
+                          "id": 56526,
+                          "name": "childTimestamp",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 56511,
+                          "src": "2156:14:97",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                            "typeString": "Timestamp"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                            "typeString": "Hash"
+                          },
+                          {
+                            "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                            "typeString": "Timestamp"
+                          }
+                        ],
+                        "id": 56524,
+                        "name": "BlockInfo",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56438,
+                        "src": "2111:9:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_struct$_BlockInfo_$56438_storage_ptr_$",
+                          "typeString": "type(struct BlockOracle.BlockInfo storage pointer)"
+                        }
+                      },
+                      "id": 56527,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "structConstructorCall",
+                      "lValueRequested": false,
+                      "names": [
+                        "hash",
+                        "childTimestamp"
+                      ],
+                      "nodeType": "FunctionCall",
+                      "src": "2111:62:97",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BlockInfo_$56438_memory_ptr",
+                        "typeString": "struct BlockOracle.BlockInfo memory"
+                      }
+                    },
+                    "src": "2088:85:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_BlockInfo_$56438_storage",
+                      "typeString": "struct BlockOracle.BlockInfo storage ref"
+                    }
+                  },
+                  "id": 56529,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2088:85:97"
+                },
+                {
+                  "eventCall": {
+                    "arguments": [
+                      {
+                        "id": 56531,
+                        "name": "blockNumber_",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56490,
+                        "src": "2200:12:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 56532,
+                        "name": "blockHash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56501,
+                        "src": "2214:9:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                          "typeString": "Hash"
+                        }
+                      },
+                      {
+                        "id": 56533,
+                        "name": "childTimestamp",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 56511,
+                        "src": "2225:14:97",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                          "typeString": "Timestamp"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
+                          "typeString": "Hash"
+                        },
+                        {
+                          "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
+                          "typeString": "Timestamp"
+                        }
+                      ],
+                      "id": 56530,
+                      "name": "Checkpoint",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 56449,
+                      "src": "2189:10:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_userDefinedValueType$_Hash_$60195_$_t_userDefinedValueType$_Timestamp_$60203_$returns$__$",
+                        "typeString": "function (uint256,Hash,Timestamp)"
+                      }
+                    },
+                    "id": 56534,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2189:51:97",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 56535,
+                  "nodeType": "EmitStatement",
+                  "src": "2184:56:97"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 56487,
+              "nodeType": "StructuredDocumentation",
+              "src": "1431:196:97",
+              "text": "@notice Stores a block hash for the previous block number.\n @return blockNumber_ The block number that was checkpointed, which is always\n                      `block.number - 1`."
+            },
+            "functionSelector": "c2c4c5c1",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "checkpoint",
+            "nameLocation": "1641:10:97",
+            "parameters": {
+              "id": 56488,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1651:2:97"
+            },
+            "returnParameters": {
+              "id": 56491,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56490,
+                  "mutability": "mutable",
+                  "name": "blockNumber_",
+                  "nameLocation": "1680:12:97",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56537,
+                  "src": "1672:20:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56489,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1672:7:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1671:22:97"
+            },
+            "scope": 56538,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 56430,
+              "name": "ISemver",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 64010,
+              "src": "329:7:97"
+            },
+            "id": 56431,
+            "nodeType": "InheritanceSpecifier",
+            "src": "329:7:97"
+          }
+        ],
+        "canonicalName": "BlockOracle",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 56429,
+          "nodeType": "StructuredDocumentation",
+          "src": "194:111:97",
+          "text": "@title BlockOracle\n @notice Stores a map of block numbers => block hashes for use in dispute resolution"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          56538,
+          64010
+        ],
+        "name": "BlockOracle",
+        "nameLocation": "314:11:97",
+        "scope": 56539,
+        "usedErrors": [
+          60167
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 97
+}

@@ -1,0 +1,515 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "oracle",
+      "outputs": [
+        {
+          "internalType": "contract IPreimageOracle",
+          "name": "oracle_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "_stateData",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_proof",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_localContext",
+          "type": "uint256"
+        }
+      ],
+      "name": "step",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "postState_",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "oracle()": "7dc0d1d0",
+    "step(bytes,bytes,uint256)": "836e7b32"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"oracle\",\"outputs\":[{\"internalType\":\"contract IPreimageOracle\",\"name\":\"oracle_\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_stateData\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"_proof\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"_localContext\",\"type\":\"uint256\"}],\"name\":\"step\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"postState_\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"step(bytes,bytes,uint256)\":{\"params\":{\"_localContext\":\"The local key context for the preimage oracle. Optional, can be set as a constant                      if the caller only requires one set of local keys.\",\"_proof\":\"A proof for the inclusion of the prestate's memory in the merkle tree.\",\"_stateData\":\"The preimage of the prestate hash.\"},\"returns\":{\"postState_\":\"The poststate hash after the instruction step.\"}}},\"title\":\"IBigStepper\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"oracle()\":{\"notice\":\"Returns the preimage oracle used by the stepper.\"},\"step(bytes,bytes,uint256)\":{\"notice\":\"Performs a single instruction step from a given prestate and returns the poststate         hash.\"}},\"notice\":\"An interface for a contract with a state transition function that         will accept a pre state and return a post state. \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28c0\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2880\\u28fc\\u2836\\u2885\\u2812\\u2884\\u2894\\u28f6\\u2866\\u28e4\\u2864\\u2804\\u28c0\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2828\\u284f\\u2800\\u2800\\u2808\\u2822\\u28d9\\u28af\\u28c4\\u2800\\u28a8\\u282f\\u287a\\u2858\\u2884\\u2800\\u2800\\u2800\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28c0\\u28f6\\u2846\\u2800\\u2800\\u2800\\u2800\\u2808\\u2813\\u282c\\u2852\\u2821\\u28c0\\u2899\\u285c\\u2840\\u2813\\u2804\\u2800\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28b8\\u2877\\u283f\\u28e7\\u28c0\\u2840\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2809\\u2823\\u28de\\u2829\\u2825\\u2800\\u283c\\u2884\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28b8\\u2847\\u2800\\u2800\\u2800\\u2809\\u28b9\\u28f6\\u2812\\u2812\\u2802\\u2808\\u2809\\u2801\\u2818\\u2846\\u2800\\u28ff\\u28ff\\u282b\\u2844\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28e0\\u28b6\\u28e4\\u28c0\\u2840\\u2800\\u2800\\u28b8\\u287f\\u2800\\u2800\\u2800\\u2800\\u2800\\u2880\\u281e\\u2800\\u2800\\u28a1\\u28a8\\u2880\\u2844\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28e0\\u2852\\u28ff\\u28bf\\u2864\\u281d\\u2863\\u2809\\u2801\\u281a\\u281b\\u2800\\u2824\\u2824\\u28c4\\u2870\\u2801\\u2800\\u2800\\u2800\\u2809\\u2819\\u28b8\\u2800\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2880\\u2864\\u28af\\u284c\\u287f\\u2847\\u2818\\u2877\\u2800\\u2801\\u2800\\u2800\\u2880\\u28f0\\u2822\\u2832\\u281b\\u28c8\\u28f8\\u2826\\u2824\\u2836\\u2834\\u28ac\\u28d0\\u28ca\\u2842\\u2800 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2880\\u28e4\\u286a\\u2857\\u28ab\\u281e\\u2800\\u2806\\u28c0\\u283b\\u2824\\u2834\\u2810\\u281a\\u28c9\\u2880\\u2826\\u2802\\u280b\\u2801\\u2800\\u2801\\u2800\\u2800\\u2800\\u2800\\u288b\\u2809\\u2807\\u2800 \\u2800\\u2800\\u2800\\u2800\\u28c0\\u2864\\u2810\\u2812\\u2818\\u2879\\u2809\\u28b8\\u2807\\u2838\\u2800\\u2800\\u2800\\u2800\\u28c0\\u28e4\\u2834\\u281a\\u2809\\u2808\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u283c\\u2800\\u28fe\\u2800 \\u2800\\u2800\\u2800\\u2870\\u2800\\u2809\\u2809\\u2800\\u2801\\u2800\\u2800\\u2808\\u2887\\u2808\\u2812\\u2812\\u2818\\u2808\\u2880\\u28a1\\u2842\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28b0\\u2800\\u28b8\\u2844 \\u2800\\u2800\\u2838\\u28ff\\u28c6\\u2824\\u2880\\u2840\\u2800\\u2800\\u2800\\u2800\\u2898\\u284c\\u2800\\u2800\\u28c0\\u28c0\\u28c0\\u2848\\u28e4\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28b8\\u2800\\u28b8\\u2847 \\u2800\\u2800\\u28b8\\u28c0\\u2800\\u2809\\u2812\\u2810\\u281b\\u280b\\u282d\\u282d\\u280d\\u2809\\u281b\\u2812\\u2812\\u2812\\u2800\\u2812\\u281a\\u281b\\u281b\\u281b\\u2829\\u282d\\u282d\\u282d\\u282d\\u2824\\u2824\\u2824\\u2824\\u2824\\u282d\\u282d\\u2809\\u2813\\u2846 \\u2800\\u2800\\u2818\\u283f\\u28f7\\u28f6\\u28e4\\u28e4\\u28c0\\u28c0\\u2840\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u28e0\\u28e4\\u28c4\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2847 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2809\\u2819\\u281b\\u281b\\u283b\\u283f\\u28bf\\u28ff\\u28ff\\u28f7\\u28f6\\u28f6\\u28f6\\u28e4\\u28e4\\u28c0\\u28c1\\u28db\\u28c3\\u28d2\\u283f\\u283f\\u283f\\u2824\\u2820\\u2804\\u2824\\u2824\\u28a4\\u28db\\u28d3\\u28c2\\u28fb\\u2847 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2808\\u2809\\u2809\\u2809\\u2819\\u281b\\u283b\\u283f\\u283f\\u283f\\u28bf\\u28ff\\u28ff\\u28ff\\u28f7\\u28f6\\u28f6\\u28fe\\u28ff\\u28ff\\u28ff\\u28ff\\u283f\\u281f\\u2801 \\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2800\\u2808\\u2808\\u2809\\u2809\\u2809\\u2809\\u2801\\u2800\\u2800\\u2800\\u2800\\u2800\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/dispute/interfaces/IBigStepper.sol\":\"IBigStepper\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/cannon/interfaces/IPreimageOracle.sol\":{\"keccak256\":\"0x40004ff6a4cc4a7816c48f736c65c24d2292cf99f03b1706eb8a634e0c914646\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e475d6e5353d65a8dc7482941090daef1d14ee86eacccc29bd255f568bbd6bf8\",\"dweb:/ipfs/QmcAcCqPPsyhGiuf7J1FxfEaRHCyXgm22o562jtXWdjUk7\"]},\"src/dispute/interfaces/IBigStepper.sol\":{\"keccak256\":\"0x61a351679c3698e7b8299022aedee5d114f974ce9071c8e7e3ba2a4dbc220be1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://abd4a9968fa97f70ef2dc99fc205a516ea20cdf0af8ec16c05ef7f75e79086e2\",\"dweb:/ipfs/QmYDF6DKyUtkpdUq53PYVxyRYWy8apc661gtyAnoSXBsZQ\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "oracle",
+          "outputs": [
+            {
+              "internalType": "contract IPreimageOracle",
+              "name": "oracle_",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "_stateData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_proof",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_localContext",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "step",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "postState_",
+              "type": "bytes32"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "step(bytes,bytes,uint256)": {
+            "params": {
+              "_localContext": "The local key context for the preimage oracle. Optional, can be set as a constant                      if the caller only requires one set of local keys.",
+              "_proof": "A proof for the inclusion of the prestate's memory in the merkle tree.",
+              "_stateData": "The preimage of the prestate hash."
+            },
+            "returns": {
+              "postState_": "The poststate hash after the instruction step."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "oracle()": {
+            "notice": "Returns the preimage oracle used by the stepper."
+          },
+          "step(bytes,bytes,uint256)": {
+            "notice": "Performs a single instruction step from a given prestate and returns the poststate         hash."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/dispute/interfaces/IBigStepper.sol": "IBigStepper"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/cannon/interfaces/IPreimageOracle.sol": {
+        "keccak256": "0x40004ff6a4cc4a7816c48f736c65c24d2292cf99f03b1706eb8a634e0c914646",
+        "urls": [
+          "bzz-raw://e475d6e5353d65a8dc7482941090daef1d14ee86eacccc29bd255f568bbd6bf8",
+          "dweb:/ipfs/QmcAcCqPPsyhGiuf7J1FxfEaRHCyXgm22o562jtXWdjUk7"
+        ],
+        "license": "MIT"
+      },
+      "src/dispute/interfaces/IBigStepper.sol": {
+        "keccak256": "0x61a351679c3698e7b8299022aedee5d114f974ce9071c8e7e3ba2a4dbc220be1",
+        "urls": [
+          "bzz-raw://abd4a9968fa97f70ef2dc99fc205a516ea20cdf0af8ec16c05ef7f75e79086e2",
+          "dweb:/ipfs/QmYDF6DKyUtkpdUq53PYVxyRYWy8apc661gtyAnoSXBsZQ"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "oracle()": {
+        "notice": "Returns the preimage oracle used by the stepper."
+      },
+      "step(bytes,bytes,uint256)": {
+        "notice": "Performs a single instruction step from a given prestate and returns the poststate         hash."
+      }
+    },
+    "notice": "An interface for a contract with a state transition function that         will accept a pre state and return a post state. ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⠶⢅⠒⢄⢔⣶⡦⣤⡤⠄⣀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠨⡏⠀⠀⠈⠢⣙⢯⣄⠀⢨⠯⡺⡘⢄⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣶⡆⠀⠀⠀⠀⠈⠓⠬⡒⠡⣀⢙⡜⡀⠓⠄⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡷⠿⣧⣀⡀⠀⠀⠀⠀⠀⠀⠉⠣⣞⠩⠥⠀⠼⢄⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠉⢹⣶⠒⠒⠂⠈⠉⠁⠘⡆⠀⣿⣿⠫⡄⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢶⣤⣀⡀⠀⠀⢸⡿⠀⠀⠀⠀⠀⢀⠞⠀⠀⢡⢨⢀⡄⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡒⣿⢿⡤⠝⡣⠉⠁⠚⠛⠀⠤⠤⣄⡰⠁⠀⠀⠀⠉⠙⢸⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⢯⡌⡿⡇⠘⡷⠀⠁⠀⠀⢀⣰⠢⠲⠛⣈⣸⠦⠤⠶⠴⢬⣐⣊⡂⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡪⡗⢫⠞⠀⠆⣀⠻⠤⠴⠐⠚⣉⢀⠦⠂⠋⠁⠀⠁⠀⠀⠀⠀⢋⠉⠇⠀ ⠀⠀⠀⠀⣀⡤⠐⠒⠘⡹⠉⢸⠇⠸⠀⠀⠀⠀⣀⣤⠴⠚⠉⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠼⠀⣾⠀ ⠀⠀⠀⡰⠀⠉⠉⠀⠁⠀⠀⠈⢇⠈⠒⠒⠘⠈⢀⢡⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⢸⡄ ⠀⠀⠸⣿⣆⠤⢀⡀⠀⠀⠀⠀⢘⡌⠀⠀⣀⣀⣀⡈⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⢸⡇ ⠀⠀⢸⣀⠀⠉⠒⠐⠛⠋⠭⠭⠍⠉⠛⠒⠒⠒⠀⠒⠚⠛⠛⠛⠩⠭⠭⠭⠭⠤⠤⠤⠤⠤⠭⠭⠉⠓⡆ ⠀⠀⠘⠿⣷⣶⣤⣤⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇ ⠀⠀⠀⠀⠀⠉⠙⠛⠛⠻⠿⢿⣿⣿⣷⣶⣶⣶⣤⣤⣀⣁⣛⣃⣒⠿⠿⠿⠤⠠⠄⠤⠤⢤⣛⣓⣂⣻⡇ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠙⠛⠻⠿⠿⠿⢿⣿⣿⣿⣷⣶⣶⣾⣿⣿⣿⣿⠿⠟⠁ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠈⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "step(bytes,bytes,uint256)": {
+        "params": {
+          "_localContext": "The local key context for the preimage oracle. Optional, can be set as a constant                      if the caller only requires one set of local keys.",
+          "_proof": "A proof for the inclusion of the prestate's memory in the merkle tree.",
+          "_stateData": "The preimage of the prestate hash."
+        },
+        "returns": {
+          "postState_": "The poststate hash after the instruction step."
+        }
+      }
+    },
+    "title": "IBigStepper"
+  },
+  "ast": {
+    "absolutePath": "src/dispute/interfaces/IBigStepper.sol",
+    "id": 58017,
+    "exportedSymbols": {
+      "IBigStepper": [
+        58016
+      ],
+      "IPreimageOracle": [
+        56303
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:3341:100",
+    "nodes": [
+      {
+        "id": 57993,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:100",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 57995,
+        "nodeType": "ImportDirective",
+        "src": "58:76:100",
+        "nodes": [],
+        "absolutePath": "src/cannon/interfaces/IPreimageOracle.sol",
+        "file": "src/cannon/interfaces/IPreimageOracle.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 58017,
+        "sourceUnit": 56304,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 57994,
+              "name": "IPreimageOracle",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 56303,
+              "src": "67:15:100",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 58016,
+        "nodeType": "ContractDefinition",
+        "src": "2494:878:100",
+        "nodes": [
+          {
+            "id": 58008,
+            "nodeType": "FunctionDefinition",
+            "src": "3062:171:100",
+            "nodes": [],
+            "documentation": {
+              "id": 57997,
+              "nodeType": "StructuredDocumentation",
+              "src": "2522:535:100",
+              "text": "@notice Performs a single instruction step from a given prestate and returns the poststate\n         hash.\n @param _stateData The preimage of the prestate hash.\n @param _proof A proof for the inclusion of the prestate's memory in the merkle tree.\n @param _localContext The local key context for the preimage oracle. Optional, can be set as a constant\n                      if the caller only requires one set of local keys.\n @return postState_ The poststate hash after the instruction step."
+            },
+            "functionSelector": "836e7b32",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "step",
+            "nameLocation": "3071:4:100",
+            "parameters": {
+              "id": 58004,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 57999,
+                  "mutability": "mutable",
+                  "name": "_stateData",
+                  "nameLocation": "3100:10:100",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58008,
+                  "src": "3085:25:100",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 57998,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3085:5:100",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58001,
+                  "mutability": "mutable",
+                  "name": "_proof",
+                  "nameLocation": "3135:6:100",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58008,
+                  "src": "3120:21:100",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 58000,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3120:5:100",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58003,
+                  "mutability": "mutable",
+                  "name": "_localContext",
+                  "nameLocation": "3159:13:100",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58008,
+                  "src": "3151:21:100",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 58002,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3151:7:100",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3075:103:100"
+            },
+            "returnParameters": {
+              "id": 58007,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58006,
+                  "mutability": "mutable",
+                  "name": "postState_",
+                  "nameLocation": "3221:10:100",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58008,
+                  "src": "3213:18:100",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58005,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3213:7:100",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3212:20:100"
+            },
+            "scope": 58016,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 58015,
+            "nodeType": "FunctionDefinition",
+            "src": "3304:66:100",
+            "nodes": [],
+            "documentation": {
+              "id": 58009,
+              "nodeType": "StructuredDocumentation",
+              "src": "3239:60:100",
+              "text": "@notice Returns the preimage oracle used by the stepper."
+            },
+            "functionSelector": "7dc0d1d0",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "oracle",
+            "nameLocation": "3313:6:100",
+            "parameters": {
+              "id": 58010,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3319:2:100"
+            },
+            "returnParameters": {
+              "id": 58014,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58013,
+                  "mutability": "mutable",
+                  "name": "oracle_",
+                  "nameLocation": "3361:7:100",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58015,
+                  "src": "3345:23:100",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IPreimageOracle_$56303",
+                    "typeString": "contract IPreimageOracle"
+                  },
+                  "typeName": {
+                    "id": 58012,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 58011,
+                      "name": "IPreimageOracle",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 56303,
+                      "src": "3345:15:100"
+                    },
+                    "referencedDeclaration": 56303,
+                    "src": "3345:15:100",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IPreimageOracle_$56303",
+                      "typeString": "contract IPreimageOracle"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3344:25:100"
+            },
+            "scope": 58016,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IBigStepper",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 57996,
+          "nodeType": "StructuredDocumentation",
+          "src": "136:2358:100",
+          "text": "@title IBigStepper\n @notice An interface for a contract with a state transition function that\n         will accept a pre state and return a post state.\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⠶⢅⠒⢄⢔⣶⡦⣤⡤⠄⣀⠀⠀⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠨⡏⠀⠀⠈⠢⣙⢯⣄⠀⢨⠯⡺⡘⢄⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣶⡆⠀⠀⠀⠀⠈⠓⠬⡒⠡⣀⢙⡜⡀⠓⠄⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡷⠿⣧⣀⡀⠀⠀⠀⠀⠀⠀⠉⠣⣞⠩⠥⠀⠼⢄⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠉⢹⣶⠒⠒⠂⠈⠉⠁⠘⡆⠀⣿⣿⠫⡄⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢶⣤⣀⡀⠀⠀⢸⡿⠀⠀⠀⠀⠀⢀⠞⠀⠀⢡⢨⢀⡄⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡒⣿⢿⡤⠝⡣⠉⠁⠚⠛⠀⠤⠤⣄⡰⠁⠀⠀⠀⠉⠙⢸⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⢯⡌⡿⡇⠘⡷⠀⠁⠀⠀⢀⣰⠢⠲⠛⣈⣸⠦⠤⠶⠴⢬⣐⣊⡂⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡪⡗⢫⠞⠀⠆⣀⠻⠤⠴⠐⠚⣉⢀⠦⠂⠋⠁⠀⠁⠀⠀⠀⠀⢋⠉⠇⠀\n ⠀⠀⠀⠀⣀⡤⠐⠒⠘⡹⠉⢸⠇⠸⠀⠀⠀⠀⣀⣤⠴⠚⠉⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠼⠀⣾⠀\n ⠀⠀⠀⡰⠀⠉⠉⠀⠁⠀⠀⠈⢇⠈⠒⠒⠘⠈⢀⢡⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⢸⡄\n ⠀⠀⠸⣿⣆⠤⢀⡀⠀⠀⠀⠀⢘⡌⠀⠀⣀⣀⣀⡈⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⢸⡇\n ⠀⠀⢸⣀⠀⠉⠒⠐⠛⠋⠭⠭⠍⠉⠛⠒⠒⠒⠀⠒⠚⠛⠛⠛⠩⠭⠭⠭⠭⠤⠤⠤⠤⠤⠭⠭⠉⠓⡆\n ⠀⠀⠘⠿⣷⣶⣤⣤⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇\n ⠀⠀⠀⠀⠀⠉⠙⠛⠛⠻⠿⢿⣿⣿⣷⣶⣶⣶⣤⣤⣀⣁⣛⣃⣒⠿⠿⠿⠤⠠⠄⠤⠤⢤⣛⣓⣂⣻⡇\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠙⠛⠻⠿⠿⠿⢿⣿⣿⣿⣷⣶⣶⣾⣿⣿⣿⣿⠿⠟⠁\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠈⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          58016
+        ],
+        "name": "IBigStepper",
+        "nameLocation": "2504:11:100",
+        "scope": 58017,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 100
+}

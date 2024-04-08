@@ -1,0 +1,821 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_partOffset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_preimage",
+          "type": "bytes"
+        }
+      ],
+      "name": "loadKeccak256PreimagePart",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_ident",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_localContext",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_word",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_partOffset",
+          "type": "uint256"
+        }
+      ],
+      "name": "loadLocalData",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_key",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_offset",
+          "type": "uint256"
+        }
+      ],
+      "name": "readPreimage",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "dat_",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "datLen_",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "loadKeccak256PreimagePart(uint256,bytes)": "e1592611",
+    "loadLocalData(uint256,uint256,bytes32,uint256,uint256)": "c0c220c9",
+    "readPreimage(bytes32,uint256)": "e03110e1"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_partOffset\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_preimage\",\"type\":\"bytes\"}],\"name\":\"loadKeccak256PreimagePart\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_ident\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_localContext\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"_word\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_partOffset\",\"type\":\"uint256\"}],\"name\":\"loadLocalData\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"key_\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_key\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"_offset\",\"type\":\"uint256\"}],\"name\":\"readPreimage\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"dat_\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"datLen_\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"loadKeccak256PreimagePart(uint256,bytes)\":{\"params\":{\"_partOffset\":\"The offset of the preimage to read.\",\"_preimage\":\"The preimage data.\"}},\"loadLocalData(uint256,uint256,bytes32,uint256,uint256)\":{\"details\":\"The local data parts are loaded into the preimage oracle under the context      of the caller - no other account can write to the caller's context      specific data.      There are 5 local data identifiers:      \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u252c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2510      \\u2502 Identifier \\u2502      Data              \\u2502      \\u251c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u253c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2524      \\u2502          1 \\u2502 L1 Head Hash (bytes32) \\u2502      \\u2502          2 \\u2502 Output Root (bytes32)  \\u2502      \\u2502          3 \\u2502 Root Claim (bytes32)   \\u2502      \\u2502          4 \\u2502 L2 Block Number (u64)  \\u2502      \\u2502          5 \\u2502 Chain ID (u64)         \\u2502      \\u2514\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2534\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2518\",\"params\":{\"_ident\":\"The identifier of the local data.\",\"_localContext\":\"The local key context for the preimage oracle. Optionally, can be set as a constant                      if the caller only requires one set of local keys.\",\"_partOffset\":\"The offset of the local data part to write to the oracle.\",\"_size\":\"The number of bytes in `_word` to load.\",\"_word\":\"The local data word.\"}},\"readPreimage(bytes32,uint256)\":{\"params\":{\"_key\":\"The key of the preimage to read.\",\"_offset\":\"The offset of the preimage to read.\"},\"returns\":{\"datLen_\":\"The length of the preimage data.\",\"dat_\":\"The preimage data.\"}}},\"title\":\"IPreimageOracle\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"loadKeccak256PreimagePart(uint256,bytes)\":{\"notice\":\"Prepares a preimage to be read by keccak256 key, starting at         the given offset and up to 32 bytes (clipped at preimage length, if out of data).\"},\"loadLocalData(uint256,uint256,bytes32,uint256,uint256)\":{\"notice\":\"Loads of local data part into the preimage oracle.\"},\"readPreimage(bytes32,uint256)\":{\"notice\":\"Reads a preimage from the oracle.\"}},\"notice\":\"Interface for a preimage oracle.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/cannon/interfaces/IPreimageOracle.sol\":\"IPreimageOracle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/cannon/interfaces/IPreimageOracle.sol\":{\"keccak256\":\"0x40004ff6a4cc4a7816c48f736c65c24d2292cf99f03b1706eb8a634e0c914646\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e475d6e5353d65a8dc7482941090daef1d14ee86eacccc29bd255f568bbd6bf8\",\"dweb:/ipfs/QmcAcCqPPsyhGiuf7J1FxfEaRHCyXgm22o562jtXWdjUk7\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_partOffset",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_preimage",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "loadKeccak256PreimagePart"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_ident",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_localContext",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_word",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_size",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_partOffset",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "loadLocalData",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "key_",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_key",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_offset",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "readPreimage",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "dat_",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datLen_",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "loadKeccak256PreimagePart(uint256,bytes)": {
+            "params": {
+              "_partOffset": "The offset of the preimage to read.",
+              "_preimage": "The preimage data."
+            }
+          },
+          "loadLocalData(uint256,uint256,bytes32,uint256,uint256)": {
+            "details": "The local data parts are loaded into the preimage oracle under the context      of the caller - no other account can write to the caller's context      specific data.      There are 5 local data identifiers:      ┌────────────┬────────────────────────┐      │ Identifier │      Data              │      ├────────────┼────────────────────────┤      │          1 │ L1 Head Hash (bytes32) │      │          2 │ Output Root (bytes32)  │      │          3 │ Root Claim (bytes32)   │      │          4 │ L2 Block Number (u64)  │      │          5 │ Chain ID (u64)         │      └────────────┴────────────────────────┘",
+            "params": {
+              "_ident": "The identifier of the local data.",
+              "_localContext": "The local key context for the preimage oracle. Optionally, can be set as a constant                      if the caller only requires one set of local keys.",
+              "_partOffset": "The offset of the local data part to write to the oracle.",
+              "_size": "The number of bytes in `_word` to load.",
+              "_word": "The local data word."
+            }
+          },
+          "readPreimage(bytes32,uint256)": {
+            "params": {
+              "_key": "The key of the preimage to read.",
+              "_offset": "The offset of the preimage to read."
+            },
+            "returns": {
+              "datLen_": "The length of the preimage data.",
+              "dat_": "The preimage data."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "loadKeccak256PreimagePart(uint256,bytes)": {
+            "notice": "Prepares a preimage to be read by keccak256 key, starting at         the given offset and up to 32 bytes (clipped at preimage length, if out of data)."
+          },
+          "loadLocalData(uint256,uint256,bytes32,uint256,uint256)": {
+            "notice": "Loads of local data part into the preimage oracle."
+          },
+          "readPreimage(bytes32,uint256)": {
+            "notice": "Reads a preimage from the oracle."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/cannon/interfaces/IPreimageOracle.sol": "IPreimageOracle"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/cannon/interfaces/IPreimageOracle.sol": {
+        "keccak256": "0x40004ff6a4cc4a7816c48f736c65c24d2292cf99f03b1706eb8a634e0c914646",
+        "urls": [
+          "bzz-raw://e475d6e5353d65a8dc7482941090daef1d14ee86eacccc29bd255f568bbd6bf8",
+          "dweb:/ipfs/QmcAcCqPPsyhGiuf7J1FxfEaRHCyXgm22o562jtXWdjUk7"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "loadKeccak256PreimagePart(uint256,bytes)": {
+        "notice": "Prepares a preimage to be read by keccak256 key, starting at         the given offset and up to 32 bytes (clipped at preimage length, if out of data)."
+      },
+      "loadLocalData(uint256,uint256,bytes32,uint256,uint256)": {
+        "notice": "Loads of local data part into the preimage oracle."
+      },
+      "readPreimage(bytes32,uint256)": {
+        "notice": "Reads a preimage from the oracle."
+      }
+    },
+    "notice": "Interface for a preimage oracle."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "loadKeccak256PreimagePart(uint256,bytes)": {
+        "params": {
+          "_partOffset": "The offset of the preimage to read.",
+          "_preimage": "The preimage data."
+        }
+      },
+      "loadLocalData(uint256,uint256,bytes32,uint256,uint256)": {
+        "details": "The local data parts are loaded into the preimage oracle under the context      of the caller - no other account can write to the caller's context      specific data.      There are 5 local data identifiers:      ┌────────────┬────────────────────────┐      │ Identifier │      Data              │      ├────────────┼────────────────────────┤      │          1 │ L1 Head Hash (bytes32) │      │          2 │ Output Root (bytes32)  │      │          3 │ Root Claim (bytes32)   │      │          4 │ L2 Block Number (u64)  │      │          5 │ Chain ID (u64)         │      └────────────┴────────────────────────┘",
+        "params": {
+          "_ident": "The identifier of the local data.",
+          "_localContext": "The local key context for the preimage oracle. Optionally, can be set as a constant                      if the caller only requires one set of local keys.",
+          "_partOffset": "The offset of the local data part to write to the oracle.",
+          "_size": "The number of bytes in `_word` to load.",
+          "_word": "The local data word."
+        }
+      },
+      "readPreimage(bytes32,uint256)": {
+        "params": {
+          "_key": "The key of the preimage to read.",
+          "_offset": "The offset of the preimage to read."
+        },
+        "returns": {
+          "datLen_": "The length of the preimage data.",
+          "dat_": "The preimage data."
+        }
+      }
+    },
+    "title": "IPreimageOracle"
+  },
+  "ast": {
+    "absolutePath": "src/cannon/interfaces/IPreimageOracle.sol",
+    "id": 56304,
+    "exportedSymbols": {
+      "IPreimageOracle": [
+        56303
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2594:93",
+    "nodes": [
+      {
+        "id": 56265,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:93",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 56303,
+        "nodeType": "ContractDefinition",
+        "src": "129:2496:93",
+        "nodes": [
+          {
+            "id": 56278,
+            "nodeType": "FunctionDefinition",
+            "src": "420:107:93",
+            "nodes": [],
+            "documentation": {
+              "id": 56267,
+              "nodeType": "StructuredDocumentation",
+              "src": "161:254:93",
+              "text": "@notice Reads a preimage from the oracle.\n @param _key The key of the preimage to read.\n @param _offset The offset of the preimage to read.\n @return dat_ The preimage data.\n @return datLen_ The length of the preimage data."
+            },
+            "functionSelector": "e03110e1",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "readPreimage",
+            "nameLocation": "429:12:93",
+            "parameters": {
+              "id": 56272,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56269,
+                  "mutability": "mutable",
+                  "name": "_key",
+                  "nameLocation": "450:4:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56278,
+                  "src": "442:12:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 56268,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "442:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56271,
+                  "mutability": "mutable",
+                  "name": "_offset",
+                  "nameLocation": "464:7:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56278,
+                  "src": "456:15:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56270,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "456:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "441:31:93"
+            },
+            "returnParameters": {
+              "id": 56277,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56274,
+                  "mutability": "mutable",
+                  "name": "dat_",
+                  "nameLocation": "504:4:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56278,
+                  "src": "496:12:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 56273,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "496:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56276,
+                  "mutability": "mutable",
+                  "name": "datLen_",
+                  "nameLocation": "518:7:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56278,
+                  "src": "510:15:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56275,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "510:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "495:31:93"
+            },
+            "scope": 56303,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 56294,
+            "nodeType": "FunctionDefinition",
+            "src": "2037:207:93",
+            "nodes": [],
+            "documentation": {
+              "id": 56279,
+              "nodeType": "StructuredDocumentation",
+              "src": "533:1499:93",
+              "text": "@notice Loads of local data part into the preimage oracle.\n @param _ident The identifier of the local data.\n @param _localContext The local key context for the preimage oracle. Optionally, can be set as a constant\n                      if the caller only requires one set of local keys.\n @param _word The local data word.\n @param _size The number of bytes in `_word` to load.\n @param _partOffset The offset of the local data part to write to the oracle.\n @dev The local data parts are loaded into the preimage oracle under the context\n      of the caller - no other account can write to the caller's context\n      specific data.\n      There are 5 local data identifiers:\n      ┌────────────┬────────────────────────┐\n      │ Identifier │      Data              │\n      ├────────────┼────────────────────────┤\n      │          1 │ L1 Head Hash (bytes32) │\n      │          2 │ Output Root (bytes32)  │\n      │          3 │ Root Claim (bytes32)   │\n      │          4 │ L2 Block Number (u64)  │\n      │          5 │ Chain ID (u64)         │\n      └────────────┴────────────────────────┘"
+            },
+            "functionSelector": "c0c220c9",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "loadLocalData",
+            "nameLocation": "2046:13:93",
+            "parameters": {
+              "id": 56290,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56281,
+                  "mutability": "mutable",
+                  "name": "_ident",
+                  "nameLocation": "2077:6:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2069:14:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56280,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2069:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56283,
+                  "mutability": "mutable",
+                  "name": "_localContext",
+                  "nameLocation": "2101:13:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2093:21:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56282,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2093:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56285,
+                  "mutability": "mutable",
+                  "name": "_word",
+                  "nameLocation": "2132:5:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2124:13:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 56284,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2124:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56287,
+                  "mutability": "mutable",
+                  "name": "_size",
+                  "nameLocation": "2155:5:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2147:13:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56286,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2147:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56289,
+                  "mutability": "mutable",
+                  "name": "_partOffset",
+                  "nameLocation": "2178:11:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2170:19:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56288,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2170:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2059:136:93"
+            },
+            "returnParameters": {
+              "id": 56293,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56292,
+                  "mutability": "mutable",
+                  "name": "key_",
+                  "nameLocation": "2238:4:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56294,
+                  "src": "2230:12:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 56291,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2230:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2229:14:93"
+            },
+            "scope": 56303,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 56302,
+            "nodeType": "FunctionDefinition",
+            "src": "2532:91:93",
+            "nodes": [],
+            "documentation": {
+              "id": 56295,
+              "nodeType": "StructuredDocumentation",
+              "src": "2250:277:93",
+              "text": "@notice Prepares a preimage to be read by keccak256 key, starting at\n         the given offset and up to 32 bytes (clipped at preimage length, if out of data).\n @param _partOffset The offset of the preimage to read.\n @param _preimage The preimage data."
+            },
+            "functionSelector": "e1592611",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "loadKeccak256PreimagePart",
+            "nameLocation": "2541:25:93",
+            "parameters": {
+              "id": 56300,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 56297,
+                  "mutability": "mutable",
+                  "name": "_partOffset",
+                  "nameLocation": "2575:11:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56302,
+                  "src": "2567:19:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 56296,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2567:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 56299,
+                  "mutability": "mutable",
+                  "name": "_preimage",
+                  "nameLocation": "2603:9:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 56302,
+                  "src": "2588:24:93",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 56298,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2588:5:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2566:47:93"
+            },
+            "returnParameters": {
+              "id": 56301,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2622:0:93"
+            },
+            "scope": 56303,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IPreimageOracle",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 56266,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:72:93",
+          "text": "@title IPreimageOracle\n @notice Interface for a preimage oracle."
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          56303
+        ],
+        "name": "IPreimageOracle",
+        "nameLocation": "139:15:93",
+        "scope": 56304,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 93
+}

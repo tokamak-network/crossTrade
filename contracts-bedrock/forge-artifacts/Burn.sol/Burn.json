@@ -1,0 +1,819 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x602d6037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080f000a",
+    "sourceMap": "114:487:120:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;114:487:120;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080f000a",
+    "sourceMap": "114:487:120:-:0;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"Burn\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Utilities for burning stuff.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/libraries/Burn.sol\":\"Burn\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/libraries/Burn.sol\":{\"keccak256\":\"0x90a795bcea3ef06d6d5011256c4bd63d1a4271f519246dbf1ee3e8f1c0e21010\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f60c3aa77cf0c484ddda4754157cff4dc0e2eace4bea67990daff4c0612ab5f\",\"dweb:/ipfs/QmSYGanMFve9uBC17X7hFneSFnwnJxz86Jgh6MX9BRMweb\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/libraries/Burn.sol": "Burn"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/libraries/Burn.sol": {
+        "keccak256": "0x90a795bcea3ef06d6d5011256c4bd63d1a4271f519246dbf1ee3e8f1c0e21010",
+        "urls": [
+          "bzz-raw://9f60c3aa77cf0c484ddda4754157cff4dc0e2eace4bea67990daff4c0612ab5f",
+          "dweb:/ipfs/QmSYGanMFve9uBC17X7hFneSFnwnJxz86Jgh6MX9BRMweb"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "notice": "Utilities for burning stuff."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "title": "Burn"
+  },
+  "ast": {
+    "absolutePath": "src/libraries/Burn.sol",
+    "id": 59768,
+    "exportedSymbols": {
+      "Burn": [
+        59751
+      ],
+      "Burner": [
+        59767
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:932:120",
+    "nodes": [
+      {
+        "id": 59708,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:120",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 59751,
+        "nodeType": "ContractDefinition",
+        "src": "114:487:120",
+        "nodes": [
+          {
+            "id": 59723,
+            "nodeType": "FunctionDefinition",
+            "src": "224:86:120",
+            "nodes": [],
+            "body": {
+              "id": 59722,
+              "nodeType": "Block",
+              "src": "263:47:120",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "expression": {
+                        "argumentTypes": [],
+                        "id": 59717,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "NewExpression",
+                        "src": "273:10:120",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_creation_payable$__$returns$_t_contract$_Burner_$59767_$",
+                          "typeString": "function () payable returns (contract Burner)"
+                        },
+                        "typeName": {
+                          "id": 59716,
+                          "nodeType": "UserDefinedTypeName",
+                          "pathNode": {
+                            "id": 59715,
+                            "name": "Burner",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 59767,
+                            "src": "277:6:120"
+                          },
+                          "referencedDeclaration": 59767,
+                          "src": "277:6:120",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_Burner_$59767",
+                            "typeString": "contract Burner"
+                          }
+                        }
+                      },
+                      "id": 59719,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "names": [
+                        "value"
+                      ],
+                      "nodeType": "FunctionCallOptions",
+                      "options": [
+                        {
+                          "id": 59718,
+                          "name": "_amount",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 59712,
+                          "src": "292:7:120",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "src": "273:28:120",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_creation_payable$__$returns$_t_contract$_Burner_$59767_$value",
+                        "typeString": "function () payable returns (contract Burner)"
+                      }
+                    },
+                    "id": 59720,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "273:30:120",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Burner_$59767",
+                      "typeString": "contract Burner"
+                    }
+                  },
+                  "id": 59721,
+                  "nodeType": "ExpressionStatement",
+                  "src": "273:30:120"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 59710,
+              "nodeType": "StructuredDocumentation",
+              "src": "133:86:120",
+              "text": "@notice Burns a given amount of ETH.\n @param _amount Amount of ETH to burn."
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "eth",
+            "nameLocation": "233:3:120",
+            "parameters": {
+              "id": 59713,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 59712,
+                  "mutability": "mutable",
+                  "name": "_amount",
+                  "nameLocation": "245:7:120",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 59723,
+                  "src": "237:15:120",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 59711,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "237:7:120",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "236:17:120"
+            },
+            "returnParameters": {
+              "id": 59714,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "263:0:120"
+            },
+            "scope": 59751,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 59750,
+            "nodeType": "FunctionDefinition",
+            "src": "407:192:120",
+            "nodes": [],
+            "body": {
+              "id": 59749,
+              "nodeType": "Block",
+              "src": "451:148:120",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    59730
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 59730,
+                      "mutability": "mutable",
+                      "name": "i",
+                      "nameLocation": "469:1:120",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 59749,
+                      "src": "461:9:120",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 59729,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "461:7:120",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 59732,
+                  "initialValue": {
+                    "hexValue": "30",
+                    "id": 59731,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "473:1:120",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_0_by_1",
+                      "typeString": "int_const 0"
+                    },
+                    "value": "0"
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "461:13:120"
+                },
+                {
+                  "assignments": [
+                    59734
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 59734,
+                      "mutability": "mutable",
+                      "name": "initialGas",
+                      "nameLocation": "492:10:120",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 59749,
+                      "src": "484:18:120",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 59733,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "484:7:120",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 59737,
+                  "initialValue": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 59735,
+                      "name": "gasleft",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": -7,
+                      "src": "505:7:120",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_gasleft_view$__$returns$_t_uint256_$",
+                        "typeString": "function () view returns (uint256)"
+                      }
+                    },
+                    "id": 59736,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "505:9:120",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "484:30:120"
+                },
+                {
+                  "body": {
+                    "id": 59747,
+                    "nodeType": "Block",
+                    "src": "565:28:120",
+                    "statements": [
+                      {
+                        "expression": {
+                          "id": 59745,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "nodeType": "UnaryOperation",
+                          "operator": "++",
+                          "prefix": true,
+                          "src": "579:3:120",
+                          "subExpression": {
+                            "id": 59744,
+                            "name": "i",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 59730,
+                            "src": "581:1:120",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "id": 59746,
+                        "nodeType": "ExpressionStatement",
+                        "src": "579:3:120"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 59743,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 59741,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "id": 59738,
+                        "name": "initialGas",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 59734,
+                        "src": "531:10:120",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "-",
+                      "rightExpression": {
+                        "arguments": [],
+                        "expression": {
+                          "argumentTypes": [],
+                          "id": 59739,
+                          "name": "gasleft",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -7,
+                          "src": "544:7:120",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_gasleft_view$__$returns$_t_uint256_$",
+                            "typeString": "function () view returns (uint256)"
+                          }
+                        },
+                        "id": 59740,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "544:9:120",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "src": "531:22:120",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "<",
+                    "rightExpression": {
+                      "id": 59742,
+                      "name": "_amount",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 59726,
+                      "src": "556:7:120",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "531:32:120",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 59748,
+                  "nodeType": "WhileStatement",
+                  "src": "524:69:120"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 59724,
+              "nodeType": "StructuredDocumentation",
+              "src": "316:86:120",
+              "text": "@notice Burns a given amount of gas.\n @param _amount Amount of gas to burn."
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "gas",
+            "nameLocation": "416:3:120",
+            "parameters": {
+              "id": 59727,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 59726,
+                  "mutability": "mutable",
+                  "name": "_amount",
+                  "nameLocation": "428:7:120",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 59750,
+                  "src": "420:15:120",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 59725,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "420:7:120",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "419:17:120"
+            },
+            "returnParameters": {
+              "id": 59728,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "451:0:120"
+            },
+            "scope": 59751,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Burn",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": {
+          "id": 59709,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:57:120",
+          "text": "@title Burn\n @notice Utilities for burning stuff."
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          59751
+        ],
+        "name": "Burn",
+        "nameLocation": "122:4:120",
+        "scope": 59768,
+        "usedErrors": []
+      },
+      {
+        "id": 59767,
+        "nodeType": "ContractDefinition",
+        "src": "864:99:120",
+        "nodes": [
+          {
+            "id": 59766,
+            "nodeType": "FunctionDefinition",
+            "src": "886:75:120",
+            "nodes": [],
+            "body": {
+              "id": 59765,
+              "nodeType": "Block",
+              "src": "908:53:120",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "arguments": [
+                              {
+                                "id": 59760,
+                                "name": "this",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": -28,
+                                "src": "947:4:120",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_contract$_Burner_$59767",
+                                  "typeString": "contract Burner"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_contract$_Burner_$59767",
+                                  "typeString": "contract Burner"
+                                }
+                              ],
+                              "id": 59759,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "lValueRequested": false,
+                              "nodeType": "ElementaryTypeNameExpression",
+                              "src": "939:7:120",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_address_$",
+                                "typeString": "type(address)"
+                              },
+                              "typeName": {
+                                "id": 59758,
+                                "name": "address",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "939:7:120",
+                                "typeDescriptions": {}
+                              }
+                            },
+                            "id": 59761,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "typeConversion",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "939:13:120",
+                            "tryCall": false,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "id": 59757,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "ElementaryTypeNameExpression",
+                          "src": "931:8:120",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_address_payable_$",
+                            "typeString": "type(address payable)"
+                          },
+                          "typeName": {
+                            "id": 59756,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "931:8:120",
+                            "stateMutability": "payable",
+                            "typeDescriptions": {}
+                          }
+                        },
+                        "id": 59762,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "931:22:120",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address_payable",
+                          "typeString": "address payable"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address_payable",
+                          "typeString": "address payable"
+                        }
+                      ],
+                      "id": 59755,
+                      "name": "selfdestruct",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": -21,
+                      "src": "918:12:120",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_selfdestruct_nonpayable$_t_address_payable_$returns$__$",
+                        "typeString": "function (address payable)"
+                      }
+                    },
+                    "id": 59763,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "918:36:120",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 59764,
+                  "nodeType": "ExpressionStatement",
+                  "src": "918:36:120"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 59753,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "897:2:120"
+            },
+            "returnParameters": {
+              "id": 59754,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "908:0:120"
+            },
+            "scope": 59767,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Burner",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 59752,
+          "nodeType": "StructuredDocumentation",
+          "src": "603:261:120",
+          "text": "@title Burner\n @notice Burner self-destructs on creation and sends all ETH to itself, removing all ETH given to\n         the contract from the circulating supply. Self-destructing is the only way to remove ETH\n         from the circulating supply."
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          59767
+        ],
+        "name": "Burner",
+        "nameLocation": "873:6:120",
+        "scope": 59768,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 120
+}

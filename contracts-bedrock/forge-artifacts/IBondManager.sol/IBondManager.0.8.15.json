@@ -1,0 +1,1290 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "bondId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "expiration",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "BondPosted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "bondId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "claiment",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "BondReclaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "bondId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "seizer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "BondSeized",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_bondId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "_bondOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint128",
+          "name": "_minClaimHold",
+          "type": "uint128"
+        }
+      ],
+      "name": "post",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_bondId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reclaim",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_bondId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "seize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_bondId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_claimRecipients",
+          "type": "address[]"
+        }
+      ],
+      "name": "seizeAndSplit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "post(bytes32,address,uint128)": "5785bcb4",
+    "reclaim(bytes32)": "96afb365",
+    "seize(bytes32)": "dff3dbb2",
+    "seizeAndSplit(bytes32,address[])": "7c523a68"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"bondId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"expiration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"BondPosted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"bondId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"claiment\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"BondReclaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"bondId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"seizer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"BondSeized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bondId\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_bondOwner\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"_minClaimHold\",\"type\":\"uint128\"}],\"name\":\"post\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bondId\",\"type\":\"bytes32\"}],\"name\":\"reclaim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bondId\",\"type\":\"bytes32\"}],\"name\":\"seize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bondId\",\"type\":\"bytes32\"},{\"internalType\":\"address[]\",\"name\":\"_claimRecipients\",\"type\":\"address[]\"}],\"name\":\"seizeAndSplit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"BondPosted(bytes32,address,uint256,uint256)\":{\"params\":{\"amount\":\"is the amount of the bond.\",\"bondId\":\"is the id of the bond.\",\"expiration\":\"is the time at which the bond expires.\",\"owner\":\"is the address that owns the bond.\"}},\"BondReclaimed(bytes32,address,uint256)\":{\"params\":{\"amount\":\"is the amount of the bond.\",\"bondId\":\"is the id of the bond.\",\"claiment\":\"is the address that reclaimed the bond.\"}},\"BondSeized(bytes32,address,address,uint256)\":{\"params\":{\"amount\":\"is the amount of the bond.\",\"bondId\":\"is the id of the bond.\",\"owner\":\"is the address that owns the bond.\",\"seizer\":\"is the address that seized the bond.\"}}},\"kind\":\"dev\",\"methods\":{\"post(bytes32,address,uint128)\":{\"details\":\"This function will revert if the provided bondId is already in use.\",\"params\":{\"_bondId\":\"is the id of the bond.\",\"_bondOwner\":\"is the address that owns the bond.\",\"_minClaimHold\":\"is the minimum amount of time the owner        must wait before reclaiming their bond.\"}},\"reclaim(bytes32)\":{\"details\":\"This function will revert if there is no bond at the given id.\",\"params\":{\"_bondId\":\"is the id of the bond.\"}},\"seize(bytes32)\":{\"details\":\"This function will revert if there is no bond at the given id.\",\"params\":{\"_bondId\":\"is the id of the bond.\"}},\"seizeAndSplit(bytes32,address[])\":{\"details\":\"This function will revert if there is no bond at the given id.\",\"params\":{\"_bondId\":\"is the id of the bond.\",\"_claimRecipients\":\"is a set of addresses to split the bond amongst.\"}}},\"title\":\"IBondManager\",\"version\":1},\"userdoc\":{\"events\":{\"BondPosted(bytes32,address,uint256,uint256)\":{\"notice\":\"BondPosted is emitted when a bond is posted.\"},\"BondReclaimed(bytes32,address,uint256)\":{\"notice\":\"BondReclaimed is emitted when a bond is reclaimed by the owner.\"},\"BondSeized(bytes32,address,address,uint256)\":{\"notice\":\"BondSeized is emitted when a bond is seized.\"}},\"kind\":\"user\",\"methods\":{\"post(bytes32,address,uint128)\":{\"notice\":\"Post a bond with a given id and owner.\"},\"reclaim(bytes32)\":{\"notice\":\"Reclaims the bond of the bond owner.\"},\"seize(bytes32)\":{\"notice\":\"Seizes the bond with the given id.\"},\"seizeAndSplit(bytes32,address[])\":{\"notice\":\"Seizes the bond with the given id and distributes it to recipients.\"}},\"notice\":\"The Bond Manager holds ether posted as a bond for a bond id.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/dispute/interfaces/IBondManager.sol\":\"IBondManager\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[\":@cwia/=lib/clones-with-immutable-args/src/\",\":@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@rari-capital/solmate/=lib/solmate/\",\":clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":safe-contracts/=lib/safe-contracts/contracts/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"src/dispute/interfaces/IBondManager.sol\":{\"keccak256\":\"0x31db84bf7a701125719c0bdaed316c8ec3d32e774a70b9bac3045d3ed272da8b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://35ef3970234b9a2d85ca800c5257398fd92a6959b0daa088b402a493ebf18d88\",\"dweb:/ipfs/QmWr1ZCBjRJPTUWyNcDv3G2Jb72cYG2p4rQA55WuUPUjao\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "bondId",
+              "type": "bytes32",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "expiration",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "BondPosted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "bondId",
+              "type": "bytes32",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "claiment",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "BondReclaimed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "bondId",
+              "type": "bytes32",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "seizer",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "BondSeized",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_bondId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "_bondOwner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint128",
+              "name": "_minClaimHold",
+              "type": "uint128"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "post"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_bondId",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "reclaim"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_bondId",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "seize"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "_bondId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address[]",
+              "name": "_claimRecipients",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "seizeAndSplit"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "post(bytes32,address,uint128)": {
+            "details": "This function will revert if the provided bondId is already in use.",
+            "params": {
+              "_bondId": "is the id of the bond.",
+              "_bondOwner": "is the address that owns the bond.",
+              "_minClaimHold": "is the minimum amount of time the owner        must wait before reclaiming their bond."
+            }
+          },
+          "reclaim(bytes32)": {
+            "details": "This function will revert if there is no bond at the given id.",
+            "params": {
+              "_bondId": "is the id of the bond."
+            }
+          },
+          "seize(bytes32)": {
+            "details": "This function will revert if there is no bond at the given id.",
+            "params": {
+              "_bondId": "is the id of the bond."
+            }
+          },
+          "seizeAndSplit(bytes32,address[])": {
+            "details": "This function will revert if there is no bond at the given id.",
+            "params": {
+              "_bondId": "is the id of the bond.",
+              "_claimRecipients": "is a set of addresses to split the bond amongst."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "post(bytes32,address,uint128)": {
+            "notice": "Post a bond with a given id and owner."
+          },
+          "reclaim(bytes32)": {
+            "notice": "Reclaims the bond of the bond owner."
+          },
+          "seize(bytes32)": {
+            "notice": "Seizes the bond with the given id."
+          },
+          "seizeAndSplit(bytes32,address[])": {
+            "notice": "Seizes the bond with the given id and distributes it to recipients."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@cwia/=lib/clones-with-immutable-args/src/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@rari-capital/solmate/=lib/solmate/",
+        "clones-with-immutable-args/=lib/clones-with-immutable-args/src/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 999999
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/dispute/interfaces/IBondManager.sol": "IBondManager"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/dispute/interfaces/IBondManager.sol": {
+        "keccak256": "0x31db84bf7a701125719c0bdaed316c8ec3d32e774a70b9bac3045d3ed272da8b",
+        "urls": [
+          "bzz-raw://35ef3970234b9a2d85ca800c5257398fd92a6959b0daa088b402a493ebf18d88",
+          "dweb:/ipfs/QmWr1ZCBjRJPTUWyNcDv3G2Jb72cYG2p4rQA55WuUPUjao"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": {}
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "post(bytes32,address,uint128)": {
+        "notice": "Post a bond with a given id and owner."
+      },
+      "reclaim(bytes32)": {
+        "notice": "Reclaims the bond of the bond owner."
+      },
+      "seize(bytes32)": {
+        "notice": "Seizes the bond with the given id."
+      },
+      "seizeAndSplit(bytes32,address[])": {
+        "notice": "Seizes the bond with the given id and distributes it to recipients."
+      }
+    },
+    "events": {
+      "BondPosted(bytes32,address,uint256,uint256)": {
+        "notice": "BondPosted is emitted when a bond is posted."
+      },
+      "BondReclaimed(bytes32,address,uint256)": {
+        "notice": "BondReclaimed is emitted when a bond is reclaimed by the owner."
+      },
+      "BondSeized(bytes32,address,address,uint256)": {
+        "notice": "BondSeized is emitted when a bond is seized."
+      }
+    },
+    "notice": "The Bond Manager holds ether posted as a bond for a bond id."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "post(bytes32,address,uint128)": {
+        "details": "This function will revert if the provided bondId is already in use.",
+        "params": {
+          "_bondId": "is the id of the bond.",
+          "_bondOwner": "is the address that owns the bond.",
+          "_minClaimHold": "is the minimum amount of time the owner        must wait before reclaiming their bond."
+        }
+      },
+      "reclaim(bytes32)": {
+        "details": "This function will revert if there is no bond at the given id.",
+        "params": {
+          "_bondId": "is the id of the bond."
+        }
+      },
+      "seize(bytes32)": {
+        "details": "This function will revert if there is no bond at the given id.",
+        "params": {
+          "_bondId": "is the id of the bond."
+        }
+      },
+      "seizeAndSplit(bytes32,address[])": {
+        "details": "This function will revert if there is no bond at the given id.",
+        "params": {
+          "_bondId": "is the id of the bond.",
+          "_claimRecipients": "is a set of addresses to split the bond amongst."
+        }
+      }
+    },
+    "events": {
+      "BondPosted(bytes32,address,uint256,uint256)": {
+        "params": {
+          "amount": "is the amount of the bond.",
+          "bondId": "is the id of the bond.",
+          "expiration": "is the time at which the bond expires.",
+          "owner": "is the address that owns the bond."
+        }
+      },
+      "BondReclaimed(bytes32,address,uint256)": {
+        "params": {
+          "amount": "is the amount of the bond.",
+          "bondId": "is the id of the bond.",
+          "claiment": "is the address that reclaimed the bond."
+        }
+      },
+      "BondSeized(bytes32,address,address,uint256)": {
+        "params": {
+          "amount": "is the amount of the bond.",
+          "bondId": "is the id of the bond.",
+          "owner": "is the address that owns the bond.",
+          "seizer": "is the address that seized the bond."
+        }
+      }
+    },
+    "title": "IBondManager"
+  },
+  "ast": {
+    "absolutePath": "src/dispute/interfaces/IBondManager.sol",
+    "id": 58083,
+    "exportedSymbols": {
+      "IBondManager": [
+        58082
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2480:101",
+    "nodes": [
+      {
+        "id": 58018,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:101",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 58082,
+        "nodeType": "ContractDefinition",
+        "src": "155:2356:101",
+        "nodes": [
+          {
+            "id": 58030,
+            "nodeType": "EventDefinition",
+            "src": "460:84:101",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 58020,
+              "nodeType": "StructuredDocumentation",
+              "src": "184:271:101",
+              "text": "@notice BondPosted is emitted when a bond is posted.\n @param bondId is the id of the bond.\n @param owner is the address that owns the bond.\n @param expiration is the time at which the bond expires.\n @param amount is the amount of the bond."
+            },
+            "eventSelector": "b3f7ea9789b653f1f16bea488689a6e60a64300aaf9a66ca828aeff75685fb59",
+            "name": "BondPosted",
+            "nameLocation": "466:10:101",
+            "parameters": {
+              "id": 58029,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58022,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "bondId",
+                  "nameLocation": "485:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58030,
+                  "src": "477:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58021,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "477:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58024,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "501:5:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58030,
+                  "src": "493:13:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 58023,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "493:7:101",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58026,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "expiration",
+                  "nameLocation": "516:10:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58030,
+                  "src": "508:18:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 58025,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "508:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58028,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "536:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58030,
+                  "src": "528:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 58027,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "528:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "476:67:101"
+            }
+          },
+          {
+            "id": 58041,
+            "nodeType": "EventDefinition",
+            "src": "820:80:101",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 58031,
+              "nodeType": "StructuredDocumentation",
+              "src": "550:265:101",
+              "text": "@notice BondSeized is emitted when a bond is seized.\n @param bondId is the id of the bond.\n @param owner is the address that owns the bond.\n @param seizer is the address that seized the bond.\n @param amount is the amount of the bond."
+            },
+            "eventSelector": "322ab0b3db5c6bbcf092c78b528fe9456261a542abd1da447140e2f74bde7e39",
+            "name": "BondSeized",
+            "nameLocation": "826:10:101",
+            "parameters": {
+              "id": 58040,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58033,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "bondId",
+                  "nameLocation": "845:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58041,
+                  "src": "837:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58032,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "837:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58035,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "owner",
+                  "nameLocation": "861:5:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58041,
+                  "src": "853:13:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 58034,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "853:7:101",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58037,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "seizer",
+                  "nameLocation": "876:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58041,
+                  "src": "868:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 58036,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "868:7:101",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58039,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "892:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58041,
+                  "src": "884:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 58038,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "884:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "836:63:101"
+            }
+          },
+          {
+            "id": 58050,
+            "nodeType": "EventDefinition",
+            "src": "1144:70:101",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 58042,
+              "nodeType": "StructuredDocumentation",
+              "src": "906:233:101",
+              "text": "@notice BondReclaimed is emitted when a bond is reclaimed by the owner.\n @param bondId is the id of the bond.\n @param claiment is the address that reclaimed the bond.\n @param amount is the amount of the bond."
+            },
+            "eventSelector": "a9b8d1cb23fc6bfcae1f7ed8ec77868451af44dde191688baa93bb00b7ee4917",
+            "name": "BondReclaimed",
+            "nameLocation": "1150:13:101",
+            "parameters": {
+              "id": 58049,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58044,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "bondId",
+                  "nameLocation": "1172:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58050,
+                  "src": "1164:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58043,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1164:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58046,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "claiment",
+                  "nameLocation": "1188:8:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58050,
+                  "src": "1180:16:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 58045,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1180:7:101",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58048,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "1206:6:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58050,
+                  "src": "1198:14:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 58047,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1198:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1163:50:101"
+            }
+          },
+          {
+            "id": 58060,
+            "nodeType": "FunctionDefinition",
+            "src": "1587:91:101",
+            "nodes": [],
+            "documentation": {
+              "id": 58051,
+              "nodeType": "StructuredDocumentation",
+              "src": "1220:362:101",
+              "text": "@notice Post a bond with a given id and owner.\n @dev This function will revert if the provided bondId is already in use.\n @param _bondId is the id of the bond.\n @param _bondOwner is the address that owns the bond.\n @param _minClaimHold is the minimum amount of time the owner\n        must wait before reclaiming their bond."
+            },
+            "functionSelector": "5785bcb4",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "post",
+            "nameLocation": "1596:4:101",
+            "parameters": {
+              "id": 58058,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58053,
+                  "mutability": "mutable",
+                  "name": "_bondId",
+                  "nameLocation": "1609:7:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58060,
+                  "src": "1601:15:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58052,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1601:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58055,
+                  "mutability": "mutable",
+                  "name": "_bondOwner",
+                  "nameLocation": "1626:10:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58060,
+                  "src": "1618:18:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 58054,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1618:7:101",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58057,
+                  "mutability": "mutable",
+                  "name": "_minClaimHold",
+                  "nameLocation": "1646:13:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58060,
+                  "src": "1638:21:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 58056,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1638:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1600:60:101"
+            },
+            "returnParameters": {
+              "id": 58059,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1677:0:101"
+            },
+            "scope": 58082,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 58066,
+            "nodeType": "FunctionDefinition",
+            "src": "1857:41:101",
+            "nodes": [],
+            "documentation": {
+              "id": 58061,
+              "nodeType": "StructuredDocumentation",
+              "src": "1684:168:101",
+              "text": "@notice Seizes the bond with the given id.\n @dev This function will revert if there is no bond at the given id.\n @param _bondId is the id of the bond."
+            },
+            "functionSelector": "dff3dbb2",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "seize",
+            "nameLocation": "1866:5:101",
+            "parameters": {
+              "id": 58064,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58063,
+                  "mutability": "mutable",
+                  "name": "_bondId",
+                  "nameLocation": "1880:7:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58066,
+                  "src": "1872:15:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58062,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1872:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1871:17:101"
+            },
+            "returnParameters": {
+              "id": 58065,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1897:0:101"
+            },
+            "scope": 58082,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 58075,
+            "nodeType": "FunctionDefinition",
+            "src": "2199:86:101",
+            "nodes": [],
+            "documentation": {
+              "id": 58067,
+              "nodeType": "StructuredDocumentation",
+              "src": "1904:290:101",
+              "text": "@notice Seizes the bond with the given id and distributes it to recipients.\n @dev This function will revert if there is no bond at the given id.\n @param _bondId is the id of the bond.\n @param _claimRecipients is a set of addresses to split the bond amongst."
+            },
+            "functionSelector": "7c523a68",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "seizeAndSplit",
+            "nameLocation": "2208:13:101",
+            "parameters": {
+              "id": 58073,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58069,
+                  "mutability": "mutable",
+                  "name": "_bondId",
+                  "nameLocation": "2230:7:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58075,
+                  "src": "2222:15:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58068,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2222:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58072,
+                  "mutability": "mutable",
+                  "name": "_claimRecipients",
+                  "nameLocation": "2258:16:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58075,
+                  "src": "2239:35:101",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 58070,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2239:7:101",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 58071,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2239:9:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2221:54:101"
+            },
+            "returnParameters": {
+              "id": 58074,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2284:0:101"
+            },
+            "scope": 58082,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 58081,
+            "nodeType": "FunctionDefinition",
+            "src": "2466:43:101",
+            "nodes": [],
+            "documentation": {
+              "id": 58076,
+              "nodeType": "StructuredDocumentation",
+              "src": "2291:170:101",
+              "text": "@notice Reclaims the bond of the bond owner.\n @dev This function will revert if there is no bond at the given id.\n @param _bondId is the id of the bond."
+            },
+            "functionSelector": "96afb365",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "reclaim",
+            "nameLocation": "2475:7:101",
+            "parameters": {
+              "id": 58079,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 58078,
+                  "mutability": "mutable",
+                  "name": "_bondId",
+                  "nameLocation": "2491:7:101",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 58081,
+                  "src": "2483:15:101",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 58077,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2483:7:101",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2482:17:101"
+            },
+            "returnParameters": {
+              "id": 58080,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2508:0:101"
+            },
+            "scope": 58082,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IBondManager",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 58019,
+          "nodeType": "StructuredDocumentation",
+          "src": "58:97:101",
+          "text": "@title IBondManager\n @notice The Bond Manager holds ether posted as a bond for a bond id."
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          58082
+        ],
+        "name": "IBondManager",
+        "nameLocation": "165:12:101",
+        "scope": 58083,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 101
+}
