@@ -2,6 +2,7 @@
 pragma solidity 0.8.20;
 
 import "../libraries/SafeERC20.sol";
+import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
@@ -9,7 +10,7 @@ import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOpt
 
 import "hardhat/console.sol";
 
-contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
+contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage {
 
     using SafeERC20 for IERC20;
 
@@ -55,15 +56,15 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
     {
         // address l1token = enteringToken[_l2token];
         // require(checkToken[l1token][_l2token], "not entering token");
-        
+        console.log("before salecount: ", salecount);
         ++salecount;
-
-        if (dealData[salecount].l2token == LEGACY_ERC20_ETH) {
+        console.log("after salecount: ", salecount);
+        if (_l2token == LEGACY_ERC20_ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
         } else {
             //need to approve
-            IERC20(dealData[salecount].l2token).safeTransferFrom(msg.sender,address(this),dealData[salecount].totalAmount);
+            IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
         }
 
         dealData[salecount] = RequestData({
@@ -91,10 +92,12 @@ contract L2FastWithdraw is AccessibleCommon, L2FastWithdrawStorage {
         dealData[_saleCount].fwAmount = _amount;
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
+            console.log("1");
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
             require(sent, "claim fail");
         } else {
-            IERC20(dealData[_saleCount].l2token).safeTransferFrom(address(this),_from,dealData[_saleCount].totalAmount);
+            console.log("2");
+            IERC20(dealData[_saleCount].l2token).transfer(_from,dealData[_saleCount].totalAmount);
         }
     }
 
