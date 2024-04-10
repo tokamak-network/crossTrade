@@ -92,29 +92,61 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         dealData[_saleCount].fwAmount = _amount;
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
-            console.log("1");
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
             require(sent, "claim fail");
         } else {
-            console.log("2");
             IERC20(dealData[_saleCount].l2token).transfer(_from,dealData[_saleCount].totalAmount);
         }
     }
 
     function cancelFW(
+        address _msgSender,
         uint256 _salecount
     )
         external
         payable
     {
-        require(dealData[_salecount].requester == dealData[_salecount].provider && dealData[_salecount].fwAmount == 0, "already been sold");
-        require(dealData[_salecount].requester == msg.sender, "your not seller");
+        require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
+        require(dealData[_salecount].requester == _msgSender, "your not seller");
+
+        msgSender = msg.sender;
+
+        dealData[_salecount].provider = dealData[_salecount].requester;
         
         if (dealData[_salecount].l2token == LEGACY_ERC20_ETH) {
             (bool sent, ) = payable(msg.sender).call{value: dealData[_salecount].totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
-            IERC20(dealData[_salecount].l2token).safeTransfer(msg.sender,dealData[_salecount].totalAmount);
+            IERC20(dealData[_salecount].l2token).transfer(dealData[_salecount].requester,dealData[_salecount].totalAmount);
+        }
+    }
+
+    function editFW(
+        address _msgSender,
+        uint256 _salecount,
+        uint256 _totalAmount,
+        uint256 _fwAmount
+    )
+        external
+        payable
+    {
+        require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
+        require(dealData[_salecount].requester == _msgSender, "your not seller");
+        require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
+        require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
+        
+        msgSender = msg.sender;
+
+        dealData[_salecount].totalAmount = _totalAmount;
+        dealData[_salecount].fwAmount = _fwAmount;
+
+        uint256 refundAmount = dealData[_salecount].totalAmount - _totalAmount;
+
+        if (dealData[_salecount].l2token == LEGACY_ERC20_ETH) {
+            (bool sent, ) = payable(msg.sender).call{value: refundAmount}("");
+            require(sent, "cancel refund fail");
+        } else {
+            IERC20(dealData[_salecount].l2token).transfer(dealData[_salecount].requester,refundAmount);
         }
     }
 

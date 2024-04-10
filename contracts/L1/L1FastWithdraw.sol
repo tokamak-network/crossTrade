@@ -23,7 +23,6 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
-        //need the check cancel or editing (L1FW)
         bytes memory message;
 
         message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
@@ -63,19 +62,48 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
     }
 
     function cancelFW(
-
+        uint256 _salecount,
+        uint32 _minGasLimit
     )
         external
     {
+        bytes memory message;
 
+        message = abi.encodeWithSignature("cancelFW(address,uint256)", 
+            msg.sender,
+            _salecount
+        );
+
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+            l2fastWithdrawContract, 
+            message, 
+            _minGasLimit
+        );
     }
 
     function editFW(
-
+        uint256 _salecount,
+        uint256 _totalAmount,
+        uint256 _fwAmount,
+        uint32 _minGasLimit
     )  
         external
     {
+        bytes memory message;
 
+        message = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
+            msg.sender,
+            _salecount,
+            _totalAmount,
+            _fwAmount
+        );
+        
+
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+            l2fastWithdrawContract, 
+            message, 
+            _minGasLimit
+        );
     }
 
 }

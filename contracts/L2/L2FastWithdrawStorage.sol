@@ -15,6 +15,8 @@ contract L2FastWithdrawStorage {
     address public LEGACY_ERC20_ETH;
     address public LEGACY_l1token;
 
+    address public msgSender;
+
 
     uint256 public salecount;
 
