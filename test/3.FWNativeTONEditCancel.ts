@@ -445,7 +445,7 @@ describe("3.FWNativeTONEditCancel", function () {
       )
     })
 
-    it("requestFW in L2", async () => {
+    it("requestFW (NativeTON) in L2", async () => {
       let l2Balance = await l2Wallet.getBalance()
       console.log('l2 native balance(requester): ', l2Balance.toString())
       let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
