@@ -10,4 +10,22 @@ interface IL2FastWithdraw {
     )
         external
         payable;
+
+
+    function cancelFW(
+        address _msgSender,
+        address _l1FastWithdraw,
+        uint256 _salecount
+    )
+        external
+        payable;
+
+    function editFW(
+        address _msgSender,
+        uint256 _totalAmount,
+        uint256 _fwAmount,
+        uint256 _salecount
+    )
+        external
+        payable;
 }

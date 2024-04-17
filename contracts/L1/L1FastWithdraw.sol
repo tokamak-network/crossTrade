@@ -61,47 +61,65 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
     }
 
-    function cancelFW(
+    function cancel(
         uint256 _salecount,
         uint32 _minGasLimit
     )
         external
+        payable
     {
-        bytes memory message;
+        bytes memory message1;
 
-        message = abi.encodeWithSignature("cancelFW(address,uint256)", 
+        message1 = abi.encodeWithSignature("cancelFW(address,address,uint256)", 
             msg.sender,
+            address(this),
             _salecount
         );
 
+        // message1 = abi.encodeWithSelector(
+        //     IL2FastWithdraw.cancelFW.selector, 
+        //     msg.sender,
+        //     address(this),
+        //     _salecount
+        // );
+
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
-            message, 
+            message1, 
             _minGasLimit
         );
     }
 
-    function editFW(
+    function edit(
         uint256 _salecount,
-        uint256 _totalAmount,
         uint256 _fwAmount,
+        uint256 _totalAmount,
         uint32 _minGasLimit
     )  
         external
+        payable
     {
-        bytes memory message;
+        bytes memory message2;
 
-        message = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
+        message2 = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
             msg.sender,
-            _salecount,
+            _fwAmount,
             _totalAmount,
-            _fwAmount
+            _salecount
         );
+
+        // message2 = abi.encodeWithSelector(
+        //     IL2FastWithdraw.editFW.selector, 
+        //     msg.sender,
+        //     _totalAmount,
+        //     _fwAmount,
+        //     _salecount
+        // );
         
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
-            message, 
+            message2, 
             _minGasLimit
         );
     }

@@ -511,6 +511,9 @@ describe("FWBasicTest", function () {
 
       let saleInformation = await L2FastWithdrawContract.dealData(1)
       console.log("saleInformation : ", saleInformation)
+
+      let msgSenderCheck = await L2FastWithdrawContract.msgSender();
+      console.log("msg.sender : ", msgSenderCheck)
     })
   })
 
