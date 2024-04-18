@@ -25,7 +25,7 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
-describe("4.FWERC20EditCancal", function () {
+describe("4.FWERC20EditCancel", function () {
   let network = "devnetL1"
   let deployedAddress = require('./data/deployed.'+network+'.json');
   let predeployedAddress = require('./data/predeployed.'+network+'.json');
@@ -231,19 +231,19 @@ describe("4.FWERC20EditCancal", function () {
       let tx = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
-      console.log('TON balance in L1(Wallet):', Number(tx.toString()))
-      tx = await l2NativeTokenContract.balanceOf(
-        l1user1.address
-      )
-      console.log('TON balance in L1(user1):', Number(tx.toString()))
-      let l1Balance = await l1Wallet.getBalance()
-      console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
-      let l2Balance = await l2Wallet.getBalance()
-      console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
-      l1Balance = await l1user1.getBalance()
-      console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
-      l2Balance = await l2user1.getBalance()
-      console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
+      // console.log('TON balance in L1(Wallet):', Number(tx.toString()))
+      // tx = await l2NativeTokenContract.balanceOf(
+      //   l1user1.address
+      // )
+      // console.log('TON balance in L1(user1):', Number(tx.toString()))
+      // let l1Balance = await l1Wallet.getBalance()
+      // console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
+      // let l2Balance = await l2Wallet.getBalance()
+      // console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
+      // l1Balance = await l1user1.getBalance()
+      // console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
+      // l2Balance = await l2user1.getBalance()
+      // console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
     })
     
     it("L1FastWithdrawLogic", async () => {
@@ -256,7 +256,7 @@ describe("4.FWERC20EditCancal", function () {
       L1FastWithdrawLogic = await L1FastWithdrawLogicDep.deploy()
       await L1FastWithdrawLogic.deployed()
 
-      console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
+      // console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
     })
 
     it("L1FastWithdrawProxy", async () => {
@@ -268,14 +268,14 @@ describe("4.FWERC20EditCancal", function () {
 
       L1FastWithdrawProxy = await L1FastWithdrawProxyDep.deploy()
       await L1FastWithdrawProxy.deployed()
-      console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
+      // console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
     })
 
     it("L1FastWithdrawProxy upgradeTo", async () => {
       await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
       let imp2 = await L1FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      // console.log('check upgradeAddress : ', imp2)
+      // console.log('upgradeTo done')
     })
 
     it("set L1FastWithdraw", async () => {
