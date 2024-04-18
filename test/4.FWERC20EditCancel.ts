@@ -296,7 +296,7 @@ describe("4.FWERC20EditCancel", function () {
       L2FastWithdrawLogic = await L2FastWithdrawLogicDep.deploy()
       await L2FastWithdrawLogic.deployed()
 
-      console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
+      // console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
     })
 
     it("L2FastWithdrawProxy", async () => {
@@ -308,14 +308,14 @@ describe("4.FWERC20EditCancel", function () {
 
       L2FastWithdrawProxy = await L2FastWithdrawProxyDep.deploy()
       await L2FastWithdrawProxy.deployed()
-      console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
+      // console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
     })
 
     it("L2FastWithdrawProxy upgradeTo", async () => {
       await (await L2FastWithdrawProxy.upgradeTo(L2FastWithdrawLogic.address)).wait();
-      let imp2 = await L2FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      // let imp2 = await L2FastWithdrawProxy.implementation()
+      // console.log('check upgradeAddress : ', imp2)
+      // console.log('upgradeTo done')
     })
 
     it("set L2FastWithdraw", async () => {
@@ -335,8 +335,8 @@ describe("4.FWERC20EditCancel", function () {
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
-      console.log('checkL1Inform :', checkL1Inform) 
-      console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
+      // console.log('checkL1Inform :', checkL1Inform) 
+      // console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -347,17 +347,17 @@ describe("4.FWERC20EditCancel", function () {
         l2NativeTokenContract.address
       )).wait();
     
-      const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
-      console.log("checkL2Inform :", checkL2Inform)
-      console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
-      let tx = await L2FastWithdrawContract.salecount()
-      console.log("salecount :", tx)
-      tx = await L2FastWithdrawContract.l1fastWithdrawContract()
-      console.log("l1fastWithdrawContract :", tx)
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
-      console.log("LEGACY_ERC20_ETH :", tx)
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
-      console.log("LEGACY_l1token :", tx)
+      // const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
+      // console.log("checkL2Inform :", checkL2Inform)
+      // console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
+      // let tx = await L2FastWithdrawContract.salecount()
+      // console.log("salecount :", tx)
+      // tx = await L2FastWithdrawContract.l1fastWithdrawContract()
+      // console.log("l1fastWithdrawContract :", tx)
+      // tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      // console.log("LEGACY_ERC20_ETH :", tx)
+      // tx = await L2FastWithdrawContract.LEGACY_l1token()
+      // console.log("LEGACY_l1token :", tx)
     })
 
     it("deploy MockERC20 in L1", async () => {
@@ -432,14 +432,14 @@ describe("4.FWERC20EditCancel", function () {
         '0x'
       )
       const depositTx = await deposited.wait()
-      console.log(
-        'depositTx Tx:',
-        depositTx.transactionHash,
-        ' Block',
-        depositTx.blockNumber,
-        ' hash',
-        deposited.hash
-      )
+      // console.log(
+      //   'depositTx Tx:',
+      //   depositTx.transactionHash,
+      //   ' Block',
+      //   depositTx.blockNumber,
+      //   ' hash',
+      //   deposited.hash
+      // )
     
       await messenger.waitForMessageStatus(depositTx.transactionHash, MessageStatus.RELAYED)
     })
