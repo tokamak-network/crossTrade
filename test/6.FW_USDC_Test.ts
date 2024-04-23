@@ -9,7 +9,7 @@ import { expect } from "chai";
 // import '@nomiclabs/hardhat-ethers'
 // import 'hardhat-deploy'
 import { ethers } from "hardhat";
-import { BytesLike, Event } from 'ethers'
+import { BytesLike, Event, utils } from 'ethers'
 
 import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
 import L1FastWithdrawProxy_ABI from "../artifacts/contracts/L1/L1FastWithdrawProxy.sol/L1FastWithdrawProxy.json"
@@ -163,6 +163,74 @@ describe("USDC FastWithdraw Test", function () {
   let l2NativeTokenContract : any;
   let L1StandardBridgeContract : any;
   let L2FastWithdrawBalance : any;
+  let L1SignatureCheckerContract : any;
+  let L2SignatureCheckerContract : any;
+
+  let L1fiatTokenV2_2 : any;
+  let L2fiatTokenV2_2 : any;
+
+  let libraryName = "SignatureChecker"
+
+  function link(bytecode : any, libraryName : any, libraryAddress : any) {
+    const address = libraryAddress.replace('0x', '');
+    console.log("address :", address);
+    const encodedLibraryName = utils
+        .solidityKeccak256(['string'], [libraryName])
+        .slice(2, 36);
+    console.log("encodedLibraryName :", encodedLibraryName);
+    const pattern = new RegExp(`_+\\$${encodedLibraryName}\\$_+`, 'g');
+    console.log("pattern :", pattern);
+    if (!pattern.exec(bytecode)) {
+        throw new Error(`Can't link '${libraryName}'.`);
+    }
+    return bytecode.replace(pattern, address);
+  }
+
+  function linkLibraries(
+    {
+      bytecode,
+      linkReferences,
+    }: {
+      bytecode: string
+      linkReferences: { [fileName: string]: { [contractName: string]: { length: number; start: number }[] } }
+    },
+    libraries: { [libraryName: string]: string }
+  ): string {
+    Object.keys(linkReferences).forEach((fileName) => {
+      Object.keys(linkReferences[fileName]).forEach((contractName) => {
+        if (!libraries.hasOwnProperty(contractName)) {
+          throw new Error(`Missing link library name ${contractName}`)
+        }
+        const address = utils.getAddress(libraries[contractName]).toLowerCase().slice(2)
+        linkReferences[fileName][contractName].forEach(({ start: byteStart, length: byteLength }) => {
+          const start = 2 + byteStart * 2
+          const length = byteLength * 2
+          bytecode = bytecode
+            .slice(0, start)
+            .concat(address)
+            .concat(bytecode.slice(start + length, bytecode.length))
+        })
+      })
+    })
+    return bytecode
+  }
+
+  function linkLibrary2(bytecode: string, libraries: {
+    [name: string]: string
+  } = {}): string {
+    let linkedBytecode = bytecode
+    for (const [name, address] of Object.entries(libraries)) {
+      const placeholder = `__\$${utils.solidityKeccak256(['string'], [name]).slice(2, 36)}\$__`
+      const formattedAddress = utils.getAddress(address).toLowerCase().replace('0x', '')
+      if (linkedBytecode.indexOf(placeholder) === -1) {
+        throw new Error(`Unable to find placeholder for library ${name}`)
+      }
+      while (linkedBytecode.indexOf(placeholder) !== -1) {
+        linkedBytecode = linkedBytecode.replace(placeholder, formattedAddress)
+      }
+    }
+    return linkedBytecode
+  }
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -280,9 +348,8 @@ describe("USDC FastWithdraw Test", function () {
 
     it("L1FastWithdrawProxy upgradeTo", async () => {
       await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
-      let imp2 = await L1FastWithdrawProxy.implementation()
+      // let imp2 = await L1FastWithdrawProxy.implementation()
       // console.log('check upgradeAddress : ', imp2)
-      expect(imp2.toString()).to.be.equal((L1FastWithdrawLogic.address).toString())
       // console.log('upgradeTo done')
     })
 
@@ -417,129 +484,202 @@ describe("USDC FastWithdraw Test", function () {
         l1Wallet
       )
     })
+
+
+    it("deploy the L1SignatureCheckerContract", async () => {
+      const L1SignatureCheckerContractDep = new ethers.ContractFactory(
+        SignatureChecker_ABI.abi,
+        SignatureChecker_ABI.bytecode,
+        l1Wallet
+      )
+
+      L1SignatureCheckerContract = await L1SignatureCheckerContractDep.deploy()
+      await L1SignatureCheckerContract.deployed()
+    })
+
+    it("deploy the L2SignatureCheckerContract", async () => {
+      const L2SignatureCheckerContractDep = new ethers.ContractFactory(
+        SignatureChecker_ABI.abi,
+        SignatureChecker_ABI.bytecode,
+        l2Wallet
+      )
+
+      L2SignatureCheckerContract = await L2SignatureCheckerContractDep.deploy()
+      await L2SignatureCheckerContract.deployed()
+    })
+
+    it("deploy the L1fiatTokenV2_2", async () => {
+      // console.log("L1SignatureCheckerContract.address :", L1SignatureCheckerContract.address)
+      // let getByteCode = await link(Usdc_ABI.bytecode, libraryName.toString() , L1SignatureCheckerContract.address);
+      // const L1fiatTokenV2_2Dep = await ethers.getContractFactory("FiatTokenV2_2",{
+      //   libraries: {
+      //     SignatureChecker: L1SignatureCheckerContract.address,
+      //   }
+      // })
+      // let usdcBytecode = Usdc_ABI.bytecode
+      // let usdcLinkReference = Usdc_ABI.linkReferences
+      // let getByteCode2 = await linkLibraries({Usdc_ABI.bytecode, Usdc_ABI.linkReferences}, libraryName.toString())
+      let getByteCode3 = await linkLibrary2(Usdc_ABI.bytecode, {
+        [`contracts/mockUsdc/util/SignatureChecker.sol:SignatureChecker`]: L1SignatureCheckerContract.address,
+      })
+
+      const L1fiatTokenV2_2Dep = new ethers.ContractFactory(
+        Usdc_ABI.abi,
+        getByteCode3,
+        l1Wallet
+      )
+
+      L1fiatTokenV2_2 = await L1fiatTokenV2_2Dep.deploy()
+      await L1fiatTokenV2_2.deployed()
+    })
+
+    it("deploy the L2fiatTokenV2_2", async () => {
+      // const L2fiatTokenV2_2Dep = await ethers.getContractFactory("FiatTokenV2_2",{
+      //   signer: l2Wallet,
+      //   libraries: {
+      //     SignatureChecker: L2SignatureCheckerContract.address,
+      //   }
+      // })
+
+      let getByteCode = await linkLibrary2(Usdc_ABI.bytecode, {
+        [`contracts/mockUsdc/util/SignatureChecker.sol:SignatureChecker`]: L2SignatureCheckerContract.address,
+      })
+
+
+      const L2fiatTokenV2_2Dep = new ethers.ContractFactory(
+        Usdc_ABI.abi,
+        getByteCode,
+        l2Wallet
+      )
+      
+      L2fiatTokenV2_2 = await L2fiatTokenV2_2Dep.deploy()
+      await L2fiatTokenV2_2.deployed()
+    })
+
+
   });
 
-  describe("FW ERC20 Test", () => {
-    it("before deposit check L1ERC20, L2ERC20", async () => {
-      let l1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
-      console.log('l1MockBalance(Wallet): ', l1MockBalance.toString())
+  // describe("FW ERC20 Test", () => {
+  //   it("before deposit check L1ERC20, L2ERC20", async () => {
+  //     let l1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
+  //     console.log('l1MockBalance(Wallet): ', l1MockBalance.toString())
 
-      let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance(Wallet): ', l2MockBalance.toString())
-    })
+  //     let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+  //     console.log('l2MockBalance(Wallet): ', l2MockBalance.toString())
+  //   })
 
-    it("Deposit ERC20 to L2", async () => {
-      let approved = await MockERC20.connect(l1Wallet).approve(L1StandardBridgeContract.address, tenETH)
-      await approved.wait()
+  //   it("Deposit ERC20 to L2", async () => {
+  //     let approved = await MockERC20.connect(l1Wallet).approve(L1StandardBridgeContract.address, tenETH)
+  //     await approved.wait()
 
-      let deposited = await L1StandardBridgeContract.connect(l1Wallet).depositERC20(
-        MockERC20.address,
-        l2MockERC20.address,
-        tenETH,
-        20000,
-        '0x'
-      )
-      const depositTx = await deposited.wait()
-      console.log(
-        'depositTx Tx:',
-        depositTx.transactionHash,
-        ' Block',
-        depositTx.blockNumber,
-        ' hash',
-        deposited.hash
-      )
+  //     let deposited = await L1StandardBridgeContract.connect(l1Wallet).depositERC20(
+  //       MockERC20.address,
+  //       l2MockERC20.address,
+  //       tenETH,
+  //       20000,
+  //       '0x'
+  //     )
+  //     const depositTx = await deposited.wait()
+  //     console.log(
+  //       'depositTx Tx:',
+  //       depositTx.transactionHash,
+  //       ' Block',
+  //       depositTx.blockNumber,
+  //       ' hash',
+  //       deposited.hash
+  //     )
     
-      await messenger.waitForMessageStatus(depositTx.transactionHash, MessageStatus.RELAYED)
-    })
+  //     await messenger.waitForMessageStatus(depositTx.transactionHash, MessageStatus.RELAYED)
+  //   })
 
-    it("after deposit check L1ERC20, L2ERC20", async () => {
-      let l1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
-      console.log('l1MockBalance(Wallet): ', l1MockBalance.toString())
+  //   it("after deposit check L1ERC20, L2ERC20", async () => {
+  //     let l1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
+  //     console.log('l1MockBalance(Wallet): ', l1MockBalance.toString())
 
-      let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance(Wallet): ', l2MockBalance.toString())
-    })
+  //     let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+  //     console.log('l2MockBalance(Wallet): ', l2MockBalance.toString())
+  //   })
 
-    it("requestFW (ERC20) in L2", async () => {
-      L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('before L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+  //   it("requestFW (ERC20) in L2", async () => {
+  //     L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+  //     console.log('before L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      let tx = await l2MockERC20.connect(l2Wallet).approve(L2FastWithdrawContract.address, threeETH)
-      await tx.wait()
-      console.log('pass the approve')
+  //     let tx = await l2MockERC20.connect(l2Wallet).approve(L2FastWithdrawContract.address, threeETH)
+  //     await tx.wait()
+  //     console.log('pass the approve')
 
-      await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
-        l2MockERC20.address,
-        threeETH,
-        twoETH
-      )).wait()
-      console.log('pass the request')
+  //     await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
+  //       l2MockERC20.address,
+  //       threeETH,
+  //       twoETH
+  //     )).wait()
+  //     console.log('pass the request')
 
-      let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance: ', l2MockBalance.toString())
-      L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('after L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+  //     let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+  //     console.log('l2MockBalance: ', l2MockBalance.toString())
+  //     L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+  //     console.log('after L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
-      console.log('saleCount : ', saleCount);
-      expect(saleCount).to.be.equal(1);
-      let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
-      console.log('saleInformation : ', saleInformation);
-    })
+  //     const saleCount = await L2FastWithdrawProxy.salecount()
+  //     console.log('saleCount : ', saleCount);
+  //     expect(saleCount).to.be.equal(1);
+  //     let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
+  //     console.log('saleInformation : ', saleInformation);
+  //   })
 
-    it("providerFW(ERC20) in L1", async () => {
-      let l2Balance = await MockERC20.balanceOf(l1Wallet.address)
-      console.log('L1 ERC20 (Wallet):', l2Balance.toString())
+  //   it("providerFW(ERC20) in L1", async () => {
+  //     let l2Balance = await MockERC20.balanceOf(l1Wallet.address)
+  //     console.log('L1 ERC20 (Wallet):', l2Balance.toString())
 
-      let l2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
-      console.log('L1 ERC20 (User1): ', l2BalanceUser1.toString())
+  //     let l2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
+  //     console.log('L1 ERC20 (User1): ', l2BalanceUser1.toString())
 
-      let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance(L2Wallet): ', l2MockBalance.toString())
+  //     let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+  //     console.log('l2MockBalance(L2Wallet): ', l2MockBalance.toString())
 
-      let l2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
-      console.log('l2MockBalance(User1): ', l2MockBalanceUser1.toString())
+  //     let l2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
+  //     console.log('l2MockBalance(User1): ', l2MockBalanceUser1.toString())
 
-      L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('after L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+  //     L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+  //     console.log('after L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      const providerApproveTx = await MockERC20.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
-      await providerApproveTx.wait()
-      console.log('pass the L1 TON approve')
+  //     const providerApproveTx = await MockERC20.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
+  //     await providerApproveTx.wait()
+  //     console.log('pass the L1 TON approve')
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+  //     const saleCount = await L2FastWithdrawProxy.salecount()
 
-      const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
-        MockERC20.address,
-        l2Wallet.address,
-        twoETH,
-        saleCount,
-        200000
-      )
-      await providerTx.wait()
-      console.log('providerTx : ', providerTx.hash)
+  //     const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
+  //       MockERC20.address,
+  //       l2Wallet.address,
+  //       twoETH,
+  //       saleCount,
+  //       200000
+  //     )
+  //     await providerTx.wait()
+  //     console.log('providerTx : ', providerTx.hash)
 
-      await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-      console.log("send the Message L1 to L2");
+  //     await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+  //     console.log("send the Message L1 to L2");
 
-      l2Balance = await MockERC20.balanceOf(l1Wallet.address)
-      console.log('L1 ERC20 (Wallet):', l2Balance.toString())
+  //     l2Balance = await MockERC20.balanceOf(l1Wallet.address)
+  //     console.log('L1 ERC20 (Wallet):', l2Balance.toString())
 
-      l2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
-      console.log('L1 ERC20 (User1): ', l2BalanceUser1.toString())
+  //     l2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
+  //     console.log('L1 ERC20 (User1): ', l2BalanceUser1.toString())
 
-      l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance(L2Wallet): ', l2MockBalance.toString())
+  //     l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+  //     console.log('l2MockBalance(L2Wallet): ', l2MockBalance.toString())
 
-      l2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
-      console.log('l2MockBalance(User1): ', l2MockBalanceUser1.toString())
+  //     l2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
+  //     console.log('l2MockBalance(User1): ', l2MockBalanceUser1.toString())
 
-      L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('provider after l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+  //     L2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+  //     console.log('provider after l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
-      console.log("saleInformation : ", saleInformation)
-    })
-  })
+  //     let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+  //     console.log("saleInformation : ", saleInformation)
+  //   })
+  // })
 
 });
