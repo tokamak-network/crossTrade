@@ -26,7 +26,8 @@ import L1UsdcBridgeProxy_ABI from '../artifacts/contracts/L1/L1UsdcBridgeProxy.s
 import L1UsdcBridge_ABI from '../artifacts/contracts/L1/L1UsdcBridge.sol/L1UsdcBridge.json'
 import SignatureChecker_ABI from '../artifacts/contracts/mockUsdc/util/SignatureChecker.sol/SignatureChecker.json'
 import Usdc_ABI from '../artifacts/contracts/mockUsdc/v2/FiatTokenV2_2.sol/FiatTokenV2_2.json'
-// import FiatTokenProxy from '../artifacts/contracts/mockUsdc/'
+import FiatTokenProxy_ABI from '../artifacts/contracts/mockUsdc/v1/FiatTokenProxy.sol/FiatTokenProxy.json'
+import MasterMinter_ABI from '../artifacts/contracts/mockUsdc/minting/MasterMinter.sol/MasterMinter.json'
 
 
 import dotenv from "dotenv" ;
@@ -121,6 +122,7 @@ describe("USDC FastWithdraw Test", function () {
   const tenETH = ethers.utils.parseUnits('10', 18)
   const hundETH = ethers.utils.parseUnits('100', 18)
 
+
   const zeroAddr = '0x'.padEnd(42, '0')
 
   // let L1FastWithdrawLogicDep : any;
@@ -179,6 +181,11 @@ describe("USDC FastWithdraw Test", function () {
   const THROWAWAY_ADDRESS = "0x0000000000000000000000000000000000000001"
 
   let libraryName = "SignatureChecker"
+
+  let tokenName = "USD Coin"
+  let tokenSymbol = "USDC"
+  let tokenCurrency = "USD"
+  let tokenDecimals = 6
 
   function link(bytecode : any, libraryName : any, libraryAddress : any) {
     const address = libraryAddress.replace('0x', '');
@@ -566,70 +573,258 @@ describe("USDC FastWithdraw Test", function () {
     })
 
     it("L1fiatTokenV2_2 initialize", async () => {
-      let tx = await L1fiatTokenV2_2.initialize(
-          "",
-          "",
-          "",
-          0,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
-      )
-      await tx.wait()
-      // console.log("initialize tx hash:", tx.hash)
+      // let tx = await L1fiatTokenV2_2.initialize(
+      //     "",
+      //     "",
+      //     "",
+      //     0,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      // )
+      // await tx.wait()
+      // // console.log("initialize tx hash:", tx.hash)
       
-      tx = await L1fiatTokenV2_2.initializeV2("")
-      await tx.wait()
-      // console.log("initializeV2 tx hash:", tx.hash)
+      // tx = await L1fiatTokenV2_2.initializeV2("")
+      // await tx.wait()
+      // // console.log("initializeV2 tx hash:", tx.hash)
       
-      tx = await L1fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
-      await tx.wait()
-      // console.log("initializeV2_1 tx hash:", tx.hash)
+      // tx = await L1fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
+      // await tx.wait()
+      // // console.log("initializeV2_1 tx hash:", tx.hash)
       
-      tx = await L1fiatTokenV2_2.initializeV2_2([], "")
-      await tx.wait()
-      console.log("initialize L1V2_2 tx hash:", tx.hash)
+      // tx = await L1fiatTokenV2_2.initializeV2_2([], "")
+      // await tx.wait()
+      // // console.log("initialize L1V2_2 tx hash:", tx.hash)
+
+      let tx = await L1fiatTokenV2_2.connect(l1Wallet).initialize(
+        tokenName,
+        tokenSymbol,
+        tokenCurrency,
+        tokenDecimals,
+        l2Wallet.address,
+        l1Wallet.address,
+        l1Wallet.address,
+        l1Wallet.address
+      )  
+      await tx.wait();
+
+      tx = await L1fiatTokenV2_2.connect(l1Wallet).initializeV2(tokenName)
+      await tx.wait();
+      tx = await L1fiatTokenV2_2.connect(l1Wallet).initializeV2_1(l1Wallet.address)
+      await tx.wait();
+      tx = await L1fiatTokenV2_2.connect(l1Wallet).initializeV2_2([], tokenSymbol)
+      await tx.wait();
     })
 
     it("L2fiatTokenV2_2 initialize", async () => {
+      // let tx = await L2fiatTokenV2_2.initialize(
+      //     "",
+      //     "",
+      //     "",
+      //     0,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      //     THROWAWAY_ADDRESS,
+      // )
+      // await tx.wait()
+      // // console.log("initialize tx hash:", tx.hash)
+      
+      // tx = await L2fiatTokenV2_2.initializeV2("")
+      // await tx.wait()
+      // // console.log("initializeV2 tx hash:", tx.hash)
+      
+      // tx = await L2fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
+      // await tx.wait()
+      // // console.log("initializeV2_1 tx hash:", tx.hash)
+      
+      // tx = await L2fiatTokenV2_2.initializeV2_2([], "")
+      // await tx.wait()
+      // // console.log("initialize L2V2_2 tx hash:", tx.hash)
+
       let tx = await L2fiatTokenV2_2.initialize(
-          "",
-          "",
-          "",
-          0,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
-          THROWAWAY_ADDRESS,
+        tokenName,
+        tokenSymbol,
+        tokenCurrency,
+        tokenDecimals,
+        l2Wallet.address,
+        l2Wallet.address,
+        l2Wallet.address,
+        l2Wallet.address
+      )
+      await tx.wait();
+
+      tx = await L2fiatTokenV2_2.initializeV2(tokenName)
+      await tx.wait();
+      tx = await L2fiatTokenV2_2.initializeV2_1(l2Wallet.address)
+      await tx.wait();
+      tx = await L2fiatTokenV2_2.initializeV2_2([], tokenSymbol)
+      await tx.wait();
+    })
+
+    it("configureMinter L1", async () => {
+      let tx = await L1fiatTokenV2_2.configureMinter(
+        l1Wallet.address,
+        hundETH
       )
       await tx.wait()
-      // console.log("initialize tx hash:", tx.hash)
-      
-      tx = await L2fiatTokenV2_2.initializeV2("")
-      await tx.wait()
-      // console.log("initializeV2 tx hash:", tx.hash)
-      
-      tx = await L2fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
-      await tx.wait()
-      // console.log("initializeV2_1 tx hash:", tx.hash)
-      
-      tx = await L2fiatTokenV2_2.initializeV2_2([], "")
-      await tx.wait()
-      console.log("initialize L2V2_2 tx hash:", tx.hash)
     })
 
-    it("Deploy the L1FiatTokenProxy", async () => {
-      const L1fiatTokenProxy = new ethers.ContractFactory(
-
+    it("mint L1 wallet", async () => {
+      let beforeUsdcBalance = await L1fiatTokenV2_2.balanceOf(l1Wallet.address)
+      expect(beforeUsdcBalance).to.be.equal(0)
+      let tx = await L1fiatTokenV2_2.mint(
+        l1Wallet.address,
+        tenETH
       )
+      await tx.wait()
+      let afterUsdcBalance = await L1fiatTokenV2_2.balanceOf(l1Wallet.address)
+      expect(afterUsdcBalance).to.be.equal(tenETH)
     })
 
-    it("Deploy the L2FiatTokenProxy", async () => {
-
+    it("configureMinter L2", async () => {
+      let tx = await L2fiatTokenV2_2.configureMinter(
+        l2Wallet.address,
+        hundETH
+      )
+      await tx.wait()
     })
 
+    it("mint L2 wallet", async () => {
+      let beforeUsdcBalance = await L2fiatTokenV2_2.balanceOf(l1Wallet.address)
+      expect(beforeUsdcBalance).to.be.equal(0)
+      let tx = await L2fiatTokenV2_2.mint(
+        l2Wallet.address,
+        tenETH
+      )
+      await tx.wait()
+      let afterUsdcBalance = await L2fiatTokenV2_2.balanceOf(l1Wallet.address)
+      expect(afterUsdcBalance).to.be.equal(tenETH)
+    })
 
+    // it("Deploy the L1FiatTokenProxy", async () => {
+    //   const L1fiatTokenProxyDep = new ethers.ContractFactory(
+    //     FiatTokenProxy_ABI.abi,
+    //     FiatTokenProxy_ABI.bytecode,
+    //     l1Wallet
+    //   )
+
+    //   L1fiatTokenProxy = await L1fiatTokenProxyDep.deploy(L1fiatTokenV2_2.address)
+    //   await L1fiatTokenProxy.deployed()
+    // })
+
+    // it("Deploy the L2FiatTokenProxy", async () => {
+    //   const L2fiatTokenProxyDep = new ethers.ContractFactory(
+    //     FiatTokenProxy_ABI.abi,
+    //     FiatTokenProxy_ABI.bytecode,
+    //     l2Wallet
+    //   )
+
+    //   L2fiatTokenProxy = await L2fiatTokenProxyDep.deploy(L2fiatTokenV2_2.address)
+    //   await L2fiatTokenProxy.deployed()
+    // })
+
+    // it("Deploy the L1MasterMinter", async () => {
+    //   const L1MasterMinterDep = new ethers.ContractFactory(
+    //     MasterMinter_ABI.abi,
+    //     MasterMinter_ABI.bytecode,
+    //     l1Wallet
+    //   )
+
+    //   L1MasterMinter = await L1MasterMinterDep.deploy(L1fiatTokenProxy.address)
+    //   await L1MasterMinter.deployed()
+    //   await L1MasterMinter.transferOwnership(l1Wallet.address)
+    // })
+
+    // it("Deploy the L2MasterMinter", async () => {
+    //   const L2MasterMinterDep = new ethers.ContractFactory(
+    //     MasterMinter_ABI.abi,
+    //     MasterMinter_ABI.bytecode,
+    //     l2Wallet
+    //   )
+
+    //   L2MasterMinter = await L2MasterMinterDep.deploy(L2fiatTokenProxy.address)
+    //   await L2MasterMinter.deployed()
+    //   await L2MasterMinter.transferOwnership(l2Wallet.address)
+    // })
+
+    // it("L1FiatTokenProxy changeAdmin", async () => {
+    //   let tx = await L1fiatTokenProxy.changeAdmin(l1Wallet.address)
+    //   await tx.wait()
+    // })
+
+    // it("L2FiatTokenProxy changeAdmin", async () => {
+    //   let tx = await L2fiatTokenProxy.changeAdmin(l2Wallet.address)
+    //   await tx.wait()
+    // })
+
+    // it("set L1fiatTokenContract", async () => {
+    //   L1fiatTokenContract = new ethers.Contract(
+    //     L1fiatTokenProxy.address,
+    //     Usdc_ABI.abi,
+    //     l1Wallet
+    //   )
+    // })
+
+    // it("set L2fiatTokenContract", async () => {
+    //   L2fiatTokenContract = new ethers.Contract(
+    //     L2fiatTokenProxy.address,
+    //     Usdc_ABI.abi,
+    //     l2Wallet
+    //   )
+    // })
+
+
+    // it("L1fiatTokenContract initialize", async () => {
+    //   // let admincheck = await L1fiatTokenProxy.admin()
+    //   // console.log(L1fiatTokenContract)
+    //   // console.log("admincheck :", admincheck)
+    //   // console.log("l1Wallet.address :", l1Wallet.address)
+    //   let tx = await L1fiatTokenContract.connect(l1Wallet).initialize(
+    //     tokenName,
+    //     tokenSymbol,
+    //     tokenCurrency,
+    //     tokenDecimals,
+    //     L1MasterMinter.address,
+    //     l1Wallet.address,
+    //     l1Wallet.address,
+    //     l1Wallet.address
+    //   )  
+    //   await tx.wait();
+
+    //   tx = await L1fiatTokenContract.connect(l1Wallet).initializeV2(tokenName)
+    //   await tx.wait();
+    //   tx = await L1fiatTokenContract.connect(l1Wallet).initializeV2_1(l1Wallet.address)
+    //   await tx.wait();
+    //   tx = await L1fiatTokenContract.connect(l1Wallet).initializeV2_2([], tokenSymbol)
+    //   await tx.wait();
+    // })
+
+    // it("L2fiatTokenContract initialize", async () => {
+    //   // let admincheck = await L2fiatTokenProxy.admin()
+    //   // console.log("admincheck :", admincheck)
+    //   // console.log("l1Wallet.address :", l2Wallet.address)
+    //   let tx = await L2fiatTokenContract.initialize(
+    //     tokenName,
+    //     tokenSymbol,
+    //     tokenCurrency,
+    //     tokenDecimals,
+    //     L2MasterMinter.address,
+    //     l2Wallet.address,
+    //     l2Wallet.address,
+    //     l2Wallet.address
+    //   )
+    //   await tx.wait();
+
+    //   tx = await L2fiatTokenContract.initializeV2(tokenName)
+    //   await tx.wait();
+    //   tx = await L2fiatTokenContract.initializeV2_1(l2Wallet.address)
+    //   await tx.wait();
+    //   tx = await L2fiatTokenContract.initializeV2_2([], tokenSymbol)
+    //   await tx.wait();
+    // })
 
   });
 
