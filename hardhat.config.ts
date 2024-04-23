@@ -6,7 +6,16 @@ import dotenv from "dotenv" ;
 dotenv.config();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
+  // solidity: "0.8.20",
+  solidity: {
+    version: '0.8.20',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 100,
+      },
+    },
+  },
   networks: {
     mainnet: {
       url: process.env.L1_RPC || 'https://mainnet-l1-rehearsal.optimism.io',
