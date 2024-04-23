@@ -26,6 +26,7 @@ import L1UsdcBridgeProxy_ABI from '../artifacts/contracts/L1/L1UsdcBridgeProxy.s
 import L1UsdcBridge_ABI from '../artifacts/contracts/L1/L1UsdcBridge.sol/L1UsdcBridge.json'
 import SignatureChecker_ABI from '../artifacts/contracts/mockUsdc/util/SignatureChecker.sol/SignatureChecker.json'
 import Usdc_ABI from '../artifacts/contracts/mockUsdc/v2/FiatTokenV2_2.sol/FiatTokenV2_2.json'
+// import FiatTokenProxy from '../artifacts/contracts/mockUsdc/'
 
 
 import dotenv from "dotenv" ;
@@ -168,6 +169,14 @@ describe("USDC FastWithdraw Test", function () {
 
   let L1fiatTokenV2_2 : any;
   let L2fiatTokenV2_2 : any;
+  let L1fiatTokenProxy : any;
+  let L2fiatTokenProxy : any;
+  let L1fiatTokenContract : any;
+  let L2fiatTokenContract : any;
+  let L1MasterMinter : any;
+  let L2MasterMinter : any;
+
+  const THROWAWAY_ADDRESS = "0x0000000000000000000000000000000000000001"
 
   let libraryName = "SignatureChecker"
 
@@ -555,6 +564,71 @@ describe("USDC FastWithdraw Test", function () {
       L2fiatTokenV2_2 = await L2fiatTokenV2_2Dep.deploy()
       await L2fiatTokenV2_2.deployed()
     })
+
+    it("L1fiatTokenV2_2 initialize", async () => {
+      let tx = await L1fiatTokenV2_2.initialize(
+          "",
+          "",
+          "",
+          0,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+      )
+      await tx.wait()
+      // console.log("initialize tx hash:", tx.hash)
+      
+      tx = await L1fiatTokenV2_2.initializeV2("")
+      await tx.wait()
+      // console.log("initializeV2 tx hash:", tx.hash)
+      
+      tx = await L1fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
+      await tx.wait()
+      // console.log("initializeV2_1 tx hash:", tx.hash)
+      
+      tx = await L1fiatTokenV2_2.initializeV2_2([], "")
+      await tx.wait()
+      console.log("initialize L1V2_2 tx hash:", tx.hash)
+    })
+
+    it("L2fiatTokenV2_2 initialize", async () => {
+      let tx = await L2fiatTokenV2_2.initialize(
+          "",
+          "",
+          "",
+          0,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+          THROWAWAY_ADDRESS,
+      )
+      await tx.wait()
+      // console.log("initialize tx hash:", tx.hash)
+      
+      tx = await L2fiatTokenV2_2.initializeV2("")
+      await tx.wait()
+      // console.log("initializeV2 tx hash:", tx.hash)
+      
+      tx = await L2fiatTokenV2_2.initializeV2_1(THROWAWAY_ADDRESS)
+      await tx.wait()
+      // console.log("initializeV2_1 tx hash:", tx.hash)
+      
+      tx = await L2fiatTokenV2_2.initializeV2_2([], "")
+      await tx.wait()
+      console.log("initialize L2V2_2 tx hash:", tx.hash)
+    })
+
+    it("Deploy the L1FiatTokenProxy", async () => {
+      const L1fiatTokenProxy = new ethers.ContractFactory(
+
+      )
+    })
+
+    it("Deploy the L2FiatTokenProxy", async () => {
+
+    })
+
 
 
   });
