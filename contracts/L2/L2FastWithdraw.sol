@@ -85,7 +85,6 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         external
         payable
     {
-        console.log("msg.sender: ", msg.sender);
         require(dealData[_saleCount].requester == _to, "not match the seller");
         require(dealData[_saleCount].fwAmount <= _amount, "need to over minAmount");
         dealData[_saleCount].provider = _from;
