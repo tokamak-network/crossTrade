@@ -68,9 +68,9 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
-        bytes memory message1;
+        bytes memory message;
 
-        message1 = abi.encodeWithSignature("cancelFW(address,address,uint256)", 
+        message = abi.encodeWithSignature("cancelFW(address,address,uint256)", 
             msg.sender,
             address(this),
             _salecount
@@ -85,7 +85,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
-            message1, 
+            message, 
             _minGasLimit
         );
     }
@@ -99,9 +99,9 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
-        bytes memory message2;
+        bytes memory message;
 
-        message2 = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
+        message = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
             msg.sender,
             _fwAmount,
             _totalAmount,
@@ -119,7 +119,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
-            message2, 
+            message, 
             _minGasLimit
         );
     }
