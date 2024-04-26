@@ -429,7 +429,7 @@ describe("FWBasicTest", function () {
         l1user1.address
       )
 
-      if (Number(l2NativeTokenBalance.toString()) === 0) {
+      if (Number(l2NativeTokenBalance.toString()) < Number(twoETH)) {
         console.log('start faucet')
         const tx = await l2NativeTokenContract.connect(l1user1).faucet(twoETH)
         await tx.wait()
@@ -514,6 +514,8 @@ describe("FWBasicTest", function () {
 
       let msgSenderCheck = await L2FastWithdrawContract.msgSender();
       console.log("msg.sender : ", msgSenderCheck)
+      console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
+      console.log("L1FastWithdrawProxy : ", L1FastWithdrawContract.address);
     })
   })
 

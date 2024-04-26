@@ -90,7 +90,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         dealData[_saleCount].provider = _from;
         dealData[_saleCount].fwAmount = _amount;
 
-        msgSender = msg.sender;
+        msgSender = tx.origin;
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
@@ -172,5 +172,13 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
     function _isContract(address account) internal view returns (bool) {
         return account.code.length > 0;
+    }
+
+    function getChainID() internal view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
     }
 }
