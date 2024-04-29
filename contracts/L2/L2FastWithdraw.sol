@@ -7,6 +7,7 @@ import "../proxy/ProxyStorage.sol";
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
+import { AddressAliasHelper } from "../libraries/AddressAliasHelper.sol";
 
 import "hardhat/console.sol";
 
@@ -59,6 +60,8 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
         ++salecount;
 
+        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
+
         if (_l2token == LEGACY_ERC20_ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
@@ -90,7 +93,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         dealData[_saleCount].provider = _from;
         dealData[_saleCount].fwAmount = _amount;
 
-        msgSender = tx.origin;
+        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
@@ -112,7 +115,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         require(l1fastWithdrawContract == _l1FastWithdraw);
         require(dealData[_salecount].requester == _msgSender, "your not seller");
 
-        msgSender = msg.sender;
+        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
 
         dealData[_salecount].provider = dealData[_salecount].requester;
         
