@@ -20,4 +20,12 @@ contract L1FastWithdrawProxy is Proxy, L1FastWithdrawStorage {
         LEGACY_ERC20_ETH = _legacyERC20;
         LEGACY_l1token = _l1legacyERC20;
     }
+
+    function setPortal(
+        address _portal
+    )
+        external
+    {
+        portal = _portal;
+    }
 }
