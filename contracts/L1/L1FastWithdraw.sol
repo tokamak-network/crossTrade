@@ -99,7 +99,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         uint64 baseGas = IL1CrossDomainMessenger(crossDomainMessenger).baseGas(message, _minGasLimit);
 
         IOptimismPortal(portal).depositTransaction(
-            OTHER_MESSENGER,
+            l2fastWithdrawContract,
             0,
             baseGas,
             abi.encodeWithSelector(

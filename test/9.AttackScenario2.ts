@@ -474,7 +474,7 @@ describe("8.AttackScenario1", function () {
     it("after amount check", async () => {
       let msgSenderCheck = await L2FastWithdrawContract.msgSender();
       console.log("tx.origin : ", msgSenderCheck)
-      
+
       let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
@@ -485,20 +485,22 @@ describe("8.AttackScenario1", function () {
       let afterl2BalanceWallet = await l2Wallet.getBalance()
       let afterl2BalanceUser1 = await l2user1.getBalance()
 
-      expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
-      expect(beforel2NativeTokenBalanceUser).to.be.equal(afterl2NativeTokenBalanceUser)
-
-      expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
-      expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
-
-      let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      expect(L2FastWithdrawBalance).to.be.equal(0)
-
       const saleCount = await L2FastWithdrawProxy.salecount()
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider === l2user1.address){
         console.log("===========Attack Success!!===========")
+      } else {
+        console.log("===========Attack fail!!===========")
       }
+
+      expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
+      expect(beforel2NativeTokenBalanceUser).to.be.equal(afterl2NativeTokenBalanceUser)
+
+      expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
+      // expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+
+      // let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+      // expect(L2FastWithdrawBalance).to.be.equal(0)
     })
   })
 

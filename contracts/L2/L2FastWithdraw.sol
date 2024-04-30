@@ -7,6 +7,7 @@ import "../proxy/ProxyStorage.sol";
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
+import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { AddressAliasHelper } from "../libraries/AddressAliasHelper.sol";
 
 import "hardhat/console.sol";
@@ -88,12 +89,14 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         external
         payable
     {
+        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
         require(dealData[_saleCount].requester == _to, "not match the seller");
         require(dealData[_saleCount].fwAmount <= _amount, "need to over minAmount");
         dealData[_saleCount].provider = _from;
         dealData[_saleCount].fwAmount = _amount;
 
         msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
+        msgSender = IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender();
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
@@ -112,6 +115,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
     {
         // require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
+        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
         require(l1fastWithdrawContract == _l1FastWithdraw);
         require(dealData[_salecount].requester == _msgSender, "your not seller");
 
@@ -136,8 +140,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         external
         payable
     {
-        // require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
+        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
+        // require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
         // require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
         // require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
         
