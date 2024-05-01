@@ -26,20 +26,13 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
     {
         bytes memory message;
 
-        message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
+        message = abi.encodeWithSignature("claimFW(address,address,address,uint256,uint256)", 
+            _l1token,
             msg.sender,
             _to,
             _amount,
             _saleCount
         );
-
-        // message = abi.encodeWithSelector(
-        //     IL2FastWithdraw.claimFW.selector, 
-        //     msg.sender,
-        //     _to,
-        //     _amount,
-        //     _saleCount
-        // );
 
         if (LEGACY_l1token == _l1token) {
             //need to approve
@@ -62,51 +55,51 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
     }
 
-    function provideFW2(
-        address _l1token,
-        address _to,
-        uint256 _amount,
-        uint256 _saleCount,
-        uint32 _minGasLimit
-    ) 
-        external
-        payable
-    {
-        bytes memory message;
+    // function provideFW2(
+    //     address _l1token,
+    //     address _to,
+    //     uint256 _amount,
+    //     uint256 _saleCount,
+    //     uint32 _minGasLimit
+    // ) 
+    //     external
+    //     payable
+    // {
+    //     bytes memory message;
 
-        message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
-            msg.sender,
-            _to,
-            _amount,
-            _saleCount
-        );
+    //     message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
+    //         msg.sender,
+    //         _to,
+    //         _amount,
+    //         _saleCount
+    //     );
 
-        if (LEGACY_l1token == _l1token) {
-            //need to approve
-            IERC20(_l1token).transferFrom(msg.sender, address(this), _amount);
-            IERC20(_l1token).transfer(_to,_amount);
-        } else if (LEGACY_ERC20_ETH == _l1token) {
-            require(msg.value == _amount, "FW: ETH need same amount");
-            payable(address(this)).call{value: msg.value};
-            (bool sent, ) = payable(_to).call{value: msg.value}("");
-            require(sent, "claim fail");
-        } else {
-            //need to approve
-            IERC20(_l1token).transferFrom(msg.sender, _to, _amount);
-        }
+    //     if (LEGACY_l1token == _l1token) {
+    //         //need to approve
+    //         IERC20(_l1token).transferFrom(msg.sender, address(this), _amount);
+    //         IERC20(_l1token).transfer(_to,_amount);
+    //     } else if (LEGACY_ERC20_ETH == _l1token) {
+    //         require(msg.value == _amount, "FW: ETH need same amount");
+    //         payable(address(this)).call{value: msg.value};
+    //         (bool sent, ) = payable(_to).call{value: msg.value}("");
+    //         require(sent, "claim fail");
+    //     } else {
+    //         //need to approve
+    //         IERC20(_l1token).transferFrom(msg.sender, _to, _amount);
+    //     }
 
-        uint256 messageNonce = IL1CrossDomainMessenger(crossDomainMessenger).messageNonce();
-        uint64 baseGas = IL1CrossDomainMessenger(crossDomainMessenger).baseGas(message, _minGasLimit);
+    //     uint256 messageNonce = IL1CrossDomainMessenger(crossDomainMessenger).messageNonce();
+    //     uint64 baseGas = IL1CrossDomainMessenger(crossDomainMessenger).baseGas(message, _minGasLimit);
 
-        IOptimismPortal(portal).depositTransaction(
-            l2fastWithdrawContract,
-            0,
-            baseGas,
-            abi.encodeWithSelector(
-                IL1CrossDomainMessenger.relayMessage.selector, messageNonce, msg.sender, l2fastWithdrawContract, msg.value, _minGasLimit, message
-            )
-        );
-    }
+    //     IOptimismPortal(portal).depositTransaction(
+    //         l2fastWithdrawContract,
+    //         0,
+    //         baseGas,
+    //         abi.encodeWithSelector(
+    //             IL1CrossDomainMessenger.relayMessage.selector, messageNonce, msg.sender, l2fastWithdrawContract, msg.value, _minGasLimit, message
+    //         )
+    //     );
+    // }
 
     function cancel(
         uint256 _salecount,
@@ -117,18 +110,10 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
     {
         bytes memory message;
 
-        message = abi.encodeWithSignature("cancelFW(address,address,uint256)", 
+        message = abi.encodeWithSignature("cancelFW(address,uint256)", 
             msg.sender,
-            address(this),
             _salecount
         );
-
-        // message1 = abi.encodeWithSelector(
-        //     IL2FastWithdraw.cancelFW.selector, 
-        //     msg.sender,
-        //     address(this),
-        //     _salecount
-        // );
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
@@ -154,15 +139,6 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _totalAmount,
             _salecount
         );
-
-        // message2 = abi.encodeWithSelector(
-        //     IL2FastWithdraw.editFW.selector, 
-        //     msg.sender,
-        //     _totalAmount,
-        //     _fwAmount,
-        //     _salecount
-        // );
-        
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 

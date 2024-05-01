@@ -48,6 +48,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     // }
 
     function requestFW(
+        address _l1token,
         address _l2token,
         uint256 _totalAmount,
         uint256 _fwAmount
@@ -56,12 +57,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
         onlyEOA
     {
-        // address l1token = enteringToken[_l2token];
-        // require(checkToken[l1token][_l2token], "not entering token");
-
         ++salecount;
-
-        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
 
         if (_l2token == LEGACY_ERC20_ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
@@ -72,6 +68,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         }
 
         dealData[salecount] = RequestData({
+            l1token: _l1token,
             l2token: _l2token,
             requester: msg.sender,
             provider: address(0),
@@ -81,6 +78,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     }
     
     function claimFW(
+        address _l1token,
         address _from,
         address _to,
         uint256 _amount,
@@ -90,13 +88,15 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
     {
         require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
+        require(dealData[_saleCount].provider == address(0), "already sold");
         require(dealData[_saleCount].requester == _to, "not match the seller");
         require(dealData[_saleCount].fwAmount <= _amount, "need to over minAmount");
+        require(dealData[_saleCount].l1token == _l1token, "need same l1token");
+
         dealData[_saleCount].provider = _from;
         dealData[_saleCount].fwAmount = _amount;
 
-        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
-        msgSender = IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender();
+        // msgSender = IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender();
 
         if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
@@ -108,18 +108,16 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
     function cancelFW(
         address _msgSender,
-        address _l1FastWithdraw,
         uint256 _salecount
     )
         external
         payable
     {
-        // require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
         require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
-        require(l1fastWithdrawContract == _l1FastWithdraw);
+        require(dealData[_salecount].provider == address(0), "already sold");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
 
-        msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
+        // msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
 
         dealData[_salecount].provider = dealData[_salecount].requester;
         
@@ -141,12 +139,10 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
     {
         require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
+        require(dealData[_salecount].provider == address(0), "already sold");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
-        // require(dealData[_salecount].provider == address(0) && dealData[_salecount].fwAmount == 0, "already been sold");
         // require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
         // require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
-        
-        // msgSender = msg.sender;
 
         uint256 refundAmount = dealData[_salecount].totalAmount - _totalAmount;
         

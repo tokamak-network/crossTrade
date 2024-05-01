@@ -264,8 +264,9 @@ describe("FWBasicTest", function () {
     it("L1FastWithdrawProxy upgradeTo", async () => {
       await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
       let imp2 = await L1FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      if(L1FastWithdrawLogic.address !== imp2) {
+        console.log("===========L1FastWithdrawProxy upgradeTo ERROR!!===========")
+      }
     })
 
     it("set L1FastWithdraw", async () => {
@@ -304,8 +305,9 @@ describe("FWBasicTest", function () {
     it("L2FastWithdrawProxy upgradeTo", async () => {
       await (await L2FastWithdrawProxy.upgradeTo(L2FastWithdrawLogic.address)).wait();
       let imp2 = await L2FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      if(L2FastWithdrawLogic.address !== imp2) {
+        console.log("===========L2FastWithdrawProxy upgradeTo ERROR!!===========")
+      }
     })
 
     it("set L2FastWithdraw", async () => {
@@ -324,9 +326,10 @@ describe("FWBasicTest", function () {
         l2NativeTokenContract.address
       )).wait()
 
-      // const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
-      // console.log('checkL1Inform :', checkL1Inform) 
-      // console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
+      const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
+      if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
+        console.log("===========L1FastWithdraw initialize ERROR!!===========")
+      }
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -338,16 +341,23 @@ describe("FWBasicTest", function () {
       )).wait();
     
       const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
-      console.log("checkL2Inform :", checkL2Inform)
-      console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
+      if(checkL2Inform !== l2CrossDomainMessengerAddr){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       let tx = await L2FastWithdrawContract.salecount()
-      console.log("salecount :", tx)
+      expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
-      console.log("l1fastWithdrawContract :", tx)
+      if(tx !== L1FastWithdrawContract.address){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
-      console.log("LEGACY_ERC20_ETH :", tx)
+      if(tx !== predeployedAddress.LegacyERC20ETH){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       tx = await L2FastWithdrawContract.LEGACY_l1token()
-      console.log("LEGACY_l1token :", tx)
+      if(tx !== l2NativeTokenContract.address){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
     })
   });
 
@@ -369,42 +379,29 @@ describe("FWBasicTest", function () {
     })
 
     it("deposit TON", async () => {
-      let l1Balance = await l1Wallet.getBalance()
-      // console.log('l1 native balance: ', l1Balance.toString())
-      let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance: ', l2Balance.toString())
-      let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(l1Wallet.address)
-      // console.log(
-      //   'native token(TON) balance in L1: ',
-      //   l2NativeTokenBalance.toString()
-      // )
+      let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(l1Wallet.address)
+      let beforel2Balance = await l2Wallet.getBalance()
 
       const approveTx = await messenger.approveERC20(l2NativeToken, ETH, hundETH)
       await approveTx.wait()
-      // console.log('approveTx:', approveTx.hash)
     
       const depositTx = await messenger.depositERC20(l2NativeToken, ETH, hundETH)
       await depositTx.wait()
-      // console.log('depositTx:', depositTx.hash)
     
       await messenger.waitForMessageStatus(depositTx.hash, MessageStatus.RELAYED)
-      l1Balance = await l1Wallet.getBalance()
-      // console.log('l1 native balance(ETH): ', l1Balance.toString())
-      l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(TON): ', l2Balance.toString())
-      l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(l1Wallet.address)
-      // console.log(
-      //   'native token(TON) balance in L1: ',
-      //   l2NativeTokenBalance.toString()
-      // )
+
+      let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(l1Wallet.address)
+      let afterl2Balance = await l2Wallet.getBalance()
+
+      expect(afterl2Balance).to.be.gt(beforel2Balance)
+      expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
     })
 
     it("requestFW in L2", async () => {
-      let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(requester): ', l2Balance.toString())
-      let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      // console.log('before l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let beforel2Balance = await l2Wallet.getBalance()
+      let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
+        l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
@@ -412,16 +409,14 @@ describe("FWBasicTest", function () {
           value: threeETH
         }
       )).wait()
-      l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(requester): ', l2Balance.toString())
-      L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      // console.log('after l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let afterl2Balance = await l2Wallet.getBalance()
+      let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
       const saleCount = await L2FastWithdrawProxy.salecount()
-      // console.log('saleCount : ', saleCount);
       expect(saleCount).to.be.equal(1);
-      // let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
-      // console.log('saleInformation : ', saleInformation);
+
+      expect(beforel2Balance).to.be.gt(afterl2Balance)
+      expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
     })
 
     it("faucet TON to user1", async () => {
@@ -441,37 +436,22 @@ describe("FWBasicTest", function () {
     })
 
     it("providerFW(TON) in L1", async () => {
-      let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(TON) (Wallet):', l2Balance.toString())
+      let beforel2Balance = await l2Wallet.getBalance()
+      let beforel2BalanceUser1 = await l2user1.getBalance()
 
-      let l2BalanceUser1 = await l2user1.getBalance()
-      // console.log('l2 native balance (TON) (User1): ', l2BalanceUser1.toString())
-
-      let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+      let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
-      // console.log(
-      //   'native token(TON) balance in L1 (user1): ',
-      //   l2NativeTokenBalance.toString()
-      // )
-
-      let l2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+      let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
-      // console.log(
-      //   'native token(TON) balance in L1 (Wallet): ',
-      //   l2NativeTokenBalanceWallet.toString()
-      // )
-
-      let beforemsgSenderCheck = await L2FastWithdrawContract.msgSender();
-      console.log("msg.sender : ", beforemsgSenderCheck)
     
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
-      // console.log("pass the L1 TON approve")
     
       const saleCount = await L2FastWithdrawProxy.salecount()
-      // console.log('saleCount : ', saleCount);
+
+      let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         l2NativeToken,
@@ -481,44 +461,32 @@ describe("FWBasicTest", function () {
         200000
       )
       await providerTx.wait()
-      // console.log("providerTx : ", providerTx.hash)
     
       await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-      // console.log("send the Message L1 to L2");
 
-      l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(TON) (Wallet):', l2Balance.toString())
+      let afterl2Balance = await l2Wallet.getBalance()
+      let afterl2BalanceUser1 = await l2user1.getBalance()
 
-      l2BalanceUser1 = await l2user1.getBalance()
-      // console.log('l2 native balance (TON) (User1): ', l2BalanceUser1.toString())
-
-      l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+      let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
-      // console.log(
-      //   'native token(TON) balance in L1 (user1): ',
-      //   l2NativeTokenBalance.toString()
-      // )
-
-      l2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+      let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
 
-      // console.log(
-      //   'native token(TON) balance in L1 (Wallet): ',
-      //   l2NativeTokenBalanceWallet.toString()
-      // )
+      expect(afterl2Balance).to.be.equal(beforel2Balance)
+      expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+      
+      expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+      expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
 
-      let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      // console.log('provider after l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+      expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
 
       let saleInformation = await L2FastWithdrawContract.dealData(1)
-      console.log("saleInformation : ", saleInformation)
-
-      let msgSenderCheck = await L2FastWithdrawContract.msgSender();
-      console.log("tx.origin : ", msgSenderCheck)
-      console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
-      console.log("L1FastWithdrawProxy : ", L1FastWithdrawContract.address);
+      if(saleInformation.provider !== l2user1.address) {
+        console.log("===========Provider Fail!!===========")
+      } 
     })
   })
 

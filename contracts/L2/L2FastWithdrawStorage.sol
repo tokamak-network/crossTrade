@@ -3,6 +3,7 @@ pragma solidity 0.8.20;
 
 contract L2FastWithdrawStorage {
     struct RequestData {
+        address l1token;
         address l2token;
         address requester;
         address provider;

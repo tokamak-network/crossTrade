@@ -35,6 +35,14 @@ contract AttackContract {
             _amount,
             _saleCount
         );
+
+        // message = abi.encodeWithSelector(
+        //     IL2FastWithdraw.claimFW.selector, 
+        //     msg.sender,
+        //     _to,
+        //     _amount,
+        //     _saleCount
+        // );
         
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
@@ -85,6 +93,14 @@ contract AttackContract {
             _salecount
         );
 
+        // message2 = abi.encodeWithSelector(
+        //     IL2FastWithdraw.editFW.selector, 
+        //     msg.sender,
+        //     _totalAmount,
+        //     _fwAmount,
+        //     _salecount
+        // );
+        
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             l2fastWithdrawContract, 
             message, 
