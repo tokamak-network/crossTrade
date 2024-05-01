@@ -131,6 +131,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
+        require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
         bytes memory message;
 
         message = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 

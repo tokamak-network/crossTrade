@@ -141,8 +141,8 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
         require(dealData[_salecount].provider == address(0), "already sold");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
-        // require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
-        // require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
+        require(dealData[_salecount].fwAmount > _fwAmount, "need before fwAmount over new fwAmount");
+        require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
 
         uint256 refundAmount = dealData[_salecount].totalAmount - _totalAmount;
         

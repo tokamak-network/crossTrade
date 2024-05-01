@@ -229,22 +229,22 @@ describe("ETH FastWithdraw Test", function () {
         l1Wallet
       )
 
-      let tx = await l2NativeTokenContract.balanceOf(
-        l1Wallet.address
-      )
-      console.log('TON balance in L1(Wallet):', Number(tx.toString()))
-      tx = await l2NativeTokenContract.balanceOf(
-        l1user1.address
-      )
-      console.log('TON balance in L1(user1):', Number(tx.toString()))
-      let l1Balance = await l1Wallet.getBalance()
-      console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
-      let l2Balance = await l2Wallet.getBalance()
-      console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
-      l1Balance = await l1user1.getBalance()
-      console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
-      l2Balance = await l2user1.getBalance()
-      console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
+      // let tx = await l2NativeTokenContract.balanceOf(
+      //   l1Wallet.address
+      // )
+      // console.log('TON balance in L1(Wallet):', Number(tx.toString()))
+      // tx = await l2NativeTokenContract.balanceOf(
+      //   l1user1.address
+      // )
+      // console.log('TON balance in L1(user1):', Number(tx.toString()))
+      // let l1Balance = await l1Wallet.getBalance()
+      // console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
+      // let l2Balance = await l2Wallet.getBalance()
+      // console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
+      // l1Balance = await l1user1.getBalance()
+      // console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
+      // l2Balance = await l2user1.getBalance()
+      // console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
     })
     
     it("L1FastWithdrawLogic", async () => {
@@ -257,7 +257,7 @@ describe("ETH FastWithdraw Test", function () {
       L1FastWithdrawLogic = await L1FastWithdrawLogicDep.deploy()
       await L1FastWithdrawLogic.deployed()
 
-      console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
+      // console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
     })
 
     it("L1FastWithdrawProxy", async () => {
@@ -269,14 +269,15 @@ describe("ETH FastWithdraw Test", function () {
 
       L1FastWithdrawProxy = await L1FastWithdrawProxyDep.deploy()
       await L1FastWithdrawProxy.deployed()
-      console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
+      // console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
     })
 
     it("L1FastWithdrawProxy upgradeTo", async () => {
       await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
       let imp2 = await L1FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      if(L1FastWithdrawLogic.address !== imp2) {
+        console.log("===========L1FastWithdrawProxy upgradeTo ERROR!!===========")
+      }
     })
 
     it("set L1FastWithdraw", async () => {
@@ -297,7 +298,7 @@ describe("ETH FastWithdraw Test", function () {
       L2FastWithdrawLogic = await L2FastWithdrawLogicDep.deploy()
       await L2FastWithdrawLogic.deployed()
 
-      console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
+      // console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
     })
 
     it("L2FastWithdrawProxy", async () => {
@@ -309,14 +310,15 @@ describe("ETH FastWithdraw Test", function () {
 
       L2FastWithdrawProxy = await L2FastWithdrawProxyDep.deploy()
       await L2FastWithdrawProxy.deployed()
-      console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
+      // console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
     })
 
     it("L2FastWithdrawProxy upgradeTo", async () => {
       await (await L2FastWithdrawProxy.upgradeTo(L2FastWithdrawLogic.address)).wait();
       let imp2 = await L2FastWithdrawProxy.implementation()
-      console.log('check upgradeAddress : ', imp2)
-      console.log('upgradeTo done')
+      if(L2FastWithdrawLogic.address !== imp2) {
+        console.log("===========L2FastWithdrawProxy upgradeTo ERROR!!===========")
+      }
     })
 
     it("set L2FastWithdraw", async () => {
@@ -336,8 +338,9 @@ describe("ETH FastWithdraw Test", function () {
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
-      console.log('checkL1Inform :', checkL1Inform) 
-      console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
+      if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
+        console.log("===========L1FastWithdraw initialize ERROR!!===========")
+      }
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -349,16 +352,23 @@ describe("ETH FastWithdraw Test", function () {
       )).wait();
     
       const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
-      console.log("checkL2Inform :", checkL2Inform)
-      console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
+      if(checkL2Inform !== l2CrossDomainMessengerAddr){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       let tx = await L2FastWithdrawContract.salecount()
-      console.log("salecount :", tx)
+      expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
-      console.log("l1fastWithdrawContract :", tx)
+      if(tx !== L1FastWithdrawContract.address){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
-      console.log("LEGACY_ERC20_ETH :", tx)
+      if(tx !== predeployedAddress.LegacyERC20ETH){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
       tx = await L2FastWithdrawContract.LEGACY_l1token()
-      console.log("LEGACY_l1token :", tx)
+      if(tx !== l2NativeTokenContract.address){
+        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      }
     })
 
     it("deploy MockERC20 in L1", async () => {
@@ -421,14 +431,10 @@ describe("ETH FastWithdraw Test", function () {
   });
 
   describe("FW ETH Test", () => {
-    it("before deposit check L1ETH, L2ETH", async () => {
-      let l1Balance = await l1Wallet.getBalance()
-      console.log('l1 native balance(ETH) (Wallet): ', l1Balance.toString())
-      let l2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
-      console.log('l2 ETH(ERC20) balance (Wallet): ', l2ETHBalance.toString())
-    })
-
     it("Deposit ETH to L2", async () => {
+      let beforel1Balance = await l1Wallet.getBalance()
+      let beforel2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+
       const tx = await L1StandardBridgeContract.connect(l1Wallet).depositETH(
         20000,
         '0x',
@@ -438,61 +444,64 @@ describe("ETH FastWithdraw Test", function () {
       )
     
       const depositTx = await tx.wait()
-      console.log(
-        'depositTx Tx:',
-        depositTx.transactionHash,
-        ' Block',
-        depositTx.blockNumber,
-        ' hash',
-        tx.hash
-      )
+      // console.log(
+      //   'depositTx Tx:',
+      //   depositTx.transactionHash,
+      //   ' Block',
+      //   depositTx.blockNumber,
+      //   ' hash',
+      //   tx.hash
+      // )
     
       await messenger.waitForMessageStatus(
         depositTx.transactionHash,
         MessageStatus.RELAYED
       )
-    })
 
-    it("after deposit check L1ETH, L2ETH", async () => {
-      let l1Balance = await l1Wallet.getBalance()
-      console.log('l1 native balance(ETH) (Wallet): ', l1Balance.toString())
-      let l2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
-      console.log('l2 ETH(ERC20) balance (Wallet): ', l2ETHBalance.toString())
+      let afterl1Balance = await l1Wallet.getBalance()
+      let afterl2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+
+      expect(beforel1Balance).to.be.gt(afterl1Balance)
+      expect(afterl2ETHBalance).to.be.gt(beforel2ETHBalance)
     })
 
     it("requestFW (ETH) in L2", async () => {
-      let l1BalanceUser1 = await l1user1.getBalance()
-      console.log('l1 native balance (ETH) (User1): ', l1BalanceUser1.toString())
-      let l2ETHBalanceUser1 = await l2ETHERC20.balanceOf(l2user1.address)
-      console.log('l2 ETH(ERC20) balance (User1): ', l2ETHBalanceUser1.toString())
-
-      L2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('before L2 ETH (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let beforel2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+      let beforeL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
 
       let tx = await l2ETHERC20.connect(l2Wallet).approve(L2FastWithdrawContract.address, threeETH)
       await tx.wait()
-      console.log('pass the approve')
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
+        zeroAddr,
         l2ETHERC20.address,
         threeETH,
         twoETH
       )).wait()
-      console.log('pass the request')
 
-      let l2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      console.log('l2MockBalance: ', l2MockBalance.toString())
-      L2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('after l2 ETH (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let afterl2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+      let afterL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
+
+      expect(beforel2ETHBalance).to.be.gt(afterl2ETHBalance)
+      expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
       const saleCount = await L2FastWithdrawProxy.salecount()
-      console.log('saleCount : ', saleCount);
       expect(saleCount).to.be.equal(1);
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
-      console.log('saleInformation : ', saleInformation);
+      if(saleInformation.requester !== l2Wallet.address) {
+        console.log("===========requestFW Fail!!===========")
+      } 
     })
 
     it("providerFW(ERC20) in L1", async () => {
+      let beforel1Balance = await l1Wallet.getBalance()
+      let beforel1BalanceUser1 = await l1user1.getBalance()
+
+      let beforel2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+      let beforel2ETHBalanceUser1 = await l2ETHERC20.balanceOf(l2user1.address)
+
+      let beforeL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
+
       const saleCount = await L2FastWithdrawProxy.salecount()
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         zeroAddr,
@@ -505,26 +514,29 @@ describe("ETH FastWithdraw Test", function () {
         }
       )
       await providerTx.wait()
-      console.log('providerTx : ', providerTx.hash)
     
       await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-      console.log("send the Message L1 to L2");
 
-      let l1Balance = await l1Wallet.getBalance()
-      console.log('l1 ETH balance(Wallet): ', l1Balance.toString())
-      let l2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
-      console.log('l2 ETH(ERC20) balance (l1Wallet): ', l2ETHBalance.toString())
+      let afterl1Balance = await l1Wallet.getBalance()
+      let afterl1BalanceUser1 = await l1user1.getBalance()
 
-      let l1BalanceUser1 = await l1user1.getBalance()
-      console.log('l1 native balance (ETH) (User1): ', l1BalanceUser1.toString())
-      let l2ETHBalanceUser1 = await l2ETHERC20.balanceOf(l2user1.address)
-      console.log('l2 ETH(ERC20) balance (User1): ', l2ETHBalanceUser1.toString())
+      let afterl2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
+      let afterl2ETHBalanceUser1 = await l2ETHERC20.balanceOf(l2user1.address)
 
-      L2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
-      console.log('provider after L2 ERC20 (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
+      let afterL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
+
+      expect(afterl1Balance).to.be.gt(beforel1Balance)
+      expect(beforel1BalanceUser1).to.be.gt(afterl1BalanceUser1)
+      
+      expect(beforel2ETHBalance).to.be.equal(afterl2ETHBalance)
+      expect(afterl2ETHBalanceUser1).to.be.gt(beforel2ETHBalanceUser1)
+      
+      expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
 
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
-      console.log("saleInformation : ", saleInformation)
+      if(saleInformation.provider !== l2user1.address) {
+        console.log("===========Provider Fail!!===========")
+      } 
     })
   })
 

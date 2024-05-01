@@ -400,6 +400,7 @@ describe("FWBasicTest", function () {
     it("requestFW in L2", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+      
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
