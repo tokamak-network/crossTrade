@@ -19,6 +19,7 @@ contract AttackContract {
     }
 
     function provideAttack(
+        address _l1token,
         address _to,
         uint256 _amount,
         uint256 _saleCount,
@@ -29,7 +30,8 @@ contract AttackContract {
     {
         bytes memory message;
 
-        message = abi.encodeWithSignature("claimFW(address,address,uint256,uint256)", 
+        message = abi.encodeWithSignature("claimFW(address,address,address,uint256,uint256)", 
+            _l1token,
             msg.sender,
             _to,
             _amount,

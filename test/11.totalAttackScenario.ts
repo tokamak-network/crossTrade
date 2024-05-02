@@ -9,13 +9,18 @@ import { expect } from "chai";
 // import '@nomiclabs/hardhat-ethers'
 // import 'hardhat-deploy'
 // import { ethers } from "hardhat";
-import { BytesLike, ethers } from 'ethers'
+import { BytesLike, ethers, Event } from 'ethers'
 
 import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
 import L1FastWithdrawProxy_ABI from "../artifacts/contracts/L1/L1FastWithdrawProxy.sol/L1FastWithdrawProxy.json"
 import L1FastWithdraw_ABI from "../artifacts/contracts/L1/L1FastWithdraw.sol/L1FastWithdraw.json"
 import L2FastWithdrawProxy_ABI from "../artifacts/contracts/L2/L2FastWithdrawProxy.sol/L2FastWithdrawProxy.json"
 import L2FastWithdraw_ABI from "../artifacts/contracts/L2/L2FastWithdraw.sol/L2FastWithdraw.json"
+import AttackContract_ABI from "../artifacts/contracts/L1/AttackContract.sol/AttackContract.json"
+import L1StandardBridgeABI from '../contracts-bedrock/forge-artifacts/L1StandardBridge.sol/L1StandardBridge.json'
+import OptimismMintableERC20TokenFactoryABI from '../contracts-bedrock/forge-artifacts/OptimismMintableERC20Factory.sol/OptimismMintableERC20Factory.json'
+import OptimismMintableERC20TokenABI from '../contracts-bedrock/forge-artifacts/OptimismMintableERC20.sol/OptimismMintableERC20.json'
+import MockERC20ABI from '../contracts-bedrock/forge-artifacts/MockERC20Token.sol/MockERC20Token.json'
 import Proxy_ABI from "../artifacts/contracts/proxy/Proxy.sol/Proxy.json"
 
 
@@ -25,7 +30,7 @@ dotenv.config();
 
 
 
-describe("8.AttackScenario1", function () {
+describe("11.totalAttackScenario", function () {
   let network = "devnetL1"
   let deployedAddress = require('./data/deployed.'+network+'.json');
   let predeployedAddress = require('./data/predeployed.'+network+'.json');
@@ -125,7 +130,8 @@ describe("8.AttackScenario1", function () {
   let L2FastWithdrawProxy : any;
   let L2FastWithdrawContract : any;
 
-  
+  let attackContract : any;
+
   let deployer : any;
 
   let nativeTokenAddr = "0x75fE809aE1C4A66c27a0239F147d0cc5710a104A"
@@ -154,6 +160,16 @@ describe("8.AttackScenario1", function () {
   let beforel2BalanceUser1 : any;
 
   let providerTx : any;
+
+  let MockERC20 : any;
+  let l2MockERC20 : any;
+  let L1StandardBridgeContract : any;
+
+  const name = 'Mock'
+  const symbol = 'MTK'
+
+  const l2name = 'L2Mock'
+  const l2symbol = 'LTK'
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -344,6 +360,75 @@ describe("8.AttackScenario1", function () {
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
     })
+
+    it("Deploy the AttackContract", async () => {
+      const attackContractDep = new ethers.ContractFactory(
+        AttackContract_ABI.abi,
+        AttackContract_ABI.bytecode,
+        l1Wallet
+      )
+
+      attackContract = await attackContractDep.deploy()
+      await attackContract.deployed()
+    })
+
+    it("AttackContract initialize", async () => {
+      let tx = await attackContract.initialize(
+        l1Contracts.L1CrossDomainMessenger,
+        L2FastWithdrawContract.address
+      )
+      await tx.wait();
+    })
+
+    it("deploy MockERC20 in L1", async () => {
+      const DeployMockERC20 = new ethers.ContractFactory(
+        MockERC20ABI.abi,
+        MockERC20ABI.bytecode,
+        l1Wallet
+      )
+      MockERC20 = await DeployMockERC20.deploy(name,symbol)
+      await MockERC20.deployed()
+      await MockERC20.mint(l1Wallet.address, tenETH)
+      await MockERC20.mint(l1user1.address, tenETH)
+    })
+
+    it("deploy MockERC20 in L2", async () => {
+      const factory_OptimismMintable = new ethers.Contract(
+        predeployedAddress.OptimismMintableERC20Factory,
+        OptimismMintableERC20TokenFactoryABI.abi,
+        l2Wallet
+      )
+
+      let tx = await factory_OptimismMintable.createOptimismMintableERC20(
+        MockERC20.address,
+        l2name,
+        l2symbol
+      )
+      await tx.wait()
+
+      const receipt = await tx.wait()
+      const event = receipt.events.find(
+        (e: Event) => e.event === 'OptimismMintableERC20Created'
+      )
+    
+      if (!event) {
+        throw new Error('Unable to find OptimismMintableERC20Created event')
+      }
+
+      l2MockERC20 = new ethers.Contract(
+        event.args.localToken,
+        OptimismMintableERC20TokenABI.abi,
+        l2Wallet
+      )
+    })
+
+    it("Set L1StandrardBridgeContract", async () => {
+      L1StandardBridgeContract = new ethers.Contract(
+        l1Contracts.L1StandardBridge,
+        L1StandardBridgeABI.abi,
+        l1Wallet
+      )
+    })
   });
 
   describe("FW Test", () => {
@@ -374,6 +459,39 @@ describe("8.AttackScenario1", function () {
 
       expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
       expect(afterl2Balance).to.be.gt(beforel2Balance)
+    })
+
+    it("Deposit ERC20 to L2", async () => {
+      let beforel1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
+      let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+
+      let approved = await MockERC20.connect(l1Wallet).approve(L1StandardBridgeContract.address, tenETH)
+      await approved.wait()
+
+      let deposited = await L1StandardBridgeContract.connect(l1Wallet).depositERC20(
+        MockERC20.address,
+        l2MockERC20.address,
+        tenETH,
+        20000,
+        '0x'
+      )
+      const depositTx = await deposited.wait()
+      // console.log(
+      //   'depositTx Tx:',
+      //   depositTx.transactionHash,
+      //   ' Block',
+      //   depositTx.blockNumber,
+      //   ' hash',
+      //   deposited.hash
+      // )
+    
+      await messenger.waitForMessageStatus(depositTx.transactionHash, MessageStatus.RELAYED)
+
+      let afterl1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
+      let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
+
+      expect(beforel1MockBalance).to.be.gt(afterl1MockBalance)
+      expect(afterl2MockBalance).to.be.gt(beforel2MockBalance)
     })
 
     it("requestFW in L2", async () => {
@@ -433,7 +551,7 @@ describe("8.AttackScenario1", function () {
       beforel2BalanceUser1 = await l2user1.getBalance()
     })
 
-    it("providerFW(TON) in L1(Failed at layer 2)", async () => {
+    it("attack providerFW(TON) lower fwAmount", async () => {
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
     
@@ -448,18 +566,15 @@ describe("8.AttackScenario1", function () {
       )
       await providerTx.wait()
     
-      await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-
-      // let msgSenderCheck = await L2FastWithdrawContract.msgSender();
-      // console.log("msg.sender : ", msgSenderCheck)
+      // await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
     })
 
-    // it("revert the Message", async () => {
-    //   await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
-    //     .to.be.reverted
-    //   await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
-    //     .to.be.revertedWithoutReason();
-    // })
+    it("revert the Message", async () => {
+      await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+        .to.be.reverted
+      // await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+      //   .to.be.revertedWithoutReason();
+    })
 
     it("after amount check", async () => {
       let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
@@ -485,10 +600,137 @@ describe("8.AttackScenario1", function () {
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== zeroAddr){
         console.log("===========Attack Success!!===========")
-      } else {
+      } else if(saleInformation.provider === zeroAddr){
         console.log("===========Attack fail!!===========")
       }
     })
-  })
 
+    it("before amount check", async () => {
+      beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      beforel2NativeTokenBalanceUser = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+
+      beforel2BalanceWallet = await l2Wallet.getBalance()
+      beforel2BalanceUser1 = await l2user1.getBalance()
+    })
+
+    it("attack2 providerFW(TON) anotherContractAttack", async () => {
+      const saleCount = await L2FastWithdrawProxy.salecount()
+
+      providerTx = await attackContract.connect(l1user1).provideAttack(
+        l2NativeToken,
+        l2Wallet.address,
+        twoETH,
+        saleCount,
+        200000
+      )
+      await providerTx.wait()
+    
+      // await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+    })
+
+    it("revert the Message", async () => {
+      await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+        .to.be.reverted
+      // await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+      //   .to.be.revertedWithoutReason();
+    })
+
+    it("after amount check", async () => {
+      let msgSenderCheck = await L2FastWithdrawContract.msgSender();
+      console.log("tx.origin : ", msgSenderCheck)
+
+      let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      let afterl2NativeTokenBalanceUser = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+
+      let afterl2BalanceWallet = await l2Wallet.getBalance()
+      let afterl2BalanceUser1 = await l2user1.getBalance()
+
+      const saleCount = await L2FastWithdrawProxy.salecount()
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      if(saleInformation.provider === l2user1.address){
+        console.log("===========Attack Success!!===========")
+      } else {
+        console.log("===========Attack fail!!===========")
+      }
+
+      expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
+      expect(beforel2NativeTokenBalanceUser).to.be.equal(afterl2NativeTokenBalanceUser)
+
+      expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
+    })
+
+    it("before amount check", async () => {
+      beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      beforel2NativeTokenBalanceUser = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+  
+      beforel2BalanceWallet = await l2Wallet.getBalance()
+      beforel2BalanceUser1 = await l2user1.getBalance()
+    })
+  
+    it("attack3 providerFW(TON) input fault l1TokenAddr", async () => {
+      const providerApproveTx = await MockERC20.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
+      await providerApproveTx.wait()
+    
+      const saleCount = await L2FastWithdrawProxy.salecount()
+  
+      providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
+        MockERC20.address,
+        l2Wallet.address,
+        twoETH,
+        saleCount,
+        200000
+      )
+      await providerTx.wait()
+    })
+  
+    it("revert the Message", async () => {
+      await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+        .to.be.reverted
+      // await expect(messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED))
+      //   .to.be.revertedWithoutReason();
+    })
+  
+    it("after amount check", async () => {
+      let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      let afterl2NativeTokenBalanceUser = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+  
+      let afterl2BalanceWallet = await l2Wallet.getBalance()
+      let afterl2BalanceUser1 = await l2user1.getBalance()
+  
+      expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
+      expect(beforel2NativeTokenBalanceUser).to.be.gt(afterl2NativeTokenBalanceUser)
+  
+      expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
+      expect(beforel2BalanceUser1).to.be.equal(afterl2BalanceUser1)
+  
+      let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+      expect(L2FastWithdrawBalance).to.be.equal(threeETH)
+  
+      const saleCount = await L2FastWithdrawProxy.salecount()
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      if(saleInformation.provider !== zeroAddr){
+        console.log("===========Attack Success!!===========")
+      } else if(saleInformation.provider === zeroAddr){
+        console.log("===========Attack fail!!===========")
+      }
+    })
+
+    
+  })
 });

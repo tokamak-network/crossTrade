@@ -400,6 +400,7 @@ describe("8.AttackScenario1", function () {
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
+        l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
@@ -458,6 +459,7 @@ describe("8.AttackScenario1", function () {
       const saleCount = await L2FastWithdrawProxy.salecount()
 
       const providerTx = await attackContract.connect(l1user1).provideAttack(
+        l2NativeToken,
         l2Wallet.address,
         twoETH,
         saleCount,
