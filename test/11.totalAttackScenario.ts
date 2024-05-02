@@ -534,7 +534,7 @@ describe("11.totalAttackScenario", function () {
       )
 
       if (Number(l2NativeTokenBalance.toString()) === 0) {
-        const tx = await l2NativeTokenContract.connect(l1user1).faucet(twoETH)
+        const tx = await l2NativeTokenContract.connect(l1user1).faucet(tenETH)
         await tx.wait()
       }
     })
@@ -728,6 +728,17 @@ describe("11.totalAttackScenario", function () {
       }
     })
 
+    it("faucet TON to user1", async () => {
+      let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+
+      if (Number(l2NativeTokenBalance.toString()) === 0) {
+        const tx = await l2NativeTokenContract.connect(l1user1).faucet(tenETH)
+        await tx.wait()
+      }
+    })
+
     it("normal providerFW success", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforel2BalanceUser1 = await l2user1.getBalance()
@@ -735,6 +746,7 @@ describe("11.totalAttackScenario", function () {
       let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
+      console.log("beforel2NativeTokenBalance :", beforel2NativeTokenBalance)
       let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
