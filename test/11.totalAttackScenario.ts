@@ -640,9 +640,6 @@ describe("11.totalAttackScenario", function () {
     })
 
     it("after amount check", async () => {
-      let msgSenderCheck = await L2FastWithdrawContract.msgSender();
-      console.log("tx.origin : ", msgSenderCheck)
-
       let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
@@ -713,8 +710,8 @@ describe("11.totalAttackScenario", function () {
       let afterl2BalanceWallet = await l2Wallet.getBalance()
       let afterl2BalanceUser1 = await l2user1.getBalance()
   
-      expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
-      expect(beforel2NativeTokenBalanceUser).to.be.gt(afterl2NativeTokenBalanceUser)
+      expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
+      expect(beforel2NativeTokenBalanceUser).to.be.equal(afterl2NativeTokenBalanceUser)
   
       expect(beforel2BalanceWallet).to.be.equal(afterl2BalanceWallet)
       expect(beforel2BalanceUser1).to.be.equal(afterl2BalanceUser1)
@@ -731,6 +728,59 @@ describe("11.totalAttackScenario", function () {
       }
     })
 
+    it("normal providerFW success", async () => {
+      let beforel2Balance = await l2Wallet.getBalance()
+      let beforel2BalanceUser1 = await l2user1.getBalance()
+
+      let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+      let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
     
+      const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
+      await providerApproveTx.wait()
+    
+      const saleCount = await L2FastWithdrawProxy.salecount()
+
+      let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+
+      const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
+        l2NativeToken,
+        l2Wallet.address,
+        twoETH,
+        saleCount,
+        200000
+      )
+      await providerTx.wait()
+    
+      await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+
+      let afterl2Balance = await l2Wallet.getBalance()
+      let afterl2BalanceUser1 = await l2user1.getBalance()
+
+      let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+      let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+
+      expect(afterl2Balance).to.be.equal(beforel2Balance)
+      expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+      
+      expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+      expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
+
+      let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+      expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
+
+      let saleInformation = await L2FastWithdrawContract.dealData(1)
+      if(saleInformation.provider !== l2user1.address) {
+        console.log("===========Provider Fail!!===========")
+      } 
+    })
+
   })
 });
