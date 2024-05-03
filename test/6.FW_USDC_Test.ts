@@ -973,6 +973,8 @@ describe("USDC FastWithdraw Test", function () {
       const saleCount = await L2FastWithdrawProxy.saleCount()
 
       let beforesaleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      let l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
+      console.log("before l1tokenAddrcheck", l1tokenAddrcheck);
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         L1fiatTokenV2_2.address,
@@ -984,6 +986,9 @@ describe("USDC FastWithdraw Test", function () {
       await providerTx.wait()
 
       await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+
+      l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
+      console.log("after l1tokenAddrcheck", l1tokenAddrcheck);
 
       afterL1USDCBalanceWallet = await L1fiatTokenV2_2.balanceOf(l1Wallet.address)
       afterL1USDCBalanceUser = await L1fiatTokenV2_2.balanceOf(l2user1.address)

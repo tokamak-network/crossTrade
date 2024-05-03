@@ -463,7 +463,7 @@ describe("ERC20 FastWithdraw Test", function () {
       await tx.wait()
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
-        MockERC20.address,
+        zeroAddr,
         l2MockERC20.address,
         threeETH,
         twoETH

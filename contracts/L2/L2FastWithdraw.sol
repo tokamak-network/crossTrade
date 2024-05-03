@@ -72,6 +72,10 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     {
         ++saleCount;
 
+        if (_l1token == address(0)){
+            _l1token = getL1token(_l2token);
+        } 
+
         if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
@@ -174,7 +178,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     function getL1token(
         address _l2token
     )
-        external
+        public
         view
         returns (address l1Token) 
     {

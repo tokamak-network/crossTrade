@@ -402,7 +402,7 @@ describe("FWBasicTest", function () {
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
-        l2NativeToken,
+        zeroAddr,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
