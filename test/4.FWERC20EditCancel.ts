@@ -365,11 +365,11 @@ describe("4.FWERC20EditCancel", function () {
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
