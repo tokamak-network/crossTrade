@@ -355,17 +355,17 @@ describe("ETH FastWithdraw Test", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
@@ -485,7 +485,7 @@ describe("ETH FastWithdraw Test", function () {
       expect(beforel2ETHBalance).to.be.gt(afterl2ETHBalance)
       expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1);
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
       if(saleInformation.requester !== l2Wallet.address) {
@@ -502,7 +502,7 @@ describe("ETH FastWithdraw Test", function () {
 
       let beforeL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         zeroAddr,
         l2Wallet.address,

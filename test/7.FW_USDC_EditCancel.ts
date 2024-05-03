@@ -465,17 +465,17 @@ describe("USDC FastWithdraw Test", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
@@ -814,7 +814,7 @@ describe("USDC FastWithdraw Test", function () {
       await tx.wait()
       // console.log('pass the approve')
 
-      let saleCount = await L2FastWithdrawProxy.salecount()
+      let saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(0)
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
@@ -830,7 +830,7 @@ describe("USDC FastWithdraw Test", function () {
       afterContractBalance = await L2fiatTokenV2_2.balanceOf(L2FastWithdrawContract.address)
       // console.log('after L2 USDC (L2FastWithdrawBalance): ', afterContractBalance.toString())
 
-      saleCount = await L2FastWithdrawProxy.salecount()
+      saleCount = await L2FastWithdrawProxy.saleCount()
       // console.log('saleCount : ', saleCount);
       expect(saleCount).to.be.equal(1);
       expect(beforeL2USDCBalanceWallet).to.be.gt(afterL2USDCBalanceWallet)
@@ -848,7 +848,7 @@ describe("USDC FastWithdraw Test", function () {
     })
 
     it("revert the CancelFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       
       const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
         saleCount,
@@ -872,7 +872,7 @@ describe("USDC FastWithdraw Test", function () {
       beforeL2USDCBalanceWallet = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
       beforeContractBalance = await L2fiatTokenV2_2.balanceOf(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       const cancelTx = await L1FastWithdrawContract.connect(l1Wallet).cancel(
         saleCount,
@@ -895,7 +895,7 @@ describe("USDC FastWithdraw Test", function () {
       await tx.wait()
       // console.log('pass the approve')
 
-      let saleCount = await L2FastWithdrawProxy.salecount()
+      let saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1)
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
@@ -905,7 +905,7 @@ describe("USDC FastWithdraw Test", function () {
         twoETH
       )).wait()
 
-      saleCount = await L2FastWithdrawProxy.salecount()
+      saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
     })
 
@@ -915,7 +915,7 @@ describe("USDC FastWithdraw Test", function () {
     })
 
     it("revert the editFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       
       const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
         saleCount,
@@ -940,7 +940,7 @@ describe("USDC FastWithdraw Test", function () {
       beforeL2USDCBalanceWallet = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
       beforeContractBalance = await L2fiatTokenV2_2.balanceOf(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       const editTx = await L1FastWithdrawContract.connect(l1Wallet).edit(
         saleCount,

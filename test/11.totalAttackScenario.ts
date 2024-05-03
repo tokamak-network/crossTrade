@@ -345,17 +345,17 @@ describe("11.totalAttackScenario", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
@@ -514,7 +514,7 @@ describe("11.totalAttackScenario", function () {
       expect(beforel2Balance).to.be.gt(afterl2Balance)
       expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1);
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
       if(saleInformation.l2token !== predeployedAddress.LegacyERC20ETH){
@@ -555,7 +555,7 @@ describe("11.totalAttackScenario", function () {
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
     
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         l2NativeToken,
@@ -596,7 +596,7 @@ describe("11.totalAttackScenario", function () {
       let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       expect(L2FastWithdrawBalance).to.be.equal(threeETH)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== zeroAddr){
         console.log("===========Attack Success!!===========")
@@ -618,7 +618,7 @@ describe("11.totalAttackScenario", function () {
     })
 
     it("attack2 providerFW(TON) anotherContractAttack", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       providerTx = await attackContract.connect(l1user1).provideAttack(
         l2NativeToken,
@@ -650,7 +650,7 @@ describe("11.totalAttackScenario", function () {
       let afterl2BalanceWallet = await l2Wallet.getBalance()
       let afterl2BalanceUser1 = await l2user1.getBalance()
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider === l2user1.address){
         console.log("===========Attack Success!!===========")
@@ -680,7 +680,7 @@ describe("11.totalAttackScenario", function () {
       const providerApproveTx = await MockERC20.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
     
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
   
       providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         MockERC20.address,
@@ -719,7 +719,7 @@ describe("11.totalAttackScenario", function () {
       let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       expect(L2FastWithdrawBalance).to.be.equal(threeETH)
   
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== zeroAddr){
         console.log("===========Attack Success!!===========")
@@ -754,7 +754,7 @@ describe("11.totalAttackScenario", function () {
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
     
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 

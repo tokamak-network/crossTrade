@@ -465,17 +465,17 @@ describe("USDC FastWithdraw Test", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
@@ -935,7 +935,7 @@ describe("USDC FastWithdraw Test", function () {
       let tx = await L2fiatTokenV2_2.connect(l2Wallet).approve(L2FastWithdrawContract.address, threeETH)
       await tx.wait()
 
-      let saleCount = await L2FastWithdrawProxy.salecount()
+      let saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(0)
 
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
@@ -951,7 +951,7 @@ describe("USDC FastWithdraw Test", function () {
       expect(beforeL2USDCBalanceWallet).to.be.gt(afterL2USDCBalanceWallet)
       expect(afterContractBalance).to.be.gt(beforeContractBalance)
       
-      saleCount = await L2FastWithdrawProxy.salecount()
+      saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1);
       
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
@@ -970,7 +970,7 @@ describe("USDC FastWithdraw Test", function () {
       const providerApproveTx = await L1fiatTokenV2_2.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       let beforesaleInformation = await L2FastWithdrawContract.dealData(saleCount)
 

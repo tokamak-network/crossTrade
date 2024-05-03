@@ -13,13 +13,14 @@ contract L2FastWithdrawStorage {
 
     address public crossDomainMessenger;
     address public l1fastWithdrawContract;
-    address public LEGACY_ERC20_ETH;
-    address public LEGACY_l1token;
+    address public legacyERC20ETH;
+    address public nativeL1token;
 
     address public msgSender;
+    uint256 public chainID;
 
 
-    uint256 public salecount;
+    uint256 public saleCount;
 
     mapping(uint256 => RequestData) public dealData;
     // mapping(address => address) public enteringToken;

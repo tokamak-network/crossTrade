@@ -379,17 +379,17 @@ describe("3.FWNativeTONEditCancel", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
@@ -443,7 +443,7 @@ describe("3.FWNativeTONEditCancel", function () {
       let afterl2Balance = await l2Wallet.getBalance()
       let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1);
 
       expect(beforel2Balance).to.be.gt(afterl2Balance)
@@ -458,7 +458,7 @@ describe("3.FWNativeTONEditCancel", function () {
     })
 
     it("revert the CancelFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       
       const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
         saleCount,
@@ -491,7 +491,7 @@ describe("3.FWNativeTONEditCancel", function () {
       // console.log('before l2 native balance (L2FastWithdrawBalance): ', beforeL2Contract.toString())
       
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       // let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
 
       const cancelTx = await L1FastWithdrawContract.connect(l1Wallet).cancel(
@@ -530,7 +530,7 @@ describe("3.FWNativeTONEditCancel", function () {
       let afterl2Balance = await l2Wallet.getBalance()
       let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
 
       expect(beforel2Balance).to.be.gt(afterl2Balance)
@@ -545,7 +545,7 @@ describe("3.FWNativeTONEditCancel", function () {
     })
 
     it("revert the editFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       // let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
       // console.log(saleInformation)
       
@@ -579,7 +579,7 @@ describe("3.FWNativeTONEditCancel", function () {
       let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       // console.log('before l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
 
       const editTx = await L1FastWithdrawContract.connect(l1Wallet).edit(

@@ -332,16 +332,16 @@ describe("10.SendMessagePortal", function () {
       console.log('l1Contracts.L1CrossDomainMessenger :', l1Contracts.L1CrossDomainMessenger)
     })
 
-    it("L1FastWithdraw Set portal", async () => {
-      await (await L1FastWithdrawProxy.connect(l1Wallet).setPortal(
-        OptimismPortalProxyAddr
-      )).wait()
+    // it("L1FastWithdraw Set portal", async () => {
+    //   await (await L1FastWithdrawProxy.connect(l1Wallet).setPortal(
+    //     OptimismPortalProxyAddr
+    //   )).wait()
 
-      let tx = await L1FastWithdrawProxy.portal()
-      if(tx !== OptimismPortalProxyAddr) {
-        console.log("set portal ERROR!!")
-      }
-    })
+    //   let tx = await L1FastWithdrawProxy.portal()
+    //   if(tx !== OptimismPortalProxyAddr) {
+    //     console.log("set portal ERROR!!")
+    //   }
+    // })
 
     it("L2FastWithdraw initialize", async () => {
       await (await L2FastWithdrawProxy.connect(l2Wallet).initialize(
@@ -354,13 +354,13 @@ describe("10.SendMessagePortal", function () {
       const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
       console.log("checkL2Inform :", checkL2Inform)
       console.log("l2CrossDomainMessengerAddr :", l2CrossDomainMessengerAddr)
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       console.log("salecount :", tx)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       console.log("l1fastWithdrawContract :", tx)
-      tx = await L2FastWithdrawContract.LEGACY_ERC20_ETH()
+      tx = await L2FastWithdrawContract.legacyERC20ETH()
       console.log("LEGACY_ERC20_ETH :", tx)
-      tx = await L2FastWithdrawContract.LEGACY_l1token()
+      tx = await L2FastWithdrawContract.nativeL1token()
       console.log("LEGACY_l1token :", tx)
     })
   });
@@ -431,7 +431,7 @@ describe("10.SendMessagePortal", function () {
       L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       console.log('after l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       console.log('saleCount : ', saleCount);
       expect(saleCount).to.be.equal(1);
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
@@ -481,7 +481,7 @@ describe("10.SendMessagePortal", function () {
       await providerApproveTx.wait()
       console.log("pass the L1 TON approve")
     
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       console.log('saleCount : ', saleCount);
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW2(

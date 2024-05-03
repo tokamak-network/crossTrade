@@ -359,7 +359,7 @@ describe("4.FWERC20EditCancel", function () {
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2FastWithdraw initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.salecount()
+      let tx = await L2FastWithdrawContract.saleCount()
       expect(tx).to.be.equal(0)
       tx = await L2FastWithdrawContract.l1fastWithdrawContract()
       if(tx !== L1FastWithdrawContract.address){
@@ -480,7 +480,7 @@ describe("4.FWERC20EditCancel", function () {
       expect(beforel2MockBalance).to.be.gt(afterl2MockBalance)
       expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(1);
       
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
@@ -497,7 +497,7 @@ describe("4.FWERC20EditCancel", function () {
     })
 
     it("revert the CancelFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       
       const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
         saleCount,
@@ -525,7 +525,7 @@ describe("4.FWERC20EditCancel", function () {
       beforeL2Contract = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
       // console.log('after  L2 ERC20 (L2FastWithdrawBalance): ', afterL2Contract.toString())
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       const cancelTx = await L1FastWithdrawContract.connect(l1Wallet).cancel(
         saleCount,
@@ -565,7 +565,7 @@ describe("4.FWERC20EditCancel", function () {
       expect(beforel2MockBalance).to.be.gt(afterl2MockBalance)
       expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
       
       let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
@@ -582,7 +582,7 @@ describe("4.FWERC20EditCancel", function () {
     })
 
     it("revert the editFW (need the make the requestFW Owner)", async () => {
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
       
       const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
         saleCount,
@@ -613,7 +613,7 @@ describe("4.FWERC20EditCancel", function () {
       beforeL2Contract = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
       // console.log('before  L2 ERC20 (L2FastWithdrawBalance): ', beforeL2Contract.toString())
 
-      const saleCount = await L2FastWithdrawProxy.salecount()
+      const saleCount = await L2FastWithdrawProxy.saleCount()
 
       const editTx = await L1FastWithdrawContract.connect(l1Wallet).edit(
         saleCount,

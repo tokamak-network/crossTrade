@@ -10,7 +10,7 @@ import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOpt
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { AddressAliasHelper } from "../libraries/AddressAliasHelper.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage {
 
@@ -20,6 +20,19 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
     modifier onlyEOA() {
         require(!_isContract(msg.sender), "L2FW: function can only be called from an EOA");
+        _;
+    }
+
+    modifier checkL1() {
+        require(
+            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, 
+            "only call l1FastWithdraw"
+        );
+        _;
+    }
+
+    modifier providerCheck(uint256 _saleCount) {
+        require(dealData[_saleCount].provider == address(0), "already sold");
         _;
     }
 
@@ -57,9 +70,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
         onlyEOA
     {
-        ++salecount;
+        ++saleCount;
 
-        if (_l2token == LEGACY_ERC20_ETH) {
+        if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
             payable(address(this)).call{value: msg.value};
         } else {
@@ -67,7 +80,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
         }
 
-        dealData[salecount] = RequestData({
+        dealData[saleCount] = RequestData({
             l1token: _l1token,
             l2token: _l2token,
             requester: msg.sender,
@@ -86,9 +99,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     )
         external
         payable
+        checkL1
+        providerCheck(_saleCount)
     {
-        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
-        require(dealData[_saleCount].provider == address(0), "already sold");
         require(dealData[_saleCount].requester == _to, "not match the seller");
         require(dealData[_saleCount].fwAmount <= _amount, "need to over minAmount");
         require(dealData[_saleCount].l1token == _l1token, "need same l1token");
@@ -96,9 +109,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         dealData[_saleCount].provider = _from;
         dealData[_saleCount].fwAmount = _amount;
 
-        // msgSender = IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender();
+        chainID = _getChainID();
 
-        if(dealData[_saleCount].l2token == LEGACY_ERC20_ETH) {
+        if(dealData[_saleCount].l2token == legacyERC20ETH) {
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
             require(sent, "claim fail");
         } else {
@@ -112,16 +125,16 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     )
         external
         payable
+        checkL1
+        providerCheck(_salecount)
     {
-        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
-        require(dealData[_salecount].provider == address(0), "already sold");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
 
         // msgSender = AddressAliasHelper.undoL1ToL2Alias(tx.origin);
 
         dealData[_salecount].provider = dealData[_salecount].requester;
         
-        if (dealData[_salecount].l2token == LEGACY_ERC20_ETH) {
+        if (dealData[_salecount].l2token == legacyERC20ETH) {
             (bool sent, ) = payable(_msgSender).call{value: dealData[_salecount].totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
@@ -137,9 +150,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     )
         external
         payable
+        checkL1
+        providerCheck(_salecount)
     {
-        require(IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, "only call l1FastWithdraw");
-        require(dealData[_salecount].provider == address(0), "already sold");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
         require(dealData[_salecount].fwAmount > _fwAmount, "need before fwAmount over new fwAmount");
         require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
@@ -150,7 +163,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         dealData[_salecount].fwAmount = _fwAmount;
 
 
-        if (dealData[_salecount].l2token == LEGACY_ERC20_ETH) {
+        if (dealData[_salecount].l2token == legacyERC20ETH) {
             (bool sent, ) = payable(_msgSender).call{value: refundAmount}("");
             require(sent, "cancel refund fail");
         } else {
@@ -165,8 +178,8 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         view
         returns (address l1Token) 
     {
-        if (_l2token == LEGACY_ERC20_ETH) {
-            return l1Token = LEGACY_l1token;
+        if (_l2token == legacyERC20ETH) {
+            return l1Token = nativeL1token;
         } else {
             return l1Token = ILegacyMintableERC20(_l2token).l1Token();
         }
@@ -178,7 +191,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         return account.code.length > 0;
     }
 
-    function getChainID() internal view returns (uint256) {
+    function _getChainID() internal view returns (uint256) {
         uint256 id;
         assembly {
             id := chainid()

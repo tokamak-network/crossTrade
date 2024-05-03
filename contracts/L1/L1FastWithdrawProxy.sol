@@ -17,15 +17,7 @@ contract L1FastWithdrawProxy is Proxy, L1FastWithdrawStorage {
     {
         crossDomainMessenger = _crossDomainMessenger;
         l2fastWithdrawContract = _l2fastWithdraw;
-        LEGACY_ERC20_ETH = _legacyERC20;
-        LEGACY_l1token = _l1legacyERC20;
-    }
-
-    function setPortal(
-        address _portal
-    )
-        external
-    {
-        portal = _portal;
+        legacyERC20ETH = _legacyERC20;
+        nativeL1token = _l1legacyERC20;
     }
 }
