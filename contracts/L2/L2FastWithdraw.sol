@@ -16,7 +16,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
     using SafeERC20 for IERC20;
 
-    event CreateRequest(
+    event CreateRequestFW(
         address _l1token,
         address _l2token,
         address _requester,
@@ -83,6 +83,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     {
         ++saleCount;
 
+        //L1 chainId도 넣으면 좋겠다.
         if (_l1token == address(0)){
             _l1token = getL1token(_l2token);
         } 
@@ -95,6 +96,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
         }
 
+        //L2 token, L1 chainId Hash값에 추가
         bytes32 hashValue = getHash(
             _l1token,
             msg.sender,
@@ -112,7 +114,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             hashValue: hashValue
         });
 
-        emit CreateRequest(
+        emit CreateRequestFW(
             _l1token,
             _l2token,
             msg.sender,
@@ -148,7 +150,6 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         } else {
             IERC20(dealData[_saleCount].l2token).transfer(_from,dealData[_saleCount].totalAmount);
         }
-
 
         emit ProviderClaimFW(
             dealData[_saleCount].l1token,
@@ -188,6 +189,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         );
     }
 
+    //totalAmount는 변경 불가라서 editFW는 필요없음
     function editFW(
         address _msgSender,
         uint256 _fwAmount,
@@ -200,8 +202,8 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         providerCheck(_salecount)
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
-        require(dealData[_salecount].fwAmount > _fwAmount, "need before fwAmount over new fwAmount");
-        require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
+        // require(dealData[_salecount].fwAmount > _fwAmount, "need before fwAmount over new fwAmount");
+        // require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
 
         uint256 refundAmount = dealData[_salecount].totalAmount - _totalAmount;
 
@@ -256,13 +258,22 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         returns (bytes32)
     {
         uint256 chainID = _getChainID();
+        //abi.encode값 어떻게 나오는지 확인
         return keccak256(
             abi.encode(_l1token, _to, _amount, _saleCount,chainID)
         );
     }
 
-    //=======internal========
+    //=======Temporary view for testing ========
+    function getChainID() public view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
+    }
 
+    //=======internal========
 
 
     function _isContract(address account) internal view returns (bool) {

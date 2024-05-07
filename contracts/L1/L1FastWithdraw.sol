@@ -13,6 +13,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
     using SafeERC20 for IERC20;
 
+    // Storage 저장 추가 (Hash mapping 값 확인과 최종 저장 확인) 
     function provideFW(
         address _l1token,
         address _to,
@@ -25,7 +26,6 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
-
         bytes32 L2HashValue = getHash(
             _l1token,
             _to,
@@ -85,6 +85,9 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
     }
 
+    //totalAmount는 변경 불가
+    //fwAmount만 변경 
+    // Storage 저장 추가 (Hash mapping 값) 
     function edit(
         uint256 _salecount,
         uint256 _fwAmount,

@@ -497,13 +497,17 @@ describe("ERC20 FastWithdraw Test", function () {
       await providerApproveTx.wait()
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
+      let chainId = await L2FastWithdrawContract.getChainID()
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         MockERC20.address,
         l2Wallet.address,
         twoETH,
         saleCount,
-        200000
+        chainId,
+        200000,
+        saleInformation.hashValue
       )
       await providerTx.wait()
 
@@ -525,7 +529,7 @@ describe("ERC20 FastWithdraw Test", function () {
       
       expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
 
-      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== l2user1.address) {
         console.log("===========Provider Fail!!===========")
       } 

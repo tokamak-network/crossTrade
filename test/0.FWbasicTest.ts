@@ -451,17 +451,20 @@ describe("FWBasicTest", function () {
       await providerApproveTx.wait()
     
       const saleCount = await L2FastWithdrawProxy.saleCount()
-      let chainId = await L2FastWithdrawContract.chainID()
-      console.log("before chainID", chainId.toString())
+      let chainId = await L2FastWithdrawContract.getChainID()
 
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         l2NativeToken,
         l2Wallet.address,
         twoETH,
         saleCount,
-        200000
+        chainId,
+        200000,
+        saleInformation.hashValue
       )
       await providerTx.wait()
     
@@ -486,14 +489,10 @@ describe("FWBasicTest", function () {
       let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
       expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
 
-      let saleInformation = await L2FastWithdrawContract.dealData(1)
+      saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== l2user1.address) {
         console.log("===========Provider Fail!!===========")
       } 
-
-      chainId = await L2FastWithdrawContract.chainID()
-      console.log("after chainID", chainId.toString())
-      
     })
   })
 

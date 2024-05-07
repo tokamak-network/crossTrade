@@ -486,6 +486,7 @@ describe("ETH FastWithdraw Test", function () {
       expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
+      
       expect(saleCount).to.be.equal(1);
       let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
       if(saleInformation.requester !== l2Wallet.address) {
@@ -503,12 +504,17 @@ describe("ETH FastWithdraw Test", function () {
       let beforeL2FastWithdrawBalance = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
+      let chainId = await L2FastWithdrawContract.getChainID()
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         zeroAddr,
         l2Wallet.address,
         twoETH,
         saleCount,
+        chainId,
         200000,
+        saleInformation.hashValue,
         {
           value: twoETH,
         }
@@ -533,7 +539,7 @@ describe("ETH FastWithdraw Test", function () {
       
       expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
 
-      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      saleInformation = await L2FastWithdrawContract.dealData(saleCount)
       if(saleInformation.provider !== l2user1.address) {
         console.log("===========Provider Fail!!===========")
       } 
