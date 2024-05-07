@@ -18,11 +18,23 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         address _to,
         uint256 _amount,
         uint256 _saleCount,
+        uint256 _chainID,
+        bytes32 _hash,
         uint32 _minGasLimit
     )
         external
         payable
     {
+
+        bytes32 L2HashValue = getHash(
+            _l1token,
+            _to,
+            _amount,
+            _saleCount,
+            _chainID
+        );
+        require(L2HashValue == _hash, "Hash values do not match.");
+
         bytes memory message;
 
         message = abi.encodeWithSignature("claimFW(address,address,address,uint256,uint256)", 
@@ -98,6 +110,22 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             l2fastWithdrawContract, 
             message, 
             _minGasLimit
+        );
+    }
+
+    function getHash(
+        address _l1token,
+        address _to,
+        uint256 _amount,
+        uint256 _saleCount,
+        uint256 _chainID
+    )
+        public
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(_l1token, _to, _amount, _saleCount,_chainID)
         );
     }
 

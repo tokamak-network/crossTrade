@@ -84,6 +84,13 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
         }
 
+        bytes32 hashValue = getHash(
+            _l1token,
+            msg.sender,
+            _fwAmount,
+            saleCount
+        );
+
         dealData[saleCount] = RequestData({
             l1token: _l1token,
             l2token: _l2token,
@@ -189,7 +196,25 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         }
     }
 
+    function getHash(
+        address _l1token,
+        address _to,
+        uint256 _amount,
+        uint256 _saleCount
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        uint256 chainID = _getChainID();
+        return keccak256(
+            abi.encode(_l1token, _to, _amount, _saleCount,chainID)
+        );
+    }
+
     //=======internal========
+
+
 
     function _isContract(address account) internal view returns (bool) {
         return account.code.length > 0;
