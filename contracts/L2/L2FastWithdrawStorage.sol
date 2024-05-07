@@ -9,6 +9,7 @@ contract L2FastWithdrawStorage {
         address provider;
         uint256 totalAmount;
         uint256 fwAmount;
+        bytes32 hashValue;
     }
 
     address public crossDomainMessenger;
@@ -23,6 +24,4 @@ contract L2FastWithdrawStorage {
     uint256 public saleCount;
 
     mapping(uint256 => RequestData) public dealData;
-    // mapping(address => address) public enteringToken;
-    // mapping(address => mapping(address => bool)) public checkToken;
 }

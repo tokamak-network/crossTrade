@@ -19,8 +19,8 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         uint256 _amount,
         uint256 _saleCount,
         uint256 _chainID,
-        bytes32 _hash,
-        uint32 _minGasLimit
+        uint32 _minGasLimit,
+        bytes32 _hash
     )
         external
         payable
@@ -37,12 +37,10 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         bytes memory message;
 
-        message = abi.encodeWithSignature("claimFW(address,address,address,uint256,uint256)", 
-            _l1token,
+        message = abi.encodeWithSignature("claimFW(address,uint256,bytes32)", 
             msg.sender,
-            _to,
-            _amount,
-            _saleCount
+            _saleCount,
+            L2HashValue
         );
 
         if (nativeL1token == _l1token) {
