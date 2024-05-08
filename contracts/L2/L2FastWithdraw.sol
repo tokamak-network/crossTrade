@@ -96,7 +96,6 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
         }
 
-        //L2 token, L1 chainId Hash값에 추가
         bytes32 hashValue = getHash(
             _l1token,
             _l2token,
@@ -196,18 +195,21 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     function editFW(
         address _msgSender,
         uint256 _fwAmount,
-        uint256 _salecount
+        uint256 _salecount,
+        bytes32 _hash
     )
         external
         payable
         checkL1
         providerCheck(_salecount)
     {
+        require(dealData[_salecount].hashValue == _hash, "Hash values do not match");
         require(dealData[_salecount].requester == _msgSender, "your not seller");
         // require(dealData[_salecount].fwAmount > _fwAmount, "need before fwAmount over new fwAmount");
         // require(dealData[_salecount].totalAmount > _totalAmount, "need before totalAmount over new totalAmount");
 
         dealData[_salecount].fwAmount = _fwAmount;
+        editCheck[_hash] = true;
 
         emit EditFW(
             _msgSender, 

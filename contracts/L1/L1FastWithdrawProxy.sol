@@ -7,20 +7,12 @@ import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";
 contract L1FastWithdrawProxy is Proxy, L1FastWithdrawStorage {
 
     function initialize(
-        address _crossDomainMessenger,
-        address _l2fastWithdraw,
-        address _legacyERC20,
-        address _l1legacyERC20,
-        uint256 _editTime
+        address _crossDomainMessenger
     ) 
         external
         onlyOwner
     {
         crossDomainMessenger = _crossDomainMessenger;
-        l2fastWithdrawContract = _l2fastWithdraw;
-        legacyERC20ETH = _legacyERC20;
-        nativeL1token = _l1legacyERC20;
-        editTime = _editTime;
     }
 
     function chainInfo(

@@ -50,7 +50,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             L2HashValue
         );
 
-        if (nativeL1token == _l1token) {
+        if (chainData[_l2chainId].nativeL1token == _l1token) {
             //need to approve
             IERC20(_l1token).transferFrom(msg.sender, address(this), _fwAmount);
             IERC20(_l1token).transfer(_to,_fwAmount);
@@ -78,7 +78,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         address _l2token,
         uint256 _totalAmount,
         uint256 _salecount,
-        uint256 _chainId,
+        uint256 _l2chainId,
         uint32 _minGasLimit,
         bytes32 _hash
     )
@@ -91,7 +91,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             msg.sender,
             _totalAmount,
             _salecount,
-            _chainId
+            _l2chainId
         );
         require(L2HashValue == _hash, "Hash values do not match.");
 
@@ -103,7 +103,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
-            chainData[_chainId].l2fastWithdrawContract, 
+            chainData[_l2chainId].l2fastWithdrawContract, 
             message, 
             _minGasLimit
         );
@@ -120,7 +120,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         uint256 _totalAmount,
         uint256 _fwAmount,
         uint256 _salecount,
-        uint256 _chainId,
+        uint256 _l2chainId,
         uint32 _minGasLimit,
         bytes32 _hash
     )  
@@ -133,25 +133,26 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             msg.sender,
             _totalAmount,
             _salecount,
-            _chainId
+            _l2chainId
         );
         require(L2HashValue == _hash, "Hash values do not match.");
 
         bytes memory message;
 
-        message = abi.encodeWithSignature("editFW(address,uint256,uint256,uint256)", 
+        message = abi.encodeWithSignature("editFW(address,uint256,uint256,bytes32)", 
             msg.sender,
             _fwAmount,
-            _salecount
+            _salecount,
+            _hash
         );
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
-            chainData[_chainId].l2fastWithdrawContract, 
+            chainData[_l2chainId].l2fastWithdrawContract, 
             message, 
             _minGasLimit
         );
 
-        editEndTime[L2HashValue] = block.timestamp + chainData[_chainId].editTime;
+        editEndTime[L2HashValue] = block.timestamp + chainData[_l2chainId].editTime;
     }
 
     function getHash(

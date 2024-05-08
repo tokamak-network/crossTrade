@@ -10,12 +10,6 @@ contract L1FastWithdrawStorage {
     }
 
     address public crossDomainMessenger;
-    // address public l2fastWithdrawContract;
-    // address public legacyERC20ETH;
-    // address public nativeL1token;
-
-    uint256 public chainID;
-    // uint256 public editTime;
 
     //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
     mapping(bytes32 => bool) public successFW;

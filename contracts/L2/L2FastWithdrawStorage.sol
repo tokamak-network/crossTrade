@@ -24,4 +24,7 @@ contract L2FastWithdrawStorage {
     uint256 public saleCount;
 
     mapping(uint256 => RequestData) public dealData;
+
+    //hashValue => edit성공 확인
+    mapping(bytes32 => bool) public editCheck;
 }
