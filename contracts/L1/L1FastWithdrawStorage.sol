@@ -2,10 +2,25 @@
 pragma solidity 0.8.20;
 
 contract L1FastWithdrawStorage {
+    struct ChainIdData {
+        address l2fastWithdrawContract;
+        address legacyERC20ETH;
+        address nativeL1token;
+        uint256 editTime;
+    }
+
     address public crossDomainMessenger;
-    address public l2fastWithdrawContract;
-    address public legacyERC20ETH;
-    address public nativeL1token;
+    // address public l2fastWithdrawContract;
+    // address public legacyERC20ETH;
+    // address public nativeL1token;
 
     uint256 public chainID;
+    // uint256 public editTime;
+
+    //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
+    mapping(bytes32 => bool) public successFW;
+    //hashValue => edit시간 측정
+    mapping(bytes32 => uint256) public editEndTime;
+    //chainId => Data
+    mapping(uint256 => ChainIdData) public chainData;
 }

@@ -9,6 +9,7 @@ contract L2FastWithdrawStorage {
         address provider;
         uint256 totalAmount;
         uint256 fwAmount;
+        uint256 chainId;
         bytes32 hashValue;
     }
 
@@ -19,7 +20,6 @@ contract L2FastWithdrawStorage {
 
     address public msgSender;
     uint256 public chainID;
-
 
     uint256 public saleCount;
 

@@ -146,6 +146,8 @@ describe("FWBasicTest", function () {
   let l2ChainId : any;
 
   let l2NativeTokenContract : any;
+
+  let editTime = 180
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -400,12 +402,15 @@ describe("FWBasicTest", function () {
     it("requestFW in L2", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
+
+      let chainId = await L2FastWithdrawContract.getChainID()
       
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
         zeroAddr,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
+        chainId,
         {
           value: threeETH
         }
@@ -459,7 +464,9 @@ describe("FWBasicTest", function () {
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         l2NativeToken,
+        predeployedAddress.LegacyERC20ETH,
         l2Wallet.address,
+        threeETH,
         twoETH,
         saleCount,
         chainId,
