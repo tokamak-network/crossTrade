@@ -207,6 +207,8 @@ describe("USDC FastWithdraw Test", function () {
   let tokenCurrency = "USD"
   let tokenDecimals = 6
 
+  let editTime = 180
+
   function link(bytecode : any, libraryName : any, libraryAddress : any) {
     const address = libraryAddress.replace('0x', '');
     console.log("address :", address);
@@ -441,16 +443,23 @@ describe("USDC FastWithdraw Test", function () {
 
     it("L1FastWithdraw initialize", async () => {
       await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1FastWithdraw initialize ERROR!!===========")
       }
+    })
+
+    it("L1FastWithdraw set chainInfo", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).chainInfo(
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -942,7 +951,8 @@ describe("USDC FastWithdraw Test", function () {
         L1fiatTokenV2_2.address,
         L2fiatTokenV2_2.address,
         threeETH,
-        twoETH
+        twoETH,
+        l1ChainId
       )).wait()
 
       afterL2USDCBalanceWallet = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
@@ -973,22 +983,26 @@ describe("USDC FastWithdraw Test", function () {
       const saleCount = await L2FastWithdrawProxy.saleCount()
 
       let beforesaleInformation = await L2FastWithdrawContract.dealData(saleCount)
-      let l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
-      console.log("before l1tokenAddrcheck", l1tokenAddrcheck);
+      // let l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
+      // console.log("before l1tokenAddrcheck", l1tokenAddrcheck);
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         L1fiatTokenV2_2.address,
+        L2fiatTokenV2_2.address,
         l2Wallet.address,
+        threeETH,
         twoETH,
         saleCount,
-        200000
+        l2ChainId,
+        200000,
+        beforesaleInformation.hashValue
       )
       await providerTx.wait()
 
       await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
 
-      l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
-      console.log("after l1tokenAddrcheck", l1tokenAddrcheck);
+      // l1tokenAddrcheck = await L2FastWithdrawContract.msgSender();
+      // console.log("after l1tokenAddrcheck", l1tokenAddrcheck);
 
       afterL1USDCBalanceWallet = await L1fiatTokenV2_2.balanceOf(l1Wallet.address)
       afterL1USDCBalanceUser = await L1fiatTokenV2_2.balanceOf(l2user1.address)

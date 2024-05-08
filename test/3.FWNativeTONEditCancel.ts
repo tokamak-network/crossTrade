@@ -152,7 +152,7 @@ describe("3.FWNativeTONEditCancel", function () {
   let beforeL2Contract : any;
   let afterL2Contract : any;
 
-
+  let editTime = 180
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -355,16 +355,23 @@ describe("3.FWNativeTONEditCancel", function () {
 
     it("L1FastWithdraw initialize", async () => {
       await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1FastWithdraw initialize ERROR!!===========")
       }
+    })
+
+    it("L1FastWithdraw set chainInfo", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).chainInfo(
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -435,6 +442,7 @@ describe("3.FWNativeTONEditCancel", function () {
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
+        l1ChainId,
         {
           value: threeETH
         }
@@ -459,19 +467,62 @@ describe("3.FWNativeTONEditCancel", function () {
 
     it("revert the CancelFW (need the make the requestFW Owner)", async () => {
       const saleCount = await L2FastWithdrawProxy.saleCount()
+
+      let getSaleCountHash = await L2FastWithdrawContract.dealData(saleCount)
       
-      const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
+      // const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
+      //   l2NativeToken,
+      //   predeployedAddress.LegacyERC20ETH,
+      //   threeETH,
+      //   saleCount,
+      //   l2ChainId,
+      //   1200000,
+      //   getSaleCountHash.hashValue
+      // )
+      // await cancelTx.wait()
+
+      await expect(L1FastWithdrawContract.connect(l1user1).cancel(
+        l2NativeToken,
+        predeployedAddress.LegacyERC20ETH,
+        threeETH,
         saleCount,
-        1200000
-      )
-      await cancelTx.wait()
+        l2ChainId,
+        1200000,
+        getSaleCountHash.hashValue
+      )).to.be.rejectedWith("Hash values do not match.")
       // const receipt = await cancelTx.wait();
       // console.log("receipt :", receipt);
       // console.log("cancelTx : ", cancelTx.hash)
 
-      await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
+      // await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
       // console.log("send the Message L1 to L2");
     })
+
+    // it("revert the CancelFw (L2 hash modification)", async () => {
+    //   const saleCount = await L2FastWithdrawProxy.saleCount()
+
+    //   let getSaleCountHash = await L1FastWithdrawContract.getHash(
+    //     l2NativeToken,
+    //     predeployedAddress.LegacyERC20ETH,
+    //     l1user1.address,
+    //     threeETH,
+    //     saleCount,
+    //     l2ChainId
+    //   )
+      
+    //   const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
+    //     l2NativeToken,
+    //     predeployedAddress.LegacyERC20ETH,
+    //     threeETH,
+    //     saleCount,
+    //     l2ChainId,
+    //     1200000,
+    //     getSaleCountHash
+    //   )
+    //   await cancelTx.wait()
+
+    //   await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
+    // })
 
     it("after fail CancelFW", async () => {
       afterL2Balance = await l2Wallet.getBalance()
@@ -492,11 +543,17 @@ describe("3.FWNativeTONEditCancel", function () {
       
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
-      // let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
+
+      let getSaleCountHash = await L2FastWithdrawContract.dealData(saleCount)
 
       const cancelTx = await L1FastWithdrawContract.connect(l1Wallet).cancel(
+        l2NativeToken,
+        predeployedAddress.LegacyERC20ETH,
+        threeETH,
         saleCount,
-        200000
+        l2ChainId,
+        1200000,
+        getSaleCountHash.hashValue
       );
       await cancelTx.wait();
       // console.log("cancelTx : ", cancelTx.hash)
@@ -522,6 +579,7 @@ describe("3.FWNativeTONEditCancel", function () {
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
+        l1ChainId,
         {
           value: threeETH
         }
@@ -530,7 +588,7 @@ describe("3.FWNativeTONEditCancel", function () {
       let afterl2Balance = await l2Wallet.getBalance()
       let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
 
-      const saleCount = await L2FastWithdrawProxy.saleCount()
+      let saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
 
       expect(beforel2Balance).to.be.gt(afterl2Balance)
@@ -548,19 +606,63 @@ describe("3.FWNativeTONEditCancel", function () {
       const saleCount = await L2FastWithdrawProxy.saleCount()
       // let saleInformation = await L2FastWithdrawProxy.dealData(saleCount)
       // console.log(saleInformation)
+
+      let getSaleCountHash = await L2FastWithdrawContract.dealData(saleCount)
       
-      const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
-        saleCount,
+      // const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
+      //   l2NativeToken,
+      //   predeployedAddress.LegacyERC20ETH,
+      //   threeETH,
+      //   oneETH,
+      //   saleCount,
+      //   l2ChainId,
+      //   1200000,
+      //   getSaleCountHash.hashValue
+      // )
+      // await editTx.wait()
+
+      await expect(L1FastWithdrawContract.connect(l1user1).edit(
+        l2NativeToken,
+        predeployedAddress.LegacyERC20ETH,
+        threeETH,
         oneETH,
-        twoETH,
-        1200000
-      )
-      await editTx.wait()
+        saleCount,
+        l2ChainId,
+        1200000,
+        getSaleCountHash.hashValue
+      )).to.be.rejectedWith("Hash values do not match.")
       // console.log("editTx : ", editTx.hash)
     
-      await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
+      // await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
       // console.log("send the Message L1 to L2");
     })
+
+    // it("revert the editFW (L2 hash modification)", async () => {
+    //   const saleCount = await L2FastWithdrawProxy.saleCount()
+
+    //   let getSaleCountHash = await L1FastWithdrawContract.getHash(
+    //     l2NativeToken,
+    //     predeployedAddress.LegacyERC20ETH,
+    //     l1user1.address,
+    //     threeETH,
+    //     saleCount,
+    //     l2ChainId
+    //   )
+      
+    //   const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
+    //     l2NativeToken,
+    //     predeployedAddress.LegacyERC20ETH,
+    //     threeETH,
+    //     oneETH,
+    //     saleCount,
+    //     l2ChainId,
+    //     1200000,
+    //     getSaleCountHash
+    //   )
+    //   await editTx.wait()
+
+    //   await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
+    // })
 
     it("after fail editFW", async () => {
       afterL2Balance = await l2Wallet.getBalance()
@@ -574,19 +676,22 @@ describe("3.FWNativeTONEditCancel", function () {
     })
 
     it("edit in L1", async () => {
-      let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance(requester): ', l2Balance.toString())
-      let L2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      // console.log('before l2 native balance (L2FastWithdrawBalance): ', L2FastWithdrawBalance.toString())
-
+      
       const saleCount = await L2FastWithdrawProxy.saleCount()
       expect(saleCount).to.be.equal(2);
+      
+      let getSaleCountHash = await L2FastWithdrawContract.dealData(saleCount)
+      expect(getSaleCountHash.fwAmount).to.be.equal(twoETH)
 
       const editTx = await L1FastWithdrawContract.connect(l1Wallet).edit(
-        saleCount,
+        l2NativeToken,
+        predeployedAddress.LegacyERC20ETH,
+        threeETH,
         oneETH,
-        twoETH,
-        200000
+        saleCount,
+        l2ChainId,
+        1200000,
+        getSaleCountHash.hashValue
       )
       await editTx.wait()
       // console.log("editTx : ", editTx.hash)
@@ -594,13 +699,13 @@ describe("3.FWNativeTONEditCancel", function () {
       await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
       // console.log("send the Message L1 to L2");
 
-      let afterl2Balance = await l2Wallet.getBalance()
-      // console.log('after l2 native balance(requester): ', afterl2Balance.toString())
-      let afterL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-      // console.log('after l2 native balance (L2FastWithdrawBalance): ', afterL2FastWithdrawBalance.toString())
-
-      expect(afterl2Balance).to.be.gt(l2Balance)
-      expect(L2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
+      getSaleCountHash = await L2FastWithdrawContract.dealData(saleCount)
+      expect(getSaleCountHash.fwAmount).to.be.equal(oneETH)
+      let editCheck = await L2FastWithdrawContract.editCheck(getSaleCountHash.hashValue)
+      if(editCheck != true) {
+        console.log("=============== edit ERROR ===============")
+      }
+      // console.log("after editCheck :", editCheck)
     })
 
   })

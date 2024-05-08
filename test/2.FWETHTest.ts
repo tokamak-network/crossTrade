@@ -157,6 +157,8 @@ describe("ETH FastWithdraw Test", function () {
   let L1StandardBridgeContract : any;
   let L2FastWithdrawBalance : any;
   let l2ETHERC20 : any;
+
+  let editTime = 180
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -331,16 +333,23 @@ describe("ETH FastWithdraw Test", function () {
 
     it("L1FastWithdraw initialize", async () => {
       await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1FastWithdraw initialize ERROR!!===========")
       }
+    })
+
+    it("L1FastWithdraw set chainInfo", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).chainInfo(
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -476,7 +485,8 @@ describe("ETH FastWithdraw Test", function () {
         zeroAddr,
         l2ETHERC20.address,
         threeETH,
-        twoETH
+        twoETH,
+        l1ChainId
       )).wait()
 
       let afterl2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
@@ -509,7 +519,9 @@ describe("ETH FastWithdraw Test", function () {
 
       const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
         zeroAddr,
+        l2ETHERC20.address,
         l2Wallet.address,
+        threeETH,
         twoETH,
         saleCount,
         chainId,

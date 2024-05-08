@@ -165,6 +165,8 @@ describe("5.FWETHEditCancel", function () {
   let afterL2ETHBalance : any;
   let afterL1ETHBalance : any;
   let afterL2Contract : any;
+
+  let editTime = 180
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -339,16 +341,23 @@ describe("5.FWETHEditCancel", function () {
 
     it("L1FastWithdraw initialize", async () => {
       await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1FastWithdraw initialize ERROR!!===========")
       }
+    })
+
+    it("L1FastWithdraw set chainInfo", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).chainInfo(
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -485,7 +494,8 @@ describe("5.FWETHEditCancel", function () {
         zeroAddr,
         l2ETHERC20.address,
         threeETH,
-        twoETH
+        twoETH,
+        l1ChainId
       )).wait()
       
       let afterl2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
@@ -512,15 +522,26 @@ describe("5.FWETHEditCancel", function () {
 
     it("revert the cancelFW (need the make the requestFW Owner", async () => {
       const saleCount = await L2FastWithdrawProxy.saleCount()
-      
-      const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
-        saleCount,
-        0
-      );
-      await cancelTx.wait();
 
-      await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
-      // console.log("send the Message L1 to L2");
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+
+      await expect(L1FastWithdrawContract.connect(l1user1).cancel(
+        saleInformation.l1token,
+        l2ETHERC20.address,
+        threeETH,
+        saleCount,
+        l2ChainId,
+        1200000,
+        saleInformation.hashValue
+      )).to.be.rejectedWith("Hash values do not match.")
+      
+      // const cancelTx = await L1FastWithdrawContract.connect(l1user1).cancel(
+      //   saleCount,
+      //   0
+      // );
+      // await cancelTx.wait();
+
+      // await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
     })
 
     it("after fail cancelFW", async () => {
@@ -542,9 +563,16 @@ describe("5.FWETHEditCancel", function () {
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
 
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+
       const cancelTx = await L1FastWithdrawContract.connect(l1Wallet).cancel(
+        saleInformation.l1token,
+        l2ETHERC20.address,
+        threeETH,
         saleCount,
-        0
+        l2ChainId,
+        1200000,
+        saleInformation.hashValue
       );
       await cancelTx.wait();
 
@@ -574,7 +602,8 @@ describe("5.FWETHEditCancel", function () {
         zeroAddr,
         l2ETHERC20.address,
         threeETH,
-        twoETH
+        twoETH,
+        l1ChainId
       )).wait()
 
       // l2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
@@ -599,18 +628,33 @@ describe("5.FWETHEditCancel", function () {
 
     it("revert the editFW (need the make the requestFW Owner)", async () => {
       const saleCount = await L2FastWithdrawProxy.saleCount()
-      
-      const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
-        saleCount,
+
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+
+      await expect(L1FastWithdrawContract.connect(l1user1).edit(
+        saleInformation.l1token,
+        saleInformation.l2token,
+        threeETH,
         oneETH,
-        twoETH,
-        0
-      )
-      await editTx.wait()
-      // console.log("editTx : ", editTx.hash)
+        saleCount,
+        l2ChainId,
+        1200000,
+        saleInformation.hashValue
+      )).to.be.rejectedWith("Hash values do not match.")
+      
+      // const editTx = await L1FastWithdrawContract.connect(l1user1).edit(
+      //   saleInformation.l1token,
+      //   saleInformation.l2token,
+      //   threeETH,
+      //   oneETH,
+      //   saleCount,
+      //   l2ChainId,
+      //   1200000,
+      //   saleInformation.hashValue
+      // )
+      // await editTx.wait()
     
-      await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
-      // console.log("send the Message L1 to L2");
+      // await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
     })
 
     it("after fail editFW", async () => {
@@ -633,25 +677,29 @@ describe("5.FWETHEditCancel", function () {
 
       const saleCount = await L2FastWithdrawProxy.saleCount()
 
+      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+
       const editTx = await L1FastWithdrawContract.connect(l1Wallet).edit(
-        saleCount,
+        saleInformation.l1token,
+        saleInformation.l2token,
+        threeETH,
         oneETH,
-        twoETH,
-        0
+        saleCount,
+        l2ChainId,
+        1200000,
+        saleInformation.hashValue
       )
       await editTx.wait()
       // console.log("editTx : ", editTx.hash)
     
       await messenger.waitForMessageStatus(editTx.hash, MessageStatus.RELAYED)
       // console.log("send the Message L1 to L2");
-
-      afterL2ETHBalance = await l2ETHERC20.balanceOf(l2Wallet.address)
-      // console.log('after l2 ETH(ERC20) balance (Wallet): ', afterL2ETHBalance.toString())
-      afterL2Contract = await l2ETHERC20.balanceOf(L2FastWithdrawContract.address)
-      // console.log('after l2 ETH (L2FastWithdrawBalance): ', afterL2Contract.toString())
-
-      expect(afterL2ETHBalance).to.be.gt(beforeL2ETHBalance)
-      expect(beforeL2Contract).to.be.gt(afterL2Contract)
+      
+      saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      let editCheck = await L2FastWithdrawContract.editCheck(saleInformation.hashValue)
+      if(editCheck != true) {
+        console.log("=============== edit ERROR ===============")
+      }
     })
   })
 

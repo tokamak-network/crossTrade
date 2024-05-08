@@ -322,16 +322,23 @@ describe("FWBasicTest", function () {
 
     it("L1FastWithdraw initialize", async () => {
       await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
       const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1FastWithdraw initialize ERROR!!===========")
       }
+    })
+
+    it("L1FastWithdraw set chainInfo", async () => {
+      await (await L1FastWithdrawProxy.connect(l1Wallet).chainInfo(
+        L2FastWithdrawContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
     })
 
     it("L2FastWithdraw initialize", async () => {
@@ -402,15 +409,13 @@ describe("FWBasicTest", function () {
     it("requestFW in L2", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforeL2FastWithdrawBalance = await l2Provider.getBalance(L2FastWithdrawContract.address)
-
-      let chainId = await L2FastWithdrawContract.getChainID()
       
       await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
         zeroAddr,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
-        chainId,
+        l1ChainId,
         {
           value: threeETH
         }
