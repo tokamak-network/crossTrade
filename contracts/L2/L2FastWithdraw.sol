@@ -191,7 +191,6 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         );
     }
 
-    //totalAmount는 변경 불가라서 editFW는 필요없음
     function editFW(
         address _msgSender,
         uint256 _fwAmount,

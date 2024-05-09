@@ -111,9 +111,6 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         successFW[L2HashValue] = true;
     }
 
-    //totalAmount는 변경 불가
-    //fwAmount만 변경 
-    // Storage 저장 추가 (Hash mapping 값) 
     function edit(
         address _l1token,
         address _l2token,

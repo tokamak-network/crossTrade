@@ -18,9 +18,6 @@ contract L2FastWithdrawStorage {
     address public legacyERC20ETH;
     address public nativeL1token;
 
-    address public msgSender;
-    uint256 public chainID;
-
     uint256 public saleCount;
 
     mapping(uint256 => RequestData) public dealData;
