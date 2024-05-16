@@ -56,7 +56,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             IERC20(_l1token).transfer(_to,_fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
             require(msg.value == _fwAmount, "FW: ETH need same amount");
-            payable(address(this)).call{value: msg.value};
+            // payable(address(this)).call{value: msg.value};
             (bool sent, ) = payable(_to).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
