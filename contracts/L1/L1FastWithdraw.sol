@@ -52,8 +52,8 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
             //need to approve
-            IERC20(_l1token).transferFrom(msg.sender, address(this), _fwAmount);
-            IERC20(_l1token).transfer(_to,_fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
+            IERC20(_l1token).safeTransfer(_to,_fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
             require(msg.value == _fwAmount, "FW: ETH need same amount");
             // payable(address(this)).call{value: msg.value};
@@ -61,7 +61,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             require(sent, "claim fail");
         } else {
             //need to approve
-            IERC20(_l1token).transferFrom(msg.sender, _to, _fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
         }
         
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
