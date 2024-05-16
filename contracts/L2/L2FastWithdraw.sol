@@ -81,10 +81,11 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         payable
         onlyEOA
     {
+        require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
         unchecked {
             ++saleCount;
         }
-        
+
         //L1 chainId도 넣으면 좋겠다. -> 다시 상의하기 L1 chainId
         if (_l1token == address(0)){
             _l1token = getL1token(_l2token);
