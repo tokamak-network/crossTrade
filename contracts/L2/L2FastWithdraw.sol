@@ -225,9 +225,9 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         returns (address l1Token) 
     {
         if (_l2token == legacyERC20ETH) {
-            return l1Token = nativeL1token;
+            l1Token = nativeL1token;
         } else {
-            return l1Token = ILegacyMintableERC20(_l2token).l1Token();
+            l1Token = ILegacyMintableERC20(_l2token).l1Token();
         }
     }
 

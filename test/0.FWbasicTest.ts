@@ -24,7 +24,6 @@ import dotenv from "dotenv" ;
 dotenv.config();
 
 
-
 describe("FWBasicTest", function () {
   let network = "devnetL1"
   let deployedAddress = require('./data/deployed.'+network+'.json');
@@ -453,9 +452,15 @@ describe("FWBasicTest", function () {
       let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
+      console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
       let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
+      console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
+      let beforel2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
+        l2NativeTokenContract.address
+      )
+      console.log("beforel2NativeTokenBalanceContract(Contract) : ", beforel2NativeTokenBalanceContract.toString())
     
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
       await providerApproveTx.wait()
@@ -488,9 +493,18 @@ describe("FWBasicTest", function () {
       let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
+      console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+
       let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
+      console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
+
+      let afterl2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
+        l2NativeTokenContract.address
+      )
+      console.log("afterl2NativeTokenBalanceContract(Contract) : ", afterl2NativeTokenBalanceContract.toString())
+
 
       expect(afterl2Balance).to.be.equal(beforel2Balance)
       expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
