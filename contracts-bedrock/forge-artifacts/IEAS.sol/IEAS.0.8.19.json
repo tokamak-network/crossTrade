@@ -2221,56 +2221,56 @@
   },
   "ast": {
     "absolutePath": "src/EAS/IEAS.sol",
-    "id": 30670,
+    "id": 30683,
     "exportedSymbols": {
       "Attestation": [
-        28303
+        28316
       ],
       "AttestationRequest": [
-        30402
-      ],
-      "AttestationRequestData": [
-        30396
-      ],
-      "DelegatedAttestationRequest": [
         30415
       ],
+      "AttestationRequestData": [
+        30409
+      ],
+      "DelegatedAttestationRequest": [
+        30428
+      ],
       "DelegatedRevocationRequest": [
-        30461
+        30474
       ],
       "IEAS": [
-        30669
+        30682
       ],
       "ISchemaRegistry": [
-        30717
+        30730
       ],
       "MultiAttestationRequest": [
-        30422
+        30435
       ],
       "MultiDelegatedAttestationRequest": [
-        30437
+        30450
       ],
       "MultiDelegatedRevocationRequest": [
-        30483
+        30496
       ],
       "MultiRevocationRequest": [
-        30468
+        30481
       ],
       "RevocationRequest": [
-        30448
+        30461
       ],
       "RevocationRequestData": [
-        30442
+        30455
       ],
       "Signature": [
-        28282
+        28295
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:17674:25",
     "nodes": [
       {
-        "id": 30378,
+        "id": 30391,
         "nodeType": "PragmaDirective",
         "src": "32:23:25",
         "nodes": [],
@@ -2282,23 +2282,23 @@
         ]
       },
       {
-        "id": 30380,
+        "id": 30393,
         "nodeType": "ImportDirective",
         "src": "57:62:25",
         "nodes": [],
         "absolutePath": "src/EAS/ISchemaRegistry.sol",
         "file": "src/EAS/ISchemaRegistry.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 30670,
-        "sourceUnit": 30718,
+        "scope": 30683,
+        "sourceUnit": 30731,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 30379,
+              "id": 30392,
               "name": "ISchemaRegistry",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 30717,
+              "referencedDeclaration": 30730,
               "src": "66:15:25",
               "typeDescriptions": {}
             },
@@ -2308,23 +2308,23 @@
         "unitAlias": ""
       },
       {
-        "id": 30383,
+        "id": 30396,
         "nodeType": "ImportDirective",
         "src": "120:60:25",
         "nodes": [],
         "absolutePath": "src/EAS/Common.sol",
         "file": "src/EAS/Common.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 30670,
-        "sourceUnit": 28432,
+        "scope": 30683,
+        "sourceUnit": 28445,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 30381,
+              "id": 30394,
               "name": "Attestation",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 28303,
+              "referencedDeclaration": 28316,
               "src": "129:11:25",
               "typeDescriptions": {}
             },
@@ -2332,11 +2332,11 @@
           },
           {
             "foreign": {
-              "id": 30382,
+              "id": 30395,
               "name": "Signature",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 28282,
+              "referencedDeclaration": 28295,
               "src": "142:9:25",
               "typeDescriptions": {}
             },
@@ -2346,7 +2346,7 @@
         "unitAlias": ""
       },
       {
-        "id": 30396,
+        "id": 30409,
         "nodeType": "StructDefinition",
         "src": "255:477:25",
         "nodes": [],
@@ -2354,12 +2354,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30385,
+            "id": 30398,
             "mutability": "mutable",
             "name": "recipient",
             "nameLocation": "299:9:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "291:17:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2368,7 +2368,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 30384,
+              "id": 30397,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "291:7:25",
@@ -2382,12 +2382,12 @@
           },
           {
             "constant": false,
-            "id": 30387,
+            "id": 30400,
             "mutability": "mutable",
             "name": "expirationTime",
             "nameLocation": "358:14:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "351:21:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2396,7 +2396,7 @@
               "typeString": "uint64"
             },
             "typeName": {
-              "id": 30386,
+              "id": 30399,
               "name": "uint64",
               "nodeType": "ElementaryTypeName",
               "src": "351:6:25",
@@ -2409,12 +2409,12 @@
           },
           {
             "constant": false,
-            "id": 30389,
+            "id": 30402,
             "mutability": "mutable",
             "name": "revocable",
             "nameLocation": "442:9:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "437:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2423,7 +2423,7 @@
               "typeString": "bool"
             },
             "typeName": {
-              "id": 30388,
+              "id": 30401,
               "name": "bool",
               "nodeType": "ElementaryTypeName",
               "src": "437:4:25",
@@ -2436,12 +2436,12 @@
           },
           {
             "constant": false,
-            "id": 30391,
+            "id": 30404,
             "mutability": "mutable",
             "name": "refUID",
             "nameLocation": "506:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "498:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2450,7 +2450,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30390,
+              "id": 30403,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "498:7:25",
@@ -2463,12 +2463,12 @@
           },
           {
             "constant": false,
-            "id": 30393,
+            "id": 30406,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "563:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "557:10:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2477,7 +2477,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 30392,
+              "id": 30405,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "557:5:25",
@@ -2490,12 +2490,12 @@
           },
           {
             "constant": false,
-            "id": 30395,
+            "id": 30408,
             "mutability": "mutable",
             "name": "value",
             "nameLocation": "609:5:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30396,
+            "scope": 30409,
             "src": "601:13:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2504,7 +2504,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 30394,
+              "id": 30407,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "601:7:25",
@@ -2518,11 +2518,11 @@
         ],
         "name": "AttestationRequestData",
         "nameLocation": "262:22:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30402,
+        "id": 30415,
         "nodeType": "StructDefinition",
         "src": "812:167:25",
         "nodes": [],
@@ -2530,12 +2530,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30398,
+            "id": 30411,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "852:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30402,
+            "scope": 30415,
             "src": "844:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2544,7 +2544,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30397,
+              "id": 30410,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "844:7:25",
@@ -2557,36 +2557,36 @@
           },
           {
             "constant": false,
-            "id": 30401,
+            "id": 30414,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "927:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30402,
+            "scope": 30415,
             "src": "904:27:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+              "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
               "typeString": "struct AttestationRequestData"
             },
             "typeName": {
-              "id": 30400,
+              "id": 30413,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30399,
+                "id": 30412,
                 "name": "AttestationRequestData",
                 "nameLocations": [
                   "904:22:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 30396,
+                "referencedDeclaration": 30409,
                 "src": "904:22:25"
               },
-              "referencedDeclaration": 30396,
+              "referencedDeclaration": 30409,
               "src": "904:22:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+                "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
                 "typeString": "struct AttestationRequestData"
               }
             },
@@ -2595,11 +2595,11 @@
         ],
         "name": "AttestationRequest",
         "nameLocation": "819:18:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30415,
+        "id": 30428,
         "nodeType": "StructDefinition",
         "src": "1074:341:25",
         "nodes": [],
@@ -2607,12 +2607,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30404,
+            "id": 30417,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "1123:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30415,
+            "scope": 30428,
             "src": "1115:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2621,7 +2621,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30403,
+              "id": 30416,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "1115:7:25",
@@ -2634,36 +2634,36 @@
           },
           {
             "constant": false,
-            "id": 30407,
+            "id": 30420,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "1198:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30415,
+            "scope": 30428,
             "src": "1175:27:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+              "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
               "typeString": "struct AttestationRequestData"
             },
             "typeName": {
-              "id": 30406,
+              "id": 30419,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30405,
+                "id": 30418,
                 "name": "AttestationRequestData",
                 "nameLocations": [
                   "1175:22:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 30396,
+                "referencedDeclaration": 30409,
                 "src": "1175:22:25"
               },
-              "referencedDeclaration": 30396,
+              "referencedDeclaration": 30409,
               "src": "1175:22:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+                "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
                 "typeString": "struct AttestationRequestData"
               }
             },
@@ -2671,36 +2671,36 @@
           },
           {
             "constant": false,
-            "id": 30410,
+            "id": 30423,
             "mutability": "mutable",
             "name": "signature",
             "nameLocation": "1263:9:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30415,
+            "scope": 30428,
             "src": "1253:19:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+              "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
               "typeString": "struct Signature"
             },
             "typeName": {
-              "id": 30409,
+              "id": 30422,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30408,
+                "id": 30421,
                 "name": "Signature",
                 "nameLocations": [
                   "1253:9:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 28282,
+                "referencedDeclaration": 28295,
                 "src": "1253:9:25"
               },
-              "referencedDeclaration": 28282,
+              "referencedDeclaration": 28295,
               "src": "1253:9:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+                "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
                 "typeString": "struct Signature"
               }
             },
@@ -2708,12 +2708,12 @@
           },
           {
             "constant": false,
-            "id": 30412,
+            "id": 30425,
             "mutability": "mutable",
             "name": "attester",
             "nameLocation": "1315:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30415,
+            "scope": 30428,
             "src": "1307:16:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2722,7 +2722,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 30411,
+              "id": 30424,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "1307:7:25",
@@ -2736,12 +2736,12 @@
           },
           {
             "constant": false,
-            "id": 30414,
+            "id": 30427,
             "mutability": "mutable",
             "name": "deadline",
             "nameLocation": "1362:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30415,
+            "scope": 30428,
             "src": "1355:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2750,7 +2750,7 @@
               "typeString": "uint64"
             },
             "typeName": {
-              "id": 30413,
+              "id": 30426,
               "name": "uint64",
               "nodeType": "ElementaryTypeName",
               "src": "1355:6:25",
@@ -2764,11 +2764,11 @@
         ],
         "name": "DelegatedAttestationRequest",
         "nameLocation": "1081:27:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30422,
+        "id": 30435,
         "nodeType": "StructDefinition",
         "src": "1501:174:25",
         "nodes": [],
@@ -2776,12 +2776,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30417,
+            "id": 30430,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "1546:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30422,
+            "scope": 30435,
             "src": "1538:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2790,7 +2790,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30416,
+              "id": 30429,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "1538:7:25",
@@ -2803,45 +2803,45 @@
           },
           {
             "constant": false,
-            "id": 30421,
+            "id": 30434,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "1623:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30422,
+            "scope": 30435,
             "src": "1598:29:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30396_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30409_storage_$dyn_storage_ptr",
               "typeString": "struct AttestationRequestData[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30419,
+                "id": 30432,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30418,
+                  "id": 30431,
                   "name": "AttestationRequestData",
                   "nameLocations": [
                     "1598:22:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 30396,
+                  "referencedDeclaration": 30409,
                   "src": "1598:22:25"
                 },
-                "referencedDeclaration": 30396,
+                "referencedDeclaration": 30409,
                 "src": "1598:22:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+                  "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
                   "typeString": "struct AttestationRequestData"
                 }
               },
-              "id": 30420,
+              "id": 30433,
               "nodeType": "ArrayTypeName",
               "src": "1598:24:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30396_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30409_storage_$dyn_storage_ptr",
                 "typeString": "struct AttestationRequestData[]"
               }
             },
@@ -2850,11 +2850,11 @@
         ],
         "name": "MultiAttestationRequest",
         "nameLocation": "1508:23:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30437,
+        "id": 30450,
         "nodeType": "StructDefinition",
         "src": "1771:445:25",
         "nodes": [],
@@ -2862,12 +2862,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30424,
+            "id": 30437,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "1825:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30437,
+            "scope": 30450,
             "src": "1817:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2876,7 +2876,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30423,
+              "id": 30436,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "1817:7:25",
@@ -2889,45 +2889,45 @@
           },
           {
             "constant": false,
-            "id": 30428,
+            "id": 30441,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "1902:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30437,
+            "scope": 30450,
             "src": "1877:29:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30396_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30409_storage_$dyn_storage_ptr",
               "typeString": "struct AttestationRequestData[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30426,
+                "id": 30439,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30425,
+                  "id": 30438,
                   "name": "AttestationRequestData",
                   "nameLocations": [
                     "1877:22:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 30396,
+                  "referencedDeclaration": 30409,
                   "src": "1877:22:25"
                 },
-                "referencedDeclaration": 30396,
+                "referencedDeclaration": 30409,
                 "src": "1877:22:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_AttestationRequestData_$30396_storage_ptr",
+                  "typeIdentifier": "t_struct$_AttestationRequestData_$30409_storage_ptr",
                   "typeString": "struct AttestationRequestData"
                 }
               },
-              "id": 30427,
+              "id": 30440,
               "nodeType": "ArrayTypeName",
               "src": "1877:24:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30396_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_AttestationRequestData_$30409_storage_$dyn_storage_ptr",
                 "typeString": "struct AttestationRequestData[]"
               }
             },
@@ -2935,45 +2935,45 @@
           },
           {
             "constant": false,
-            "id": 30432,
+            "id": 30445,
             "mutability": "mutable",
             "name": "signatures",
             "nameLocation": "1970:10:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30437,
+            "scope": 30450,
             "src": "1958:22:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_Signature_$28282_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_Signature_$28295_storage_$dyn_storage_ptr",
               "typeString": "struct Signature[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30430,
+                "id": 30443,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30429,
+                  "id": 30442,
                   "name": "Signature",
                   "nameLocations": [
                     "1958:9:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 28282,
+                  "referencedDeclaration": 28295,
                   "src": "1958:9:25"
                 },
-                "referencedDeclaration": 28282,
+                "referencedDeclaration": 28295,
                 "src": "1958:9:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+                  "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
                   "typeString": "struct Signature"
                 }
               },
-              "id": 30431,
+              "id": 30444,
               "nodeType": "ArrayTypeName",
               "src": "1958:11:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_Signature_$28282_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_Signature_$28295_storage_$dyn_storage_ptr",
                 "typeString": "struct Signature[]"
               }
             },
@@ -2981,12 +2981,12 @@
           },
           {
             "constant": false,
-            "id": 30434,
+            "id": 30447,
             "mutability": "mutable",
             "name": "attester",
             "nameLocation": "2116:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30437,
+            "scope": 30450,
             "src": "2108:16:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -2995,7 +2995,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 30433,
+              "id": 30446,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "2108:7:25",
@@ -3009,12 +3009,12 @@
           },
           {
             "constant": false,
-            "id": 30436,
+            "id": 30449,
             "mutability": "mutable",
             "name": "deadline",
             "nameLocation": "2163:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30437,
+            "scope": 30450,
             "src": "2156:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3023,7 +3023,7 @@
               "typeString": "uint64"
             },
             "typeName": {
-              "id": 30435,
+              "id": 30448,
               "name": "uint64",
               "nodeType": "ElementaryTypeName",
               "src": "2156:6:25",
@@ -3037,11 +3037,11 @@
         ],
         "name": "MultiDelegatedAttestationRequest",
         "nameLocation": "1778:32:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30442,
+        "id": 30455,
         "nodeType": "StructDefinition",
         "src": "2290:224:25",
         "nodes": [],
@@ -3049,12 +3049,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30439,
+            "id": 30452,
             "mutability": "mutable",
             "name": "uid",
             "nameLocation": "2333:3:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30442,
+            "scope": 30455,
             "src": "2325:11:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3063,7 +3063,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30438,
+              "id": 30451,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "2325:7:25",
@@ -3076,12 +3076,12 @@
           },
           {
             "constant": false,
-            "id": 30441,
+            "id": 30454,
             "mutability": "mutable",
             "name": "value",
             "nameLocation": "2391:5:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30442,
+            "scope": 30455,
             "src": "2383:13:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3090,7 +3090,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 30440,
+              "id": 30453,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "2383:7:25",
@@ -3104,11 +3104,11 @@
         ],
         "name": "RevocationRequestData",
         "nameLocation": "2297:21:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30448,
+        "id": 30461,
         "nodeType": "StructDefinition",
         "src": "2593:164:25",
         "nodes": [],
@@ -3116,12 +3116,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30444,
+            "id": 30457,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "2632:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30448,
+            "scope": 30461,
             "src": "2624:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3130,7 +3130,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30443,
+              "id": 30456,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "2624:7:25",
@@ -3143,36 +3143,36 @@
           },
           {
             "constant": false,
-            "id": 30447,
+            "id": 30460,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "2706:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30448,
+            "scope": 30461,
             "src": "2684:26:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+              "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
               "typeString": "struct RevocationRequestData"
             },
             "typeName": {
-              "id": 30446,
+              "id": 30459,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30445,
+                "id": 30458,
                 "name": "RevocationRequestData",
                 "nameLocations": [
                   "2684:21:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 30442,
+                "referencedDeclaration": 30455,
                 "src": "2684:21:25"
               },
-              "referencedDeclaration": 30442,
+              "referencedDeclaration": 30455,
               "src": "2684:21:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+                "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
                 "typeString": "struct RevocationRequestData"
               }
             },
@@ -3181,11 +3181,11 @@
         ],
         "name": "RevocationRequest",
         "nameLocation": "2600:17:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30461,
+        "id": 30474,
         "nodeType": "StructDefinition",
         "src": "2846:336:25",
         "nodes": [],
@@ -3193,12 +3193,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30450,
+            "id": 30463,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "2894:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30461,
+            "scope": 30474,
             "src": "2886:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3207,7 +3207,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30449,
+              "id": 30462,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "2886:7:25",
@@ -3220,36 +3220,36 @@
           },
           {
             "constant": false,
-            "id": 30453,
+            "id": 30466,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "2968:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30461,
+            "scope": 30474,
             "src": "2946:26:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+              "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
               "typeString": "struct RevocationRequestData"
             },
             "typeName": {
-              "id": 30452,
+              "id": 30465,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30451,
+                "id": 30464,
                 "name": "RevocationRequestData",
                 "nameLocations": [
                   "2946:21:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 30442,
+                "referencedDeclaration": 30455,
                 "src": "2946:21:25"
               },
-              "referencedDeclaration": 30442,
+              "referencedDeclaration": 30455,
               "src": "2946:21:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+                "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
                 "typeString": "struct RevocationRequestData"
               }
             },
@@ -3257,36 +3257,36 @@
           },
           {
             "constant": false,
-            "id": 30456,
+            "id": 30469,
             "mutability": "mutable",
             "name": "signature",
             "nameLocation": "3032:9:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30461,
+            "scope": 30474,
             "src": "3022:19:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+              "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
               "typeString": "struct Signature"
             },
             "typeName": {
-              "id": 30455,
+              "id": 30468,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30454,
+                "id": 30467,
                 "name": "Signature",
                 "nameLocations": [
                   "3022:9:25"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 28282,
+                "referencedDeclaration": 28295,
                 "src": "3022:9:25"
               },
-              "referencedDeclaration": 28282,
+              "referencedDeclaration": 28295,
               "src": "3022:9:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+                "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
                 "typeString": "struct Signature"
               }
             },
@@ -3294,12 +3294,12 @@
           },
           {
             "constant": false,
-            "id": 30458,
+            "id": 30471,
             "mutability": "mutable",
             "name": "revoker",
             "nameLocation": "3084:7:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30461,
+            "scope": 30474,
             "src": "3076:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3308,7 +3308,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 30457,
+              "id": 30470,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "3076:7:25",
@@ -3322,12 +3322,12 @@
           },
           {
             "constant": false,
-            "id": 30460,
+            "id": 30473,
             "mutability": "mutable",
             "name": "deadline",
             "nameLocation": "3129:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30461,
+            "scope": 30474,
             "src": "3122:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3336,7 +3336,7 @@
               "typeString": "uint64"
             },
             "typeName": {
-              "id": 30459,
+              "id": 30472,
               "name": "uint64",
               "nodeType": "ElementaryTypeName",
               "src": "3122:6:25",
@@ -3350,11 +3350,11 @@
         ],
         "name": "DelegatedRevocationRequest",
         "nameLocation": "2853:26:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30468,
+        "id": 30481,
         "nodeType": "StructDefinition",
         "src": "3267:171:25",
         "nodes": [],
@@ -3362,12 +3362,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30463,
+            "id": 30476,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "3311:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30468,
+            "scope": 30481,
             "src": "3303:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3376,7 +3376,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30462,
+              "id": 30475,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "3303:7:25",
@@ -3389,45 +3389,45 @@
           },
           {
             "constant": false,
-            "id": 30467,
+            "id": 30480,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "3387:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30468,
+            "scope": 30481,
             "src": "3363:28:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30442_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30455_storage_$dyn_storage_ptr",
               "typeString": "struct RevocationRequestData[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30465,
+                "id": 30478,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30464,
+                  "id": 30477,
                   "name": "RevocationRequestData",
                   "nameLocations": [
                     "3363:21:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 30442,
+                  "referencedDeclaration": 30455,
                   "src": "3363:21:25"
                 },
-                "referencedDeclaration": 30442,
+                "referencedDeclaration": 30455,
                 "src": "3363:21:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+                  "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
                   "typeString": "struct RevocationRequestData"
                 }
               },
-              "id": 30466,
+              "id": 30479,
               "nodeType": "ArrayTypeName",
               "src": "3363:23:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30442_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30455_storage_$dyn_storage_ptr",
                 "typeString": "struct RevocationRequestData[]"
               }
             },
@@ -3436,11 +3436,11 @@
         ],
         "name": "MultiRevocationRequest",
         "nameLocation": "3274:22:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30483,
+        "id": 30496,
         "nodeType": "StructDefinition",
         "src": "3533:440:25",
         "nodes": [],
@@ -3448,12 +3448,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30470,
+            "id": 30483,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "3586:6:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30483,
+            "scope": 30496,
             "src": "3578:14:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3462,7 +3462,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30469,
+              "id": 30482,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "3578:7:25",
@@ -3475,45 +3475,45 @@
           },
           {
             "constant": false,
-            "id": 30474,
+            "id": 30487,
             "mutability": "mutable",
             "name": "data",
             "nameLocation": "3662:4:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30483,
+            "scope": 30496,
             "src": "3638:28:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30442_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30455_storage_$dyn_storage_ptr",
               "typeString": "struct RevocationRequestData[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30472,
+                "id": 30485,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30471,
+                  "id": 30484,
                   "name": "RevocationRequestData",
                   "nameLocations": [
                     "3638:21:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 30442,
+                  "referencedDeclaration": 30455,
                   "src": "3638:21:25"
                 },
-                "referencedDeclaration": 30442,
+                "referencedDeclaration": 30455,
                 "src": "3638:21:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_RevocationRequestData_$30442_storage_ptr",
+                  "typeIdentifier": "t_struct$_RevocationRequestData_$30455_storage_ptr",
                   "typeString": "struct RevocationRequestData"
                 }
               },
-              "id": 30473,
+              "id": 30486,
               "nodeType": "ArrayTypeName",
               "src": "3638:23:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30442_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_RevocationRequestData_$30455_storage_$dyn_storage_ptr",
                 "typeString": "struct RevocationRequestData[]"
               }
             },
@@ -3521,45 +3521,45 @@
           },
           {
             "constant": false,
-            "id": 30478,
+            "id": 30491,
             "mutability": "mutable",
             "name": "signatures",
             "nameLocation": "3729:10:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30483,
+            "scope": 30496,
             "src": "3717:22:25",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_Signature_$28282_storage_$dyn_storage_ptr",
+              "typeIdentifier": "t_array$_t_struct$_Signature_$28295_storage_$dyn_storage_ptr",
               "typeString": "struct Signature[]"
             },
             "typeName": {
               "baseType": {
-                "id": 30476,
+                "id": 30489,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 30475,
+                  "id": 30488,
                   "name": "Signature",
                   "nameLocations": [
                     "3717:9:25"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 28282,
+                  "referencedDeclaration": 28295,
                   "src": "3717:9:25"
                 },
-                "referencedDeclaration": 28282,
+                "referencedDeclaration": 28295,
                 "src": "3717:9:25",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Signature_$28282_storage_ptr",
+                  "typeIdentifier": "t_struct$_Signature_$28295_storage_ptr",
                   "typeString": "struct Signature"
                 }
               },
-              "id": 30477,
+              "id": 30490,
               "nodeType": "ArrayTypeName",
               "src": "3717:11:25",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_Signature_$28282_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_Signature_$28295_storage_$dyn_storage_ptr",
                 "typeString": "struct Signature[]"
               }
             },
@@ -3567,12 +3567,12 @@
           },
           {
             "constant": false,
-            "id": 30480,
+            "id": 30493,
             "mutability": "mutable",
             "name": "revoker",
             "nameLocation": "3875:7:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30483,
+            "scope": 30496,
             "src": "3867:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3581,7 +3581,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 30479,
+              "id": 30492,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "3867:7:25",
@@ -3595,12 +3595,12 @@
           },
           {
             "constant": false,
-            "id": 30482,
+            "id": 30495,
             "mutability": "mutable",
             "name": "deadline",
             "nameLocation": "3920:8:25",
             "nodeType": "VariableDeclaration",
-            "scope": 30483,
+            "scope": 30496,
             "src": "3913:15:25",
             "stateVariable": false,
             "storageLocation": "default",
@@ -3609,7 +3609,7 @@
               "typeString": "uint64"
             },
             "typeName": {
-              "id": 30481,
+              "id": 30494,
               "name": "uint64",
               "nodeType": "ElementaryTypeName",
               "src": "3913:6:25",
@@ -3623,22 +3623,22 @@
         ],
         "name": "MultiDelegatedRevocationRequest",
         "nameLocation": "3540:31:25",
-        "scope": 30670,
+        "scope": 30683,
         "visibility": "public"
       },
       {
-        "id": 30669,
+        "id": 30682,
         "nodeType": "ContractDefinition",
         "src": "4047:13658:25",
         "nodes": [
           {
-            "id": 30495,
+            "id": 30508,
             "nodeType": "EventDefinition",
             "src": "4330:108:25",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 30485,
+              "id": 30498,
               "nodeType": "StructuredDocumentation",
               "src": "4068:257:25",
               "text": "@dev Emitted when an attestation has been made.\n @param recipient The recipient of the attestation.\n @param attester The attesting account.\n @param uid The UID the revoked attestation.\n @param schemaUID The UID of the schema."
@@ -3647,18 +3647,18 @@
             "name": "Attested",
             "nameLocation": "4336:8:25",
             "parameters": {
-              "id": 30494,
+              "id": 30507,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30487,
+                  "id": 30500,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "recipient",
                   "nameLocation": "4361:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30495,
+                  "scope": 30508,
                   "src": "4345:25:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3667,7 +3667,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30486,
+                    "id": 30499,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4345:7:25",
@@ -3681,13 +3681,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30489,
+                  "id": 30502,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "attester",
                   "nameLocation": "4388:8:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30495,
+                  "scope": 30508,
                   "src": "4372:24:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3696,7 +3696,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30488,
+                    "id": 30501,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4372:7:25",
@@ -3710,13 +3710,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30491,
+                  "id": 30504,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "4406:3:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30495,
+                  "scope": 30508,
                   "src": "4398:11:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3725,7 +3725,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30490,
+                    "id": 30503,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "4398:7:25",
@@ -3738,13 +3738,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30493,
+                  "id": 30506,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "schemaUID",
                   "nameLocation": "4427:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30495,
+                  "scope": 30508,
                   "src": "4411:25:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3753,7 +3753,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30492,
+                    "id": 30505,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "4411:7:25",
@@ -3769,13 +3769,13 @@
             }
           },
           {
-            "id": 30506,
+            "id": 30519,
             "nodeType": "EventDefinition",
             "src": "4709:107:25",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 30496,
+              "id": 30509,
               "nodeType": "StructuredDocumentation",
               "src": "4444:260:25",
               "text": "@dev Emitted when an attestation has been revoked.\n @param recipient The recipient of the attestation.\n @param attester The attesting account.\n @param schemaUID The UID of the schema.\n @param uid The UID the revoked attestation."
@@ -3784,18 +3784,18 @@
             "name": "Revoked",
             "nameLocation": "4715:7:25",
             "parameters": {
-              "id": 30505,
+              "id": 30518,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30498,
+                  "id": 30511,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "recipient",
                   "nameLocation": "4739:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30506,
+                  "scope": 30519,
                   "src": "4723:25:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3804,7 +3804,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30497,
+                    "id": 30510,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4723:7:25",
@@ -3818,13 +3818,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30500,
+                  "id": 30513,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "attester",
                   "nameLocation": "4766:8:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30506,
+                  "scope": 30519,
                   "src": "4750:24:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3833,7 +3833,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30499,
+                    "id": 30512,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4750:7:25",
@@ -3847,13 +3847,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30502,
+                  "id": 30515,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "4784:3:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30506,
+                  "scope": 30519,
                   "src": "4776:11:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3862,7 +3862,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30501,
+                    "id": 30514,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "4776:7:25",
@@ -3875,13 +3875,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30504,
+                  "id": 30517,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "schemaUID",
                   "nameLocation": "4805:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30506,
+                  "scope": 30519,
                   "src": "4789:25:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3890,7 +3890,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30503,
+                    "id": 30516,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "4789:7:25",
@@ -3906,13 +3906,13 @@
             }
           },
           {
-            "id": 30513,
+            "id": 30526,
             "nodeType": "EventDefinition",
             "src": "4947:66:25",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 30507,
+              "id": 30520,
               "nodeType": "StructuredDocumentation",
               "src": "4822:120:25",
               "text": "@dev Emitted when a data has been timestamped.\n @param data The data.\n @param timestamp The timestamp."
@@ -3921,18 +3921,18 @@
             "name": "Timestamped",
             "nameLocation": "4953:11:25",
             "parameters": {
-              "id": 30512,
+              "id": 30525,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30509,
+                  "id": 30522,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "4981:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30513,
+                  "scope": 30526,
                   "src": "4965:20:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3941,7 +3941,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30508,
+                    "id": 30521,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "4965:7:25",
@@ -3954,13 +3954,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30511,
+                  "id": 30524,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "timestamp",
                   "nameLocation": "5002:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30513,
+                  "scope": 30526,
                   "src": "4987:24:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3969,7 +3969,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30510,
+                    "id": 30523,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "4987:6:25",
@@ -3985,13 +3985,13 @@
             }
           },
           {
-            "id": 30522,
+            "id": 30535,
             "nodeType": "EventDefinition",
             "src": "5191:95:25",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 30514,
+              "id": 30527,
               "nodeType": "StructuredDocumentation",
               "src": "5019:167:25",
               "text": "@dev Emitted when a data has been revoked.\n @param revoker The address of the revoker.\n @param data The data.\n @param timestamp The timestamp."
@@ -4000,18 +4000,18 @@
             "name": "RevokedOffchain",
             "nameLocation": "5197:15:25",
             "parameters": {
-              "id": 30521,
+              "id": 30534,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30516,
+                  "id": 30529,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "revoker",
                   "nameLocation": "5229:7:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30522,
+                  "scope": 30535,
                   "src": "5213:23:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4020,7 +4020,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30515,
+                    "id": 30528,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "5213:7:25",
@@ -4034,13 +4034,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30518,
+                  "id": 30531,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "5254:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30522,
+                  "scope": 30535,
                   "src": "5238:20:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4049,7 +4049,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30517,
+                    "id": 30530,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "5238:7:25",
@@ -4062,13 +4062,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30520,
+                  "id": 30533,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "timestamp",
                   "nameLocation": "5275:9:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30522,
+                  "scope": 30535,
                   "src": "5260:24:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4077,7 +4077,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30519,
+                    "id": 30532,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "5260:6:25",
@@ -4093,12 +4093,12 @@
             }
           },
           {
-            "id": 30529,
+            "id": 30542,
             "nodeType": "FunctionDefinition",
             "src": "5418:69:25",
             "nodes": [],
             "documentation": {
-              "id": 30523,
+              "id": 30536,
               "nodeType": "StructuredDocumentation",
               "src": "5292:121:25",
               "text": "@notice Returns the address of the global schema registry.\n @return The address of the global schema registry."
@@ -4110,47 +4110,47 @@
             "name": "getSchemaRegistry",
             "nameLocation": "5427:17:25",
             "parameters": {
-              "id": 30524,
+              "id": 30537,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "5444:2:25"
             },
             "returnParameters": {
-              "id": 30528,
+              "id": 30541,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30527,
+                  "id": 30540,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30529,
+                  "scope": 30542,
                   "src": "5470:15:25",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ISchemaRegistry_$30717",
+                    "typeIdentifier": "t_contract$_ISchemaRegistry_$30730",
                     "typeString": "contract ISchemaRegistry"
                   },
                   "typeName": {
-                    "id": 30526,
+                    "id": 30539,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30525,
+                      "id": 30538,
                       "name": "ISchemaRegistry",
                       "nameLocations": [
                         "5470:15:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30717,
+                      "referencedDeclaration": 30730,
                       "src": "5470:15:25"
                     },
-                    "referencedDeclaration": 30717,
+                    "referencedDeclaration": 30730,
                     "src": "5470:15:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ISchemaRegistry_$30717",
+                      "typeIdentifier": "t_contract$_ISchemaRegistry_$30730",
                       "typeString": "contract ISchemaRegistry"
                     }
                   },
@@ -4159,18 +4159,18 @@
               ],
               "src": "5469:17:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30538,
+            "id": 30551,
             "nodeType": "FunctionDefinition",
             "src": "6186:88:25",
             "nodes": [],
             "documentation": {
-              "id": 30530,
+              "id": 30543,
               "nodeType": "StructuredDocumentation",
               "src": "5493:688:25",
               "text": "@notice Attests to a specific schema.\n      Example:\n      attest({\n         schema: \"0facc36681cbe2456019c1b0d1e7bedd6d1d40f6f324bf3dd3a4cef2999200a0\",\n         data: {\n             recipient: \"0xdEADBeAFdeAdbEafdeadbeafDeAdbEAFdeadbeaf\",\n             expirationTime: 0,\n             revocable: true,\n             refUID: \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n             data: \"0xF00D\",\n             value: 0\n         }\n      })\n @param request The arguments of the attestation request.\n @return The UID of the new attestation."
@@ -4182,41 +4182,41 @@
             "name": "attest",
             "nameLocation": "6195:6:25",
             "parameters": {
-              "id": 30534,
+              "id": 30547,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30533,
+                  "id": 30546,
                   "mutability": "mutable",
                   "name": "request",
                   "nameLocation": "6230:7:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30538,
+                  "scope": 30551,
                   "src": "6202:35:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AttestationRequest_$30402_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AttestationRequest_$30415_calldata_ptr",
                     "typeString": "struct AttestationRequest"
                   },
                   "typeName": {
-                    "id": 30532,
+                    "id": 30545,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30531,
+                      "id": 30544,
                       "name": "AttestationRequest",
                       "nameLocations": [
                         "6202:18:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30402,
+                      "referencedDeclaration": 30415,
                       "src": "6202:18:25"
                     },
-                    "referencedDeclaration": 30402,
+                    "referencedDeclaration": 30415,
                     "src": "6202:18:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AttestationRequest_$30402_storage_ptr",
+                      "typeIdentifier": "t_struct$_AttestationRequest_$30415_storage_ptr",
                       "typeString": "struct AttestationRequest"
                     }
                   },
@@ -4226,17 +4226,17 @@
               "src": "6201:37:25"
             },
             "returnParameters": {
-              "id": 30537,
+              "id": 30550,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30536,
+                  "id": 30549,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30538,
+                  "scope": 30551,
                   "src": "6265:7:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4245,7 +4245,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30535,
+                    "id": 30548,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "6265:7:25",
@@ -4259,18 +4259,18 @@
               ],
               "src": "6264:9:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30547,
+            "id": 30560,
             "nodeType": "FunctionDefinition",
             "src": "7386:142:25",
             "nodes": [],
             "documentation": {
-              "id": 30539,
+              "id": 30552,
               "nodeType": "StructuredDocumentation",
               "src": "6280:1101:25",
               "text": "@notice Attests to a specific schema via the provided EIP712 signature.\n         Example:\n         attestByDelegation({\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: {\n                 recipient: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',\n                 expirationTime: 1673891048,\n                 revocable: true,\n                 refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',\n                 data: '0x1234',\n                 value: 0\n             },\n             signature: {\n                 v: 28,\n                 r: '0x148c...b25b',\n                 s: '0x5a72...be22'\n             },\n             attester: '0xc5E8740aD971409492b1A63Db8d83025e0Fc427e',\n             deadline: 1673891048\n         })\n @param delegatedRequest The arguments of the delegated attestation request.\n @return The UID of the new attestation."
@@ -4282,41 +4282,41 @@
             "name": "attestByDelegation",
             "nameLocation": "7395:18:25",
             "parameters": {
-              "id": 30543,
+              "id": 30556,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30542,
+                  "id": 30555,
                   "mutability": "mutable",
                   "name": "delegatedRequest",
                   "nameLocation": "7451:16:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30547,
+                  "scope": 30560,
                   "src": "7414:53:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DelegatedAttestationRequest_$30415_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DelegatedAttestationRequest_$30428_calldata_ptr",
                     "typeString": "struct DelegatedAttestationRequest"
                   },
                   "typeName": {
-                    "id": 30541,
+                    "id": 30554,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30540,
+                      "id": 30553,
                       "name": "DelegatedAttestationRequest",
                       "nameLocations": [
                         "7414:27:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30415,
+                      "referencedDeclaration": 30428,
                       "src": "7414:27:25"
                     },
-                    "referencedDeclaration": 30415,
+                    "referencedDeclaration": 30428,
                     "src": "7414:27:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DelegatedAttestationRequest_$30415_storage_ptr",
+                      "typeIdentifier": "t_struct$_DelegatedAttestationRequest_$30428_storage_ptr",
                       "typeString": "struct DelegatedAttestationRequest"
                     }
                   },
@@ -4326,17 +4326,17 @@
               "src": "7413:55:25"
             },
             "returnParameters": {
-              "id": 30546,
+              "id": 30559,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30545,
+                  "id": 30558,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30547,
+                  "scope": 30560,
                   "src": "7519:7:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4345,7 +4345,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30544,
+                    "id": 30557,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "7519:7:25",
@@ -4359,18 +4359,18 @@
               ],
               "src": "7518:9:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30558,
+            "id": 30571,
             "nodeType": "FunctionDefinition",
             "src": "9342:139:25",
             "nodes": [],
             "documentation": {
-              "id": 30548,
+              "id": 30561,
               "nodeType": "StructuredDocumentation",
               "src": "7534:1803:25",
               "text": "@notice Attests to multiple schemas.\n         Example:\n         multiAttest([{\n             schema: '0x33e9094830a5cba5554d1954310e4fbed2ef5f859ec1404619adea4207f391fd',\n             data: [{\n                 recipient: '0xdEADBeAFdeAdbEafdeadbeafDeAdbEAFdeadbeaf',\n                 expirationTime: 1673891048,\n                 revocable: true,\n                 refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',\n                 data: '0x1234',\n                 value: 1000\n             },\n             {\n                 recipient: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',\n                 expirationTime: 0,\n                 revocable: false,\n                 refUID: '0x480df4a039efc31b11bfdf491b383ca138b6bde160988222a2a3509c02cee174',\n                 data: '0x00',\n                 value: 0\n             }],\n         },\n         {\n             schema: '0x5ac273ce41e3c8bfa383efe7c03e54c5f0bff29c9f11ef6ffa930fc84ca32425',\n             data: [{\n                 recipient: '0xdEADBeAFdeAdbEafdeadbeafDeAdbEAFdeadbeaf',\n                 expirationTime: 0,\n                 revocable: true,\n                 refUID: '0x75bf2ed8dca25a8190c50c52db136664de25b2449535839008ccfdab469b214f',\n                 data: '0x12345678',\n                 value: 0\n             },\n         }])\n @param multiRequests The arguments of the multi attestation requests. The requests should be grouped by distinct\n        schema ids to benefit from the best batching optimization.\n @return The UIDs of the new attestations."
@@ -4382,50 +4382,50 @@
             "name": "multiAttest",
             "nameLocation": "9351:11:25",
             "parameters": {
-              "id": 30553,
+              "id": 30566,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30552,
+                  "id": 30565,
                   "mutability": "mutable",
                   "name": "multiRequests",
                   "nameLocation": "9398:13:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30558,
+                  "scope": 30571,
                   "src": "9363:48:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_MultiAttestationRequest_$30422_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_MultiAttestationRequest_$30435_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct MultiAttestationRequest[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30550,
+                      "id": 30563,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 30549,
+                        "id": 30562,
                         "name": "MultiAttestationRequest",
                         "nameLocations": [
                           "9363:23:25"
                         ],
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 30422,
+                        "referencedDeclaration": 30435,
                         "src": "9363:23:25"
                       },
-                      "referencedDeclaration": 30422,
+                      "referencedDeclaration": 30435,
                       "src": "9363:23:25",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_MultiAttestationRequest_$30422_storage_ptr",
+                        "typeIdentifier": "t_struct$_MultiAttestationRequest_$30435_storage_ptr",
                         "typeString": "struct MultiAttestationRequest"
                       }
                     },
-                    "id": 30551,
+                    "id": 30564,
                     "nodeType": "ArrayTypeName",
                     "src": "9363:25:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_MultiAttestationRequest_$30422_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_MultiAttestationRequest_$30435_storage_$dyn_storage_ptr",
                       "typeString": "struct MultiAttestationRequest[]"
                     }
                   },
@@ -4435,17 +4435,17 @@
               "src": "9362:50:25"
             },
             "returnParameters": {
-              "id": 30557,
+              "id": 30570,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30556,
+                  "id": 30569,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30558,
+                  "scope": 30571,
                   "src": "9463:16:25",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -4455,7 +4455,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30554,
+                      "id": 30567,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
                       "src": "9463:7:25",
@@ -4464,7 +4464,7 @@
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30555,
+                    "id": 30568,
                     "nodeType": "ArrayTypeName",
                     "src": "9463:9:25",
                     "typeDescriptions": {
@@ -4477,18 +4477,18 @@
               ],
               "src": "9462:18:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30569,
+            "id": 30582,
             "nodeType": "FunctionDefinition",
             "src": "11286:169:25",
             "nodes": [],
             "documentation": {
-              "id": 30559,
+              "id": 30572,
               "nodeType": "StructuredDocumentation",
               "src": "9487:1794:25",
               "text": "@notice Attests to multiple schemas using via provided EIP712 signatures.\n         Example:\n         multiAttestByDelegation([{\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: [{\n                 recipient: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',\n                 expirationTime: 1673891048,\n                 revocable: true,\n                 refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',\n                 data: '0x1234',\n                 value: 0\n             },\n             {\n                 recipient: '0xdEADBeAFdeAdbEafdeadbeafDeAdbEAFdeadbeaf',\n                 expirationTime: 0,\n                 revocable: false,\n                 refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',\n                 data: '0x00',\n                 value: 0\n             }],\n             signatures: [{\n                 v: 28,\n                 r: '0x148c...b25b',\n                 s: '0x5a72...be22'\n             },\n             {\n                 v: 28,\n                 r: '0x487s...67bb',\n                 s: '0x12ad...2366'\n             }],\n             attester: '0x1D86495b2A7B524D747d2839b3C645Bed32e8CF4',\n             deadline: 1673891048\n         }])\n @param multiDelegatedRequests The arguments of the delegated multi attestation requests. The requests should be\n        grouped by distinct schema ids to benefit from the best batching optimization.\n @return The UIDs of the new attestations."
@@ -4500,50 +4500,50 @@
             "name": "multiAttestByDelegation",
             "nameLocation": "11295:23:25",
             "parameters": {
-              "id": 30564,
+              "id": 30577,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30563,
+                  "id": 30576,
                   "mutability": "mutable",
                   "name": "multiDelegatedRequests",
                   "nameLocation": "11363:22:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30569,
+                  "scope": 30582,
                   "src": "11319:66:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_MultiDelegatedAttestationRequest_$30437_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_MultiDelegatedAttestationRequest_$30450_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct MultiDelegatedAttestationRequest[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30561,
+                      "id": 30574,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 30560,
+                        "id": 30573,
                         "name": "MultiDelegatedAttestationRequest",
                         "nameLocations": [
                           "11319:32:25"
                         ],
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 30437,
+                        "referencedDeclaration": 30450,
                         "src": "11319:32:25"
                       },
-                      "referencedDeclaration": 30437,
+                      "referencedDeclaration": 30450,
                       "src": "11319:32:25",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_MultiDelegatedAttestationRequest_$30437_storage_ptr",
+                        "typeIdentifier": "t_struct$_MultiDelegatedAttestationRequest_$30450_storage_ptr",
                         "typeString": "struct MultiDelegatedAttestationRequest"
                       }
                     },
-                    "id": 30562,
+                    "id": 30575,
                     "nodeType": "ArrayTypeName",
                     "src": "11319:34:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_MultiDelegatedAttestationRequest_$30437_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_MultiDelegatedAttestationRequest_$30450_storage_$dyn_storage_ptr",
                       "typeString": "struct MultiDelegatedAttestationRequest[]"
                     }
                   },
@@ -4553,17 +4553,17 @@
               "src": "11318:68:25"
             },
             "returnParameters": {
-              "id": 30568,
+              "id": 30581,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30567,
+                  "id": 30580,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30569,
+                  "scope": 30582,
                   "src": "11437:16:25",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -4573,7 +4573,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30565,
+                      "id": 30578,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
                       "src": "11437:7:25",
@@ -4582,7 +4582,7 @@
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30566,
+                    "id": 30579,
                     "nodeType": "ArrayTypeName",
                     "src": "11437:9:25",
                     "typeDescriptions": {
@@ -4595,18 +4595,18 @@
               ],
               "src": "11436:18:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30576,
+            "id": 30589,
             "nodeType": "FunctionDefinition",
             "src": "11968:69:25",
             "nodes": [],
             "documentation": {
-              "id": 30570,
+              "id": 30583,
               "nodeType": "StructuredDocumentation",
               "src": "11461:502:25",
               "text": "@notice Revokes an existing attestation to a specific schema.\n         Example:\n         revoke({\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: {\n                 uid: '0x101032e487642ee04ee17049f99a70590c735b8614079fc9275f9dd57c00966d',\n                 value: 0\n             }\n         })\n @param request The arguments of the revocation request."
@@ -4618,41 +4618,41 @@
             "name": "revoke",
             "nameLocation": "11977:6:25",
             "parameters": {
-              "id": 30574,
+              "id": 30587,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30573,
+                  "id": 30586,
                   "mutability": "mutable",
                   "name": "request",
                   "nameLocation": "12011:7:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30576,
+                  "scope": 30589,
                   "src": "11984:34:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RevocationRequest_$30448_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RevocationRequest_$30461_calldata_ptr",
                     "typeString": "struct RevocationRequest"
                   },
                   "typeName": {
-                    "id": 30572,
+                    "id": 30585,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30571,
+                      "id": 30584,
                       "name": "RevocationRequest",
                       "nameLocations": [
                         "11984:17:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30448,
+                      "referencedDeclaration": 30461,
                       "src": "11984:17:25"
                     },
-                    "referencedDeclaration": 30448,
+                    "referencedDeclaration": 30461,
                     "src": "11984:17:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RevocationRequest_$30448_storage_ptr",
+                      "typeIdentifier": "t_struct$_RevocationRequest_$30461_storage_ptr",
                       "typeString": "struct RevocationRequest"
                     }
                   },
@@ -4662,23 +4662,23 @@
               "src": "11983:36:25"
             },
             "returnParameters": {
-              "id": 30575,
+              "id": 30588,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "12036:0:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30583,
+            "id": 30596,
             "nodeType": "FunctionDefinition",
             "src": "12906:99:25",
             "nodes": [],
             "documentation": {
-              "id": 30577,
+              "id": 30590,
               "nodeType": "StructuredDocumentation",
               "src": "12043:858:25",
               "text": "@notice Revokes an existing attestation to a specific schema via the provided EIP712 signature.\n         Example:\n         revokeByDelegation({\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: {\n                 uid: '0xcbbc12102578c642a0f7b34fe7111e41afa25683b6cd7b5a14caf90fa14d24ba',\n                 value: 0\n             },\n             signature: {\n                 v: 27,\n                 r: '0xb593...7142',\n                 s: '0x0f5b...2cce'\n             },\n             revoker: '0x244934dd3e31bE2c81f84ECf0b3E6329F5381992',\n             deadline: 1673891048\n         })\n @param delegatedRequest The arguments of the delegated revocation request."
@@ -4690,41 +4690,41 @@
             "name": "revokeByDelegation",
             "nameLocation": "12915:18:25",
             "parameters": {
-              "id": 30581,
+              "id": 30594,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30580,
+                  "id": 30593,
                   "mutability": "mutable",
                   "name": "delegatedRequest",
                   "nameLocation": "12970:16:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30583,
+                  "scope": 30596,
                   "src": "12934:52:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DelegatedRevocationRequest_$30461_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DelegatedRevocationRequest_$30474_calldata_ptr",
                     "typeString": "struct DelegatedRevocationRequest"
                   },
                   "typeName": {
-                    "id": 30579,
+                    "id": 30592,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30578,
+                      "id": 30591,
                       "name": "DelegatedRevocationRequest",
                       "nameLocations": [
                         "12934:26:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30461,
+                      "referencedDeclaration": 30474,
                       "src": "12934:26:25"
                     },
-                    "referencedDeclaration": 30461,
+                    "referencedDeclaration": 30474,
                     "src": "12934:26:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DelegatedRevocationRequest_$30461_storage_ptr",
+                      "typeIdentifier": "t_struct$_DelegatedRevocationRequest_$30474_storage_ptr",
                       "typeString": "struct DelegatedRevocationRequest"
                     }
                   },
@@ -4734,23 +4734,23 @@
               "src": "12933:54:25"
             },
             "returnParameters": {
-              "id": 30582,
+              "id": 30595,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "13004:0:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30591,
+            "id": 30604,
             "nodeType": "FunctionDefinition",
             "src": "14154:87:25",
             "nodes": [],
             "documentation": {
-              "id": 30584,
+              "id": 30597,
               "nodeType": "StructuredDocumentation",
               "src": "13011:1138:25",
               "text": "@notice Revokes existing attestations to multiple schemas.\n         Example:\n         multiRevoke([{\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: [{\n                 uid: '0x211296a1ca0d7f9f2cfebf0daaa575bea9b20e968d81aef4e743d699c6ac4b25',\n                 value: 1000\n             },\n             {\n                 uid: '0xe160ac1bd3606a287b4d53d5d1d6da5895f65b4b4bab6d93aaf5046e48167ade',\n                 value: 0\n             }],\n         },\n         {\n             schema: '0x5ac273ce41e3c8bfa383efe7c03e54c5f0bff29c9f11ef6ffa930fc84ca32425',\n             data: [{\n                 uid: '0x053d42abce1fd7c8fcddfae21845ad34dae287b2c326220b03ba241bc5a8f019',\n                 value: 0\n             },\n         }])\n @param multiRequests The arguments of the multi revocation requests. The requests should be grouped by distinct\n        schema ids to benefit from the best batching optimization."
@@ -4762,50 +4762,50 @@
             "name": "multiRevoke",
             "nameLocation": "14163:11:25",
             "parameters": {
-              "id": 30589,
+              "id": 30602,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30588,
+                  "id": 30601,
                   "mutability": "mutable",
                   "name": "multiRequests",
                   "nameLocation": "14209:13:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30591,
+                  "scope": 30604,
                   "src": "14175:47:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_MultiRevocationRequest_$30468_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_MultiRevocationRequest_$30481_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct MultiRevocationRequest[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30586,
+                      "id": 30599,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 30585,
+                        "id": 30598,
                         "name": "MultiRevocationRequest",
                         "nameLocations": [
                           "14175:22:25"
                         ],
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 30468,
+                        "referencedDeclaration": 30481,
                         "src": "14175:22:25"
                       },
-                      "referencedDeclaration": 30468,
+                      "referencedDeclaration": 30481,
                       "src": "14175:22:25",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_MultiRevocationRequest_$30468_storage_ptr",
+                        "typeIdentifier": "t_struct$_MultiRevocationRequest_$30481_storage_ptr",
                         "typeString": "struct MultiRevocationRequest"
                       }
                     },
-                    "id": 30587,
+                    "id": 30600,
                     "nodeType": "ArrayTypeName",
                     "src": "14175:24:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_MultiRevocationRequest_$30468_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_MultiRevocationRequest_$30481_storage_$dyn_storage_ptr",
                       "typeString": "struct MultiRevocationRequest[]"
                     }
                   },
@@ -4815,23 +4815,23 @@
               "src": "14174:49:25"
             },
             "returnParameters": {
-              "id": 30590,
+              "id": 30603,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "14240:0:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30599,
+            "id": 30612,
             "nodeType": "FunctionDefinition",
             "src": "15609:133:25",
             "nodes": [],
             "documentation": {
-              "id": 30592,
+              "id": 30605,
               "nodeType": "StructuredDocumentation",
               "src": "14247:1357:25",
               "text": "@notice Revokes existing attestations to multiple schemas via provided EIP712 signatures.\n         Example:\n         multiRevokeByDelegation([{\n             schema: '0x8e72f5bc0a8d4be6aa98360baa889040c50a0e51f32dbf0baa5199bd93472ebc',\n             data: [{\n                 uid: '0x211296a1ca0d7f9f2cfebf0daaa575bea9b20e968d81aef4e743d699c6ac4b25',\n                 value: 1000\n             },\n             {\n                 uid: '0xe160ac1bd3606a287b4d53d5d1d6da5895f65b4b4bab6d93aaf5046e48167ade',\n                 value: 0\n             }],\n             signatures: [{\n                 v: 28,\n                 r: '0x148c...b25b',\n                 s: '0x5a72...be22'\n             },\n             {\n                 v: 28,\n                 r: '0x487s...67bb',\n                 s: '0x12ad...2366'\n             }],\n             revoker: '0x244934dd3e31bE2c81f84ECf0b3E6329F5381992',\n             deadline: 1673891048\n         }])\n @param multiDelegatedRequests The arguments of the delegated multi revocation attestation requests. The requests\n should be\n        grouped by distinct schema ids to benefit from the best batching optimization."
@@ -4843,50 +4843,50 @@
             "name": "multiRevokeByDelegation",
             "nameLocation": "15618:23:25",
             "parameters": {
-              "id": 30597,
+              "id": 30610,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30596,
+                  "id": 30609,
                   "mutability": "mutable",
                   "name": "multiDelegatedRequests",
                   "nameLocation": "15685:22:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30599,
+                  "scope": 30612,
                   "src": "15642:65:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_MultiDelegatedRevocationRequest_$30483_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_MultiDelegatedRevocationRequest_$30496_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct MultiDelegatedRevocationRequest[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30594,
+                      "id": 30607,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 30593,
+                        "id": 30606,
                         "name": "MultiDelegatedRevocationRequest",
                         "nameLocations": [
                           "15642:31:25"
                         ],
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 30483,
+                        "referencedDeclaration": 30496,
                         "src": "15642:31:25"
                       },
-                      "referencedDeclaration": 30483,
+                      "referencedDeclaration": 30496,
                       "src": "15642:31:25",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_MultiDelegatedRevocationRequest_$30483_storage_ptr",
+                        "typeIdentifier": "t_struct$_MultiDelegatedRevocationRequest_$30496_storage_ptr",
                         "typeString": "struct MultiDelegatedRevocationRequest"
                       }
                     },
-                    "id": 30595,
+                    "id": 30608,
                     "nodeType": "ArrayTypeName",
                     "src": "15642:33:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_MultiDelegatedRevocationRequest_$30483_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_MultiDelegatedRevocationRequest_$30496_storage_$dyn_storage_ptr",
                       "typeString": "struct MultiDelegatedRevocationRequest[]"
                     }
                   },
@@ -4896,23 +4896,23 @@
               "src": "15641:67:25"
             },
             "returnParameters": {
-              "id": 30598,
+              "id": 30611,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "15741:0:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30607,
+            "id": 30620,
             "nodeType": "FunctionDefinition",
             "src": "15907:59:25",
             "nodes": [],
             "documentation": {
-              "id": 30600,
+              "id": 30613,
               "nodeType": "StructuredDocumentation",
               "src": "15748:154:25",
               "text": "@notice Timestamps the specified bytes32 data.\n @param data The data to timestamp.\n @return The timestamp the data was timestamped with."
@@ -4924,17 +4924,17 @@
             "name": "timestamp",
             "nameLocation": "15916:9:25",
             "parameters": {
-              "id": 30603,
+              "id": 30616,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30602,
+                  "id": 30615,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "15934:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30607,
+                  "scope": 30620,
                   "src": "15926:12:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4943,7 +4943,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30601,
+                    "id": 30614,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "15926:7:25",
@@ -4958,17 +4958,17 @@
               "src": "15925:14:25"
             },
             "returnParameters": {
-              "id": 30606,
+              "id": 30619,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30605,
+                  "id": 30618,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30607,
+                  "scope": 30620,
                   "src": "15958:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4977,7 +4977,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30604,
+                    "id": 30617,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "15958:6:25",
@@ -4991,18 +4991,18 @@
               ],
               "src": "15957:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30616,
+            "id": 30629,
             "nodeType": "FunctionDefinition",
             "src": "16140:75:25",
             "nodes": [],
             "documentation": {
-              "id": 30608,
+              "id": 30621,
               "nodeType": "StructuredDocumentation",
               "src": "15972:163:25",
               "text": "@notice Timestamps the specified multiple bytes32 data.\n @param data The data to timestamp.\n @return The timestamp the data was timestamped with."
@@ -5014,17 +5014,17 @@
             "name": "multiTimestamp",
             "nameLocation": "16149:14:25",
             "parameters": {
-              "id": 30612,
+              "id": 30625,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30611,
+                  "id": 30624,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "16183:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30616,
+                  "scope": 30629,
                   "src": "16164:23:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -5034,7 +5034,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30609,
+                      "id": 30622,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
                       "src": "16164:7:25",
@@ -5043,7 +5043,7 @@
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30610,
+                    "id": 30623,
                     "nodeType": "ArrayTypeName",
                     "src": "16164:9:25",
                     "typeDescriptions": {
@@ -5057,17 +5057,17 @@
               "src": "16163:25:25"
             },
             "returnParameters": {
-              "id": 30615,
+              "id": 30628,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30614,
+                  "id": 30627,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30616,
+                  "scope": 30629,
                   "src": "16207:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5076,7 +5076,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30613,
+                    "id": 30626,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "16207:6:25",
@@ -5090,18 +5090,18 @@
               ],
               "src": "16206:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30624,
+            "id": 30637,
             "nodeType": "FunctionDefinition",
             "src": "16373:64:25",
             "nodes": [],
             "documentation": {
-              "id": 30617,
+              "id": 30630,
               "nodeType": "StructuredDocumentation",
               "src": "16221:147:25",
               "text": "@notice Revokes the specified bytes32 data.\n @param data The data to timestamp.\n @return The timestamp the data was revoked with."
@@ -5113,17 +5113,17 @@
             "name": "revokeOffchain",
             "nameLocation": "16382:14:25",
             "parameters": {
-              "id": 30620,
+              "id": 30633,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30619,
+                  "id": 30632,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "16405:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30624,
+                  "scope": 30637,
                   "src": "16397:12:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5132,7 +5132,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30618,
+                    "id": 30631,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "16397:7:25",
@@ -5147,17 +5147,17 @@
               "src": "16396:14:25"
             },
             "returnParameters": {
-              "id": 30623,
+              "id": 30636,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30622,
+                  "id": 30635,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30624,
+                  "scope": 30637,
                   "src": "16429:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5166,7 +5166,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30621,
+                    "id": 30634,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "16429:6:25",
@@ -5180,18 +5180,18 @@
               ],
               "src": "16428:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30633,
+            "id": 30646,
             "nodeType": "FunctionDefinition",
             "src": "16604:80:25",
             "nodes": [],
             "documentation": {
-              "id": 30625,
+              "id": 30638,
               "nodeType": "StructuredDocumentation",
               "src": "16443:156:25",
               "text": "@notice Revokes the specified multiple bytes32 data.\n @param data The data to timestamp.\n @return The timestamp the data was revoked with."
@@ -5203,17 +5203,17 @@
             "name": "multiRevokeOffchain",
             "nameLocation": "16613:19:25",
             "parameters": {
-              "id": 30629,
+              "id": 30642,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30628,
+                  "id": 30641,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "16652:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30633,
+                  "scope": 30646,
                   "src": "16633:23:25",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -5223,7 +5223,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 30626,
+                      "id": 30639,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
                       "src": "16633:7:25",
@@ -5232,7 +5232,7 @@
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30627,
+                    "id": 30640,
                     "nodeType": "ArrayTypeName",
                     "src": "16633:9:25",
                     "typeDescriptions": {
@@ -5246,17 +5246,17 @@
               "src": "16632:25:25"
             },
             "returnParameters": {
-              "id": 30632,
+              "id": 30645,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30631,
+                  "id": 30644,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30633,
+                  "scope": 30646,
                   "src": "16676:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5265,7 +5265,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30630,
+                    "id": 30643,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "16676:6:25",
@@ -5279,18 +5279,18 @@
               ],
               "src": "16675:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30642,
+            "id": 30655,
             "nodeType": "FunctionDefinition",
             "src": "16851:80:25",
             "nodes": [],
             "documentation": {
-              "id": 30634,
+              "id": 30647,
               "nodeType": "StructuredDocumentation",
               "src": "16690:156:25",
               "text": "@notice Returns an existing attestation by UID.\n @param uid The UID of the attestation to retrieve.\n @return The attestation data members."
@@ -5302,17 +5302,17 @@
             "name": "getAttestation",
             "nameLocation": "16860:14:25",
             "parameters": {
-              "id": 30637,
+              "id": 30650,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30636,
+                  "id": 30649,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "16883:3:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30642,
+                  "scope": 30655,
                   "src": "16875:11:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5321,7 +5321,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30635,
+                    "id": 30648,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "16875:7:25",
@@ -5336,41 +5336,41 @@
               "src": "16874:13:25"
             },
             "returnParameters": {
-              "id": 30641,
+              "id": 30654,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30640,
+                  "id": 30653,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30642,
+                  "scope": 30655,
                   "src": "16911:18:25",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Attestation_$28303_memory_ptr",
+                    "typeIdentifier": "t_struct$_Attestation_$28316_memory_ptr",
                     "typeString": "struct Attestation"
                   },
                   "typeName": {
-                    "id": 30639,
+                    "id": 30652,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30638,
+                      "id": 30651,
                       "name": "Attestation",
                       "nameLocations": [
                         "16911:11:25"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 28303,
+                      "referencedDeclaration": 28316,
                       "src": "16911:11:25"
                     },
-                    "referencedDeclaration": 28303,
+                    "referencedDeclaration": 28316,
                     "src": "16911:11:25",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Attestation_$28303_storage_ptr",
+                      "typeIdentifier": "t_struct$_Attestation_$28316_storage_ptr",
                       "typeString": "struct Attestation"
                     }
                   },
@@ -5379,18 +5379,18 @@
               ],
               "src": "16910:20:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30650,
+            "id": 30663,
             "nodeType": "FunctionDefinition",
             "src": "17097:70:25",
             "nodes": [],
             "documentation": {
-              "id": 30643,
+              "id": 30656,
               "nodeType": "StructuredDocumentation",
               "src": "16937:155:25",
               "text": "@notice Checks whether an attestation exists.\n @param uid The UID of the attestation to retrieve.\n @return Whether an attestation exists."
@@ -5402,17 +5402,17 @@
             "name": "isAttestationValid",
             "nameLocation": "17106:18:25",
             "parameters": {
-              "id": 30646,
+              "id": 30659,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30645,
+                  "id": 30658,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "17133:3:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30650,
+                  "scope": 30663,
                   "src": "17125:11:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5421,7 +5421,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30644,
+                    "id": 30657,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "17125:7:25",
@@ -5436,17 +5436,17 @@
               "src": "17124:13:25"
             },
             "returnParameters": {
-              "id": 30649,
+              "id": 30662,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30648,
+                  "id": 30661,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30650,
+                  "scope": 30663,
                   "src": "17161:4:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5455,7 +5455,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 30647,
+                    "id": 30660,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "17161:4:25",
@@ -5469,18 +5469,18 @@
               ],
               "src": "17160:6:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30658,
+            "id": 30671,
             "nodeType": "FunctionDefinition",
             "src": "17357:67:25",
             "nodes": [],
             "documentation": {
-              "id": 30651,
+              "id": 30664,
               "nodeType": "StructuredDocumentation",
               "src": "17173:179:25",
               "text": "@notice Returns the timestamp that the specified data was timestamped with.\n @param data The data to query.\n @return The timestamp the data was timestamped with."
@@ -5492,17 +5492,17 @@
             "name": "getTimestamp",
             "nameLocation": "17366:12:25",
             "parameters": {
-              "id": 30654,
+              "id": 30667,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30653,
+                  "id": 30666,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "17387:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30658,
+                  "scope": 30671,
                   "src": "17379:12:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5511,7 +5511,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30652,
+                    "id": 30665,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "17379:7:25",
@@ -5526,17 +5526,17 @@
               "src": "17378:14:25"
             },
             "returnParameters": {
-              "id": 30657,
+              "id": 30670,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30656,
+                  "id": 30669,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30658,
+                  "scope": 30671,
                   "src": "17416:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5545,7 +5545,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30655,
+                    "id": 30668,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "17416:6:25",
@@ -5559,18 +5559,18 @@
               ],
               "src": "17415:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30668,
+            "id": 30681,
             "nodeType": "FunctionDefinition",
             "src": "17614:89:25",
             "nodes": [],
             "documentation": {
-              "id": 30659,
+              "id": 30672,
               "nodeType": "StructuredDocumentation",
               "src": "17430:179:25",
               "text": "@notice Returns the timestamp that the specified data was timestamped with.\n @param data The data to query.\n @return The timestamp the data was timestamped with."
@@ -5582,17 +5582,17 @@
             "name": "getRevokeOffchain",
             "nameLocation": "17623:17:25",
             "parameters": {
-              "id": 30664,
+              "id": 30677,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30661,
+                  "id": 30674,
                   "mutability": "mutable",
                   "name": "revoker",
                   "nameLocation": "17649:7:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30668,
+                  "scope": 30681,
                   "src": "17641:15:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5601,7 +5601,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30660,
+                    "id": 30673,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "17641:7:25",
@@ -5615,12 +5615,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 30663,
+                  "id": 30676,
                   "mutability": "mutable",
                   "name": "data",
                   "nameLocation": "17666:4:25",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30668,
+                  "scope": 30681,
                   "src": "17658:12:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5629,7 +5629,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30662,
+                    "id": 30675,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "17658:7:25",
@@ -5644,17 +5644,17 @@
               "src": "17640:31:25"
             },
             "returnParameters": {
-              "id": 30667,
+              "id": 30680,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30666,
+                  "id": 30679,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30668,
+                  "scope": 30681,
                   "src": "17695:6:25",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -5663,7 +5663,7 @@
                     "typeString": "uint64"
                   },
                   "typeName": {
-                    "id": 30665,
+                    "id": 30678,
                     "name": "uint64",
                     "nodeType": "ElementaryTypeName",
                     "src": "17695:6:25",
@@ -5677,7 +5677,7 @@
               ],
               "src": "17694:8:25"
             },
-            "scope": 30669,
+            "scope": 30682,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -5689,18 +5689,18 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 30484,
+          "id": 30497,
           "nodeType": "StructuredDocumentation",
           "src": "3975:72:25",
           "text": "@title IEAS\n @notice The Ethereum Attestation Service interface."
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          30669
+          30682
         ],
         "name": "IEAS",
         "nameLocation": "4057:4:25",
-        "scope": 30670,
+        "scope": 30683,
         "usedErrors": []
       }
     ],

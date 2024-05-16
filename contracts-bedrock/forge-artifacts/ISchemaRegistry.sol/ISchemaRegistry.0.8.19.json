@@ -392,23 +392,23 @@
   },
   "ast": {
     "absolutePath": "src/EAS/ISchemaRegistry.sol",
-    "id": 30718,
+    "id": 30731,
     "exportedSymbols": {
       "ISchemaRegistry": [
-        30717
+        30730
       ],
       "ISchemaResolver": [
-        31249
+        31262
       ],
       "SchemaRecord": [
-        30683
+        30696
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:1523:26",
     "nodes": [
       {
-        "id": 30671,
+        "id": 30684,
         "nodeType": "PragmaDirective",
         "src": "32:23:26",
         "nodes": [],
@@ -420,23 +420,23 @@
         ]
       },
       {
-        "id": 30673,
+        "id": 30686,
         "nodeType": "ImportDirective",
         "src": "57:71:26",
         "nodes": [],
         "absolutePath": "src/EAS/resolver/ISchemaResolver.sol",
         "file": "src/EAS/resolver/ISchemaResolver.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 30718,
-        "sourceUnit": 31250,
+        "scope": 30731,
+        "sourceUnit": 31263,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 30672,
+              "id": 30685,
               "name": "ISchemaResolver",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 31249,
+              "referencedDeclaration": 31262,
               "src": "66:15:26",
               "typeDescriptions": {}
             },
@@ -446,7 +446,7 @@
         "unitAlias": ""
       },
       {
-        "id": 30683,
+        "id": 30696,
         "nodeType": "StructDefinition",
         "src": "196:285:26",
         "nodes": [],
@@ -454,12 +454,12 @@
         "members": [
           {
             "constant": false,
-            "id": 30675,
+            "id": 30688,
             "mutability": "mutable",
             "name": "uid",
             "nameLocation": "230:3:26",
             "nodeType": "VariableDeclaration",
-            "scope": 30683,
+            "scope": 30696,
             "src": "222:11:26",
             "stateVariable": false,
             "storageLocation": "default",
@@ -468,7 +468,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 30674,
+              "id": 30687,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "222:7:26",
@@ -481,36 +481,36 @@
           },
           {
             "constant": false,
-            "id": 30678,
+            "id": 30691,
             "mutability": "mutable",
             "name": "resolver",
             "nameLocation": "295:8:26",
             "nodeType": "VariableDeclaration",
-            "scope": 30683,
+            "scope": 30696,
             "src": "279:24:26",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ISchemaResolver_$31249",
+              "typeIdentifier": "t_contract$_ISchemaResolver_$31262",
               "typeString": "contract ISchemaResolver"
             },
             "typeName": {
-              "id": 30677,
+              "id": 30690,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 30676,
+                "id": 30689,
                 "name": "ISchemaResolver",
                 "nameLocations": [
                   "279:15:26"
                 ],
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 31249,
+                "referencedDeclaration": 31262,
                 "src": "279:15:26"
               },
-              "referencedDeclaration": 31249,
+              "referencedDeclaration": 31262,
               "src": "279:15:26",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ISchemaResolver_$31249",
+                "typeIdentifier": "t_contract$_ISchemaResolver_$31262",
                 "typeString": "contract ISchemaResolver"
               }
             },
@@ -518,12 +518,12 @@
           },
           {
             "constant": false,
-            "id": 30680,
+            "id": 30693,
             "mutability": "mutable",
             "name": "revocable",
             "nameLocation": "343:9:26",
             "nodeType": "VariableDeclaration",
-            "scope": 30683,
+            "scope": 30696,
             "src": "338:14:26",
             "stateVariable": false,
             "storageLocation": "default",
@@ -532,7 +532,7 @@
               "typeString": "bool"
             },
             "typeName": {
-              "id": 30679,
+              "id": 30692,
               "name": "bool",
               "nodeType": "ElementaryTypeName",
               "src": "338:4:26",
@@ -545,12 +545,12 @@
           },
           {
             "constant": false,
-            "id": 30682,
+            "id": 30695,
             "mutability": "mutable",
             "name": "schema",
             "nameLocation": "418:6:26",
             "nodeType": "VariableDeclaration",
-            "scope": 30683,
+            "scope": 30696,
             "src": "411:13:26",
             "stateVariable": false,
             "storageLocation": "default",
@@ -559,7 +559,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 30681,
+              "id": 30694,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "411:6:26",
@@ -573,22 +573,22 @@
         ],
         "name": "SchemaRecord",
         "nameLocation": "203:12:26",
-        "scope": 30718,
+        "scope": 30731,
         "visibility": "public"
       },
       {
-        "id": 30717,
+        "id": 30730,
         "nodeType": "ContractDefinition",
         "src": "613:941:26",
         "nodes": [
           {
-            "id": 30694,
+            "id": 30707,
             "nodeType": "EventDefinition",
             "src": "860:87:26",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 30685,
+              "id": 30698,
               "nodeType": "StructuredDocumentation",
               "src": "645:210:26",
               "text": "@dev Emitted when a new schema has been registered\n @param uid The schema UID.\n @param registerer The address of the account used to register the schema.\n @param schema The schema data."
@@ -597,18 +597,18 @@
             "name": "Registered",
             "nameLocation": "866:10:26",
             "parameters": {
-              "id": 30693,
+              "id": 30706,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30687,
+                  "id": 30700,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "893:3:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30694,
+                  "scope": 30707,
                   "src": "877:19:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -617,7 +617,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30686,
+                    "id": 30699,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "877:7:26",
@@ -630,13 +630,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 30689,
+                  "id": 30702,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "registerer",
                   "nameLocation": "914:10:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30694,
+                  "scope": 30707,
                   "src": "898:26:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -645,7 +645,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 30688,
+                    "id": 30701,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "898:7:26",
@@ -659,37 +659,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 30692,
+                  "id": 30705,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "schema",
                   "nameLocation": "939:6:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30694,
+                  "scope": 30707,
                   "src": "926:19:26",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_SchemaRecord_$30683_memory_ptr",
+                    "typeIdentifier": "t_struct$_SchemaRecord_$30696_memory_ptr",
                     "typeString": "struct SchemaRecord"
                   },
                   "typeName": {
-                    "id": 30691,
+                    "id": 30704,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30690,
+                      "id": 30703,
                       "name": "SchemaRecord",
                       "nameLocations": [
                         "926:12:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30683,
+                      "referencedDeclaration": 30696,
                       "src": "926:12:26"
                     },
-                    "referencedDeclaration": 30683,
+                    "referencedDeclaration": 30696,
                     "src": "926:12:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_SchemaRecord_$30683_storage_ptr",
+                      "typeIdentifier": "t_struct$_SchemaRecord_$30696_storage_ptr",
                       "typeString": "struct SchemaRecord"
                     }
                   },
@@ -700,12 +700,12 @@
             }
           },
           {
-            "id": 30707,
+            "id": 30720,
             "nodeType": "FunctionDefinition",
             "src": "1217:111:26",
             "nodes": [],
             "documentation": {
-              "id": 30695,
+              "id": 30708,
               "nodeType": "StructuredDocumentation",
               "src": "953:259:26",
               "text": "@dev Submits and reserves a new schema\n @param schema The schema data schema.\n @param resolver An optional schema resolver.\n @param revocable Whether the schema allows revocations explicitly.\n @return The UID of the new schema."
@@ -717,17 +717,17 @@
             "name": "register",
             "nameLocation": "1226:8:26",
             "parameters": {
-              "id": 30703,
+              "id": 30716,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30697,
+                  "id": 30710,
                   "mutability": "mutable",
                   "name": "schema",
                   "nameLocation": "1251:6:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30707,
+                  "scope": 30720,
                   "src": "1235:22:26",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -736,7 +736,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 30696,
+                    "id": 30709,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1235:6:26",
@@ -749,36 +749,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 30700,
+                  "id": 30713,
                   "mutability": "mutable",
                   "name": "resolver",
                   "nameLocation": "1275:8:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30707,
+                  "scope": 30720,
                   "src": "1259:24:26",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ISchemaResolver_$31249",
+                    "typeIdentifier": "t_contract$_ISchemaResolver_$31262",
                     "typeString": "contract ISchemaResolver"
                   },
                   "typeName": {
-                    "id": 30699,
+                    "id": 30712,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30698,
+                      "id": 30711,
                       "name": "ISchemaResolver",
                       "nameLocations": [
                         "1259:15:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 31249,
+                      "referencedDeclaration": 31262,
                       "src": "1259:15:26"
                     },
-                    "referencedDeclaration": 31249,
+                    "referencedDeclaration": 31262,
                     "src": "1259:15:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ISchemaResolver_$31249",
+                      "typeIdentifier": "t_contract$_ISchemaResolver_$31262",
                       "typeString": "contract ISchemaResolver"
                     }
                   },
@@ -786,12 +786,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 30702,
+                  "id": 30715,
                   "mutability": "mutable",
                   "name": "revocable",
                   "nameLocation": "1290:9:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30707,
+                  "scope": 30720,
                   "src": "1285:14:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -800,7 +800,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 30701,
+                    "id": 30714,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1285:4:26",
@@ -815,17 +815,17 @@
               "src": "1234:66:26"
             },
             "returnParameters": {
-              "id": 30706,
+              "id": 30719,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30705,
+                  "id": 30718,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30707,
+                  "scope": 30720,
                   "src": "1319:7:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -834,7 +834,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30704,
+                    "id": 30717,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1319:7:26",
@@ -848,18 +848,18 @@
               ],
               "src": "1318:9:26"
             },
-            "scope": 30717,
+            "scope": 30730,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 30716,
+            "id": 30729,
             "nodeType": "FunctionDefinition",
             "src": "1476:76:26",
             "nodes": [],
             "documentation": {
-              "id": 30708,
+              "id": 30721,
               "nodeType": "StructuredDocumentation",
               "src": "1334:137:26",
               "text": "@dev Returns an existing schema by UID\n @param uid The UID of the schema to retrieve.\n @return The schema data members."
@@ -871,17 +871,17 @@
             "name": "getSchema",
             "nameLocation": "1485:9:26",
             "parameters": {
-              "id": 30711,
+              "id": 30724,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30710,
+                  "id": 30723,
                   "mutability": "mutable",
                   "name": "uid",
                   "nameLocation": "1503:3:26",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30716,
+                  "scope": 30729,
                   "src": "1495:11:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -890,7 +890,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 30709,
+                    "id": 30722,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1495:7:26",
@@ -905,41 +905,41 @@
               "src": "1494:13:26"
             },
             "returnParameters": {
-              "id": 30715,
+              "id": 30728,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 30714,
+                  "id": 30727,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 30716,
+                  "scope": 30729,
                   "src": "1531:19:26",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_SchemaRecord_$30683_memory_ptr",
+                    "typeIdentifier": "t_struct$_SchemaRecord_$30696_memory_ptr",
                     "typeString": "struct SchemaRecord"
                   },
                   "typeName": {
-                    "id": 30713,
+                    "id": 30726,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 30712,
+                      "id": 30725,
                       "name": "SchemaRecord",
                       "nameLocations": [
                         "1531:12:26"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 30683,
+                      "referencedDeclaration": 30696,
                       "src": "1531:12:26"
                     },
-                    "referencedDeclaration": 30683,
+                    "referencedDeclaration": 30696,
                     "src": "1531:12:26",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_SchemaRecord_$30683_storage_ptr",
+                      "typeIdentifier": "t_struct$_SchemaRecord_$30696_storage_ptr",
                       "typeString": "struct SchemaRecord"
                     }
                   },
@@ -948,7 +948,7 @@
               ],
               "src": "1530:21:26"
             },
-            "scope": 30717,
+            "scope": 30730,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -960,18 +960,18 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 30684,
+          "id": 30697,
           "nodeType": "StructuredDocumentation",
           "src": "483:130:26",
           "text": "@title ISchemaRegistry\n @notice The interface of global attestation schemas for the Ethereum Attestation Service protocol."
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          30717
+          30730
         ],
         "name": "ISchemaRegistry",
         "nameLocation": "623:15:26",
-        "scope": 30718,
+        "scope": 30731,
         "usedErrors": []
       }
     ],

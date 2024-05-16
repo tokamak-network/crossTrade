@@ -2,12 +2,12 @@
   "abi": [],
   "bytecode": {
     "object": "0x602d6037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080f000a",
-    "sourceMap": "396:2370:123:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;396:2370:123;;;;;;;;;;;;;;;;;",
+    "sourceMap": "396:2370:142:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;396:2370:142;;;;;;;;;;;;;;;;;",
     "linkReferences": {}
   },
   "deployedBytecode": {
     "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080f000a",
-    "sourceMap": "396:2370:123:-:0;;;;;;;;",
+    "sourceMap": "396:2370:142:-:0;;;;;;;;",
     "linkReferences": {}
   },
   "methodIdentifiers": {},
@@ -148,22 +148,22 @@
   },
   "ast": {
     "absolutePath": "src/libraries/Constants.sol",
-    "id": 60087,
+    "id": 68073,
     "exportedSymbols": {
       "Constants": [
-        60086
+        68072
       ],
       "ResourceMetering": [
-        51427
+        59027
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:2735:123",
+    "src": "32:2735:142",
     "nodes": [
       {
-        "id": 60030,
+        "id": 68016,
         "nodeType": "PragmaDirective",
-        "src": "32:23:123",
+        "src": "32:23:142",
         "nodes": [],
         "literals": [
           "solidity",
@@ -173,24 +173,24 @@
         ]
       },
       {
-        "id": 60032,
+        "id": 68018,
         "nodeType": "ImportDirective",
-        "src": "57:62:123",
+        "src": "57:62:142",
         "nodes": [],
         "absolutePath": "src/L1/ResourceMetering.sol",
         "file": "../L1/ResourceMetering.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 60087,
-        "sourceUnit": 51428,
+        "scope": 68073,
+        "sourceUnit": 59028,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 60031,
+              "id": 68017,
               "name": "ResourceMetering",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 51427,
-              "src": "66:16:123",
+              "referencedDeclaration": 59027,
+              "src": "66:16:142",
               "typeDescriptions": {}
             },
             "nameLocation": "-1:-1:-1"
@@ -199,26 +199,26 @@
         "unitAlias": ""
       },
       {
-        "id": 60086,
+        "id": 68072,
         "nodeType": "ContractDefinition",
-        "src": "396:2370:123",
+        "src": "396:2370:142",
         "nodes": [
           {
-            "id": 60040,
+            "id": 68026,
             "nodeType": "VariableDeclaration",
-            "src": "960:57:123",
+            "src": "960:57:142",
             "nodes": [],
             "constant": true,
             "documentation": {
-              "id": 60034,
+              "id": 68020,
               "nodeType": "StructuredDocumentation",
-              "src": "420:535:123",
+              "src": "420:535:142",
               "text": "@notice Special address to be used as the tx origin for gas estimation calls in the\n         OptimismPortal and CrossDomainMessenger calls. You only need to use this address if\n         the minimum gas limit specified by the user is not actually enough to execute the\n         given message and you're attempting to estimate the actual necessary gas limit. We\n         use address(1) because it's the ecrecover precompile and therefore guaranteed to\n         never have any code on any EVM chain."
             },
             "mutability": "constant",
             "name": "ESTIMATION_ADDRESS",
-            "nameLocation": "986:18:123",
-            "scope": 60086,
+            "nameLocation": "986:18:142",
+            "scope": 68072,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -226,10 +226,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 60035,
+              "id": 68021,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "960:7:123",
+              "src": "960:7:142",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -240,14 +240,14 @@
               "arguments": [
                 {
                   "hexValue": "31",
-                  "id": 60038,
+                  "id": 68024,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
                   "kind": "number",
                   "lValueRequested": false,
                   "nodeType": "Literal",
-                  "src": "1015:1:123",
+                  "src": "1015:1:142",
                   "typeDescriptions": {
                     "typeIdentifier": "t_rational_1_by_1",
                     "typeString": "int_const 1"
@@ -262,26 +262,26 @@
                     "typeString": "int_const 1"
                   }
                 ],
-                "id": 60037,
+                "id": 68023,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
                 "lValueRequested": false,
                 "nodeType": "ElementaryTypeNameExpression",
-                "src": "1007:7:123",
+                "src": "1007:7:142",
                 "typeDescriptions": {
                   "typeIdentifier": "t_type$_t_address_$",
                   "typeString": "type(address)"
                 },
                 "typeName": {
-                  "id": 60036,
+                  "id": 68022,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1007:7:123",
+                  "src": "1007:7:142",
                   "typeDescriptions": {}
                 }
               },
-              "id": 60039,
+              "id": 68025,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -289,7 +289,7 @@
               "lValueRequested": false,
               "names": [],
               "nodeType": "FunctionCall",
-              "src": "1007:10:123",
+              "src": "1007:10:142",
               "tryCall": false,
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -299,21 +299,21 @@
             "visibility": "internal"
           },
           {
-            "id": 60044,
+            "id": 68030,
             "nodeType": "VariableDeclaration",
-            "src": "1291:88:123",
+            "src": "1291:88:142",
             "nodes": [],
             "constant": true,
             "documentation": {
-              "id": 60041,
+              "id": 68027,
               "nodeType": "StructuredDocumentation",
-              "src": "1024:262:123",
+              "src": "1024:262:142",
               "text": "@notice Value used for the L2 sender storage slot in both the OptimismPortal and the\n         CrossDomainMessenger contracts before an actual sender is set. This value is\n         non-zero to reduce the gas cost of message passing transactions."
             },
             "mutability": "constant",
             "name": "DEFAULT_L2_SENDER",
-            "nameLocation": "1317:17:123",
-            "scope": 60086,
+            "nameLocation": "1317:17:142",
+            "scope": 68072,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -321,10 +321,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 60042,
+              "id": 68028,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "1291:7:123",
+              "src": "1291:7:142",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -333,14 +333,14 @@
             },
             "value": {
               "hexValue": "307830303030303030303030303030303030303030303030303030303030303030303030303064456144",
-              "id": 60043,
+              "id": 68029,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "1337:42:123",
+              "src": "1337:42:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
                 "typeString": "address"
@@ -350,21 +350,21 @@
             "visibility": "internal"
           },
           {
-            "id": 60048,
+            "id": 68034,
             "nodeType": "VariableDeclaration",
-            "src": "1548:131:123",
+            "src": "1548:131:142",
             "nodes": [],
             "constant": true,
             "documentation": {
-              "id": 60045,
+              "id": 68031,
               "nodeType": "StructuredDocumentation",
-              "src": "1386:157:123",
+              "src": "1386:157:142",
               "text": "@notice The storage slot that holds the address of a proxy implementation.\n @dev `bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1)`"
             },
             "mutability": "constant",
             "name": "PROXY_IMPLEMENTATION_ADDRESS",
-            "nameLocation": "1574:28:123",
-            "scope": 60086,
+            "nameLocation": "1574:28:142",
+            "scope": 68072,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -372,10 +372,10 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 60046,
+              "id": 68032,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "1548:7:123",
+              "src": "1548:7:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -383,14 +383,14 @@
             },
             "value": {
               "hexValue": "307833363038393461313362613161333231303636376338323834393264623938646361336532303736636333373335613932306133636135303564333832626263",
-              "id": 60047,
+              "id": 68033,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "1613:66:123",
+              "src": "1613:66:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_24440054405305269366569402256811496959409073762505157381672968839269610695612_by_1",
                 "typeString": "int_const 2444...(69 digits omitted)...5612"
@@ -400,21 +400,21 @@
             "visibility": "internal"
           },
           {
-            "id": 60052,
+            "id": 68038,
             "nodeType": "VariableDeclaration",
-            "src": "1826:114:123",
+            "src": "1826:114:142",
             "nodes": [],
             "constant": true,
             "documentation": {
-              "id": 60049,
+              "id": 68035,
               "nodeType": "StructuredDocumentation",
-              "src": "1686:135:123",
+              "src": "1686:135:142",
               "text": "@notice The storage slot that holds the address of the owner.\n @dev `bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1)`"
             },
             "mutability": "constant",
             "name": "PROXY_OWNER_ADDRESS",
-            "nameLocation": "1852:19:123",
-            "scope": 60086,
+            "nameLocation": "1852:19:142",
+            "scope": 68072,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -422,10 +422,10 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 60050,
+              "id": 68036,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "1826:7:123",
+              "src": "1826:7:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -433,14 +433,14 @@
             },
             "value": {
               "hexValue": "307862353331323736383461353638623331373361653133623966386136303136653234336536336236653865653131373864366137313738353062356436313033",
-              "id": 60051,
+              "id": 68037,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "1874:66:123",
+              "src": "1874:66:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_81955473079516046949633743016697847541294818689821282749996681496272635257091_by_1",
                 "typeString": "int_const 8195...(69 digits omitted)...7091"
@@ -450,69 +450,69 @@
             "visibility": "internal"
           },
           {
-            "id": 60081,
+            "id": 68067,
             "nodeType": "FunctionDefinition",
-            "src": "2089:475:123",
+            "src": "2089:475:142",
             "nodes": [],
             "body": {
-              "id": 60080,
+              "id": 68066,
               "nodeType": "Block",
-              "src": "2187:377:123",
+              "src": "2187:377:142",
               "nodes": [],
               "statements": [
                 {
                   "assignments": [
-                    60063
+                    68049
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 60063,
+                      "id": 68049,
                       "mutability": "mutable",
                       "name": "config",
-                      "nameLocation": "2236:6:123",
+                      "nameLocation": "2236:6:142",
                       "nodeType": "VariableDeclaration",
-                      "scope": 60080,
-                      "src": "2197:45:123",
+                      "scope": 68066,
+                      "src": "2197:45:142",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_ResourceConfig_$51111_memory_ptr",
+                        "typeIdentifier": "t_struct$_ResourceConfig_$58711_memory_ptr",
                         "typeString": "struct ResourceMetering.ResourceConfig"
                       },
                       "typeName": {
-                        "id": 60062,
+                        "id": 68048,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 60061,
+                          "id": 68047,
                           "name": "ResourceMetering.ResourceConfig",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 51111,
-                          "src": "2197:31:123"
+                          "referencedDeclaration": 58711,
+                          "src": "2197:31:142"
                         },
-                        "referencedDeclaration": 51111,
-                        "src": "2197:31:123",
+                        "referencedDeclaration": 58711,
+                        "src": "2197:31:142",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_ResourceConfig_$51111_storage_ptr",
+                          "typeIdentifier": "t_struct$_ResourceConfig_$58711_storage_ptr",
                           "typeString": "struct ResourceMetering.ResourceConfig"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 60077,
+                  "id": 68063,
                   "initialValue": {
                     "arguments": [
                       {
                         "hexValue": "32305f3030305f303030",
-                        "id": 60066,
+                        "id": 68052,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2309:10:123",
+                        "src": "2309:10:142",
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_20000000_by_1",
                           "typeString": "int_const 20000000"
@@ -521,14 +521,14 @@
                       },
                       {
                         "hexValue": "3130",
-                        "id": 60067,
+                        "id": 68053,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2355:2:123",
+                        "src": "2355:2:142",
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_10_by_1",
                           "typeString": "int_const 10"
@@ -537,14 +537,14 @@
                       },
                       {
                         "hexValue": "38",
-                        "id": 60068,
+                        "id": 68054,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2400:1:123",
+                        "src": "2400:1:142",
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_8_by_1",
                           "typeString": "int_const 8"
@@ -553,14 +553,14 @@
                       },
                       {
                         "hexValue": "31",
-                        "id": 60069,
+                        "id": 68055,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2431:6:123",
+                        "src": "2431:6:142",
                         "subdenomination": "gwei",
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_1000000000_by_1",
@@ -570,14 +570,14 @@
                       },
                       {
                         "hexValue": "315f3030305f303030",
-                        "id": 60070,
+                        "id": 68056,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "2467:9:123",
+                        "src": "2467:9:142",
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_1000000_by_1",
                           "typeString": "int_const 1000000"
@@ -588,22 +588,22 @@
                         "expression": {
                           "arguments": [
                             {
-                              "id": 60073,
+                              "id": 68059,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "lValueRequested": false,
                               "nodeType": "ElementaryTypeNameExpression",
-                              "src": "2511:7:123",
+                              "src": "2511:7:142",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_type$_t_uint128_$",
                                 "typeString": "type(uint128)"
                               },
                               "typeName": {
-                                "id": 60072,
+                                "id": 68058,
                                 "name": "uint128",
                                 "nodeType": "ElementaryTypeName",
-                                "src": "2511:7:123",
+                                "src": "2511:7:142",
                                 "typeDescriptions": {}
                               }
                             }
@@ -615,18 +615,18 @@
                                 "typeString": "type(uint128)"
                               }
                             ],
-                            "id": 60071,
+                            "id": 68057,
                             "name": "type",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": -27,
-                            "src": "2506:4:123",
+                            "src": "2506:4:142",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_metatype_pure$__$returns$__$",
                               "typeString": "function () pure"
                             }
                           },
-                          "id": 60074,
+                          "id": 68060,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -634,21 +634,21 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "2506:13:123",
+                          "src": "2506:13:142",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_meta_type_t_uint128",
                             "typeString": "type(uint128)"
                           }
                         },
-                        "id": 60075,
+                        "id": 68061,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "lValueRequested": false,
                         "memberName": "max",
                         "nodeType": "MemberAccess",
-                        "src": "2506:17:123",
+                        "src": "2506:17:142",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint128",
                           "typeString": "uint128"
@@ -683,32 +683,32 @@
                         }
                       ],
                       "expression": {
-                        "id": 60064,
+                        "id": 68050,
                         "name": "ResourceMetering",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 51427,
-                        "src": "2245:16:123",
+                        "referencedDeclaration": 59027,
+                        "src": "2245:16:142",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ResourceMetering_$51427_$",
+                          "typeIdentifier": "t_type$_t_contract$_ResourceMetering_$59027_$",
                           "typeString": "type(contract ResourceMetering)"
                         }
                       },
-                      "id": 60065,
+                      "id": 68051,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "ResourceConfig",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 51111,
-                      "src": "2245:31:123",
+                      "referencedDeclaration": 58711,
+                      "src": "2245:31:142",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_struct$_ResourceConfig_$51111_storage_ptr_$",
+                        "typeIdentifier": "t_type$_t_struct$_ResourceConfig_$58711_storage_ptr_$",
                         "typeString": "type(struct ResourceMetering.ResourceConfig storage pointer)"
                       }
                     },
-                    "id": 60076,
+                    "id": 68062,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -723,115 +723,115 @@
                       "maximumBaseFee"
                     ],
                     "nodeType": "FunctionCall",
-                    "src": "2245:289:123",
+                    "src": "2245:289:142",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_ResourceConfig_$51111_memory_ptr",
+                      "typeIdentifier": "t_struct$_ResourceConfig_$58711_memory_ptr",
                       "typeString": "struct ResourceMetering.ResourceConfig memory"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "2197:337:123"
+                  "src": "2197:337:142"
                 },
                 {
                   "expression": {
-                    "id": 60078,
+                    "id": 68064,
                     "name": "config",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 60063,
-                    "src": "2551:6:123",
+                    "referencedDeclaration": 68049,
+                    "src": "2551:6:142",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_ResourceConfig_$51111_memory_ptr",
+                      "typeIdentifier": "t_struct$_ResourceConfig_$58711_memory_ptr",
                       "typeString": "struct ResourceMetering.ResourceConfig memory"
                     }
                   },
-                  "functionReturnParameters": 60058,
-                  "id": 60079,
+                  "functionReturnParameters": 68044,
+                  "id": 68065,
                   "nodeType": "Return",
-                  "src": "2544:13:123"
+                  "src": "2544:13:142"
                 }
               ]
             },
             "documentation": {
-              "id": 60053,
+              "id": 68039,
               "nodeType": "StructuredDocumentation",
-              "src": "1947:137:123",
+              "src": "1947:137:142",
               "text": "@notice Returns the default values for the ResourceConfig. These are the recommended values\n         for a production network."
             },
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "DEFAULT_RESOURCE_CONFIG",
-            "nameLocation": "2098:23:123",
+            "nameLocation": "2098:23:142",
             "parameters": {
-              "id": 60054,
+              "id": 68040,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2121:2:123"
+              "src": "2121:2:142"
             },
             "returnParameters": {
-              "id": 60058,
+              "id": 68044,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 60057,
+                  "id": 68043,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 60081,
-                  "src": "2147:38:123",
+                  "scope": 68067,
+                  "src": "2147:38:142",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_ResourceConfig_$51111_memory_ptr",
+                    "typeIdentifier": "t_struct$_ResourceConfig_$58711_memory_ptr",
                     "typeString": "struct ResourceMetering.ResourceConfig"
                   },
                   "typeName": {
-                    "id": 60056,
+                    "id": 68042,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 60055,
+                      "id": 68041,
                       "name": "ResourceMetering.ResourceConfig",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 51111,
-                      "src": "2147:31:123"
+                      "referencedDeclaration": 58711,
+                      "src": "2147:31:142"
                     },
-                    "referencedDeclaration": 51111,
-                    "src": "2147:31:123",
+                    "referencedDeclaration": 58711,
+                    "src": "2147:31:142",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_ResourceConfig_$51111_storage_ptr",
+                      "typeIdentifier": "t_struct$_ResourceConfig_$58711_storage_ptr",
                       "typeString": "struct ResourceMetering.ResourceConfig"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "2146:40:123"
+              "src": "2146:40:142"
             },
-            "scope": 60086,
+            "scope": 68072,
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           },
           {
-            "id": 60085,
+            "id": 68071,
             "nodeType": "VariableDeclaration",
-            "src": "2724:39:123",
+            "src": "2724:39:142",
             "nodes": [],
             "constant": true,
             "documentation": {
-              "id": 60082,
+              "id": 68068,
               "nodeType": "StructuredDocumentation",
-              "src": "2570:149:123",
+              "src": "2570:149:142",
               "text": "@notice The `reinitailizer` input for upgradable contracts. This value must be updated\n         each time that the contracts are deployed."
             },
             "mutability": "constant",
             "name": "INITIALIZER",
-            "nameLocation": "2748:11:123",
-            "scope": 60086,
+            "nameLocation": "2748:11:142",
+            "scope": 68072,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -839,10 +839,10 @@
               "typeString": "uint8"
             },
             "typeName": {
-              "id": 60083,
+              "id": 68069,
               "name": "uint8",
               "nodeType": "ElementaryTypeName",
-              "src": "2724:5:123",
+              "src": "2724:5:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint8",
                 "typeString": "uint8"
@@ -850,14 +850,14 @@
             },
             "value": {
               "hexValue": "33",
-              "id": 60084,
+              "id": 68070,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "2762:1:123",
+              "src": "2762:1:142",
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_3_by_1",
                 "typeString": "int_const 3"
@@ -873,22 +873,22 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 60033,
+          "id": 68019,
           "nodeType": "StructuredDocumentation",
-          "src": "121:275:123",
+          "src": "121:275:142",
           "text": "@title Constants\n @notice Constants is a library for storing constants. Simple! Don't put everything in here, just\n         the stuff used in multiple contracts. Constants that only apply to a single contract\n         should be defined in that contract instead."
         },
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          60086
+          68072
         ],
         "name": "Constants",
-        "nameLocation": "404:9:123",
-        "scope": 60087,
+        "nameLocation": "404:9:142",
+        "scope": 68073,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 123
+  "id": 142
 }
