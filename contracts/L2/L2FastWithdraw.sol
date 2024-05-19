@@ -148,21 +148,23 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         // chainID = _getChainID();
 
         dealData[_saleCount].provider = _from;
+        address l2token = dealData[_saleCount].l2token;
+        uint256 totalAmount = dealData[_saleCount].totalAmount;
 
-        if(dealData[_saleCount].l2token == legacyERC20ETH) {
-            (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
+        if(l2token == legacyERC20ETH) {
+            (bool sent, ) = payable(_from).call{value: totalAmount}("");
             require(sent, "claim fail");
         } else {
-            IERC20(dealData[_saleCount].l2token).safeTransfer(_from,dealData[_saleCount].totalAmount);
+            IERC20(l2token).safeTransfer(_from,totalAmount);
         }
 
         emit ProviderClaimFW(
             dealData[_saleCount].l1token,
-            dealData[_saleCount].l2token,
+            l2token,
             dealData[_saleCount].requester,
-            dealData[_saleCount].provider,
-            dealData[_saleCount].totalAmount,
-            dealData[_saleCount].fwAmount,
+            _from,
+            totalAmount,
+            _amount,
             _saleCount
         );
     }
@@ -178,18 +180,19 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
 
-        dealData[_salecount].provider = dealData[_salecount].requester;
+        dealData[_salecount].provider = _msgSender;
+        uint256 totalAmount = dealData[_salecount].totalAmount;
         
         if (dealData[_salecount].l2token == legacyERC20ETH) {
-            (bool sent, ) = payable(_msgSender).call{value: dealData[_salecount].totalAmount}("");
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
-            IERC20(dealData[_salecount].l2token).safeTransfer(dealData[_salecount].requester,dealData[_salecount].totalAmount);
+            IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
         }
 
         emit CancelFW(
-            dealData[_salecount].requester, 
-            dealData[_salecount].totalAmount, 
+            _msgSender, 
+            totalAmount, 
             _salecount
         );
     }
