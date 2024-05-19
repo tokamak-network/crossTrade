@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+import "hardhat-gas-reporter";
 import dotenv from "dotenv" ;
 
 dotenv.config();
@@ -75,7 +76,22 @@ const config: HardhatUserConfig = {
         'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e', // 19
       ],
     }
-  }
+  },
+  gasReporter: {
+    // enabled: true,
+    // currency: 'USD',
+    // gasPrice: 21,
+    // optimismHardfork: 'ecotone',
+    // includeIntrinsicGas: false,
+    // coinmarketcap: `${process.env.COINMARKETCAP_API_KEY}`
+    offline: true,
+    L2: "optimism",
+    gasPrice: .00325,      // gwei (L2)
+    baseFee: 35,           // gwei (L1)
+    blobBaseFee: 20,       // gwei (L1)
+    tokenPrice: "1",       // ETH per ETH
+    token: "ETH"
+  },
 };
 
 export default config;
