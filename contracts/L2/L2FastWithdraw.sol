@@ -255,8 +255,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
     }
 
     //=======Temporary view for testing ========
-    function getChainID() public view returns (uint256) {
-        uint256 id;
+    function getChainID() public view returns (uint256 id) {
         assembly {
             id := chainid()
         }
