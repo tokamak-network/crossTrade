@@ -52,6 +52,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
     modifier onlyEOA() {
         require(!_isContract(msg.sender), "L2FW: function can only be called from an EOA");
+        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
         _;
     }
 
@@ -93,10 +94,10 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
 
         if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
-            payable(address(this)).call{value: msg.value};
+            // payable(address(this)).call{value: msg.value};
         } else {
             //need to approve
-            IERC20(_l2token).transferFrom(msg.sender,address(this),_totalAmount);
+            IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
 
         bytes32 hashValue = getHash(
@@ -153,7 +154,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             (bool sent, ) = payable(_from).call{value: dealData[_saleCount].totalAmount}("");
             require(sent, "claim fail");
         } else {
-            IERC20(dealData[_saleCount].l2token).transfer(_from,dealData[_saleCount].totalAmount);
+            IERC20(dealData[_saleCount].l2token).safeTransfer(_from,dealData[_saleCount].totalAmount);
         }
 
         emit ProviderClaimFW(
@@ -184,7 +185,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
             (bool sent, ) = payable(_msgSender).call{value: dealData[_salecount].totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
-            IERC20(dealData[_salecount].l2token).transfer(dealData[_salecount].requester,dealData[_salecount].totalAmount);
+            IERC20(dealData[_salecount].l2token).safeTransfer(dealData[_salecount].requester,dealData[_salecount].totalAmount);
         }
 
         emit CancelFW(
