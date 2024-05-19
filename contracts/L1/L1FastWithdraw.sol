@@ -29,7 +29,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         external
         payable
     {
-        bytes32 L2HashValue = getHash(
+        bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
             _to,
@@ -37,9 +37,9 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _salecount,
             _l2chainId
         );
-        require(L2HashValue == _hash, "Hash values do not match.");
-        require(successFW[L2HashValue] == false, "already sold");
-        require(block.timestamp > editEndTime[L2HashValue], "The edit reflection time must pass.");
+        require(l2HashValue == _hash, "Hash values do not match.");
+        require(successFW[l2HashValue] == false, "already sold");
+        require(block.timestamp > editEndTime[l2HashValue], "The edit reflection time must pass.");
 
         bytes memory message;
 
@@ -47,7 +47,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             msg.sender,
             _fwAmount,
             _salecount,
-            L2HashValue
+            l2HashValue
         );
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
@@ -70,7 +70,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _minGasLimit
         );
 
-        successFW[L2HashValue] = true;
+        successFW[l2HashValue] = true;
     }
 
     function cancel( 
