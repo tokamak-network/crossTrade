@@ -5,7 +5,6 @@ import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
-import { IL2FastWithdraw } from "../interfaces/IL2FastWithdraw.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";
 

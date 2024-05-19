@@ -8,7 +8,6 @@ import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
-import { AddressAliasHelper } from "../libraries/AddressAliasHelper.sol";
 
 // import "hardhat/console.sol";
 
