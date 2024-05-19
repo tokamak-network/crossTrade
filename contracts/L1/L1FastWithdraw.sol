@@ -48,6 +48,8 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _salecount,
             l2HashValue
         );
+        
+        successFW[l2HashValue] = true;
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
             //need to approve
@@ -69,7 +71,6 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _minGasLimit
         );
 
-        successFW[l2HashValue] = true;
     }
 
     function cancel( 
@@ -101,13 +102,14 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _salecount
         );
 
+        successFW[L2HashValue] = true;
+
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2fastWithdrawContract, 
             message, 
             _minGasLimit
         );
 
-        successFW[L2HashValue] = true;
     }
 
     function edit(
@@ -141,14 +143,14 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
             _salecount,
             _hash
         );
+        
+        editEndTime[L2HashValue] = block.timestamp + chainData[_l2chainId].editTime;
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2fastWithdrawContract, 
             message, 
             _minGasLimit
         );
-
-        editEndTime[L2HashValue] = block.timestamp + chainData[_l2chainId].editTime;
     }
 
     function getHash(
@@ -169,8 +171,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
     }
 
-    function _getChainID() public view returns (uint256) {
-        uint256 id;
+    function _getChainID() public view returns (uint256 id) {
         assembly {
             id := chainid()
         }
