@@ -9,7 +9,7 @@ dotenv.config();
 const config: HardhatUserConfig = {
   // solidity: "0.8.20",
   solidity: {
-    version: '0.8.20',
+    version: '0.8.24',
     settings: {
       optimizer: {
         enabled: true,
@@ -82,8 +82,8 @@ const config: HardhatUserConfig = {
     // currency: 'USD',
     // gasPrice: 21,
     // optimismHardfork: 'ecotone',
-    // includeIntrinsicGas: false,
     // coinmarketcap: `${process.env.COINMARKETCAP_API_KEY}`
+    // includeIntrinsicGas: false,
     offline: true,
     L2: "optimism",
     gasPrice: .00325,      // gwei (L2)
