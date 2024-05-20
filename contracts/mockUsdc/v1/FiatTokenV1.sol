@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import { SafeMath } from "../../libraries/SafeMath.sol";
 import { AbstractFiatTokenV1 } from "./AbstractFiatTokenV1.sol";

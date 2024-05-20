@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
@@ -7,9 +7,9 @@ import "../proxy/ProxyStorage.sol";
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";
-import { ReentrancyGuardTransient } from "../utils/ReentrancyGuardTransient.sol";
+import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
-contract L1FastWithdrawGas is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage, ReentrancyGuardTransient {
+contract L1FastWithdrawGas is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 

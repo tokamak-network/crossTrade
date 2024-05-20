@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";

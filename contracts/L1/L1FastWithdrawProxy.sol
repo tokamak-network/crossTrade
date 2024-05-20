@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import { Proxy } from "../proxy/Proxy.sol";
 import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";

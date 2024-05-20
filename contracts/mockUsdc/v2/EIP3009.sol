@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import { AbstractFiatTokenV2 } from "./AbstractFiatTokenV2.sol";
 import { EIP712Domain } from "./EIP712Domain.sol";

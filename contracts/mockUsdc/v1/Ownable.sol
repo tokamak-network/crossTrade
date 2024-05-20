@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 /**
  * @notice The Ownable contract has an owner address, and provides basic
