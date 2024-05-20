@@ -7,8 +7,9 @@ import "../proxy/ProxyStorage.sol";
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";
+import { ReentrancyGuardTransient } from "../utils/ReentrancyGuardTransient.sol";
 
-contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage {
+contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage, ReentrancyGuardTransient {
 
     using SafeERC20 for IERC20;
 
@@ -27,6 +28,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
     )
         external
         payable
+        nonReentrant
     {
         bytes32 l2HashValue = getHash(
             _l1token,
@@ -84,6 +86,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
     )
         external
         payable
+        
     {
          bytes32 L2HashValue = getHash(
             _l1token,
