@@ -82,6 +82,7 @@ contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage
         onlyEOA
     {
         require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
+        
         unchecked {
             ++saleCount;
         }
