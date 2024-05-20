@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.20;
 
 import "../libraries/SafeERC20.sol";
@@ -6,10 +6,10 @@ import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
-import { L1FastWithdrawStorage } from "./L1FastWithdrawStorage.sol";
+import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
-contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage, ReentrancyGuard {
+contract L1CrossTradeGas is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 
@@ -44,8 +44,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         bytes memory message;
 
-        message = makeEncodeWithSignature(
-            1,
+        message = abi.encodeWithSignature("claimFW(address,uint256,uint256,bytes32)", 
             msg.sender,
             _fwAmount,
             _salecount,
@@ -101,12 +100,9 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         bytes memory message;
 
-        message = makeEncodeWithSignature(
-            3,
+        message = abi.encodeWithSignature("cancelFW(address,uint256)", 
             msg.sender,
-            _salecount,
-            0,
-            _hash
+            _salecount
         );
 
         successFW[L2HashValue] = true;
@@ -144,8 +140,7 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
 
         bytes memory message;
 
-        message = makeEncodeWithSignature(
-            2,
+        message = abi.encodeWithSignature("editFW(address,uint256,uint256,bytes32)", 
             msg.sender,
             _fwAmount,
             _salecount,
@@ -179,14 +174,14 @@ contract L1FastWithdraw is ProxyStorage, AccessibleCommon, L1FastWithdrawStorage
         );
     }
 
-    function makeEncodeWithSignature(
+    function encodeWithSignature(
         uint8 number,
         address to, 
         uint256 amount,
         uint256 amount2,
         bytes32 byteValue
     )
-        public
+        external
         returns (bytes memory)
     {
         if (number == 1) {

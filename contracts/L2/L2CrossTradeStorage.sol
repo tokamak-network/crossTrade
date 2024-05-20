@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.20;
 
-contract L2FastWithdrawStorage {
+contract L2CrossTradeStorage {
     struct RequestData {
         address l1token;
         address l2token;

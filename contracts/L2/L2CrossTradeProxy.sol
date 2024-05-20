@@ -2,9 +2,9 @@
 pragma solidity 0.8.20;
 
 import { Proxy } from "../proxy/Proxy.sol";
-import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
+import { L2CrossTradeStorage } from "./L2CrossTradeStorage.sol";
 
-contract L2FastWithdrawProxy is Proxy, L2FastWithdrawStorage {
+contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
 
     function initialize(
         address _crossDomainMessenger,

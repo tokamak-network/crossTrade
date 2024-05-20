@@ -5,13 +5,13 @@ import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
-import { L2FastWithdrawStorage } from "./L2FastWithdrawStorage.sol";
+import { L2CrossTradeStorage } from "./L2CrossTradeStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 
 // import "hardhat/console.sol";
 
-contract L2FastWithdraw is ProxyStorage, AccessibleCommon, L2FastWithdrawStorage {
+contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     using SafeERC20 for IERC20;
 
