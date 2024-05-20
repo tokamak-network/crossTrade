@@ -57,7 +57,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     modifier checkL1() {
         require(
-            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1fastWithdrawContract, 
+            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1CrossTradeContract, 
             "only call l1FastWithdraw"
         );
         _;

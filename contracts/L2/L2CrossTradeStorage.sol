@@ -14,7 +14,7 @@ contract L2CrossTradeStorage {
     }
 
     address public crossDomainMessenger;
-    address public l1fastWithdrawContract;
+    address public l1CrossTradeContract;
     address public legacyERC20ETH;
     address public nativeL1token;
 

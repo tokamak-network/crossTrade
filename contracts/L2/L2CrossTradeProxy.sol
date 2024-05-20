@@ -8,7 +8,7 @@ contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
 
     function initialize(
         address _crossDomainMessenger,
-        address _l1fastWithdraw,
+        address _l1crossTrade,
         address _legacyERC20,
         address _l1legacyERC20
     ) 
@@ -16,7 +16,7 @@ contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
         onlyOwner
     {
         crossDomainMessenger = _crossDomainMessenger;
-        l1fastWithdrawContract = _l1fastWithdraw;
+        l1CrossTradeContract = _l1crossTrade;
         legacyERC20ETH = _legacyERC20;
         nativeL1token = _l1legacyERC20;
     }
