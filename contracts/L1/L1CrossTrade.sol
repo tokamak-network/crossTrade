@@ -216,7 +216,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         assembly {
             id := chainid()
         }
-        return id;
     }
 
 

@@ -14,6 +14,7 @@ const config: HardhatUserConfig = {
       optimizer: {
         enabled: true,
         runs: 100,
+        evmVersion: "Dencun",
       },
     },
   },

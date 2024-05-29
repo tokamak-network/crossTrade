@@ -96,7 +96,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
             // payable(address(this)).call{value: msg.value};
         } else {
-            //need to approve
+            // need to approve
             IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
 
@@ -262,7 +262,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         assembly {
             id := chainid()
         }
-        return id;
     }
 
     //=======internal========
@@ -272,11 +271,9 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         return account.code.length > 0;
     }
 
-    function _getChainID() internal view returns (uint256) {
-        uint256 id;
+    function _getChainID() internal view returns (uint256 id) {
         assembly {
             id := chainid()
         }
-        return id;
     }
 }
