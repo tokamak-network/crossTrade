@@ -53,8 +53,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         
         successFW[l2HashValue] = true;
+        
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+            chainData[_l2chainId].l2fastWithdrawContract, 
+            message, 
+            _minGasLimit
+        );
 
-        if (chainData[_l2chainId].nativeL1token == _l1token) {
+         if (chainData[_l2chainId].nativeL1token == _l1token) {
             //need to approve
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
             IERC20(_l1token).safeTransfer(_to,_fwAmount);
@@ -67,12 +73,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             //need to approve
             IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
         }
-        
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2fastWithdrawContract, 
-            message, 
-            _minGasLimit
-        );
 
     }
 
@@ -87,6 +87,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )
         external
         payable
+        nonReentrant
         
     {
          bytes32 L2HashValue = getHash(
@@ -131,6 +132,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )  
         external
         payable
+        nonReentrant
     {
         bytes32 L2HashValue = getHash(
             _l1token,
