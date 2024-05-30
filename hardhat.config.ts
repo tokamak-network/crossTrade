@@ -9,16 +9,27 @@ dotenv.config();
 const config: HardhatUserConfig = {
   // solidity: "0.8.20",
   solidity: {
-    version: '0.8.20',
+    version: '0.8.24',
     settings: {
+      evmVersion: "cancun",
+      viaIR: true,
       optimizer: {
-        enabled: true,
-        runs: 100,
-        evmVersion: "Dencun",
+          enabled: true,
+          runs: 100000000, //4294967295,
+          details: {
+              yul: true,
+          },
       },
+      // optimizer: {
+      //   enabled: true,
+      //   runs: 100,
+      // },
     },
   },
   networks: {
+    // hardhat: {
+    //   evmVersion: "Dencun",
+    // },
     mainnet: {
       url: process.env.L1_RPC || 'https://mainnet-l1-rehearsal.optimism.io',
       accounts: [

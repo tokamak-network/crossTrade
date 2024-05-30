@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.24;
 
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
@@ -7,9 +7,9 @@ import "../proxy/ProxyStorage.sol";
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
-import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
+import { ReentrancyGuardTransient } from "../utils/ReentrancyGuardTransient.sol";
 
-contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuard {
+contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuardTransient {
 
     using SafeERC20 for IERC20;
 

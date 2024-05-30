@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.24;
 
 import { Ownable } from "./Ownable.sol";
 
