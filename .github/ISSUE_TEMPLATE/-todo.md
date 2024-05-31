@@ -7,10 +7,7 @@ assignees: zzooppii
 
 ---
 
-# Project Name
-Project Description
-
-### Column Name
+### Task Name
 - [ ] Task title ~3d #type @name yyyy-mm-dd  
   - [ ] Sub-task or description  
 
