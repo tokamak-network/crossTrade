@@ -144,7 +144,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
         require(dealData[_saleCount].fwAmount == _amount, "not match the fwAmount");
-        // require(dealData[_saleCount].requester == _to, "not match the seller");
+        require(dealData[_saleCount].provider == address(0), "already sold");
         // require(dealData[_saleCount].l1token == _l1token, "need same l1token");
         // chainID = _getChainID();
 

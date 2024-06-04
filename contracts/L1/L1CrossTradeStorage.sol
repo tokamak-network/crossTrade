@@ -15,6 +15,8 @@ contract L1CrossTradeStorage {
     mapping(bytes32 => bool) public successFW;
     //hashValue => edit시간 측정
     mapping(bytes32 => uint256) public editEndTime;
+    //hashValue => account
+    mapping(bytes32 => address) public provideAccount;
     //chainId => Data
     mapping(uint256 => ChainIdData) public chainData;
 }

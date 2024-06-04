@@ -53,6 +53,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         
         successFW[l2HashValue] = true;
+        provideAccount[l2HashValue] = msg.sender;
         
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2fastWithdrawContract, 
@@ -74,6 +75,48 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
         }
 
+    }
+
+    function reprovideFW(
+        address _l1token,
+        address _l2token,
+        address _to,
+        uint256 _totalAmount,
+        uint256 _fwAmount,
+        uint256 _salecount,
+        uint256 _l2chainId,
+        uint32 _minGasLimit,
+        bytes32 _hash
+    )
+        external
+    {
+         bytes32 l2HashValue = getHash(
+            _l1token,
+            _l2token,
+            _to,
+            _totalAmount,
+            _salecount,
+            _l2chainId
+        );
+        require(l2HashValue == _hash, "Hash values do not match.");
+        require(successFW[l2HashValue] == true, "not reprovide");
+        require(provideAccount[l2HashValue] == msg.sender, "not provider");
+
+        bytes memory message;
+
+        message = makeEncodeWithSignature(
+            1,
+            msg.sender,
+            _fwAmount,
+            _salecount,
+            l2HashValue
+        );
+
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+            chainData[_l2chainId].l2fastWithdrawContract, 
+            message, 
+            _minGasLimit
+        );
     }
 
     function cancel( 
