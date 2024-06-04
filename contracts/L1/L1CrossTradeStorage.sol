@@ -13,10 +13,10 @@ contract L1CrossTradeStorage {
 
     //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
     mapping(bytes32 => bool) public successFW;
-    //hashValue => edit시간 측정
-    mapping(bytes32 => uint256) public editEndTime;
     //hashValue => account
     mapping(bytes32 => address) public provideAccount;
+    //hashValue => fwAmount 값 저장
+    mapping(bytes32 => uint256) public editFwAmount;
     //chainId => Data
     mapping(uint256 => ChainIdData) public chainData;
 }

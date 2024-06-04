@@ -13,6 +13,12 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
     using SafeERC20 for IERC20;
 
+    event EditFW(
+        address _requester,
+        uint256 _fwAmount,
+        uint256 _saleCount
+    );
+
     // Storage 저장 추가 (Hash mapping 값 확인과 최종 저장 확인) 
     // 초기에는 front에서 amount정보를 제대로 가져와야함
     function provideFW(
@@ -40,7 +46,10 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successFW[l2HashValue] == false, "already sold");
-        require(block.timestamp > editEndTime[l2HashValue], "The edit reflection time must pass.");
+        
+        if (editFwAmount[l2HashValue] > 0) {
+            require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+        }
 
         bytes memory message;
 
@@ -133,7 +142,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         nonReentrant
         
     {
-         bytes32 L2HashValue = getHash(
+         bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
             msg.sender,
@@ -141,7 +150,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _salecount,
             _l2chainId
         );
-        require(L2HashValue == _hash, "Hash values do not match.");
+        require(l2HashValue == _hash, "Hash values do not match.");
 
         bytes memory message;
 
@@ -153,7 +162,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
 
-        successFW[L2HashValue] = true;
+        successFW[l2HashValue] = true;
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2fastWithdrawContract, 
@@ -177,7 +186,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         payable
         nonReentrant
     {
-        bytes32 L2HashValue = getHash(
+        bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
             msg.sender,
@@ -185,24 +194,15 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _salecount,
             _l2chainId
         );
-        require(L2HashValue == _hash, "Hash values do not match.");
-
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
-            2,
-            msg.sender,
-            _fwAmount,
-            _salecount,
-            _hash
-        );
+        require(l2HashValue == _hash, "Hash values do not match.");
+        require(successFW[l2HashValue] == false, "already sold");
         
-        editEndTime[L2HashValue] = block.timestamp + chainData[_l2chainId].editTime;
+        editFwAmount[l2HashValue] = _fwAmount;
 
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2fastWithdrawContract, 
-            message, 
-            _minGasLimit
+        emit EditFW(
+            msg.sender, 
+            _fwAmount, 
+            _salecount
         );
     }
 

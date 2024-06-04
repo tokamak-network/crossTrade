@@ -22,6 +22,4 @@ contract L2CrossTradeStorage {
 
     mapping(uint256 => RequestData) public dealData;
 
-    //hashValue => edit성공 확인
-    mapping(bytes32 => bool) public editCheck;
 }
