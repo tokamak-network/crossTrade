@@ -70,6 +70,73 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     //=======external========
 
+    function registerToken(
+        address _l1token,
+        address _l2token,
+        uint256 _l1chainId
+    )
+        external
+        onlyOwner
+    {
+        bytes32 enterHash = getEnterHash(
+            _l1token,
+            _l2token,
+            _l1chainId
+        );
+        require(checkToken[enterHash] == false, "already registerToken");
+        enteringToken[_l1chainId][_l2token] = _l1token;
+        checkToken[enterHash] = true;
+    }
+
+    function deleteToken(
+        uint256 _l1chainId,
+        address _l1token,
+        address _l2token
+    )
+        external
+        onlyOwner
+    {
+        bytes32 enterHash = getEnterHash(
+            _l1token,
+            _l2token,
+            _l1chainId
+        );
+        require(checkToken[enterHash] == true, "already deleteToken");
+        checkToken[enterHash] = false;
+    }
+
+    function requestEnterToken(
+        address _l2token,
+        uint256 _totalAmount,
+        uint256 _fwAmount,
+        uint256 _l1chainId
+    )
+        external
+        payable
+        onlyEOA
+    {
+        address _l1token = enteringToken[_l1chainId][_l2token];
+        bytes32 enterHash = getEnterHash(
+            _l1token,
+            _l2token,
+            _l1chainId
+        );
+        require(checkToken[enterHash], "not register token");
+        
+        unchecked {
+            ++saleCount;
+        }
+
+        _request(
+            _l1token,
+            _l2token,
+            _fwAmount,
+            _totalAmount,
+            saleCount,
+            _l1chainId
+        );
+    }
+
     function requestFW(
         address _l1token,
         address _l2token,
@@ -92,42 +159,13 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             _l1token = getL1token(_l2token);
         } 
 
-        if (_l2token == legacyERC20ETH) {
-            require(msg.value == _totalAmount, "FW: nativeTON need amount");
-            // payable(address(this)).call{value: msg.value};
-        } else {
-            // need to approve
-            IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
-        }
-
-        bytes32 hashValue = getHash(
+        _request(
             _l1token,
             _l2token,
-            msg.sender,
+            _fwAmount,
             _totalAmount,
             saleCount,
             _l1chainId
-        );
-
-        dealData[saleCount] = RequestData({
-            l1token: _l1token,
-            l2token: _l2token,
-            requester: msg.sender,
-            provider: address(0),
-            totalAmount: _totalAmount,
-            fwAmount: _fwAmount,
-            chainId: _l1chainId,
-            hashValue: hashValue
-        });
-
-        emit CreateRequestFW(
-            _l1token,
-            _l2token,
-            msg.sender,
-            _totalAmount,
-            _fwAmount,
-            saleCount,
-            hashValue
         );
     }
     
@@ -231,6 +269,20 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         );
     }
 
+    function getEnterHash(
+        address _l1token,
+        address _l2token,
+        uint256 _l1chainId
+    )
+        public
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(_l1token, _l2token, _l1chainId)
+        );
+    }
+
     //=======Temporary view for testing ========
     function getChainID() public view returns (uint256 id) {
         assembly {
@@ -249,5 +301,54 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         assembly {
             id := chainid()
         }
+    }
+
+    function _request(
+        address _l1token,
+        address _l2token,
+        uint256 _fwAmount,
+        uint256 _totalAmount,
+        uint256 _saleCount,
+        uint256 _l1chainId
+    )
+        internal
+    {
+        if (_l2token == legacyERC20ETH) {
+            require(msg.value == _totalAmount, "FW: nativeTON need amount");
+            // payable(address(this)).call{value: msg.value};
+        } else {
+            // need to approve
+            IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
+        }
+
+        bytes32 hashValue = getHash(
+            _l1token,
+            _l2token,
+            msg.sender,
+            _totalAmount,
+            _saleCount,
+            _l1chainId
+        );
+
+        dealData[_saleCount] = RequestData({
+            l1token: _l1token,
+            l2token: _l2token,
+            requester: msg.sender,
+            provider: address(0),
+            totalAmount: _totalAmount,
+            fwAmount: _fwAmount,
+            chainId: _l1chainId,
+            hashValue: hashValue
+        });
+
+        emit CreateRequestFW(
+            _l1token,
+            _l2token,
+            msg.sender,
+            _totalAmount,
+            _fwAmount,
+            _saleCount,
+            hashValue
+        );
     }
 }
