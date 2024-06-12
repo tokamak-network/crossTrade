@@ -15,7 +15,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     using SafeERC20 for IERC20;
 
-    event CreateRequestFW(
+    event CreateRequestCT(
         address _l1token,
         address _l2token,
         address _requester,
@@ -25,7 +25,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         bytes32 _hashValue
     );
 
-    event ProviderClaimFW(
+    event ProviderClaimCT(
         address _l1token,
         address _l2token,
         address _requester,
@@ -35,13 +35,13 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         uint256 _saleCount
     );
 
-    event CancelFW(
+    event CancelCT(
         address _requester,
         uint256 _totalAmount,
         uint256 _saleCount
     );
 
-    event EditFW(
+    event EditCT(
         address _requester,
         uint256 _fwAmount,
         uint256 _saleCount
@@ -137,7 +137,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         );
     }
 
-    function requestFW(
+    function requestCT(
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
@@ -169,7 +169,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         );
     }
     
-    function claimFW(
+    function claimCT(
         address _from,
         uint256 _amount,
         uint256 _saleCount,
@@ -197,7 +197,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             IERC20(l2token).safeTransfer(_from,totalAmount);
         }
 
-        emit ProviderClaimFW(
+        emit ProviderClaimCT(
             dealData[_saleCount].l1token,
             l2token,
             dealData[_saleCount].requester,
@@ -208,7 +208,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         );
     }
 
-    function cancelFW(
+    function cancelCT(
         address _msgSender,
         uint256 _salecount
     )
@@ -229,7 +229,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
         }
 
-        emit CancelFW(
+        emit CancelCT(
             _msgSender, 
             totalAmount, 
             _salecount
@@ -341,7 +341,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             hashValue: hashValue
         });
 
-        emit CreateRequestFW(
+        emit CreateRequestCT(
             _l1token,
             _l2token,
             msg.sender,

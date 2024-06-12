@@ -11,12 +11,12 @@ import { expect } from "chai";
 // import { ethers } from "hardhat";
 import { BytesLike, ethers } from 'ethers'
 
-import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
-import L1CrossTradeProxy_ABI from "../artifacts/contracts/L1/L1CrossTradeProxy.sol/L1CrossTradeProxy.json"
-import L1CrossTrade_ABI from "../artifacts/contracts/L1/L1CrossTrade.sol/L1CrossTrade.json"
-import L2CrossTradeProxy_ABI from "../artifacts/contracts/L2/L2CrossTradeProxy.sol/L2CrossTradeProxy.json"
-import L2CrossTrade_ABI from "../artifacts/contracts/L2/L2CrossTrade.sol/L2CrossTrade.json"
-import Proxy_ABI from "../artifacts/contracts/proxy/Proxy.sol/Proxy.json"
+import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../../src'
+import L1CrossTradeProxy_ABI from "../../artifacts/contracts/L1/L1CrossTradeProxy.sol/L1CrossTradeProxy.json"
+import L1CrossTrade_ABI from "../../artifacts/contracts/L1/L1CrossTrade.sol/L1CrossTrade.json"
+import L2CrossTradeProxy_ABI from "../../artifacts/contracts/L2/L2CrossTradeProxy.sol/L2CrossTradeProxy.json"
+import L2CrossTrade_ABI from "../../artifacts/contracts/L2/L2CrossTrade.sol/L2CrossTrade.json"
+import Proxy_ABI from "../../artifacts/contracts/proxy/Proxy.sol/Proxy.json"
 
 
 import dotenv from "dotenv" ;
@@ -26,8 +26,8 @@ dotenv.config();
 
 describe("CrossTradeNativeTONTest", function () {
   let network = "devnetL1"
-  let deployedAddress = require('./data/deployed.'+network+'.json');
-  let predeployedAddress = require('./data/predeployed.'+network+'.json');
+  let deployedAddress = require('../data/deployed.'+network+'.json');
+  let predeployedAddress = require('../data/predeployed.'+network+'.json');
 
   const erc20ABI = [
     {
@@ -219,22 +219,22 @@ describe("CrossTradeNativeTONTest", function () {
         l1Wallet
       )
 
-      // let tx = await l2NativeTokenContract.balanceOf(
-      //   l1Wallet.address
-      // )
-      // console.log('TON balance in L1(Wallet):', Number(tx.toString()))
-      // tx = await l2NativeTokenContract.balanceOf(
-      //   l1user1.address
-      // )
-      // console.log('TON balance in L1(user1):', Number(tx.toString()))
-      // let l1Balance = await l1Wallet.getBalance()
-      // console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
-      // let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
-      // l1Balance = await l1user1.getBalance()
-      // console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
-      // l2Balance = await l2user1.getBalance()
-      // console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
+      let tx = await l2NativeTokenContract.balanceOf(
+        l1Wallet.address
+      )
+      console.log('TON balance in L1(Wallet):', Number(tx.toString()))
+      tx = await l2NativeTokenContract.balanceOf(
+        l1user1.address
+      )
+      console.log('TON balance in L1(user1):', Number(tx.toString()))
+      let l1Balance = await l1Wallet.getBalance()
+      console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
+      let l2Balance = await l2Wallet.getBalance()
+      console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
+      l1Balance = await l1user1.getBalance()
+      console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
+      l2Balance = await l2user1.getBalance()
+      console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
     })
 
     it("L1CrossTradeProxy", async () => {
@@ -370,7 +370,7 @@ describe("CrossTradeNativeTONTest", function () {
     })
   });
 
-  describe("FW Test", () => {
+  describe("CrossTrade Test", () => {
     it("if dont have TON, get TON", async () => {
       let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
@@ -387,7 +387,7 @@ describe("CrossTradeNativeTONTest", function () {
       }
     })
 
-    it("deposit TON", async () => {
+    it("deposit TON(L1 -> L2)", async () => {
       let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(l1Wallet.address)
       let beforel2Balance = await l2Wallet.getBalance()
 
@@ -406,7 +406,7 @@ describe("CrossTradeNativeTONTest", function () {
       expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
     })
 
-    it("requestFW in L2", async () => {
+    it("requestCT in L2", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
       
@@ -430,7 +430,7 @@ describe("CrossTradeNativeTONTest", function () {
       expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
     })
 
-    it("faucet TON to user1", async () => {
+    it("faucet TON to user1 in L1", async () => {
       let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
@@ -446,22 +446,21 @@ describe("CrossTradeNativeTONTest", function () {
       }
     })
 
-    it("providerFW(TON) in L1", async () => {
-      let beforel2Balance = await l2Wallet.getBalance()
+    it("provideCT(TON) succeeds in L1 but fails in L2", async () => {
       let beforel2BalanceUser1 = await l2user1.getBalance()
 
       let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
-      console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+      // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
       let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
-      console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
+      // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
       let beforel2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
         l2NativeTokenContract.address
       )
-      console.log("beforel2NativeTokenBalanceContract(Contract) : ", beforel2NativeTokenBalanceContract.toString())
+      // console.log("beforel2NativeTokenBalanceContract(Contract) : ", beforel2NativeTokenBalanceContract.toString())
     
       const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
       await providerApproveTx.wait()
@@ -473,7 +472,7 @@ describe("CrossTradeNativeTONTest", function () {
 
       let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
-      const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
+      const providerTx = await L1CrossTradeContract.connect(l1user1).provideTest(
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         l2Wallet.address,
@@ -486,9 +485,8 @@ describe("CrossTradeNativeTONTest", function () {
       )
       await providerTx.wait()
     
-      await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+      // await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
 
-      let afterl2Balance = await l2Wallet.getBalance()
       let afterl2BalanceUser1 = await l2user1.getBalance()
 
       let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
@@ -501,26 +499,107 @@ describe("CrossTradeNativeTONTest", function () {
       )
       console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
 
-      let afterl2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
-        l2NativeTokenContract.address
-      )
-      console.log("afterl2NativeTokenBalanceContract(Contract) : ", afterl2NativeTokenBalanceContract.toString())
+      // let afterl2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
+      //   l2NativeTokenContract.address
+      // )
+      // console.log("afterl2NativeTokenBalanceContract(Contract) : ", afterl2NativeTokenBalanceContract.toString())
 
-
-      expect(afterl2Balance).to.be.equal(beforel2Balance)
-      expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+      //L2에서 user1가 TON을 받지 못함 (원래는 TON을 받아야함)
+      expect(afterl2BalanceUser1).to.be.equal(beforel2BalanceUser1)
       
+      //L1에서 user1은 TON을 지불함
       expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+
+      //L1에서 wallet은 TON을 받음
       expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
 
       let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
-      expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
+      //L2에서 contract에서 TON을 주지않음
+      expect(beforeL2CrossTradeBalance).to.be.equal(afterL2CrossTradeBalance)
 
-      saleInformation = await L2CrossTradeContract.dealData(saleCount)
-      if(saleInformation.provider !== l2user1.address) {
-        console.log("===========Provider Fail!!===========")
-      } 
+      // saleInformation = await L2CrossTradeContract.dealData(saleCount)
+      // if(saleInformation.provider !== l2user1.address) {
+      //   console.log("===========Provider Fail!!===========")
+      // } 
+    })
+
+    it("reprovideCT(TON) in L1", async () => {
+      let beforel2BalanceUser1 = await l2user1.getBalance()
+  
+        let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+          l1user1.address
+        )
+        // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+        let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+          l1Wallet.address
+        )
+        // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
+        let beforel2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
+          l2NativeTokenContract.address
+        )
+        // console.log("beforel2NativeTokenBalanceContract(Contract) : ", beforel2NativeTokenBalanceContract.toString())
+      
+        const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
+        await providerApproveTx.wait()
+      
+        const saleCount = await L2CrossTradeProxy.saleCount()
+        let chainId = await L2CrossTradeContract.getChainID()
+  
+        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+  
+        let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+  
+        const providerTx = await L1CrossTradeContract.connect(l1user1).reprovideCT(
+          l2NativeToken,
+          predeployedAddress.LegacyERC20ETH,
+          l2Wallet.address,
+          threeETH,
+          twoETH,
+          saleCount,
+          chainId,
+          200000,
+          saleInformation.hashValue
+        )
+        await providerTx.wait()
+        
+        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+  
+        let afterl2BalanceUser1 = await l2user1.getBalance()
+  
+        let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
+          l1user1.address
+        )
+        // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+  
+        let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
+          l1Wallet.address
+        )
+        // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
+  
+        // let afterl2NativeTokenBalanceContract = await l2NativeTokenContract.balanceOf(
+        //   l2NativeTokenContract.address
+        // )
+        // console.log("afterl2NativeTokenBalanceContract(Contract) : ", afterl2NativeTokenBalanceContract.toString())
+  
+        //L2에서 user1가 TON을 받아야함
+        expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+        
+        //L1에서 user1은 TON을 provideCT에서 지불했기 때문에 지불하지않음
+        expect(beforel2NativeTokenBalance).to.be.equal(afterl2NativeTokenBalance)
+  
+        //L1에서 wallet은 TON을 이미 받았기 때문에 받지않음
+        expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
+  
+        let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+        //L2에서 contract에서 TON을 줌
+        expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
+  
+        saleInformation = await L2CrossTradeContract.dealData(saleCount)
+        if(saleInformation.provider !== l2user1.address) {
+          console.log("===========reProvider Fail!!===========")
+        } 
     })
   })
+
 
 });

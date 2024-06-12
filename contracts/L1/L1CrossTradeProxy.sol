@@ -16,7 +16,7 @@ contract L1CrossTradeProxy is Proxy, L1CrossTradeStorage {
     }
 
     function chainInfo(
-        address _l2fastWithdraw,
+        address _l2CrossTrade,
         address _legacyERC20,
         address _l1legacyERC20,
         uint256 _l2chainId,
@@ -26,7 +26,7 @@ contract L1CrossTradeProxy is Proxy, L1CrossTradeStorage {
         onlyOwner
     {
         chainData[_l2chainId] = ChainIdData({
-            l2fastWithdrawContract: _l2fastWithdraw,
+            l2CrossTradeContract: _l2CrossTrade,
             legacyERC20ETH: _legacyERC20,
             nativeL1token: _l1legacyERC20,
             editTime: _editTime
