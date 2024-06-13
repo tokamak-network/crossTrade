@@ -47,10 +47,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
         
+        bool editCheck;
+
         if (editFwAmount[l2HashValue] > 0) {
             require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+            editCheck = true;
         }
-
+        
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -58,7 +61,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             msg.sender,
             _fwAmount,
             _salecount,
-            l2HashValue
+            l2HashValue,
+            editCheck
         );
         
         successCT[l2HashValue] = true;
@@ -111,8 +115,11 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
         
+        bool editCheck;
+
         if (editFwAmount[l2HashValue] > 0) {
             require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+            editCheck = true;
         }
 
         bytes memory message;
@@ -122,7 +129,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             msg.sender,
             _fwAmount,
             _salecount,
-            l2HashValue
+            l2HashValue,
+            editCheck
         );
         
         successCT[l2HashValue] = true;
@@ -168,6 +176,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(successCT[l2HashValue] == true, "not reprovide");
         require(provideAccount[l2HashValue] == msg.sender, "not provider");
 
+        bool editCheck;
+        
+        if (editFwAmount[l2HashValue] > 0) {
+            require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+            editCheck = true;
+        }
+
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -175,7 +190,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             msg.sender,
             _fwAmount,
             _salecount,
-            l2HashValue
+            l2HashValue,
+            editCheck
         );
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
@@ -216,7 +232,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             msg.sender,
             _salecount,
             0,
-            _hash
+            _hash,
+            false
         );
 
         successCT[l2HashValue] = true;
@@ -285,18 +302,20 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address to, 
         uint256 amount,
         uint256 amount2,
-        bytes32 byteValue
+        bytes32 byteValue,
+        bool _edit
     )
         public
         pure
         returns (bytes memory)
     {
         if (number == 1) {
-            return abi.encodeWithSignature("claimCT(address,uint256,uint256,bytes32)", 
+            return abi.encodeWithSignature("claimCT(address,uint256,uint256,bytes32,bool)", 
                 to, 
                 amount,
                 amount2,
-                byteValue
+                byteValue,
+                _edit
             );
         } else if (number == 2) {
             return abi.encodeWithSignature("cancelCT(address,uint256)", 

@@ -173,7 +173,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         address _from,
         uint256 _amount,
         uint256 _saleCount,
-        bytes32 _hash
+        bytes32 _hash,
+        bool _edit
     )
         external
         payable
@@ -181,8 +182,10 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         providerCheck(_saleCount)
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
-        require(dealData[_saleCount].fwAmount == _amount, "not match the fwAmount");
         require(dealData[_saleCount].provider == address(0), "already sold");
+        if (_edit == false) {
+            require(dealData[_saleCount].fwAmount == _amount, "not match the fwAmount");
+        }
         // require(dealData[_saleCount].l1token == _l1token, "need same l1token");
         // chainID = _getChainID();
 
