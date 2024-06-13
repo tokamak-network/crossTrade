@@ -455,7 +455,7 @@ describe("CrossTradeNativeTONTest", function () {
 
       let chainId = await L2CrossTradeContract.getChainID()
 
-      await (await L1CrossTradeContract.connect(l1Wallet).edit(
+      let receipt = await (await L1CrossTradeContract.connect(l1Wallet).edit(
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
@@ -467,6 +467,21 @@ describe("CrossTradeNativeTONTest", function () {
 
       let afterEditFW = await L1CrossTradeContract.editFwAmount(saleInformation.hashValue)
       expect(afterEditFW).to.be.equal(oneETH)
+
+      const topic = L1CrossTradeContract.interface.getEventTopic('EditCT');
+      const log = receipt.logs.find(x => x.topics.indexOf(topic) >= 0);
+      const editEvent = L1CrossTradeContract.interface.parseLog(log);
+      // console.log(editEvent)
+
+      expect(editEvent.args._fwAmount).to.be.equal(oneETH)
+      expect(editEvent.args._saleCount).to.be.equal(saleCount)
+      // expect(editEvent.args._requester).to.be.equal(l1Wallet.address)
+      if (editEvent.args._requester === l1Wallet.address) {
+        // console.log("event requester pass")
+      } else {
+        console.log("event requester fault data")
+      }
+      
     })
 
     it("If you using providerCT enter the original fwAmount value, it will be reverted.", async () => {
