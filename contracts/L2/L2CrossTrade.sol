@@ -89,9 +89,9 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
     }
 
     function deleteToken(
-        uint256 _l1chainId,
         address _l1token,
-        address _l2token
+        address _l2token,
+        uint256 _l1chainId
     )
         external
         onlyOwner
