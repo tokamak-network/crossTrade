@@ -53,7 +53,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
             editCheck = true;
         }
-        
+
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -75,7 +75,11 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
          if (chainData[_l2chainId].nativeL1token == _l1token) {
-            //need to approve
+            _approve(
+                msg.sender,
+                _l1token,
+                _fwAmount
+            );
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
             IERC20(_l1token).safeTransfer(_to,_fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
@@ -83,12 +87,18 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_to).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            //need to approve
+            _approve(
+                msg.sender,
+                _l1token,
+                _fwAmount
+            );
             IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
         }
 
     }
 
+
+    //reprovide 함수 테스트를 위해서 만듬
     function provideTest(
         address _l1token,
         address _l2token,
@@ -137,7 +147,11 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         provideAccount[l2HashValue] = msg.sender;
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
-            //need to approve
+            _approve(
+                msg.sender,
+                _l1token,
+                _fwAmount
+            );
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
             IERC20(_l1token).safeTransfer(_to,_fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
@@ -145,7 +159,11 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_to).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            //need to approve
+            _approve(
+                msg.sender,
+                _l1token,
+                _fwAmount
+            );
             IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
         }
 
@@ -230,8 +248,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         message = makeEncodeWithSignature(
             2,
             msg.sender,
-            _salecount,
             0,
+            _salecount,
             _hash,
             false
         );
@@ -301,26 +319,29 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint8 number,
         address to, 
         uint256 amount,
-        uint256 amount2,
+        uint256 saleCount,
         bytes32 byteValue,
         bool _edit
     )
         public
-        pure
+        view
         returns (bytes memory)
     {
+        uint256 chainId = _getChainID();
         if (number == 1) {
-            return abi.encodeWithSignature("claimCT(address,uint256,uint256,bytes32,bool)", 
+            return abi.encodeWithSignature("claimCT(address,uint256,uint256,uint256,bytes32,bool)", 
                 to, 
                 amount,
-                amount2,
+                saleCount,
+                chainId,
                 byteValue,
                 _edit
             );
         } else if (number == 2) {
-            return abi.encodeWithSignature("cancelCT(address,uint256)", 
+            return abi.encodeWithSignature("cancelCT(address,uint256,uint256)", 
                 to,
-                amount
+                saleCount,
+                chainId
             );
         }
     }
@@ -329,6 +350,15 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         assembly {
             id := chainid()
         }
+    }
+
+    function _approve(
+        address _sender,
+        address _l1token,
+        uint256 _totalAmount
+    ) internal view {
+        uint256 allow = IERC20(_l1token).allowance(_sender, address(this));
+        require(allow >= _totalAmount, "need approve");
     }
 
 

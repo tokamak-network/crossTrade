@@ -55,9 +55,9 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         _;
     }
 
-    modifier checkL1() {
+    modifier checkL1(uint256 _chainId) {
         require(
-            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1CrossTradeContract, 
+            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainCross[_chainId], 
             "only call l1FastWithdraw"
         );
         _;
@@ -173,12 +173,13 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         address _from,
         uint256 _amount,
         uint256 _saleCount,
+        uint256 _chainId,
         bytes32 _hash,
         bool _edit
     )
         external
         payable
-        checkL1
+        checkL1(_chainId)
         providerCheck(_saleCount)
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
@@ -186,8 +187,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         if (_edit == false) {
             require(dealData[_saleCount].fwAmount == _amount, "not match the fwAmount");
         }
-        // require(dealData[_saleCount].l1token == _l1token, "need same l1token");
-        // chainID = _getChainID();
 
         dealData[_saleCount].provider = _from;
         address l2token = dealData[_saleCount].l2token;
@@ -213,11 +212,12 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     function cancelCT(
         address _msgSender,
-        uint256 _salecount
+        uint256 _salecount,
+        uint256 _chainId
     )
         external
         payable
-        checkL1
+        checkL1(_chainId)
         providerCheck(_salecount)
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
@@ -306,6 +306,15 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         }
     }
 
+    function _approve(
+        address _sender,
+        address _l2token,
+        uint256 _totalAmount
+    ) internal view {
+        uint256 allow = IERC20(_l2token).allowance(_sender, address(this));
+        require(allow >= _totalAmount, "need approve");
+    }
+
     function _request(
         address _l1token,
         address _l2token,
@@ -318,9 +327,12 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
     {
         if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "FW: nativeTON need amount");
-            // payable(address(this)).call{value: msg.value};
         } else {
-            // need to approve
+            _approve(
+                msg.sender,
+                _l2token,
+                _totalAmount
+            );
             IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
 
