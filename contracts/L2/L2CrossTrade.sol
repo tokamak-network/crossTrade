@@ -57,7 +57,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
     modifier checkL1(uint256 _chainId) {
         require(
-            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainCross[_chainId], 
+            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[_chainId].l1CrossTradeContract, 
             "only call l1FastWithdraw"
         );
         _;
@@ -156,7 +156,10 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
 
         //L1 chainId도 넣으면 좋겠다. -> 다시 상의하기 L1 chainId
         if (_l1token == address(0)){
-            _l1token = getL1token(_l2token);
+            _l1token = getL1token(
+                _l2token,
+                _l1chainId
+            );
         } 
 
         _request(
@@ -240,14 +243,15 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
     }
 
     function getL1token(
-        address _l2token
+        address _l2token,
+        uint256 _chainId
     )
         public
         view
         returns (address l1Token) 
     {
         if (_l2token == legacyERC20ETH) {
-            l1Token = nativeL1token;
+            l1Token = chainData[_chainId].nativeL1token;
         } else {
             l1Token = ILegacyMintableERC20(_l2token).l1Token();
         }
