@@ -242,6 +242,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2chainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
+        require(successCT[l2HashValue] == false, "already sold");
 
         bytes memory message;
 
