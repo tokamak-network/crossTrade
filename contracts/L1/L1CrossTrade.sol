@@ -181,6 +181,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes32 _hash
     )
         external
+        nonReentrant
     {
          bytes32 l2HashValue = getHash(
             _l1token,
