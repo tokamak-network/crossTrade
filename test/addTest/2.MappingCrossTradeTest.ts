@@ -386,7 +386,7 @@ describe("CrossTradeNativeTONTest", function () {
   });
 
   describe("CrossTrade Test", () => {
-    describe("registerToken & requestEnterToken Test", () => {
+    describe("registerToken & requestRegisteredToken Test", () => {
       it("if dont have TON, get TON", async () => {
         let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
           l1Wallet.address
@@ -473,11 +473,11 @@ describe("CrossTradeNativeTONTest", function () {
       })
 
   
-      it("requestEnterToken in L2", async () => {
+      it("requestRegisteredToken in L2", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
         
-        await (await L2CrossTradeContract.connect(l2Wallet).requestEnterToken(
+        await (await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
           predeployedAddress.LegacyERC20ETH,
           threeETH,
           twoETH,
@@ -579,7 +579,7 @@ describe("CrossTradeNativeTONTest", function () {
       })
     })
 
-    describe("deleteToken & requestEnterToken is not executed Test", () => {
+    describe("deleteToken & requestRegisteredToken is not executed Test", () => {
       it("if dont have TON, get TON", async () => {
         let l2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
           l1Wallet.address
@@ -654,8 +654,8 @@ describe("CrossTradeNativeTONTest", function () {
         )).to.be.rejectedWith("already deleteToken")
       })
 
-      it("Deleted values ​​cannot be requested through requestEnterToken.", async () => {
-        await expect(L2CrossTradeContract.connect(l2Wallet).requestEnterToken(
+      it("Deleted values ​​cannot be requested through requestRegisteredToken.", async () => {
+        await expect(L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
           predeployedAddress.LegacyERC20ETH,
           threeETH,
           twoETH,

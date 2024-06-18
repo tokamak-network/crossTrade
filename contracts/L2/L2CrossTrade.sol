@@ -106,7 +106,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         checkToken[enterHash] = false;
     }
 
-    function requestEnterToken(
+    function requestRegisteredToken(
         address _l2token,
         uint256 _totalAmount,
         uint256 _fwAmount,
@@ -138,7 +138,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         );
     }
 
-    function requestCT(
+    function requestNonRegisteredToken(
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
@@ -154,14 +154,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         unchecked {
             ++saleCount;
         }
-
-        //L1 chainId도 넣으면 좋겠다. -> 다시 상의하기 L1 chainId
-        if (_l1token == address(0)){
-            _l1token = getL1token(
-                _l2token,
-                _l1chainId
-            );
-        } 
 
         _request(
             _l1token,
@@ -242,21 +234,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             totalAmount, 
             _salecount
         );
-    }
-
-    function getL1token(
-        address _l2token,
-        uint256 _chainId
-    )
-        public
-        view
-        returns (address l1Token) 
-    {
-        if (_l2token == legacyERC20ETH) {
-            l1Token = chainData[_chainId].nativeL1token;
-        } else {
-            l1Token = ILegacyMintableERC20(_l2token).l1Token();
-        }
     }
 
     function getHash(

@@ -425,11 +425,11 @@ describe("CrossTradeNativeTONTest", function () {
       expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
     })
 
-    it("requestCT in L2", async () => {
+    it("requestNonRegisteredToken in L2", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
       let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
       
-      await (await L2CrossTradeContract.connect(l2Wallet).requestCT(
+      await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
         zeroAddr,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
@@ -640,11 +640,11 @@ describe("CrossTradeNativeTONTest", function () {
         }
       })
 
-      it("requestCT in L2", async () => {
+      it("requestNonRegisteredToken in L2", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
         
-        await (await L2CrossTradeContract.connect(l2Wallet).requestCT(
+        await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
           zeroAddr,
           predeployedAddress.LegacyERC20ETH,
           threeETH,
