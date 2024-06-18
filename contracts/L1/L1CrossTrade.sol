@@ -46,7 +46,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
-        require(cancelL1[l2HashValue] == false, "already cancel");
+        require(cancelL1[l2HashValue] == address(0), "already cancel");
         
         
         bool editCheck;
@@ -126,7 +126,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
-        require(cancelL1[l2HashValue] == false, "already cancel");
+        require(cancelL1[l2HashValue] == address(0), "already cancel");
         
         bool editCheck;
 
@@ -173,10 +173,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
 
     function reprovideCT(
-        address _l1token,
-        address _l2token,
-        address _to,
-        uint256 _totalAmount,
         uint256 _fwAmount,
         uint256 _salecount,
         uint256 _l2chainId,
@@ -186,22 +182,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         external
         nonReentrant
     {
-         bytes32 l2HashValue = getHash(
-            _l1token,
-            _l2token,
-            _to,
-            _totalAmount,
-            _salecount,
-            _l2chainId
-        );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == true, "not reprovide");
-        require(cancelL1[l2HashValue] == false, "already cancel");
+        require(successCT[_hash] == true, "not provide");
+        require(provideAccount[_hash] != address(0), "not provide");
+        require(cancelL1[_hash] == address(0), "already cancel");
 
         bool editCheck;
         
-        if (editFwAmount[l2HashValue] > 0) {
-            require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+        if (editFwAmount[_hash] > 0) {
+            require(editFwAmount[_hash] == _fwAmount, "check edit fwAmount");
             editCheck = true;
         }
 
@@ -209,10 +197,10 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
         message = makeEncodeWithSignature(
             1,
-            provideAccount[l2HashValue],
+            provideAccount[_hash],
             _fwAmount,
             _salecount,
-            l2HashValue,
+            _hash,
             editCheck
         );
 
@@ -257,7 +245,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             false
         );
 
-        cancelL1[l2HashValue] = true;
+        cancelL1[l2HashValue] = msg.sender;
+        successCT[l2HashValue] = true;
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
@@ -268,12 +257,32 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
 
     function resendCancel(
-
+        uint256 _salecount,
+        uint256 _l2chainId,
+        uint32 _minGasLimit,
+        bytes32 _hash
     )
         external
         nonReentrant
     {
+        require(successCT[_hash] == true, "not cancel");
+        require(cancelL1[_hash] != address(0), "not cancel");
+        bytes memory message;
 
+        message = makeEncodeWithSignature(
+            2,
+            cancelL1[_hash],
+            0,
+            _salecount,
+            _hash,
+            false
+        );
+
+        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+            chainData[_l2chainId].l2CrossTradeContract, 
+            message, 
+            _minGasLimit
+        );
     }
         
 
