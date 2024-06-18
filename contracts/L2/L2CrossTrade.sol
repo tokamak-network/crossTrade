@@ -102,6 +102,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
             _l1chainId
         );
         require(checkToken[enterHash] == true, "already deleteToken");
+        enteringToken[_l1chainId][_l2token] = address(0);
         checkToken[enterHash] = false;
     }
 
@@ -224,6 +225,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage {
         providerCheck(_salecount)
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
+        require(dealData[_salecount].provider == address(0), "already cancel");
 
         dealData[_salecount].provider = _msgSender;
         uint256 totalAmount = dealData[_salecount].totalAmount;

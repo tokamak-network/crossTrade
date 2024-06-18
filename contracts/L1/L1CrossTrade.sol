@@ -46,6 +46,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
+        require(cancelL1[l2HashValue] == false, "already cancel");
+        
         
         bool editCheck;
 
@@ -124,6 +126,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
+        require(cancelL1[l2HashValue] == false, "already cancel");
         
         bool editCheck;
 
@@ -194,6 +197,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == true, "not reprovide");
         require(provideAccount[l2HashValue] == msg.sender, "not provider");
+        require(cancelL1[l2HashValue] == false, "already cancel");
 
         bool editCheck;
         
@@ -256,7 +260,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             false
         );
 
-        successCT[l2HashValue] = true;
+        cancelL1[l2HashValue] = true;
 
         IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 

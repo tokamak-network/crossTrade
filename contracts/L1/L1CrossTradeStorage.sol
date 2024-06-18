@@ -13,6 +13,8 @@ contract L1CrossTradeStorage {
 
     //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
     mapping(bytes32 => bool) public successCT;
+    //hashValue => bool -> 해당 hash값이 L1에서 cancel요청했는지 안했는지
+    mapping(bytes32 => bool) public cancelL1;
     //hashValue => account
     mapping(bytes32 => address) public provideAccount;
     //hashValue => fwAmount 값 저장
