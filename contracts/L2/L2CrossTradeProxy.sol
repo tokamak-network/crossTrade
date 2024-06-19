@@ -6,6 +6,9 @@ import { L2CrossTradeStorage } from "./L2CrossTradeStorage.sol";
 
 contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
 
+    /// @notice L2CrossTrade initial settings
+    /// @param _crossDomainMessenger crossDomainMessenger address
+    /// @param _legacyERC20 legacyERC20 address 
     function initialize(
         address _crossDomainMessenger,
         address _legacyERC20
@@ -17,6 +20,10 @@ contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
         legacyERC20ETH = _legacyERC20;
     }
 
+    /// @notice Store addresses for chainId
+    /// @param _l1CrossTrade L2CrossTradeProxy address for chainId
+    /// @param _l1legacyERC20 l1legacyERC20 address for chainId
+    /// @param _chainId store chainId
     function chainInfo(
         address _l1CrossTrade,
         address _l1legacyERC20,

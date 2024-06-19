@@ -6,6 +6,12 @@ import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
 
 contract L1CrossTradeProxy is Proxy, L1CrossTradeStorage {
 
+    /// @notice Store addresses for chainId
+    /// @param _crossDomainMessenger crossDomainMessenger address for chainId
+    /// @param _l2CrossTrade L2CrossTradeProxy address for chainId
+    /// @param _legacyERC20 legacyERC20 address for chainId
+    /// @param _l1legacyERC20 l1legacyERC20 address for chainId
+    /// @param _l2chainId store chainId
     function chainInfo(
         address _crossDomainMessenger,
         address _l2CrossTrade,

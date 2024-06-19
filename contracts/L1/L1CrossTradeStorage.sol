@@ -9,13 +9,13 @@ contract L1CrossTradeStorage {
         address nativeL1token;
     }
 
-    //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
+    //hashValue => bool -> Check whether provision has been made using the hash value.
     mapping(bytes32 => bool) public successCT;
-    //hashValue => bool -> hash값과 cancel을 요청한 address 저장
+    //hashValue => address -> Store address requesting cancel using hash value
     mapping(bytes32 => address) public cancelL1;
-    //hashValue => account
+    //hashValue => address -> Record the address provided using the hash value
     mapping(bytes32 => address) public provideAccount;
-    //hashValue => fwAmount 값 저장
+    //hashValue => fwAmount -> When editing is done using the hash value, the change amount is saved.
     mapping(bytes32 => uint256) public editFwAmount;
     //chainId => Data
     mapping(uint256 => ChainIdData) public chainData;

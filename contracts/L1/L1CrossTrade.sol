@@ -19,8 +19,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _saleCount
     );
 
-    // Storage 저장 추가 (Hash mapping 값 확인과 최종 저장 확인) 
-    // 초기에는 front에서 amount정보를 제대로 가져와야함
+    /// @notice Provides information that matches the hash value requested in L2
+    /// @param _l1token Address of requested l1token
+    /// @param _l2token Address of requested l2token
+    /// @param _to requester's address
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
     function provideCT(
         address _l1token,
         address _l2token,
@@ -100,7 +108,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
 
 
-    //reprovide 함수 테스트를 위해서 만듬
+    /// @notice This is a function created to test the reprovide function. This is for testing purposes only and will be deleted upon final distribution.
+    /// @param _l1token Address of requested l1token
+    /// @param _l2token Address of requested l2token
+    /// @param _to requester's address
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
     function provideTest(
         address _l1token,
         address _l2token,
@@ -172,6 +189,12 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
     }
 
+    /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
+    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
     function reprovideCT(
         uint256 _fwAmount,
         uint256 _salecount,
@@ -211,6 +234,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
     }
 
+    /// @notice Cancels the request requested by the requester.
+    /// @param _l1token Address of requested l1token
+    /// @param _l2token Address of requested l2token
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
     function cancel( 
         address _l1token,
         address _l2token,
@@ -256,6 +287,12 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
     }
 
+
+    /// @notice If the cancel function succeeds in L1 but fails in L2, this function calls the transaction in L2 again.
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
     function resendCancel(
         uint256 _salecount,
         uint256 _l2chainId,
@@ -285,7 +322,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
     }
         
-
+    /// @notice This is a function that changes the value that the requester wants to receive.
+    /// @param _l1token Address of requested l1token
+    /// @param _l2token Address of requested l2token
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _salecount Number generated upon request
+    /// @param _l2chainId request requested chainId
+    /// @param _hash Hash value generated upon request
     function edit(
         address _l1token,
         address _l2token,
@@ -319,6 +363,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
     }
 
+    /// @notice Create a Hash value and check if it matches the Hash value created upon request in L2.
+    /// @param _l1token Address of requested l1token
+    /// @param _l2token Address of requested l2token
+    /// @param _to This is the address of the request.
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _saleCount Number generated upon request
+    /// @param _l2chainId request requested chainId
     function getHash(
         address _l1token,
         address _l2token,
@@ -337,6 +388,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
     }
 
+    /// @notice This is a function that creates encodeWithSignature according to each function.
+    /// @param number A number that determines what type of function to create
+    /// @param to This is the address of the request.
+    /// @param amount The amount the requester wants to receive in l1
+    /// @param saleCount  Number generated upon request
+    /// @param byteValue Hash value generated upon request
+    /// @param _edit Check whether the edit function was executed
     function makeEncodeWithSignature(
         uint8 number,
         address to, 
@@ -368,19 +426,25 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         }
     }
 
+
+    /// @notice Function that returns the chainId of the current contract
     function _getChainID() public view returns (uint256 id) {
         assembly {
             id := chainid()
         }
     }
 
+    /// @notice Function that returns the chainId of the current contract
+    /// @param _sender sender applying to provide
+    /// @param _l1token l1token address applying to provide
+    /// @param _fwAmount Amount provided
     function _approve(
         address _sender,
         address _l1token,
-        uint256 _totalAmount
+        uint256 _fwAmount
     ) internal view {
         uint256 allow = IERC20(_l1token).allowance(_sender, address(this));
-        require(allow >= _totalAmount, "need approve");
+        require(allow >= _fwAmount, "need approve");
     }
 
 
