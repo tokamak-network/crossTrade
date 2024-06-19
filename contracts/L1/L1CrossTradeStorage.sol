@@ -3,13 +3,11 @@ pragma solidity 0.8.24;
 
 contract L1CrossTradeStorage {
     struct ChainIdData {
+        address crossDomainMessenger;
         address l2CrossTradeContract;
         address legacyERC20ETH;
         address nativeL1token;
-        uint256 editTime;
     }
-
-    address public crossDomainMessenger;
 
     //hashValue => bool -> 해당 hash값이 거래했는지 안했는지
     mapping(bytes32 => bool) public successCT;

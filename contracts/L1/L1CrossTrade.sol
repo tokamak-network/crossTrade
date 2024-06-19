@@ -70,7 +70,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         provideAccount[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
         
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
             message, 
             _minGasLimit
@@ -204,7 +204,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             editCheck
         );
 
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
             message, 
             _minGasLimit
@@ -248,7 +248,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         cancelL1[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
 
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
             message, 
             _minGasLimit
@@ -278,7 +278,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             false
         );
 
-        IL1CrossDomainMessenger(crossDomainMessenger).sendMessage(
+        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
             message, 
             _minGasLimit

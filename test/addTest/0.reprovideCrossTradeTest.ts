@@ -324,25 +324,40 @@ describe("CrossTradeNativeTONTest", function () {
       )
     })
 
-    it("L1CrossTrade initialize", async () => {
-      await (await L1CrossTradeProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger
-      )).wait()
+    // it("L1CrossTrade initialize", async () => {
+    //   await (await L1CrossTradeProxy.connect(l1Wallet).initialize(
+    //     l1Contracts.L1CrossDomainMessenger
+    //   )).wait()
 
-      const checkL1Inform = await L1CrossTradeProxy.crossDomainMessenger()
-      if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
-        console.log("===========L1CrossTrade initialize ERROR!!===========")
-      }
-    })
+    //   const checkL1Inform = await L1CrossTradeProxy.crossDomainMessenger()
+    //   if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
+    //     console.log("===========L1CrossTrade initialize ERROR!!===========")
+    //   }
+    // })
 
     it("L1CrossTrade set chainInfo", async () => {
       await (await L1CrossTradeProxy.connect(l1Wallet).chainInfo(
+        l1Contracts.L1CrossDomainMessenger,
         L2CrossTradeContract.address,
         zeroAddr,
         l2NativeTokenContract.address,
-        l2ChainId,
-        editTime
+        l2ChainId
       )).wait()
+
+      let tx = await L1CrossTradeProxy.chainData(l2ChainId)
+
+      if(tx.crossDomainMessenger !== l1Contracts.L1CrossDomainMessenger){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.l2CrossTradeContract !== L2CrossTradeContract.address){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.legacyERC20ETH !== zeroAddr){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.nativeL1token !== l2NativeTokenContract.address){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
     })
 
     it("L2CrossTrade initialize", async () => {
