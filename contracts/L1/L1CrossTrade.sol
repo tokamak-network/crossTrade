@@ -392,7 +392,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param number A number that determines what type of function to create
     /// @param to This is the address of the request.
     /// @param amount The amount the requester wants to receive in l1
-    /// @param saleCount  Number generated upon request
+    /// @param saleCount Number generated upon request
     /// @param byteValue Hash value generated upon request
     /// @param _edit Check whether the edit function was executed
     function makeEncodeWithSignature(
