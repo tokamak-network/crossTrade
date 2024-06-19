@@ -434,7 +434,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         }
     }
 
-    /// @notice Function that returns the chainId of the current contract
+    /// @notice Function to check approve
     /// @param _sender sender applying to provide
     /// @param _l1token l1token address applying to provide
     /// @param _fwAmount Amount provided

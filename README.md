@@ -252,6 +252,266 @@ function _approve(
 
 ### L2CrossTradeContract
 
+### `initialize`
+
+L2CrossTrade initial settings (onlyOwner)
+
+**Parameters:**
+- `_crossDomainMessenger`: crossDomainMessenger address for chainId
+- `_legacyERC20`: legacyERC20 address for chainId
+
+```solidity
+function initialize(
+    address _crossDomainMessenger,
+    address _legacyERC20
+)
+    external
+    onlyOwner
+```
+
+### `chainInfo`
+
+Store addresses for chainId (onlyOwner)
+
+**Parameters:**
+- `_l1CrossTrade`: L1CrossTradeProxy address for chainId
+- `_l1legacyERC20`: l1legacyERC20 address for chainId
+- `_chainId`: store chainId
+
+```solidity
+function chainInfo(
+    address _l1CrossTrade,
+    address _l1legacyERC20,
+    uint256 _chainId
+)
+    external
+    onlyOwner
+```
+
+### `registerToken`
+
+Register L1token and L2token and use them in requestRegisteredToken (onlyOwner)
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_l1chainId`: store chainId
+
+```solidity
+function registerToken(
+    address _l1token,
+    address _l2token,
+    uint256 _l1chainId
+)
+    external
+    onlyOwner
+```
+
+### `deleteToken`
+
+Function to delete registered token (onlyOwner)
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function deleteToken(
+    address _l1token,
+    address _l2token,
+    uint256 _l1chainId
+)
+    external
+    onlyOwner
+```
+
+### `requestRegisteredToken`
+
+Token transaction request registered in register
+
+**Parameters:**
+- `_l2token`: l2token Address
+- `_totalAmount`: Amount provided to L2
+- `_fwAmount`: Amount to be received from L1
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function requestRegisteredToken(
+    address _l2token,
+    uint256 _totalAmount,
+    uint256 _fwAmount,
+    uint256 _l1chainId
+)
+    external
+    payable
+    nonReentrant
+```
+
+### `requestNonRegisteredToken`
+
+Token transaction request not registered in register
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_totalAmount`: Amount provided to L2
+- `_fwAmount`: Amount to be received from L1
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function requestNonRegisteredToken(
+    address _l2token,
+    uint256 _totalAmount,
+    uint256 _fwAmount,
+    uint256 _l1chainId
+)
+    external
+    payable
+    nonReentrant
+```
+
+### `claimCT`
+
+When providing a function called from L1, the amount is given to the provider.
+
+**Parameters:**
+- `_from`: provider Address
+- `_amount`: Amount paid by L1
+- `_saleCount`: Number generated upon request
+- `_chainId`: chainId of l1token
+- `_hash`: Hash value generated upon request
+- `_edit`: Whether edit was executed in L1
+
+
+```solidity
+function claimCT(
+    address _from,
+    uint256 _amount,
+    uint256 _saleCount,
+    uint256 _chainId,
+    bytes32 _hash,
+    bool _edit
+)
+    external
+    payable
+    nonReentrant
+    checkL1(_chainId)
+    providerCheck(_saleCount)
+```
+
+### `cancelCT`
+
+When canceling a function called from L1, the amount is given to the requester.
+
+**Parameters:**
+- `_msgSender`: Address where cancellation was requested
+- `_saleCount`: Number generated upon request
+- `_chainId`: chainId of l1token
+
+```solidity
+function cancelCT(
+    address _msgSender,
+    uint256 _salecount,
+    uint256 _chainId
+)
+    external
+    payable
+    nonReentrant
+    checkL1(_chainId)
+    providerCheck(_salecount)
+```
+
+
+### `getHash`
+
+Function that calculates hash value in L2CrossTradeContract
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_to`: requester's address
+- `_totalAmount`: Amount provided to L2
+- `_saleCount`: Number generated upon request
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function getHash(
+    address _l1token,
+    address _l2token,
+    address _to,
+    uint256 _totalAmount,
+    uint256 _saleCount,
+    uint256 _l1chainId
+)
+    public
+    view
+    returns (bytes32)
+```
+
+### `getEnterHash`
+
+Function to calculate l1token, l2token register hash value
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function getEnterHash(
+    address _l1token,
+    address _l2token,
+    uint256 _l1chainId
+)
+    public
+    pure
+    returns (bytes32)
+```
+
+### `_approve`
+
+Function to check approve
+
+**Parameters:**
+- `_sender`: sender applying to provide
+- `_l1token`: l1token address applying to provide
+- `_fwAmount`: Amount provided
+
+```solidity
+function _approve(
+    address _sender,
+    address _l1token,
+    uint256 _fwAmount
+) 
+    internal 
+    view
+```
+
+### `_request`
+
+Token transaction request not registered in register
+
+**Parameters:**
+- `_l1token`: l1token Address
+- `_l2token`: l2token Address
+- `_fwAmount`: Amount to be received from L1
+- `_totalAmount`: Amount provided to L2
+- `_saleCount`: Number generated upon request
+- `_l1chainId`: chainId of l1token
+
+```solidity
+function _request(
+    address _l1token,
+    address _l2token,
+    uint256 _fwAmount,
+    uint256 _totalAmount,
+    uint256 _saleCount,
+    uint256 _l1chainId
+)
+    internal
+```
+
 
 # How to Test
 1. Configure L1 and L2 using docker

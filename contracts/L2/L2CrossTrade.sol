@@ -185,7 +185,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _saleCount Number generated upon request
     /// @param _chainId chainId of l1token
     /// @param _hash Hash value generated upon request
-    /// @param _edit chainId of l1token
+    /// @param _edit Whether edit was executed in L1
     function claimCT(
         address _from,
         uint256 _amount,
