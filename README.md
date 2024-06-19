@@ -1,5 +1,6 @@
 # CrossTrade
 ![Contract Composition] (https://viewer.diagrams.net/?tags=%7B%7D#G1xUNgKjUPN_JHC7JbFmRUcwzWW6Crd4PQ)
+![Contract Composition](https://viewer.diagrams.net/?tags=%7B%7D#G1xUNgKjUPN_JHC7JbFmRUcwzWW6Crd4PQ)
 
 This is a contract that utilizes standardBridge to enable fast trade through messages rather than time-consuming transactions.
 
