@@ -527,16 +527,16 @@ function _request(
     - .env.example copy .env and setting
     - update json
     ```solidity
-    #tokamak-thanos git
+    #tokamak-thanos git repository
     tokamak/contracts-bedrock/deployments folder copy
 
-    #crossTrade git
+    #crossTrade git repository
     contracts-bedrock/deployments folder paste
 
-    #tokamak-thanos git
+    #tokamak-thanos git repository
     tokamak/contracts-bedrock/deployments/devnetL1/.deploy contents of the file copy
 
-    #crossTrade git
+    #crossTrade git repository
     test/data/deployed.devnetL1.json contents of the file paste
     ```
     - start the test
