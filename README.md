@@ -523,6 +523,7 @@ function _request(
 
 2. **crossTrade Test**
     - git clone https://github.com/tokamak-network/crossTrade/tree/2nd_Audit 
+    - npm install --force
     - .env.example copy .env and setting
     - update json
     ```solidity
