@@ -1,5 +1,5 @@
 # CrossTrade
-[Contract Composition](https://viewer.diagrams.net/?tags=%7B%7D#G1xUNgKjUPN_JHC7JbFmRUcwzWW6Crd4PQ)
+![Contract Composition](https://github.com/tokamak-network/crossTrade/blob/2nd_Audit/img/CrossTrade%20Composition.drawio.png)
 
 It consists of a CrossTrade-related proxy and logic contract in L1, and a CrossTrade-related proxy and logic contract in L2.
 
@@ -519,7 +519,7 @@ function _request(
     - make build
     - make devnet-up
     - Check execution results
-    - (https://file.notion.so/f/f/64903c51-687e-448d-8297-662b977d8aa9/d65e1b5d-924b-4aba-91ab-85297abc3046/Untitled.png?id=c806c744-254c-4a58-8dfc-18450dba3631&table=block&spaceId=64903c51-687e-448d-8297-662b977d8aa9&expirationTimestamp=1719014400000&signature=ieKqSfeHBeVEIsjr1XhjGlg3hQ-9MCb4ze-fuhMiM7M&downloadName=Untitled.png)
+    - ![resultCheck](https://github.com/tokamak-network/crossTrade/blob/2nd_Audit/img/running_docker.png)
 
 2. **crossTrade Test**
     - git clone https://github.com/tokamak-network/crossTrade/tree/2nd_Audit 
