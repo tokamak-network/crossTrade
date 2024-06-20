@@ -513,10 +513,45 @@ function _request(
 ```
 
 
-# How to Test
-1. Configure L1 and L2 using docker
-2. Copy env.example to .env and set the contents
-3. Change the contracts-bedrock/deployments value to suit the environment.
-4. Change test/data/deployed.devnetL1.json value to suit the environment.
-5. npx hardhat test test/0.FWbasicTest.ts --network devnetL1
-6. npx harhdat test test/Available for testing from 1 to 8
+## How to Test
+1. **docker environment configuration**
+    - git clone https://github.com/tokamak-network/tokamak-thanos/tree/OR-1257-Update-smart-contracts-for-deposit-TON-in-L1 
+    - make build
+    - make devnet-up
+    - Check execution results
+    - (https://file.notion.so/f/f/64903c51-687e-448d-8297-662b977d8aa9/d65e1b5d-924b-4aba-91ab-85297abc3046/Untitled.png?id=c806c744-254c-4a58-8dfc-18450dba3631&table=block&spaceId=64903c51-687e-448d-8297-662b977d8aa9&expirationTimestamp=1719014400000&signature=ieKqSfeHBeVEIsjr1XhjGlg3hQ-9MCb4ze-fuhMiM7M&downloadName=Untitled.png)
+
+2. **crossTrade Test**
+    - git clone https://github.com/tokamak-network/crossTrade/tree/2nd_Audit 
+    - .env.example copy .env and setting
+    - update json
+    ```solidity
+    #tokamak-thanos git
+    tokamak/contracts-bedrock/deployments folder copy
+
+    #crossTrade git
+    contracts-bedrock/deployments folder paste
+
+    #tokamak-thanos git
+    tokamak/contracts-bedrock/deployments/devnetL1/.deploy contents of the file copy
+
+    #crossTrade git
+    test/data/deployed.devnetL1.json contents of the file paste
+    ```
+    - start the test
+    ```solidity
+    # get L1 ETH
+    cast send --from 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 --rpc-url http://127.0.0.1:8545 --unlocked --value 9ether YOUR_PUBLICKEY
+    cast send --from 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 --rpc-url http://127.0.0.1:8545 --unlocked --value 9ether YOUR_PUBLICKEY2
+
+    # run test
+    # 0. request, provide, reprovide test
+    npx hardhat test test/addTest/0.reprovideCrossTradeTest.ts --network devnetL1 
+
+    # 1. request, edit, provide test
+    npx hardhat test test/addTest/1.EditingCrossTradeTest.ts --network devnetL1 
+
+    # 2. registerToken, requestEnterToken, provide, deleteToken test
+    npx hardhat test test/addTest/2.MappingCrossTradeTest.ts --network devnetL1
+
+    ```
