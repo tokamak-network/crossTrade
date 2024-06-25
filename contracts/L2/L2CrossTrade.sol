@@ -63,6 +63,11 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         _;
     }
 
+    modifier nonZero(uint256 _amount) {
+        require(_amount > 0 , "input amount need nonZero");
+        _;
+    }
+
     //=======external========
 
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
@@ -122,6 +127,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     )
         external
         payable
+        nonZero(_totalAmount)
+        nonZero(_fwAmount)
         nonReentrant
     {
         address _l1token = enteringToken[_l1chainId][_l2token];
@@ -139,8 +146,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         _request(
             _l1token,
             _l2token,
-            _fwAmount,
             _totalAmount,
+            _fwAmount,
             saleCount,
             _l1chainId
         );
@@ -161,6 +168,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     )
         external
         payable
+        nonZero(_totalAmount)
+        nonZero(_fwAmount)
         nonReentrant
     {
         require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
@@ -172,8 +181,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         _request(
             _l1token,
             _l2token,
-            _fwAmount,
             _totalAmount,
+            _fwAmount,
             saleCount,
             _l1chainId
         );
@@ -269,6 +278,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _l2token l2token Address
     /// @param _to requester's address
     /// @param _totalAmount Amount provided to L2
+    /// @param _fwAmount Amount provided to L2
     /// @param _saleCount Number generated upon request
     /// @param _l1chainId chainId of l1token
     function getHash(
@@ -276,6 +286,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _l2token,
         address _to,
         uint256 _totalAmount,
+        uint256 _fwAmount,
         uint256 _saleCount,
         uint256 _l1chainId
     )
@@ -284,9 +295,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         returns (bytes32)
     {
         uint256 l2chainId = _getChainID();
-        //abi.encode값 어떻게 나오는지 확인
         return keccak256(
-            abi.encode(_l1token, _l2token, _to, _totalAmount, _saleCount, _l1chainId, l2chainId)
+            abi.encode(_l1token, _l2token, _to, _totalAmount, _fwAmount, _saleCount, _l1chainId, l2chainId)
         );
     }
 
@@ -341,15 +351,15 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @notice Token transaction request
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
-    /// @param _fwAmount Amount to be received from L1
     /// @param _totalAmount Amount provided to L2
+    /// @param _fwAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
     /// @param _l1chainId chainId of l1token
     function _request(
         address _l1token,
         address _l2token,
-        uint256 _fwAmount,
         uint256 _totalAmount,
+        uint256 _fwAmount,
         uint256 _saleCount,
         uint256 _l1chainId
     )
@@ -371,6 +381,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l2token,
             msg.sender,
             _totalAmount,
+            _fwAmount,
             _saleCount,
             _l1chainId
         );

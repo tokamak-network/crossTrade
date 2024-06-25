@@ -348,11 +348,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2token,
             msg.sender,
             _totalAmount,
+            _fwAmount,
             _salecount,
             _l2chainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
+        require(_fwAmount > 0, "fwAmount need nonZero");
         
         editFwAmount[l2HashValue] = _fwAmount;
 
@@ -368,6 +370,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l2token Address of requested l2token
     /// @param _to This is the address of the request.
     /// @param _totalAmount Total amount requested by l2
+    /// @param _fwAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
     /// @param _l2chainId request requested chainId
     function getHash(
@@ -375,6 +378,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l2token,
         address _to,
         uint256 _totalAmount,
+        uint256 _fwAmount,
         uint256 _saleCount,
         uint256 _l2chainId
     )
@@ -384,7 +388,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     {
         uint256 l1chainId = _getChainID();
         return keccak256(
-            abi.encode(_l1token, _l2token, _to, _totalAmount, _saleCount, l1chainId, _l2chainId)
+            abi.encode(_l1token, _l2token, _to, _totalAmount, _fwAmount, _saleCount, l1chainId, _l2chainId)
         );
     }
 
