@@ -24,7 +24,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l2token Address of requested l2token
     /// @param _to requester's address
     /// @param _totalAmount Total amount requested by l2
-    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _initialfwAmount fwAmount requested when creating the initial request
+    /// @param _editedfwAmount The amount that the requester requested to edit
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -34,7 +35,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l2token,
         address _to,
         uint256 _totalAmount,
-        uint256 _fwAmount,
+        uint256 _initialfwAmount,
+        uint256 _editedfwAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -49,6 +51,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2token,
             _to,
             _totalAmount,
+            _initialfwAmount,
             _salecount,
             _l2chainId
         );
@@ -56,12 +59,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(successCT[l2HashValue] == false, "already sold");
         require(cancelL1[l2HashValue] == address(0), "already cancel");
         
-        
         bool editCheck;
+        uint256 fwAmount = _initialfwAmount;
 
         if (editFwAmount[l2HashValue] > 0) {
-            require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+            require(editFwAmount[l2HashValue] == _editedfwAmount, "check edit fwAmount");
             editCheck = true;
+            fwAmount = _editedfwAmount;
         }
 
         bytes memory message;
@@ -69,7 +73,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         message = makeEncodeWithSignature(
             1,
             msg.sender,
-            _fwAmount,
+            fwAmount,
             _salecount,
             l2HashValue,
             editCheck
@@ -88,21 +92,21 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _approve(
                 msg.sender,
                 _l1token,
-                _fwAmount
+                fwAmount
             );
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
-            IERC20(_l1token).safeTransfer(_to,_fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), fwAmount);
+            IERC20(_l1token).safeTransfer(_to,fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == _fwAmount, "FW: ETH need same amount");
+            require(msg.value == fwAmount, "FW: ETH need same amount");
             (bool sent, ) = payable(_to).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
             _approve(
                 msg.sender,
                 _l1token,
-                _fwAmount
+                fwAmount
             );
-            IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, _to, fwAmount);
         }
 
     }
@@ -113,7 +117,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l2token Address of requested l2token
     /// @param _to requester's address
     /// @param _totalAmount Total amount requested by l2
-    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _initialfwAmount fwAmount requested when creating the initial request
+    /// @param _editedfwAmount The amount that the requester requested to edit
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -123,7 +128,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l2token,
         address _to,
         uint256 _totalAmount,
-        uint256 _fwAmount,
+        uint256 _initialfwAmount,
+        uint256 _editedfwAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -138,6 +144,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2token,
             _to,
             _totalAmount,
+            _initialfwAmount,
             _salecount,
             _l2chainId
         );
@@ -146,10 +153,12 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(cancelL1[l2HashValue] == address(0), "already cancel");
         
         bool editCheck;
+        uint256 fwAmount = _initialfwAmount;
 
         if (editFwAmount[l2HashValue] > 0) {
-            require(editFwAmount[l2HashValue] == _fwAmount, "check edit fwAmount");
+            require(editFwAmount[l2HashValue] == _editedfwAmount, "check edit fwAmount");
             editCheck = true;
+            fwAmount = _editedfwAmount;
         }
 
         bytes memory message;
@@ -157,40 +166,40 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         message = makeEncodeWithSignature(
             1,
             msg.sender,
-            _fwAmount,
+            fwAmount,
             _salecount,
             l2HashValue,
             editCheck
         );
         
-        successCT[l2HashValue] = true;
         provideAccount[l2HashValue] = msg.sender;
+        successCT[l2HashValue] = true;
 
-        if (chainData[_l2chainId].nativeL1token == _l1token) {
+         if (chainData[_l2chainId].nativeL1token == _l1token) {
             _approve(
                 msg.sender,
                 _l1token,
-                _fwAmount
+                fwAmount
             );
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _fwAmount);
-            IERC20(_l1token).safeTransfer(_to,_fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), fwAmount);
+            IERC20(_l1token).safeTransfer(_to,fwAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == _fwAmount, "FW: ETH need same amount");
+            require(msg.value == fwAmount, "FW: ETH need same amount");
             (bool sent, ) = payable(_to).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
             _approve(
                 msg.sender,
                 _l1token,
-                _fwAmount
+                fwAmount
             );
-            IERC20(_l1token).safeTransferFrom(msg.sender, _to, _fwAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, _to, fwAmount);
         }
 
     }
 
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
-    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _fwAmount If edit was not requested, enter InitialfwAmount. If edit was requested, enter EditedAmount.
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -238,6 +247,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
+    /// @param _initialfwAmount fwAmount requested when creating the initial request
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -246,6 +256,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
+        uint256 _initialfwAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -259,6 +270,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2token,
             msg.sender,
             _totalAmount,
+            _initialfwAmount,
             _salecount,
             _l2chainId
         );
@@ -326,7 +338,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
-    /// @param _fwAmount The amount the requester wants to receive in l1
+    /// @param _initialfwAmount fwAmount requested when creating the initial request
+    /// @param _editedfwAmount The amount that the requester requested to edit
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _hash Hash value generated upon request
@@ -334,7 +347,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
-        uint256 _fwAmount,
+        uint256 _initialfwAmount,
+        uint256 _editedfwAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         bytes32 _hash
@@ -348,19 +362,20 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2token,
             msg.sender,
             _totalAmount,
-            _fwAmount,
+            _initialfwAmount,
             _salecount,
             _l2chainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
-        require(_fwAmount > 0, "fwAmount need nonZero");
+        require(_editedfwAmount > 0, "fwAmount need nonZero");
+        require(_totalAmount > _editedfwAmount, "fwAmount need nonZero");
         
-        editFwAmount[l2HashValue] = _fwAmount;
+        editFwAmount[l2HashValue] = _editedfwAmount;
 
         emit EditCT(
             msg.sender, 
-            _fwAmount, 
+            _editedfwAmount, 
             _salecount
         );
     }

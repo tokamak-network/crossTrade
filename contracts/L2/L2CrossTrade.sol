@@ -138,6 +138,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1chainId
         );
         require(checkToken[enterHash], "not register token");
+        require(_totalAmount > _fwAmount, "need totalAmount over fwAmount");
         
         unchecked {
             ++saleCount;
@@ -190,14 +191,14 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     
     /// @notice When providing a function called from L1, the amount is given to the provider.
     /// @param _from provider Address
-    /// @param _amount Amount paid by L1
+    /// @param _fwAmount Amount paid by L1
     /// @param _saleCount Number generated upon request
     /// @param _chainId chainId of l1token
     /// @param _hash Hash value generated upon request
     /// @param _edit Whether edit was executed in L1
     function claimCT(
         address _from,
-        uint256 _amount,
+        uint256 _fwAmount,
         uint256 _saleCount,
         uint256 _chainId,
         bytes32 _hash,
@@ -211,8 +212,9 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
         require(dealData[_saleCount].provider == address(0), "already sold");
+
         if (_edit == false) {
-            require(dealData[_saleCount].fwAmount == _amount, "not match the fwAmount");
+            require(dealData[_saleCount].fwAmount == _fwAmount, "not match the initial fwAmount");
         }
 
         dealData[_saleCount].provider = _from;
@@ -232,7 +234,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             dealData[_saleCount].requester,
             _from,
             totalAmount,
-            _amount,
+            _fwAmount,
             _saleCount
         );
     }
