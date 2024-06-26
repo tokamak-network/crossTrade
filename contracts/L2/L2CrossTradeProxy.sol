@@ -32,10 +32,9 @@ contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
         external
         onlyOwner
     {
-        // chainCross[_chainId] = _l1CrossTrade;
         chainData[_chainId] = ChainIdData({
             l1CrossTradeContract: _l1CrossTrade,
-            nativeL1token: _l1legacyERC20
+            l1TON: _l1legacyERC20
         });
     }
 }

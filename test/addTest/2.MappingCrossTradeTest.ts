@@ -351,7 +351,7 @@ describe("CrossTradeNativeTONTest", function () {
       if(tx.legacyERC20ETH !== zeroAddr){
         console.log("===========L1CrossTrade chainInfo ERROR!!===========")
       }
-      if(tx.nativeL1token !== l2NativeTokenContract.address){
+      if(tx.l1TON !== l2NativeTokenContract.address){
         console.log("===========L1CrossTrade chainInfo ERROR!!===========")
       }
     })
@@ -393,7 +393,7 @@ describe("CrossTradeNativeTONTest", function () {
       if(tx.l1CrossTradeContract !== L1CrossTradeContract.address){
         console.log("===========L2CrossTrade chainInfo ERROR!!===========")
       }
-      if(tx.nativeL1token !== l2NativeTokenContract.address){
+      if(tx.l1TON !== l2NativeTokenContract.address){
         console.log("===========L2CrossTrade chainInfo ERROR!!===========")
       }
     })

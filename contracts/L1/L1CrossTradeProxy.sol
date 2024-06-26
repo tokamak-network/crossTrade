@@ -26,7 +26,7 @@ contract L1CrossTradeProxy is Proxy, L1CrossTradeStorage {
             crossDomainMessenger: _crossDomainMessenger,
             l2CrossTradeContract: _l2CrossTrade,
             legacyERC20ETH: _legacyERC20,
-            nativeL1token: _l1legacyERC20
+            l1TON: _l1legacyERC20
         });
     }
 }

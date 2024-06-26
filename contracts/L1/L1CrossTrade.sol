@@ -82,7 +82,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _minGasLimit
         );
 
-        if (chainData[_l2chainId].nativeL1token == _l1token) {
+        if (chainData[_l2chainId].l1TON == _l1token) {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
@@ -153,7 +153,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         provideAccount[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
 
-        if (chainData[_l2chainId].nativeL1token == _l1token) {
+        if (chainData[_l2chainId].l1TON == _l1token) {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {

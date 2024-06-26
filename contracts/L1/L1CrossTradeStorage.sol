@@ -10,7 +10,7 @@ contract L1CrossTradeStorage {
         address crossDomainMessenger;
         address l2CrossTradeContract;
         address legacyERC20ETH;
-        address nativeL1token;
+        address l1TON;
     }
 
     //hashValue => bool -> Check whether provision has been made using the hash value.

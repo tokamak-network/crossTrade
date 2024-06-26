@@ -15,12 +15,11 @@ contract L2CrossTradeStorage {
 
     struct ChainIdData {
         address l1CrossTradeContract;
-        address nativeL1token;
+        address l1TON;
     }
 
     address public crossDomainMessenger;
     address public legacyERC20ETH;
-    // address public nativeL1token;
 
     uint256 public saleCount;
 
