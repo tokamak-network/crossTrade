@@ -194,7 +194,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         providerCheck(_saleCount)
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
-        require(dealData[_saleCount].provider == address(0), "already sold");
 
         uint256 ctAmount;
         if(_ctAmount == 0) {
@@ -241,7 +240,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         providerCheck(_salecount)
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
-        require(dealData[_salecount].provider == address(0), "already cancel");
 
         dealData[_salecount].provider = _msgSender;
         uint256 totalAmount = dealData[_salecount].totalAmount;
@@ -296,7 +294,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             )
         );
     }
-    
+
     //=======Temporary view for testing ========
     function getChainID() public view returns (uint256 id) {
         assembly {
