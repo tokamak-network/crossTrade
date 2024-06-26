@@ -357,7 +357,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _sender requester's address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
-    function _approve(
+    function _checkAllowance(
         address _sender,
         address _l2token,
         uint256 _totalAmount
@@ -387,7 +387,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "CT: nativeTON need amount");
         } else {
-            _approve(
+            _checkAllowance(
                 msg.sender,
                 _l2token,
                 _totalAmount

@@ -83,7 +83,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
-            _approve(
+            _checkAllowance(
                 msg.sender,
                 _l1token,
                 ctAmount
@@ -95,7 +95,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_requestor).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            _approve(
+            _checkAllowance(
                 msg.sender,
                 _l1token,
                 ctAmount
@@ -164,7 +164,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         successCT[l2HashValue] = true;
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
-            _approve(
+            _checkAllowance(
                 msg.sender,
                 _l1token,
                 ctAmount
@@ -176,7 +176,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_requestor).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            _approve(
+            _checkAllowance(
                 msg.sender,
                 _l1token,
                 ctAmount
@@ -444,7 +444,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _sender sender applying to provide
     /// @param _l1token l1token address applying to provide
     /// @param _ctAmount Amount provided
-    function _approve(
+    function _checkAllowance(
         address _sender,
         address _l1token,
         uint256 _ctAmount
