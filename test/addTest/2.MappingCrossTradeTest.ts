@@ -332,7 +332,7 @@ describe("CrossTradeNativeTONTest", function () {
     // })
 
     it("L1CrossTrade set chainInfo", async () => {
-      await (await L1CrossTradeProxy.connect(l1Wallet).chainInfo(
+      await (await L1CrossTradeProxy.connect(l1Wallet).setChainInfo(
         l1Contracts.L1CrossDomainMessenger,
         L2CrossTradeContract.address,
         zeroAddr,
@@ -379,7 +379,7 @@ describe("CrossTradeNativeTONTest", function () {
     })
 
     it("L2CrossTrade set chainInfo", async () => {
-      await (await L2CrossTradeProxy.connect(l2Wallet).chainInfo(
+      await (await L2CrossTradeProxy.connect(l2Wallet).setChainInfo(
         L1CrossTradeContract.address,
         l2NativeTokenContract.address,
         l1ChainId
