@@ -276,13 +276,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         external
         nonReentrant
     {
+        address cancelL1Address = cancelL1[_hash];
         require(successCT[_hash] == true, "not cancel");
-        require(cancelL1[_hash] != address(0), "not cancel");
+        require(cancelL1Address != address(0), "not cancel");
         bytes memory message;
 
         message = makeEncodeWithSignature(
             CANCEL_CT,
-            cancelL1[_hash],
+            cancelL1Address,
             0,
             _salecount,
             _hash
