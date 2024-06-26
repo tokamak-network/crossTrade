@@ -188,7 +188,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         bytes32 _hash
     )
         external
-        payable
         nonReentrant
         checkL1(_chainId)
         providerCheck(_saleCount)
@@ -234,7 +233,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _chainId
     )
         external
-        payable
         nonReentrant
         checkL1(_chainId)
         providerCheck(_salecount)

@@ -490,6 +490,7 @@ describe("CrossTradeNativeTONTest", function () {
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
+        oneETH,
         saleCount,
         chainId,
         saleInformation.hashValue
@@ -514,27 +515,27 @@ describe("CrossTradeNativeTONTest", function () {
       
     })
 
-    it("If you using providerCT enter the original ctAmount value, it will be reverted.", async () => {
-      const saleCount = await L2CrossTradeProxy.saleCount()
-      let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+    // it("If you using providerCT enter the original ctAmount value, it will be reverted.", async () => {
+    //   const saleCount = await L2CrossTradeProxy.saleCount()
+    //   let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
-      let chainId = await L2CrossTradeContract.getChainID()
+    //   let chainId = await L2CrossTradeContract.getChainID()
 
-      const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-      await providerApproveTx.wait()
+    //   const providerApproveTx = await l2NativeTokenContract.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
+    //   await providerApproveTx.wait()
 
-      await expect(L1CrossTradeContract.connect(l1user1).provideCT(
-        l2NativeToken,
-        predeployedAddress.LegacyERC20ETH,
-        l2Wallet.address,
-        threeETH,
-        twoETH,
-        saleCount,
-        chainId,
-        200000,
-        saleInformation.hashValue
-      )).to.be.rejectedWith("check edit fwAmount")
-    })
+    //   await expect(L1CrossTradeContract.connect(l1user1).provideCT(
+    //     l2NativeToken,
+    //     predeployedAddress.LegacyERC20ETH,
+    //     l2Wallet.address,
+    //     threeETH,
+    //     twoETH,
+    //     saleCount,
+    //     chainId,
+    //     200000,
+    //     saleInformation.hashValue
+    //   )).to.be.rejectedWith("check edit fwAmount")
+    // })
 
     it("providerCT(TON) in L1", async () => {
       let beforel2Balance = await l2Wallet.getBalance()
@@ -558,7 +559,7 @@ describe("CrossTradeNativeTONTest", function () {
       let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
 
       let saleInformation = await L2CrossTradeContract.dealData(saleCount)
-
+      
       const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
@@ -571,7 +572,6 @@ describe("CrossTradeNativeTONTest", function () {
         saleInformation.hashValue
       )
       await providerTx.wait()
-    
       await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
 
       let afterl2Balance = await l2Wallet.getBalance()

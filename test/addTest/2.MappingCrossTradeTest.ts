@@ -465,17 +465,6 @@ describe("CrossTradeNativeTONTest", function () {
         if (l1tokenAddr !== l2NativeToken) {
           console.log("enteringToken fault data")
         }
-        
-        let getHash = await L2CrossTradeContract.getEnterHash(
-          l2NativeToken,
-          predeployedAddress.LegacyERC20ETH,
-          chainId
-        )
-  
-        let checkToken = await L2CrossTradeContract.checkToken(getHash)
-        if (checkToken === false) {
-          console.log("checkToken fault data")
-        }
       })
       
       it("The same value cannot be registerToken twice.", async () => {
@@ -633,7 +622,6 @@ describe("CrossTradeNativeTONTest", function () {
       it("not register token can't use common user", async () => {
         let chainId = await L1CrossTradeContract._getChainID()
         await expect(L2CrossTradeContract.connect(l2user1).deleteToken(
-          l2NativeToken,
           predeployedAddress.LegacyERC20ETH,
           chainId
         )).to.be.rejectedWith("Accessible: Caller is not an admin")
@@ -643,27 +631,23 @@ describe("CrossTradeNativeTONTest", function () {
         let chainId = await L1CrossTradeContract._getChainID()
         
         await (await L2CrossTradeContract.connect(l2Wallet).deleteToken(
-          l2NativeToken,
           predeployedAddress.LegacyERC20ETH,
           chainId
         )).wait();
         
-        let getHash = await L2CrossTradeContract.getEnterHash(
-          l2NativeToken,
-          predeployedAddress.LegacyERC20ETH,
-          chainId
+        let l1tokenAddr = await L2CrossTradeContract.enteringToken(
+          chainId,
+          predeployedAddress.LegacyERC20ETH
         )
   
-        let checkToken = await L2CrossTradeContract.checkToken(getHash)
-        if (checkToken === true) {
-          console.log("checkToken fault data")
+        if (l1tokenAddr !== zeroAddr) {
+          console.log("enteringToken fault data")
         }
       })
       
       it("deleteToken values ​​cannot be erased again.", async () => {
         let chainId = await L1CrossTradeContract._getChainID()
         await expect(L2CrossTradeContract.connect(l2Wallet).deleteToken(
-          l2NativeToken,
           predeployedAddress.LegacyERC20ETH,
           chainId
         )).to.be.rejectedWith("already deleteToken")
