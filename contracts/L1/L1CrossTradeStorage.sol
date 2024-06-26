@@ -2,6 +2,10 @@
 pragma solidity 0.8.24;
 
 contract L1CrossTradeStorage {
+
+    uint8 internal constant CLAIM_CT = 1;
+    uint8 internal constant CANCEL_CT = 2;
+
     struct ChainIdData {
         address crossDomainMessenger;
         address l2CrossTradeContract;

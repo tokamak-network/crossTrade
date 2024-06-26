@@ -66,7 +66,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes memory message;
 
         message = makeEncodeWithSignature(
-            1,
+            CLAIM_CT,
             msg.sender,
             ctAmount,
             _salecount,
@@ -153,7 +153,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes memory message;
 
         message = makeEncodeWithSignature(
-            1,
+            CLAIM_CT,
             msg.sender,
             ctAmount,
             _salecount,
@@ -212,7 +212,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes memory message;
 
         message = makeEncodeWithSignature(
-            1,
+            CLAIM_CT,
             provideAccount[_hash],
             ctAmount,
             _salecount,
@@ -263,7 +263,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes memory message;
 
         message = makeEncodeWithSignature(
-            2,
+            CANCEL_CT,
             msg.sender,
             0,
             _salecount,
@@ -301,7 +301,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes memory message;
 
         message = makeEncodeWithSignature(
-            2,
+            CANCEL_CT,
             cancelL1[_hash],
             0,
             _salecount,
@@ -415,7 +415,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         returns (bytes memory)
     {
         uint256 chainId = _getChainID();
-        if (number == 1) {
+        if (number == CLAIM_CT) {
             return abi.encodeWithSignature("claimCT(address,uint256,uint256,uint256,bytes32)", 
                 to, 
                 amount,
@@ -423,7 +423,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
                 chainId,
                 byteValue
             );
-        } else if (number == 2) {
+        } else if (number == CANCEL_CT) {
             return abi.encodeWithSignature("cancelCT(address,uint256,uint256)", 
                 to,
                 saleCount,
