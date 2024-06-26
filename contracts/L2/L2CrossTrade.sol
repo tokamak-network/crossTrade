@@ -87,36 +87,22 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         external
         onlyOwner
     {
-        bytes32 enterHash = getEnterHash(
-            _l1token,
-            _l2token,
-            _l1chainId
-        );
-        require(checkToken[enterHash] == false, "already registerToken");
+        require(enteringToken[_l1chainId][_l2token] == address(0), "already registerToken");
         enteringToken[_l1chainId][_l2token] = _l1token;
-        checkToken[enterHash] = true;
     }
     
     /// @notice Function to delete registered token
-    /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _l1chainId chainId of l1token
     function deleteToken(
-        address _l1token,
         address _l2token,
         uint256 _l1chainId
     )
         external
         onlyOwner
     {
-        bytes32 enterHash = getEnterHash(
-            _l1token,
-            _l2token,
-            _l1chainId
-        );
-        require(checkToken[enterHash] == true, "already deleteToken");
+        require(enteringToken[_l1chainId][_l2token] != address(0), "already deleteToken");
         enteringToken[_l1chainId][_l2token] = address(0);
-        checkToken[enterHash] = false;
     }
 
     /// @notice Token transaction request registered in register
@@ -137,12 +123,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonReentrant
     {
         address _l1token = enteringToken[_l1chainId][_l2token];
-        bytes32 enterHash = getEnterHash(
-            _l1token,
-            _l2token,
-            _l1chainId
-        );
-        require(checkToken[enterHash], "not register token");
+        require(_l1token != address(0), "not register token");
         
         unchecked {
             ++saleCount;
@@ -315,25 +296,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             )
         );
     }
-
-    /// @notice Function to calculate l1token, l2token register hash value
-    /// @param _l1token l1token Address
-    /// @param _l2token l2token Address
-    /// @param _l1chainId chainId of l1token
-    function getEnterHash(
-        address _l1token,
-        address _l2token,
-        uint256 _l1chainId
-    )
-        public
-        pure
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encode(_l1token, _l2token, _l1chainId)
-        );
-    }
-
+    
     //=======Temporary view for testing ========
     function getChainID() public view returns (uint256 id) {
         assembly {
