@@ -8,7 +8,7 @@ contract L2CrossTradeStorage {
         address requester;
         address provider;
         uint256 totalAmount;
-        uint256 fwAmount;
+        uint256 ctAmount;
         uint256 chainId;
         bytes32 hashValue;
     }
@@ -20,7 +20,7 @@ contract L2CrossTradeStorage {
 
     address public crossDomainMessenger;
     address public legacyERC20ETH;
-    address public nativeL1token;
+    // address public nativeL1token;
 
     uint256 public saleCount;
 

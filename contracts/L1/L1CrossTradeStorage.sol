@@ -16,7 +16,7 @@ contract L1CrossTradeStorage {
     //hashValue => address -> Record the address provided using the hash value
     mapping(bytes32 => address) public provideAccount;
     //hashValue => fwAmount -> When editing is done using the hash value, the change amount is saved.
-    mapping(bytes32 => uint256) public editFwAmount;
+    mapping(bytes32 => uint256) public editCtAmount;
     //chainId => Data
     mapping(uint256 => ChainIdData) public chainData;
 }
