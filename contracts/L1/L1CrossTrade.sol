@@ -83,11 +83,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
-            _checkAllowance(
-                msg.sender,
-                _l1token,
-                ctAmount
-            );
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
@@ -95,11 +90,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_requestor).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            _checkAllowance(
-                msg.sender,
-                _l1token,
-                ctAmount
-            );
             IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
         }
 
@@ -164,11 +154,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         successCT[l2HashValue] = true;
 
         if (chainData[_l2chainId].nativeL1token == _l1token) {
-            _checkAllowance(
-                msg.sender,
-                _l1token,
-                ctAmount
-            );
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
@@ -176,11 +161,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             (bool sent, ) = payable(_requestor).call{value: msg.value}("");
             require(sent, "claim fail");
         } else {
-            _checkAllowance(
-                msg.sender,
-                _l1token,
-                ctAmount
-            );
             IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
         }
 
@@ -439,19 +419,5 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             id := chainid()
         }
     }
-
-    /// @notice Function to check approve
-    /// @param _sender sender applying to provide
-    /// @param _l1token l1token address applying to provide
-    /// @param _ctAmount Amount provided
-    function _checkAllowance(
-        address _sender,
-        address _l1token,
-        uint256 _ctAmount
-    ) internal view {
-        uint256 allow = IERC20(_l1token).allowance(_sender, address(this));
-        require(allow >= _ctAmount, "need approve");
-    }
-
 
 }
