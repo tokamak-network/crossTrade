@@ -441,7 +441,7 @@ describe("CrossTradeNativeTONTest", function () {
       let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
       
       await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
-        zeroAddr,
+        l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
         twoETH,
@@ -480,8 +480,8 @@ describe("CrossTradeNativeTONTest", function () {
       const saleCount = await L2CrossTradeProxy.saleCount()
       let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
-      let beforeEditFW = await L1CrossTradeContract.editFwAmount(saleInformation.hashValue)
-      expect(beforeEditFW).to.be.equal(0)
+      let beforeEditCT = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+      expect(beforeEditCT).to.be.equal(0)
 
       let chainId = await L2CrossTradeContract.getChainID()
 
@@ -489,21 +489,21 @@ describe("CrossTradeNativeTONTest", function () {
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,
-        oneETH,
+        twoETH,
         saleCount,
         chainId,
         saleInformation.hashValue
       )).wait()
 
-      let afterEditFW = await L1CrossTradeContract.editFwAmount(saleInformation.hashValue)
-      expect(afterEditFW).to.be.equal(oneETH)
+      let afterEditCT = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+      expect(afterEditCT).to.be.equal(oneETH)
 
       const topic = L1CrossTradeContract.interface.getEventTopic('EditCT');
       const log = receipt.logs.find(x => x.topics.indexOf(topic) >= 0);
       const editEvent = L1CrossTradeContract.interface.parseLog(log);
       // console.log(editEvent)
 
-      expect(editEvent.args._fwAmount).to.be.equal(oneETH)
+      expect(editEvent.args._ctAmount).to.be.equal(oneETH)
       expect(editEvent.args._saleCount).to.be.equal(saleCount)
       // expect(editEvent.args._requester).to.be.equal(l1Wallet.address)
       if (editEvent.args._requester === l1Wallet.address) {
@@ -514,7 +514,7 @@ describe("CrossTradeNativeTONTest", function () {
       
     })
 
-    it("If you using providerCT enter the original fwAmount value, it will be reverted.", async () => {
+    it("If you using providerCT enter the original ctAmount value, it will be reverted.", async () => {
       const saleCount = await L2CrossTradeProxy.saleCount()
       let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
@@ -543,7 +543,7 @@ describe("CrossTradeNativeTONTest", function () {
       let beforel2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
-      // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+      console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
       let beforel2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
       )
@@ -564,7 +564,7 @@ describe("CrossTradeNativeTONTest", function () {
         predeployedAddress.LegacyERC20ETH,
         l2Wallet.address,
         threeETH,
-        oneETH,
+        twoETH,
         saleCount,
         chainId,
         200000,
@@ -580,7 +580,7 @@ describe("CrossTradeNativeTONTest", function () {
       let afterl2NativeTokenBalance = await l2NativeTokenContract.balanceOf(
         l1user1.address
       )
-      // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+      console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
 
       let afterl2NativeTokenBalanceWallet = await l2NativeTokenContract.balanceOf(
         l1Wallet.address
