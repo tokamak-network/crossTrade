@@ -50,6 +50,11 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
 
     //=======modifier========
 
+    modifier onlyEOA() {
+        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        _;
+    }
+
     modifier checkL1(uint256 _chainId) {
         require(
             msg.sender == address(crossDomainMessenger) && IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[_chainId].l1CrossTradeContract, 
@@ -118,6 +123,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     )
         external
         payable
+        onlyEOA
         nonZero(_totalAmount)
         nonZero(_ctAmount)
         nonReentrant
@@ -154,6 +160,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     )
         external
         payable
+        onlyEOA
         nonZero(_totalAmount)
         nonZero(_ctAmount)
         nonZeroAddr(_l1token)

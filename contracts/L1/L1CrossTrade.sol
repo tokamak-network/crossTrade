@@ -19,6 +19,11 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 indexed _saleCount
     );
 
+    modifier onlyEOA() {
+        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        _;
+    }
+
     /// @notice Provides information that matches the hash value requested in L2
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
@@ -42,6 +47,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )
         external
         payable
+        onlyEOA
         nonReentrant
     {
         bytes32 l2HashValue = getHash(
@@ -119,6 +125,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )
         external
         payable
+        onlyEOA
         nonReentrant
     {
         bytes32 l2HashValue = getHash(
@@ -178,6 +185,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes32 _hash
     )
         external
+        onlyEOA
         nonReentrant
     {
         require(successCT[_hash] == true, "not provide");
@@ -226,6 +234,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes32 _hash
     )
         external
+        onlyEOA
         nonReentrant
     {
          bytes32 l2HashValue = getHash(
@@ -274,6 +283,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes32 _hash
     )
         external
+        onlyEOA
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
@@ -317,6 +327,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )  
         external
         payable
+        onlyEOA
         nonReentrant
     {
         bytes32 l2HashValue = getHash(
