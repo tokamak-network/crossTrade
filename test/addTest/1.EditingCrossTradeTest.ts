@@ -485,7 +485,7 @@ describe("CrossTradeNativeTONTest", function () {
 
       let chainId = await L2CrossTradeContract.getChainID()
 
-      let receipt = await (await L1CrossTradeContract.connect(l1Wallet).edit(
+      let receipt = await (await L1CrossTradeContract.connect(l1Wallet).editFee(
         l2NativeToken,
         predeployedAddress.LegacyERC20ETH,
         threeETH,

@@ -22,7 +22,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _requester,
         uint256 _totalAmount,
         uint256 _ctAmount,
-        uint256 _saleCount,
+        uint256 indexed _saleCount,
         bytes32 _hashValue
     );
 
@@ -33,19 +33,19 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
-        uint256 _saleCount
+        uint256 indexed _saleCount
     );
 
     event CancelCT(
         address _requester,
         uint256 _totalAmount,
-        uint256 _saleCount
+        uint256 indexed _saleCount
     );
 
     event EditCT(
         address _requester,
         uint256 _ctAmount,
-        uint256 _saleCount
+        uint256 indexed _saleCount
     );
 
     //=======modifier========

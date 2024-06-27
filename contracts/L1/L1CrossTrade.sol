@@ -16,7 +16,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     event EditCT(
         address _requester,
         uint256 _ctAmount,
-        uint256 _saleCount
+        uint256 indexed _saleCount
     );
 
     /// @notice Provides information that matches the hash value requested in L2
@@ -305,7 +305,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _hash Hash value generated upon request
-    function edit(
+    function editFee(
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
