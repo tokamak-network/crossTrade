@@ -2,7 +2,7 @@ import {
   getContractInterface,
   predeploys,
 } from '@tokamak-network/titan-contracts'
-import { getContractInterface as getContractInterfaceBedrock } from '@eth-optimism/contracts-bedrock'
+// import { getContractInterface as getContractInterfaceBedrock } from '@eth-optimism/contracts-bedrock'
 import { ethers, Contract } from 'ethers'
 
 import {

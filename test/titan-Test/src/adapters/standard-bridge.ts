@@ -13,7 +13,7 @@ import {
   BlockTag,
 } from '@ethersproject/abstract-provider'
 import { predeploys } from '@tokamak-network/titan-contracts'
-import { getContractInterface } from '@eth-optimism/contracts-bedrock'
+// import { getContractInterface } from '@eth-optimism/contracts-bedrock'
 import { hexStringEquals } from '@eth-optimism/core-utils'
 
 import { BatchCrossChainMessenger } from '../cross-chain-messenger'

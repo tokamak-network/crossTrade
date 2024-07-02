@@ -11,7 +11,7 @@ import {
   BatchCrossChainMessenger,
   MessageStatus,
   CONTRACT_ADDRESSES,
-} from '../src'
+} from './src'
 
 task('deposit-eth', 'Deposits WETH9 onto L2.')
   .addParam(
