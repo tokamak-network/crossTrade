@@ -528,14 +528,15 @@ describe("CrossTradeBasicTest-Titan", function () {
             chainId
           )).wait();
     
-          let l1tokenAddr = await L2CrossTradeContract.enteringToken(
+          let check = await L2CrossTradeContract.registerCheck(
             chainId,
+            mockTON.address,
             l2mockTONAddr
           )
           // console.log("l1tokenAddr :", l1tokenAddr)
           // console.log("l2NativeToken :", l2NativeToken)
     
-          if (l1tokenAddr !== mockTON.address) {
+          if (check !== true) {
             console.log("enteringToken fault data")
           }
         })
@@ -551,12 +552,13 @@ describe("CrossTradeBasicTest-Titan", function () {
   
         it("requestRegisteredToken in L2", async () => {
           let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
           
           const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
           await providerApproveTx.wait()
           
           await (await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
+            mockTON.address,
             l2mockTONAddr,
             threeETH,
             twoETH,
@@ -564,13 +566,13 @@ describe("CrossTradeBasicTest-Titan", function () {
           )).wait()
 
           let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
     
           const saleCount = await L2CrossTradeProxy.saleCount()
           expect(saleCount).to.be.equal(1);
     
           expect(beforel2Balance).to.be.gt(afterl2Balance)
-          expect(afterL2CrossTradeBalance).to.be.equal(beforeL2CrossTradeBalance)
+          expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
         })
   
         it("faucet TON to user1 in L1", async () => {
@@ -739,6 +741,7 @@ describe("CrossTradeBasicTest-Titan", function () {
         it("not register token can't use common user", async () => {
           let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2user1).deleteToken(
+            mockTON.address,
             l2mockTON.address,
             chainId
           )).to.be.rejectedWith("Accessible: Caller is not an admin")
@@ -748,16 +751,18 @@ describe("CrossTradeBasicTest-Titan", function () {
           let chainId = await L1CrossTradeContract._getChainID()
           
           await (await L2CrossTradeContract.connect(l2Wallet).deleteToken(
+            mockTON.address,
             l2mockTON.address,
             chainId
           )).wait();
           
-          let l1tokenAddr = await L2CrossTradeContract.enteringToken(
+          let check = await L2CrossTradeContract.registerCheck(
             chainId,
+            mockTON.address,
             l2mockTON.address
           )
     
-          if (l1tokenAddr !== zeroAddr) {
+          if (check !== false) {
             console.log("enteringToken fault data")
           }
         })
@@ -765,6 +770,7 @@ describe("CrossTradeBasicTest-Titan", function () {
         it("deleteToken values ​​cannot be erased again.", async () => {
           let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2Wallet).deleteToken(
+            mockTON.address,
             l2mockTON.address,
             chainId
           )).to.be.rejectedWith("already deleteToken")
@@ -773,8 +779,9 @@ describe("CrossTradeBasicTest-Titan", function () {
         it("Deleted values ​​cannot be requested through requestRegisteredToken.", async () => {
           const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
           await providerApproveTx.wait()
-          
+
           await expect(L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
+            mockTON.address,
             l2mockTON.address,
             threeETH,
             twoETH,

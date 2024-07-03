@@ -92,30 +92,36 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         external
         onlyOwner
     {
-        require(enteringToken[_l1chainId][_l2token] == address(0), "already registerToken");
-        enteringToken[_l1chainId][_l2token] = _l1token;
+        require(registerCheck[_l1chainId][_l1token][_l2token] == false, "already registerToken");
+        // enteringToken[_l1chainId][_l2token] = _l1token;
+        registerCheck[_l1chainId][_l1token][_l2token] = true;
     }
     
     /// @notice Function to delete registered token
+    /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _l1chainId chainId of l1token
     function deleteToken(
+        address _l1token,
         address _l2token,
         uint256 _l1chainId
     )
         external
         onlyOwner
     {
-        require(enteringToken[_l1chainId][_l2token] != address(0), "already deleteToken");
-        enteringToken[_l1chainId][_l2token] = address(0);
+        require(registerCheck[_l1chainId][_l1token][_l2token] != false, "already deleteToken");
+        // enteringToken[_l1chainId][_l2token] = address(0);
+        registerCheck[_l1chainId][_l1token][_l2token] = false;
     }
 
     /// @notice Token transaction request registered in register
+    /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1chainId chainId of l1token
     function requestRegisteredToken(
+        address _l1token,
         address _l2token,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -128,8 +134,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonZero(_ctAmount)
         nonReentrant
     {
-        address _l1token = enteringToken[_l1chainId][_l2token];
-        require(_l1token != address(0), "not register token");
+        // address _l1token = enteringToken[_l1chainId][_l2token];
+        require(registerCheck[_l1chainId][_l1token][_l2token] == true, "not register token");
         
         unchecked {
             ++saleCount;
