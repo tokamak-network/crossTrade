@@ -762,7 +762,7 @@ describe("CrossTradeBasicTest-Titan", function () {
 
           const receipt = await tx.wait()
           const event = receipt.events.find(
-            (e: Event) => e.event === 'CreateRequestCT'
+            (e: Event) => e.event === 'NonRequestCT'
           )
           // console.log(event)
         
