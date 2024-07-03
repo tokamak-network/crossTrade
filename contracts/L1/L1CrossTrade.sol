@@ -342,7 +342,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
         require(_editedctAmount > 0, "ctAmount need nonZero");
-        require(_totalAmount > _editedctAmount, "ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;
 

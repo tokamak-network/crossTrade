@@ -16,7 +16,17 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
 
     using SafeERC20 for IERC20;
 
-    event CreateRequestCT(
+    event RequestCT(
+        address _l1token,
+        address _l2token,
+        address _requester,
+        uint256 _totalAmount,
+        uint256 _ctAmount,
+        uint256 indexed _saleCount,
+        bytes32 _hashValue
+    );
+
+    event NonRequestCT(
         address _l1token,
         address _l2token,
         address _requester,
@@ -141,13 +151,23 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             ++saleCount;
         }
 
-        _request(
+        bytes32 hashValue = _request(
             _l1token,
             _l2token,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1chainId
+        );
+
+        emit RequestCT(
+            _l1token,
+            _l2token,
+            msg.sender,
+            _totalAmount,
+            _ctAmount,
+            saleCount,
+            hashValue
         );
     }
 
@@ -175,13 +195,23 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             ++saleCount;
         }
 
-        _request(
+        bytes32 hashValue = _request(
             _l1token,
             _l2token,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1chainId
+        );
+
+        emit NonRequestCT(
+            _l1token,
+            _l2token,
+            msg.sender,
+            _totalAmount,
+            _ctAmount,
+            saleCount,
+            hashValue
         );
     }
     
@@ -336,6 +366,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _l1chainId
     )
         internal
+        returns (bytes32 hashValue)
     {
         if (_l2token == legacyERC20ETH) {
             require(msg.value == _totalAmount, "CT: nativeTON need amount");
@@ -343,7 +374,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
 
-        bytes32 hashValue = getHash(
+        hashValue = getHash(
             _l1token,
             _l2token,
             msg.sender,
@@ -364,14 +395,5 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             hashValue: hashValue
         });
 
-        emit CreateRequestCT(
-            _l1token,
-            _l2token,
-            msg.sender,
-            _totalAmount,
-            _ctAmount,
-            _saleCount,
-            hashValue
-        );
     }
 }
