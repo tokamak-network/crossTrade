@@ -169,8 +169,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         onlyEOA
         nonZero(_totalAmount)
         nonZero(_ctAmount)
-        nonZeroAddr(_l1token)
-        nonZeroAddr(_l2token)
         nonReentrant
     {        
         unchecked {
