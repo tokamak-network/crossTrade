@@ -509,15 +509,55 @@ describe("CrossTradeBasicTest-Titan", function () {
     })
 
     describe("CrossTrade Test", () => {
-      describe("requestNonRegisteredToken & provide Test", () => {
-        it("requestNonRegisteredToken in L2", async () => {
+      describe("registerToken & requestRegisteredToken & Edit & Provide Test", () => {
+        it("registerToken can't use common user", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          await expect(L2CrossTradeContract.connect(l2user1).registerToken(
+            mockTON.address,
+            l2mockTONAddr,
+            chainId
+          )).to.be.rejectedWith("Accessible: Caller is not an admin")
+        })
+  
+        it("registerToken can only Owner", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          
+          await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
+            mockTON.address,
+            l2mockTONAddr,
+            chainId
+          )).wait();
+    
+          let check = await L2CrossTradeContract.registerCheck(
+            chainId,
+            mockTON.address,
+            l2mockTONAddr
+          )
+          // console.log("l1tokenAddr :", l1tokenAddr)
+          // console.log("l2NativeToken :", l2NativeToken)
+    
+          if (check !== true) {
+            console.log("enteringToken fault data")
+          }
+        })
+  
+        it("The same value cannot be registerToken twice.", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          await expect(L2CrossTradeContract.connect(l2Wallet).registerToken(
+            mockTON.address,
+            l2mockTONAddr,
+            chainId
+          )).to.be.rejectedWith("already registerToken")
+        })
+  
+        it("requestRegisteredToken in L2", async () => {
           let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
           let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
           
           const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
           await providerApproveTx.wait()
           
-          await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
+          await (await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
             mockTON.address,
             l2mockTONAddr,
             threeETH,
@@ -544,6 +584,244 @@ describe("CrossTradeBasicTest-Titan", function () {
             const tx = await mockTON.connect(l1user1).faucet(twoETH)
             await tx.wait()
           }
+        })
+
+        it("You cannot editFee unless the request was made by you", async () => {
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          let chainId = await L2CrossTradeContract.getChainID()
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+          await expect(L1CrossTradeContract.connect(l1user1).editFee(
+            mockTON.address,
+            l2mockTONAddr,
+            threeETH,
+            twoETH,
+            oneETH,
+            saleCount,
+            chainId,
+            saleInformation.hashValue
+          )).to.be.rejectedWith("Hash values do not match.")
+        })
+
+        it("execute editFee in L1", async () => {
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          let chainId = await L2CrossTradeContract.getChainID()
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+          let tx = await L1CrossTradeContract.connect(l1Wallet).editFee(
+            mockTON.address,
+            l2mockTONAddr,
+            threeETH,
+            twoETH,
+            oneETH,
+            saleCount,
+            chainId,
+            saleInformation.hashValue
+          )
+
+          const receipt = await tx.wait()
+          const event = receipt.events.find(
+            (e: Event) => e.event === 'EditCT'
+          )
+          // console.log(event)
+        
+          if (!event) {
+            throw new Error('Unable to find EditCT event')
+          }
+        })
+  
+        it("providerCT(TON) in L1", async () => {
+          let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
+          let beforel2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
+    
+          let beforel2NativeTokenBalance = await mockTON.balanceOf(
+            l1user1.address
+          )
+          // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+          let beforel2NativeTokenBalanceWallet = await mockTON.balanceOf(
+            l1Wallet.address
+          )
+          // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
+        
+          const providerApproveTx = await mockTON.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
+          await providerApproveTx.wait()
+        
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          let chainId = await L2CrossTradeContract.getChainID()
+    
+          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+    
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+          // console.log("1")
+    
+          const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
+            mockTON.address,
+            l2mockTONAddr,
+            l2Wallet.address,
+            threeETH,
+            twoETH,
+            saleCount,
+            chainId,
+            2000000,
+            saleInformation.hashValue
+          )
+          await providerTx.wait()
+          // console.log("2")
+          const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+
+          // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
+          if (messageReceipt.receiptStatus !== 1) {
+            throw new Error('provide failed')
+          }
+    
+          let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
+          let afterl2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
+    
+          let afterl2NativeTokenBalance = await mockTON.balanceOf(
+            l1user1.address
+          )
+          let diffl2NativeTokenBalance = Number(beforel2NativeTokenBalance)-Number(afterl2NativeTokenBalance)
+          // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+    
+          let afterl2NativeTokenBalanceWallet = await mockTON.balanceOf(
+            l1Wallet.address
+          )
+          // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
+    
+          expect(afterl2Balance).to.be.equal(beforel2Balance)
+          expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+          
+          expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+          // console.log("diffl2NativeTokenBalance :", diffl2NativeTokenBalance)
+          // console.log("oneETH :", Number(oneETH))
+          // expect(diffl2NativeTokenBalance).to.be.equal(Number(oneETH))
+          if (diffl2NativeTokenBalance !== Number(oneETH)) {
+            throw new Error('Provider edit Amount Error')
+          }
+          
+          expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
+    
+          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
+    
+          saleInformation = await L2CrossTradeContract.dealData(saleCount)
+          if(saleInformation.provider !== l2user1.address) {
+            console.log("===========Provider Fail!!===========")
+          } 
+        })
+
+      })
+
+      describe("requestNonRegisteredToken & Edit & Provide Test", () => {
+        it("TON faucet", async () => {
+          let TONBalance = await mockTON.balanceOf(
+            l1Wallet.address
+          )
+  
+          if (Number(TONBalance.toString()) < Number(hundETH)) {
+            const tx = await mockTON.connect(l1Wallet).faucet(hundETH)
+            await tx.wait()
+          }
+        })
+
+        it("Deposit to L2 MockTON", async () => {
+          const approvalTx = await messenger.approveERC20(
+            mockTON.address,
+            l2mockTONAddr,
+            tenETH
+          )
+          await approvalTx.wait()
+  
+          const depositTx = await messenger.depositERC20(
+            mockTON.address,
+            l2mockTONAddr,
+            tenETH
+          )
+          await depositTx.wait()
+  
+          const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
+          if (messageReceipt.receiptStatus !== 1) {
+            throw new Error('deposit failed')
+          }
+        })
+
+        it("requestNonRegisteredToken in L2", async () => {
+          let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
+          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          
+          const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
+          await providerApproveTx.wait()
+          
+          let tx = await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
+            mockTON.address,
+            l2mockTONAddr,
+            threeETH,
+            twoETH,
+            l1ChainId
+          )
+
+          const receipt = await tx.wait()
+          const event = receipt.events.find(
+            (e: Event) => e.event === 'CreateRequestCT'
+          )
+          // console.log(event)
+        
+          if (!event) {
+            throw new Error('Unable to find EditCT event')
+          }
+          
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          // console.log(saleCount)
+          // console.log(event.args._saleCount)
+          expect(event.args._saleCount).to.be.equal(saleCount)
+
+          let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
+          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+    
+          expect(beforel2Balance).to.be.gt(afterl2Balance)
+          expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
+        })
+  
+        it("faucet TON to user1 in L1", async () => {
+          let l2NativeTokenBalance = await mockTON.balanceOf(
+            l1user1.address
+          )
+    
+          if (Number(l2NativeTokenBalance.toString()) < Number(twoETH)) {
+            const tx = await mockTON.connect(l1user1).faucet(twoETH)
+            await tx.wait()
+          }
+        })
+
+        it("execute editFee in L1", async () => {
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          let chainId = await L2CrossTradeContract.getChainID()
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+          let tx = await L1CrossTradeContract.connect(l1Wallet).editFee(
+            mockTON.address,
+            l2mockTONAddr,
+            threeETH,
+            twoETH,
+            oneETH,
+            saleCount,
+            chainId,
+            saleInformation.hashValue
+          )
+
+          const receipt = await tx.wait()
+          const event = receipt.events.find(
+            (e: Event) => e.event === 'EditCT'
+          )
+          // console.log(event)
+        
+          if (!event) {
+            throw new Error('Unable to find EditCT event')
+          }
+
+          // console.log(event.args._ctAmount)
+          // console.log(oneETH)
+          expect(event.args._ctAmount).to.be.equal(oneETH)
         })
   
         it("providerCT(TON) in L1", async () => {
@@ -617,48 +895,6 @@ describe("CrossTradeBasicTest-Titan", function () {
             console.log("===========Provider Fail!!===========")
           } 
         })
-
-        // it("provideTest test", async () => {    
-        //   let beforel2NativeTokenBalance = await mockTON.balanceOf(
-        //     l1user1.address
-        //   )
-        //   // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-        //   let beforel2NativeTokenBalanceWallet = await mockTON.balanceOf(
-        //     l1Wallet.address
-        //   )
-        //   // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
-        
-        //   const providerApproveTx = await mockTON.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-        //   await providerApproveTx.wait()
-
-        //   const saleCount = await L2CrossTradeProxy.saleCount()
-        //   let chainId = await L2CrossTradeContract.getChainID()
-        //   let saleInformation = await L2CrossTradeContract.dealData(saleCount)
-
-        //   const providerTx = await L1CrossTradeContract.connect(l1user1).provideTest(
-        //     mockTON.address,
-        //     l2mockTONAddr,
-        //     l2Wallet.address,
-        //     threeETH,
-        //     twoETH,
-        //     saleCount,
-        //     chainId,
-        //     2000000,
-        //     saleInformation.hashValue
-        //   )
-        //   await providerTx.wait()
-
-        //   let afterl2NativeTokenBalance = await mockTON.balanceOf(
-        //     l1user1.address
-        //   )
-    
-        //   let afterl2NativeTokenBalanceWallet = await mockTON.balanceOf(
-        //     l1Wallet.address
-        //   )
-
-        //   expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
-        //   expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
-        // })
 
       })
     })
