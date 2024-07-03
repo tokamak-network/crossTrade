@@ -73,10 +73,10 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         _;
     }
 
-    modifier nonZeroAddr(address _addr) {
-        require(_addr != address(0) , "nonZeroAddr");
-        _;
-    }
+    // modifier nonZeroAddr(address _addr) {
+    //     require(_addr != address(0) , "nonZeroAddr");
+    //     _;
+    // }
 
     //=======external========
 
