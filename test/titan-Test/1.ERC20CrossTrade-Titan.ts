@@ -685,7 +685,86 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
       })
 
       describe("deleteToken & requestRegisteredToken is not executed Test", () => {
+        it("ERC20 mint", async () => {
+          let TONBalance = await erc20Token.balanceOf(
+            l1Wallet.address
+          )
+  
+          if (Number(TONBalance.toString()) < Number(hundETH)) {
+            const tx = await erc20Token.connect(l1Wallet).mint(
+              l1Wallet.address,
+              hundETH
+            )
+            await tx.wait()
+          }
+        })
 
+        it("Deposit to L2 MockTON", async () => {
+          const approvalTx = await messenger.approveERC20(
+            erc20Token.address,
+            l2erc20Token.address,
+            tenETH
+          )
+          await approvalTx.wait()
+  
+          const depositTx = await messenger.depositERC20(
+            erc20Token.address,
+            l2erc20Token.address,
+            tenETH
+          )
+          await depositTx.wait()
+  
+          const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
+          if (messageReceipt.receiptStatus !== 1) {
+            throw new Error('deposit failed')
+          }
+        })
+        
+        it("not register token can't use common user", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          await expect(L2CrossTradeContract.connect(l2user1).deleteToken(
+            l2erc20Token.address,
+            chainId
+          )).to.be.rejectedWith("Accessible: Caller is not an admin")
+        })
+
+        it("deleteToken can only Owner", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          
+          await (await L2CrossTradeContract.connect(l2Wallet).deleteToken(
+            l2erc20Token.address,
+            chainId
+          )).wait();
+          
+          let l1tokenAddr = await L2CrossTradeContract.enteringToken(
+            chainId,
+            l2erc20Token.address
+          )
+    
+          if (l1tokenAddr !== zeroAddr) {
+            console.log("enteringToken fault data")
+          }
+        })
+
+        it("deleteToken values ​​cannot be erased again.", async () => {
+          let chainId = await L1CrossTradeContract._getChainID()
+          await expect(L2CrossTradeContract.connect(l2Wallet).deleteToken(
+            l2erc20Token.address,
+            chainId
+          )).to.be.rejectedWith("already deleteToken")
+        })
+
+        it("Deleted values ​​cannot be requested through requestRegisteredToken.", async () => {
+          const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
+          await providerApproveTx.wait()
+          
+          await expect(L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
+            l2erc20Token.address,
+            threeETH,
+            twoETH,
+            l1ChainId
+          )).to.be.rejectedWith("not register token")
+        })
       })
     })
 
