@@ -52,11 +52,11 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 indexed _saleCount
     );
 
-    event EditCT(
-        address _requester,
-        uint256 _ctAmount,
-        uint256 indexed _saleCount
-    );
+    // event EditCT(
+    //     address _requester,
+    //     uint256 _ctAmount,
+    //     uint256 indexed _saleCount
+    // );
 
     //=======modifier========
 
@@ -103,7 +103,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         onlyOwner
     {
         require(registerCheck[_l1chainId][_l1token][_l2token] == false, "already registerToken");
-        // enteringToken[_l1chainId][_l2token] = _l1token;
         registerCheck[_l1chainId][_l1token][_l2token] = true;
     }
     
@@ -120,7 +119,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         onlyOwner
     {
         require(registerCheck[_l1chainId][_l1token][_l2token] != false, "already deleteToken");
-        // enteringToken[_l1chainId][_l2token] = address(0);
         registerCheck[_l1chainId][_l1token][_l2token] = false;
     }
 
@@ -144,7 +142,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonZero(_ctAmount)
         nonReentrant
     {
-        // address _l1token = enteringToken[_l1chainId][_l2token];
         require(registerCheck[_l1chainId][_l1token][_l2token] == true, "not register token");
         
         unchecked {
