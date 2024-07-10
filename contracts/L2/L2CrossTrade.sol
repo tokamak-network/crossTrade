@@ -331,17 +331,17 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         );
     }
 
-    //=======Temporary view for testing ========
-    function getChainID() public view returns (uint256 id) {
-        assembly {
-            id := chainid()
-        }
-    }
+    // //=======Temporary view for testing ========
+    // function getChainID() public view returns (uint256 id) {
+    //     assembly {
+    //         id := chainid()
+    //     }
+    // }
 
     //=======internal========
 
     /// @notice Function to calculate l1token, l2token register hash value
-    function _getChainID() internal view returns (uint256 id) {
+    function _getChainID() private view returns (uint256 id) {
         assembly {
             id := chainid()
         }
@@ -362,7 +362,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _saleCount,
         uint256 _l1chainId
     )
-        internal
+        private
         returns (bytes32 hashValue)
     {
         if (_l2token == legacyERC20ETH) {

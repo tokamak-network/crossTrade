@@ -369,7 +369,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _saleCount,
         uint256 _l2chainId
     )
-        public
+        private
         view
         returns (bytes32)
     {
@@ -401,7 +401,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 saleCount,
         bytes32 byteValue
     )
-        public
+        private
         view
         returns (bytes memory)
     {
@@ -425,7 +425,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
 
     /// @notice Function that returns the chainId of the current contract
-    function _getChainID() public view returns (uint256 id) {
+    function _getChainID() private view returns (uint256 id) {
         assembly {
             id := chainid()
         }
