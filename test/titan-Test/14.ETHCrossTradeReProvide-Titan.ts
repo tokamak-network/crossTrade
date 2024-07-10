@@ -36,7 +36,7 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
-describe("CrossTradeReProvideTest-Titan", function () {
+describe("CrossTradeERC20BasicTest-Titan", function () {
     
     const erc20ABI = [
         {
@@ -142,6 +142,8 @@ describe("CrossTradeReProvideTest-Titan", function () {
     let l2ChainId : any;
 
     let erc20Token : any;
+    let l2erc20Token : any;
+    let l2erc20Addr : any;
     let mockTON : any;
     let l2mockTON : any;
     let l2mockTONAddr : any;
@@ -239,7 +241,6 @@ describe("CrossTradeReProvideTest-Titan", function () {
           l1Wallet.address,
           hundETH
         )
-
       })
       
       it("L1CrossTradeProxy", async () => {
@@ -414,100 +415,28 @@ describe("CrossTradeReProvideTest-Titan", function () {
       })
     })
 
-    describe("Prepare CrossTradeTest", () => {
-      it("TON faucet", async () => {
-        let TONBalance = await mockTON.balanceOf(
-          l1Wallet.address
-        )
-
-        if (Number(TONBalance.toString()) < Number(hundETH)) {
-          // console.log('start faucet')
-          const tx = await mockTON.connect(l1Wallet).faucet(hundETH)
-          await tx.wait()
-          const l2NativeTokenBalance2 = await mockTON.balanceOf(
-            l1Wallet.address
-          )
-          // console.log('after faucet mockTON balance in L1:', l2NativeTokenBalance2.toString())
-        }
-      })
-
-      it("createOptimismMintableERC20", async () => {
-        let name = await mockTON.name()
-        let symbol = await mockTON.symbol()
-
-        const tx = await OptimismMintableERC20TokenFactory.connect(l2Wallet).createStandardL2Token(
-          mockTON.address,
-          name,
-          symbol
-        )
-
-        const receipt = await tx.wait()
-        const event = receipt.events.find(
-          (e: Event) => e.event === 'StandardL2TokenCreated'
-        )
-        // console.log(event)
-      
-        if (!event) {
-          throw new Error('Unable to find StandardL2TokenCreated event')
-        }
-        // console.log("mockTON.address :", mockTON.address);
-        l2mockTONAddr = event.args.localToken
-        // console.log(`Deployed to ${l2mockTONAddr}`)
-      })
-
-      it("set l2TON", async () => {
-        l2mockTON = new ethers.Contract(
-          l2mockTONAddr,
-          L2StandardERC20_ABI.abi,
-          l2Wallet
-        )
-      })
-      
-      it("Deposit to L2 MockTON", async () => {
-        const approvalTx = await messenger.approveERC20(
-          mockTON.address,
-          l2mockTONAddr,
-          tenETH
-        )
-        await approvalTx.wait()
-
-        const depositTx = await messenger.depositERC20(
-          mockTON.address,
-          l2mockTONAddr,
-          tenETH
-        )
-        await depositTx.wait()
-
-        const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
-        if (messageReceipt.receiptStatus !== 1) {
-          throw new Error('deposit failed')
-        }
-
-        // let l2TONbalance = await l2mockTON.balanceOf(l2Wallet.address)
-        // console.log("l2TONbalance :", Number(l2TONbalance))
-      })
-
-    })
-
     describe("CrossTrade Test", () => {
       describe("requestNonRegisteredToken & provide & resendProvideCTMessage", () => {
         it("requestNonRegisteredToken in L2", async () => {
-          let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let beforel2Balance = await l2Wallet.getBalance()
+          let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
           
-          const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
-          await providerApproveTx.wait()
+          // const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
+          // await providerApproveTx.wait()
           
           await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
-            mockTON.address,
-            l2mockTONAddr,
+            zeroAddr,
+            zeroAddr,
             threeETH,
             twoETH,
-            l1ChainId
+            l1ChainId,
+            {
+              value: threeETH
+            }
           )).wait()
 
-          let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let afterl2Balance = await await l2Wallet.getBalance()
+          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
     
           const saleCount = await L2CrossTradeProxy.saleCount()
           expect(saleCount).to.be.equal(1);
@@ -516,75 +445,47 @@ describe("CrossTradeReProvideTest-Titan", function () {
           expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
         })
   
-        it("faucet TON to user1 in L1", async () => {
-          let l2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
-    
-          if (Number(l2NativeTokenBalance.toString()) < Number(twoETH)) {
-            const tx = await mockTON.connect(l1user1).faucet(twoETH)
-            await tx.wait()
-          }
-        })
+        it("provideTest(ETH) in L1", async () => {
   
-        it("provideTest(TON) in L1", async () => {
-          let beforel2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
+          let beforel2NativeTokenBalance = await l1user1.getBalance()
           // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-          let beforel2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
+          let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
         
-          const providerApproveTx = await mockTON.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-          await providerApproveTx.wait()
-        
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
-    
+        
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
     
           const providerTx = await L1CrossTradeContract.connect(l1user1).provideTest(
-            mockTON.address,
-            l2mockTONAddr,
+            zeroAddr,
+            zeroAddr,
             l2Wallet.address,
             threeETH,
             twoETH,
             saleCount,
-            chainId,
-            2000000,
-            saleInformation.hashValue
+            l2ChainId,
+            200000,
+            saleInformation.hashValue,
+            {
+              value: twoETH
+            }
           )
           await providerTx.wait()
-          // console.log("2")
     
-          let afterl2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
+          let afterl2NativeTokenBalance = await l1user1.getBalance()
           // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
     
-          let afterl2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
+          let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
+
           
           expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
           expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
-
         })
 
-        it("resendProvideCTMessage(TON) in L1", async () => {
-          let beforel2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
-          // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-          let beforel2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
-
-          const saleCount = await L2CrossTradeProxy.saleCount()    
+        it("resendProvideCTMessage(TON) in L1", async () => {    
+          const saleCount = await L2CrossTradeProxy.saleCount()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           const providerTx = await L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
@@ -596,92 +497,31 @@ describe("CrossTradeReProvideTest-Titan", function () {
           await providerTx.wait()
           
           await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-
-          let afterl2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
-    
-          let afterl2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
-
-          expect(beforel2NativeTokenBalance).to.be.equal(afterl2NativeTokenBalance)
-          expect(afterl2NativeTokenBalanceWallet).to.be.equal(beforel2NativeTokenBalanceWallet)
-
         })
-
 
       })
 
-      describe("If provide worked properly resendProvideCTMessage shouldn't work.", () => {
-        it("TON faucet", async () => {
-          let TONBalance = await mockTON.balanceOf(
-            l1Wallet.address
-          )
-  
-          if (Number(TONBalance.toString()) < Number(hundETH)) {
-            // console.log('start faucet')
-            const tx = await mockTON.connect(l1Wallet).faucet(hundETH)
-            await tx.wait()
-            const l2NativeTokenBalance2 = await mockTON.balanceOf(
-              l1Wallet.address
-            )
-            // console.log('after faucet mockTON balance in L1:', l2NativeTokenBalance2.toString())
-          }
-        })
-
-        it("faucet TON to user1 in L1", async () => {
-          let l2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
-    
-          if (Number(l2NativeTokenBalance.toString()) < Number(twoETH)) {
-            const tx = await mockTON.connect(l1user1).faucet(twoETH)
-            await tx.wait()
-          }
-        })
-
-        it("Deposit to L2 MockTON", async () => {
-          const approvalTx = await messenger.approveERC20(
-            mockTON.address,
-            l2mockTONAddr,
-            tenETH
-          )
-          await approvalTx.wait()
-  
-          const depositTx = await messenger.depositERC20(
-            mockTON.address,
-            l2mockTONAddr,
-            tenETH
-          )
-          await depositTx.wait()
-  
-          const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
-          if (messageReceipt.receiptStatus !== 1) {
-            throw new Error('deposit failed')
-          }
-  
-          // let l2TONbalance = await l2mockTON.balanceOf(l2Wallet.address)
-          // console.log("l2TONbalance :", Number(l2TONbalance))
-        })
-
+      describe("If provide worked properly resendProvideCTMessage shouldn't work", () => {
         it("requestNonRegisteredToken in L2", async () => {
-          let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let beforel2Balance = await l2Wallet.getBalance()
+          let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
           
-          const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
-          await providerApproveTx.wait()
+          // const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
+          // await providerApproveTx.wait()
           
           await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
-            mockTON.address,
-            l2mockTONAddr,
+            zeroAddr,
+            zeroAddr,
             threeETH,
             twoETH,
-            l1ChainId
+            l1ChainId,
+            {
+              value: threeETH
+            }
           )).wait()
 
-          let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let afterl2Balance = await await l2Wallet.getBalance()
+          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
     
           const saleCount = await L2CrossTradeProxy.saleCount()
           expect(saleCount).to.be.equal(2);
@@ -689,41 +529,39 @@ describe("CrossTradeReProvideTest-Titan", function () {
           expect(beforel2Balance).to.be.gt(afterl2Balance)
           expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
         })
-        
-        it("providerCT(TON) in L1", async () => {
-          let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let beforel2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
+
+        it("providerCT(ETH) in L1", async () => {
+          let beforel2Balance = await l2Wallet.getBalance()
+          let beforel2BalanceUser1 = await l2user1.getBalance()
     
-          let beforel2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
+          let beforel2NativeTokenBalance = await l1user1.getBalance()
           // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-          let beforel2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
+          let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
         
-          const providerApproveTx = await mockTON.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-          await providerApproveTx.wait()
+          // const providerApproveTx = await erc20Token.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
+          // await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
-          let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
     
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
     
           const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
-            mockTON.address,
-            l2mockTONAddr,
+            zeroAddr,
+            zeroAddr,
             l2Wallet.address,
             threeETH,
             twoETH,
             saleCount,
-            chainId,
-            2000000,
-            saleInformation.hashValue
+            l2ChainId,
+            200000,
+            saleInformation.hashValue,
+            {
+              value: twoETH
+            }
           )
           await providerTx.wait()
           // console.log("2")
@@ -734,17 +572,13 @@ describe("CrossTradeReProvideTest-Titan", function () {
             throw new Error('provide failed')
           }
     
-          let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
-          let afterl2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
+          let afterl2Balance = await l2Wallet.getBalance()
+          let afterl2BalanceUser1 = await l2user1.getBalance()
     
-          let afterl2NativeTokenBalance = await mockTON.balanceOf(
-            l1user1.address
-          )
+          let afterl2NativeTokenBalance = await l1user1.getBalance()
           // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
     
-          let afterl2NativeTokenBalanceWallet = await mockTON.balanceOf(
-            l1Wallet.address
-          )
+          let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
     
           expect(afterl2Balance).to.be.equal(beforel2Balance)
@@ -753,7 +587,8 @@ describe("CrossTradeReProvideTest-Titan", function () {
           expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
           expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
     
-          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+
           expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
     
           saleInformation = await L2CrossTradeContract.dealData(saleCount)
@@ -764,13 +599,12 @@ describe("CrossTradeReProvideTest-Titan", function () {
 
         it("An already successful provideCT will not work if you resendProvideCTMessage(fail Tx)", async () => {      
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
         
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
     
           await expect(L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
             saleCount,
-            chainId,
+            l2ChainId,
             0,
             saleInformation.hashValue
           )).to.be.rejectedWith("Transaction gas limit too low to enqueue.")
