@@ -491,25 +491,22 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
     describe("CrossTrade Test", () => {
       describe("registerToken & requestRegisteredToken & Cancel Test", () => {
         it("registerToken can't use common user", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2user1).registerToken(
             erc20Token.address,
             l2erc20Token.address,
-            chainId
+            l1ChainId
           )).to.be.rejectedWith("Accessible: Caller is not an admin")
         })
   
-        it("registerToken can only Owner", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
-          
+        it("registerToken can only Owner", async () => {          
           await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
             erc20Token.address,
             l2erc20Token.address,
-            chainId
+            l1ChainId
           )).wait();
     
           let check = await L2CrossTradeContract.registerCheck(
-            chainId,
+            l1ChainId,
             erc20Token.address,
             l2erc20Token.address
           )
@@ -522,11 +519,10 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
         })
   
         it("The same value cannot be registerToken twice.", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2Wallet).registerToken(
             erc20Token.address,
             l2erc20Token.address,
-            chainId
+            l1ChainId
           )).to.be.rejectedWith("already registerToken")
         })
   
@@ -567,7 +563,6 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
 
         it("You cannot cancel unless the request was made by you", async () => {
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           await expect(L1CrossTradeContract.connect(l1user1).cancel(
@@ -576,7 +571,7 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             200000,
             saleInformation.hashValue
           )).to.be.rejectedWith("Hash values do not match.")
@@ -587,7 +582,6 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           let beforeL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
 
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           const cancelTx = await L1CrossTradeContract.connect(l1Wallet).cancel(
@@ -596,7 +590,7 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             200000,
             saleInformation.hashValue
           )
@@ -695,7 +689,6 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           let beforeL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
 
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           const cancelTx = await L1CrossTradeContract.connect(l1Wallet).cancel(
@@ -704,7 +697,7 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             200000,
             saleInformation.hashValue
           )

@@ -541,7 +541,6 @@ describe("CrossTradeReProvideTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
@@ -553,7 +552,7 @@ describe("CrossTradeReProvideTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             2000000,
             saleInformation.hashValue
           )
@@ -707,7 +706,6 @@ describe("CrossTradeReProvideTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
           let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
     
@@ -721,7 +719,7 @@ describe("CrossTradeReProvideTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             2000000,
             saleInformation.hashValue
           )
@@ -764,13 +762,12 @@ describe("CrossTradeReProvideTest-Titan", function () {
 
         it("An already successful provideCT will not work if you resendProvideCTMessage(fail Tx)", async () => {      
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
         
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
     
           await expect(L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
             saleCount,
-            chainId,
+            l2ChainId,
             0,
             saleInformation.hashValue
           )).to.be.rejectedWith("Transaction gas limit too low to enqueue.")

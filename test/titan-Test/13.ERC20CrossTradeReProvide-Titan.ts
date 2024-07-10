@@ -544,7 +544,6 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
         
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
@@ -556,7 +555,7 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             200000,
             saleInformation.hashValue
           )
@@ -590,12 +589,11 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
 
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           const providerTx = await L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
             saleCount,
-            chainId,
+            l2ChainId,
             200000,
             saleInformation.hashValue
           )

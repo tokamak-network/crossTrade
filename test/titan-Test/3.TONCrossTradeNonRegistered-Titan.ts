@@ -563,7 +563,6 @@ describe("CrossTradeBasicTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
           let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
     
@@ -577,7 +576,7 @@ describe("CrossTradeBasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             2000000,
             saleInformation.hashValue
           )

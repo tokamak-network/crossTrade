@@ -511,25 +511,22 @@ describe("CrossTradeBasicTest-Titan", function () {
     describe("CrossTrade Test", () => {
       describe("registerToken & requestRegisteredToken & Edit & Provide Test", () => {
         it("registerToken can't use common user", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2user1).registerToken(
             mockTON.address,
             l2mockTONAddr,
-            chainId
+            l1ChainId
           )).to.be.rejectedWith("Accessible: Caller is not an admin")
         })
   
-        it("registerToken can only Owner", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
-          
+        it("registerToken can only Owner", async () => {          
           await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
             mockTON.address,
             l2mockTONAddr,
-            chainId
+            l1ChainId
           )).wait();
     
           let check = await L2CrossTradeContract.registerCheck(
-            chainId,
+            l1ChainId,
             mockTON.address,
             l2mockTONAddr
           )
@@ -542,11 +539,10 @@ describe("CrossTradeBasicTest-Titan", function () {
         })
   
         it("The same value cannot be registerToken twice.", async () => {
-          let chainId = await L1CrossTradeContract._getChainID()
           await expect(L2CrossTradeContract.connect(l2Wallet).registerToken(
             mockTON.address,
             l2mockTONAddr,
-            chainId
+            l1ChainId
           )).to.be.rejectedWith("already registerToken")
         })
   
@@ -588,7 +584,6 @@ describe("CrossTradeBasicTest-Titan", function () {
 
         it("You cannot editFee unless the request was made by you", async () => {
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           await expect(L1CrossTradeContract.connect(l1user1).editFee(
@@ -598,14 +593,13 @@ describe("CrossTradeBasicTest-Titan", function () {
             twoETH,
             oneETH,
             saleCount,
-            chainId,
+            l2ChainId,
             saleInformation.hashValue
           )).to.be.rejectedWith("Hash values do not match.")
         })
 
         it("execute editFee in L1", async () => {
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           let tx = await L1CrossTradeContract.connect(l1Wallet).editFee(
@@ -615,7 +609,7 @@ describe("CrossTradeBasicTest-Titan", function () {
             twoETH,
             oneETH,
             saleCount,
-            chainId,
+            l2ChainId,
             saleInformation.hashValue
           )
 
@@ -647,7 +641,6 @@ describe("CrossTradeBasicTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
           let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
     
@@ -661,7 +654,7 @@ describe("CrossTradeBasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             2000000,
             saleInformation.hashValue
           )
@@ -795,7 +788,6 @@ describe("CrossTradeBasicTest-Titan", function () {
 
         it("execute editFee in L1", async () => {
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
           let tx = await L1CrossTradeContract.connect(l1Wallet).editFee(
@@ -805,7 +797,7 @@ describe("CrossTradeBasicTest-Titan", function () {
             twoETH,
             oneETH,
             saleCount,
-            chainId,
+            l2ChainId,
             saleInformation.hashValue
           )
 
@@ -841,7 +833,6 @@ describe("CrossTradeBasicTest-Titan", function () {
           await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-          let chainId = await L2CrossTradeContract.getChainID()
     
           let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
     
@@ -855,7 +846,7 @@ describe("CrossTradeBasicTest-Titan", function () {
             threeETH,
             twoETH,
             saleCount,
-            chainId,
+            l2ChainId,
             2000000,
             saleInformation.hashValue
           )

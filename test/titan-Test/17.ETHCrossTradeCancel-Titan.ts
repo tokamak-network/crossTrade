@@ -36,7 +36,7 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
-describe("CrossTradeERC20BasicTest-Titan", function () {
+describe("CrossTradeETHCancelTest-Titan", function () {
     
     const erc20ABI = [
         {
@@ -416,52 +416,15 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
     })
 
     describe("CrossTrade Test", () => {
-      describe("registerToken & requestRegisteredToken & Cancel Test", () => {
-        it("registerToken can't use common user", async () => {
-          await expect(L2CrossTradeContract.connect(l2user1).registerToken(
-            zeroAddr,
-            zeroAddr,
-            l1ChainId
-          )).to.be.rejectedWith("Accessible: Caller is not an admin")
-        })
-  
-        it("registerToken can only Owner", async () => {          
-          await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
-            zeroAddr,
-            zeroAddr,
-            l1ChainId
-          )).wait();
-    
-          let check = await L2CrossTradeContract.registerCheck(
-            l1ChainId,
-            zeroAddr,
-            zeroAddr
-          )
-          // console.log("l1tokenAddr :", l1tokenAddr)
-          // console.log("l2NativeToken :", l2NativeToken)
-    
-          if (check !== true) {
-            console.log("registerCheck fault data")
-          }
-        })
-  
-        it("The same value cannot be registerToken twice.", async () => {
-          await expect(L2CrossTradeContract.connect(l2Wallet).registerToken(
-            zeroAddr,
-            zeroAddr,
-            l1ChainId
-          )).to.be.rejectedWith("already registerToken")
-        })
-
-  
-        it("requestRegisteredToken in L2", async () => {
+      describe("requestNonRegisteredToken & provide & resendProvideCTMessage", () => {
+        it("requestNonRegisteredToken in L2", async () => {
           let beforel2Balance = await l2Wallet.getBalance()
           let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
           
           // const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
           // await providerApproveTx.wait()
           
-          let tx = await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
+          await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
             zeroAddr,
             zeroAddr,
             threeETH,
@@ -470,16 +433,7 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             {
               value: threeETH
             }
-          )
-          const receipt = await tx.wait()
-          const event = receipt.events.find(
-            (e: Event) => e.event === 'RequestCT'
-          )
-          // console.log(event)
-        
-          if (!event) {
-            throw new Error('Unable to find RequestCT event')
-          }
+          )).wait()
 
           let afterl2Balance = await await l2Wallet.getBalance()
           let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
@@ -490,72 +444,72 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           expect(beforel2Balance).to.be.gt(afterl2Balance)
           expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
         })
-
-        it("You cannot editFee unless the request was made by you", async () => {
-          const saleCount = await L2CrossTradeProxy.saleCount()
-          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
-
-          await expect(L1CrossTradeContract.connect(l1user1).cancel(
-            zeroAddr,
-            zeroAddr,
-            threeETH,
-            twoETH,
-            oneETH,
-            saleCount,
-            l2ChainId,
-            saleInformation.hashValue
-          )).to.be.rejectedWith("Hash values do not match.")
-        })
   
-        it("cancel Test", async () => {
-          let beforel2Balance = await l2Wallet.getBalance()
+        it("provideTest(ETH) in L1", async () => {
+  
+          let beforel2NativeTokenBalance = await l1user1.getBalance()
+          // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+          let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
+          // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
         
           const saleCount = await L2CrossTradeProxy.saleCount()
-    
-          let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
-    
+        
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
     
-          const cancelTx = await L1CrossTradeContract.connect(l1Wallet).cancel(
+          const providerTx = await L1CrossTradeContract.connect(l1user1).provideTest(
             zeroAddr,
             zeroAddr,
+            l2Wallet.address,
             threeETH,
             twoETH,
             saleCount,
             l2ChainId,
             200000,
             saleInformation.hashValue,
+            {
+              value: twoETH
+            }
           )
-          await cancelTx.wait()
-          // console.log("2")
-          const messageReceipt = await messenger.waitForMessageReceipt(cancelTx)
+          await providerTx.wait()
+    
+          let afterl2NativeTokenBalance = await l1user1.getBalance()
+          // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+    
+          let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
+          // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
 
-          // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-          if (messageReceipt.receiptStatus !== 1) {
-            throw new Error('cancel failed')
-          }
-    
-          let afterl2Balance = await l2Wallet.getBalance()  
-          expect(afterl2Balance).to.be.gt(beforel2Balance)
-    
-          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
-          expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
-    
-          saleInformation = await L2CrossTradeContract.dealData(saleCount)
-          if(saleInformation.provider !== l2Wallet.address) {
-            console.log("===========Cancel Fail!!===========")
-          } 
+          
+          expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+          expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
+        })
+
+        it("resendProvideCTMessage(TON) in L1", async () => {    
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+          const providerTx = await L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
+            saleCount,
+            l2ChainId,
+            200000,
+            saleInformation.hashValue
+          )
+          await providerTx.wait()
+          
+          await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
         })
 
       })
 
-      describe("requestNonRegisteredToken & Edit & Provide Test", () => {
+      describe("If provide worked properly resendProvideCTMessage shouldn't work", () => {
         it("requestNonRegisteredToken in L2", async () => {
           let beforel2Balance = await l2Wallet.getBalance()
           let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
           
-          let tx = await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
+          // const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
+          // await providerApproveTx.wait()
+          
+          await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
             zeroAddr,
             zeroAddr,
             threeETH,
@@ -564,31 +518,29 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
             {
               value: threeETH
             }
-          )
-          const receipt = await tx.wait()
-          const event = receipt.events.find(
-            (e: Event) => e.event === 'NonRequestCT'
-          )
-          // console.log(event)
-        
-          if (!event) {
-            throw new Error('Unable to find EditCT event')
-          }
-          
-          const saleCount = await L2CrossTradeProxy.saleCount()
-          // console.log(saleCount)
-          // console.log(event.args._saleCount)
-          expect(event.args._saleCount).to.be.equal(saleCount)
+          )).wait()
 
           let afterl2Balance = await await l2Wallet.getBalance()
           let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+    
+          const saleCount = await L2CrossTradeProxy.saleCount()
+          expect(saleCount).to.be.equal(2);
     
           expect(beforel2Balance).to.be.gt(afterl2Balance)
           expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
         })
 
-        it("cancel Test", async () => {
+        it("providerCT(ETH) in L1", async () => {
           let beforel2Balance = await l2Wallet.getBalance()
+          let beforel2BalanceUser1 = await l2user1.getBalance()
+    
+          let beforel2NativeTokenBalance = await l1user1.getBalance()
+          // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
+          let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
+          // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
+        
+          // const providerApproveTx = await erc20Token.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
+          // await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
     
@@ -597,35 +549,65 @@ describe("CrossTradeERC20BasicTest-Titan", function () {
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
     
-          const cancelTx = await L1CrossTradeContract.connect(l1Wallet).cancel(
+          const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
             zeroAddr,
             zeroAddr,
+            l2Wallet.address,
             threeETH,
             twoETH,
             saleCount,
             l2ChainId,
             200000,
             saleInformation.hashValue,
+            {
+              value: twoETH
+            }
           )
-          await cancelTx.wait()
+          await providerTx.wait()
           // console.log("2")
-          const messageReceipt = await messenger.waitForMessageReceipt(cancelTx)
+          const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
 
           // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
           if (messageReceipt.receiptStatus !== 1) {
-            throw new Error('cancel failed')
+            throw new Error('provide failed')
           }
     
-          let afterl2Balance = await l2Wallet.getBalance()  
-          expect(afterl2Balance).to.be.gt(beforel2Balance)
+          let afterl2Balance = await l2Wallet.getBalance()
+          let afterl2BalanceUser1 = await l2user1.getBalance()
+    
+          let afterl2NativeTokenBalance = await l1user1.getBalance()
+          // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
+    
+          let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
+          // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
+    
+          expect(afterl2Balance).to.be.equal(beforel2Balance)
+          expect(afterl2BalanceUser1).to.be.gt(beforel2BalanceUser1)
+          
+          expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
+          expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
     
           let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
+
           expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
     
           saleInformation = await L2CrossTradeContract.dealData(saleCount)
-          if(saleInformation.provider !== l2Wallet.address) {
-            console.log("===========Cancel Fail!!===========")
+          if(saleInformation.provider !== l2user1.address) {
+            console.log("===========Provider Fail!!===========")
           } 
+        })
+
+        it("An already successful provideCT will not work if you resendProvideCTMessage(fail Tx)", async () => {      
+          const saleCount = await L2CrossTradeProxy.saleCount()
+        
+          let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+    
+          await expect(L1CrossTradeContract.connect(l1user1).resendProvideCTMessage(
+            saleCount,
+            l2ChainId,
+            0,
+            saleInformation.hashValue
+          )).to.be.rejectedWith("Transaction gas limit too low to enqueue.")
         })
 
       })
