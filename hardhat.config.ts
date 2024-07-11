@@ -36,6 +36,14 @@ const config: HardhatUserConfig = {
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       ],
     },
+    sepolia: {
+      url: `${process.env.ETH_NODE_URI_sepolia}`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    titanSepolia: {
+      url: 'https://rpc.thanos-sepolia-test.tokamak.network',
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
     devnetL1: {
       url: 'http://localhost:8545',
       accounts: [
