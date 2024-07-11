@@ -10,13 +10,13 @@ async function main() {
   //   process.env.Titan_L1_URL
   // )
 
-  const L1CrossTradeProxyDep = await ethers.getContractFactory("L1CrossTradeProxy");
-  let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
-  console.log('L1CrossTradeProxy' , L1CrossTradeProxy.address)
+  const L2CrossTradeProxyDep = await ethers.getContractFactory("L2CrossTradeProxy");
+  let L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy();
+  console.log('L2CrossTradeProxy' , L2CrossTradeProxy.address)
 
-  const L1CrossTradeLogicDep = await ethers.getContractFactory("L1CrossTrade");
-  let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
-  console.log('L1CrossTradeLogic' , L1CrossTradeLogic.address)
+  const L2CrossTradeLogicDep = await ethers.getContractFactory("L2CrossTrade");
+  let L2CrossTradeLogic = await L2CrossTradeLogicDep.deploy();
+  console.log('L2CrossTradeLogic' , L2CrossTradeLogic.address)
 
   // const L1CrossTradeProxyLogic = new ethers.Contract(
   //   L1CrossTradeProxy.address,
@@ -24,11 +24,11 @@ async function main() {
   //   l1Provider
   // ) 
   
-  await (await L1CrossTradeProxy.upgradeTo(
-    L1CrossTradeLogic.address)).wait()
+  await (await L2CrossTradeProxy.upgradeTo(
+    L2CrossTradeLogic.address)).wait()
   console.log("1")
 
-  let imp2 = await L1CrossTradeProxy.implementation()
+  let imp2 = await L2CrossTradeProxy.implementation()
   console.log('check upgradeAddress : ', imp2)
   console.log('upgradeTo done')
 }
