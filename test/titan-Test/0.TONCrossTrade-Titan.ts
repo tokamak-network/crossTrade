@@ -32,7 +32,7 @@ import L1CrossTrade_ABI from "../../artifacts/contracts/L1/L1CrossTrade.sol/L1Cr
 import L2CrossTradeProxy_ABI from "../../artifacts/contracts/L2/L2CrossTradeProxy.sol/L2CrossTradeProxy.json"
 import L2CrossTrade_ABI from "../../artifacts/contracts/L2/L2CrossTrade.sol/L2CrossTrade.json"
 
-import dotenv from "dotenv" ;
+import dotenv from "dotenv";
 
 dotenv.config();
 
