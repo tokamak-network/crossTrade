@@ -23,6 +23,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
+        uint256 _l2chainId,
         bytes32 _hashValue
     );
 
@@ -33,6 +34,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
+        uint256 _l2chainId,
         bytes32 _hashValue
     );
 
@@ -43,13 +45,15 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
-        uint256 indexed _saleCount
+        uint256 indexed _saleCount,
+        uint256 _l2chainId
     );
 
     event CancelCT(
         address _requester,
         uint256 _totalAmount,
-        uint256 indexed _saleCount
+        uint256 indexed _saleCount,
+        uint256 _l2chainId
     );
 
     // event EditCT(
@@ -157,6 +161,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1chainId
         );
 
+        uint256 chainId = _getChainID();
+
         emit RequestCT(
             _l1token,
             _l2token,
@@ -164,6 +170,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _totalAmount,
             _ctAmount,
             saleCount,
+            chainId,
             hashValue
         );
     }
@@ -201,6 +208,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1chainId
         );
 
+        uint256 chainId = _getChainID();
+
         emit NonRequestCT(
             _l1token,
             _l2token,
@@ -208,6 +217,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _totalAmount,
             _ctAmount,
             saleCount,
+            chainId,
             hashValue
         );
     }
@@ -250,6 +260,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             IERC20(l2token).safeTransfer(_from,totalAmount);
         }
 
+        uint256 chainId = _getChainID();
+
         emit ProviderClaimCT(
             dealData[_saleCount].l1token,
             l2token,
@@ -257,7 +269,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _from,
             totalAmount,
             ctAmount,
-            _saleCount
+            _saleCount,
+            chainId
         );
     }
     
@@ -287,10 +300,13 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
         }
 
+        uint256 chainId = _getChainID();
+
         emit CancelCT(
             _msgSender, 
             totalAmount, 
-            _salecount
+            _salecount,
+            chainId
         );
     }
 

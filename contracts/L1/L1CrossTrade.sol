@@ -16,7 +16,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     event EditCT(
         address _requester,
         uint256 _ctAmount,
-        uint256 indexed _saleCount
+        uint256 indexed _saleCount,
+        uint256 _l2chainId
     );
 
     modifier onlyEOA() {
@@ -348,7 +349,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         emit EditCT(
             msg.sender, 
             _editedctAmount, 
-            _salecount
+            _salecount,
+            _l2chainId
         );
     }
 
@@ -369,7 +371,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _saleCount,
         uint256 _l2chainId
     )
-        private
+        public
         view
         returns (bytes32)
     {
