@@ -26,6 +26,8 @@ async function main() {
 
   const zeroAddr = '0x'.padEnd(42, '0')
   const zeroAddr2 = '0x0000000000000000000000000000000000000000'
+  const L1TON = "0xa30fe40285B8f5c0457DbC3B7C8A280373c40044"
+  const L2TON = "0x7c6b91d9be155a6db01f749217d76ff02a7227f2"
 
   const sepoliaChainId = 11155111
   const titanSepoliaChainId = 55007
@@ -34,8 +36,8 @@ async function main() {
   const two = 20000000000000
   
   await (await L2CrossTradeLogic.connect(deployer).registerToken(
-    zeroAddr2,
-    zeroAddr2,
+    L1TON,
+    L2TON,
     sepoliaChainId
   )).wait()
   console.log("registerToken done")
