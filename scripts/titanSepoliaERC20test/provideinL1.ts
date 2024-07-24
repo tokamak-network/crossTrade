@@ -74,8 +74,8 @@ async function main() {
   const l2ProxyAddr = "0x8a9FB22AfA73083EE183cA8E751FaEab7efD7f23"
   const l2LogicAddr = "0x988A796F5ca1d4848d00daC1c17d0A2Bbca18a9b"
 
-  const L1TON = "0xa30fe40285B8f5c0457DbC3B7C8A280373c40044"
-  const L2TON = "0x7c6b91d9be155a6db01f749217d76ff02a7227f2"
+  const L1TOS = "0xFF3Ef745D9878AfE5934Ff0b130868AFDDbc58e8"
+  const L2TOS = "0xd08a2917653d4e460893203471f0000826fb4034"
 
   const L1CrossTradeLogic = new ethers.Contract(
     l1ProxyAddr,
@@ -90,8 +90,8 @@ async function main() {
   ) 
   console.log("L2 contract set done")
 
-  const l1mockTON = new ethers.Contract(
-    L1TON,
+  const l1mockTOS = new ethers.Contract(
+    L1TOS,
     erc20ABI,
     deployer
   )
@@ -108,7 +108,7 @@ async function main() {
 
   const saleCount = 1
 
-  await (await l1mockTON.connect(deployer).approve(
+  await (await l1mockTOS.connect(deployer).approve(
     l1ProxyAddr,
     one
   )).wait()
@@ -120,8 +120,8 @@ async function main() {
   // let byteshash = ethers.encodeBytes32String(hash);
   // let byteshash2 = ethers.getBytes(hash);
   let hash = await L1CrossTradeLogic.connect(deployer).getHash(
-    L1TON,
-    L2TON,
+    L1TOS,
+    L2TOS,
     deployer.address,
     two,
     one,
@@ -134,8 +134,8 @@ async function main() {
   
   
   await (await L1CrossTradeLogic.connect(deployer).provideCT(
-    L1TON,
-    L2TON,
+    L1TOS,
+    L2TOS,
     deployer.address,
     two,
     one,
