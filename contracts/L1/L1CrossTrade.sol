@@ -20,6 +20,17 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _l2chainId
     );
 
+    event ProvideCT(
+        address _l1token,
+        address _l2token,
+        address _requester,
+        address _provider,
+        uint256 _totalAmount,
+        uint256 _ctAmount,
+        uint256 indexed _saleCount,
+        uint256 _l2chainId
+    );
+
     modifier onlyEOA() {
         require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
         _;
@@ -100,6 +111,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
         }
 
+        emit ProvideCT(
+            _l1token,
+            _l2token,
+            _requestor,
+            msg.sender,
+            _totalAmount,
+            ctAmount,
+            _salecount,
+            _l2chainId
+        );
     }
 
 
@@ -172,6 +193,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
         }
 
+        emit ProvideCT(
+            _l1token,
+            _l2token,
+            _requestor,
+            msg.sender,
+            _totalAmount,
+            ctAmount,
+            _salecount,
+            _l2chainId
+        );
     }
 
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
