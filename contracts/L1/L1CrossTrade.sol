@@ -327,7 +327,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         bytes32 _hash
     )  
         external
-        payable
         onlyEOA
         nonReentrant
     {
