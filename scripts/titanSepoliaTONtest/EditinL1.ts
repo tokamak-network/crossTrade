@@ -33,13 +33,17 @@ async function main() {
   const zeroAddr = '0x'.padEnd(42, '0')
   const zeroAddr2 = '0x0000000000000000000000000000000000000000'
 
+  const L1TON = "0xa30fe40285B8f5c0457DbC3B7C8A280373c40044"
+  const L2TON = "0x7c6b91d9be155a6db01f749217d76ff02a7227f2"
+
   const sepoliaChainId = 11155111
   const titanSepoliaChainId = 55007
 
   const one = 10000000000000
   const two = 20000000000000
+  const halfone = 5000000000000
 
-  const saleCount = 9
+  const saleCount = 2
 
   // let hash = encodeBytes32String("0x307837626161633134346436623137333839616137353135306265333238326137643933643339636136643330626563333431323931326236653964356133623266")
   // let hash = isBytesLike("0x7baac144d6b17389aa75150be3282a7d93d39ca6d30bec3412912b6e9d5a3b2f")
@@ -47,8 +51,8 @@ async function main() {
   // let byteshash = ethers.encodeBytes32String(hash);
   // let byteshash2 = ethers.getBytes(hash);
   let hash = await L1CrossTradeLogic.connect(deployer).getHash(
-    zeroAddr2,
-    zeroAddr2,
+    L1TON,
+    L2TON,
     deployer.address,
     two,
     one,
@@ -60,21 +64,17 @@ async function main() {
   // console.log("byteshash2 : ", byteshash2);
   
   
-  await (await L1CrossTradeLogic.connect(deployer).provideTest(
-    zeroAddr2,
-    zeroAddr2,
-    deployer.address,
+  await (await L1CrossTradeLogic.connect(deployer).editFee(
+    L1TON,
+    L2TON,
     two,
     one,
+    halfone,
     saleCount,
     titanSepoliaChainId,
-    2000000,
-    hash,
-    {
-      value: one
-    }
+    hash
   )).wait()
-  console.log("provideTest done")
+  console.log("editFee done")
 
 }
 
