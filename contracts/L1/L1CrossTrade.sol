@@ -31,6 +31,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _l2chainId
     );
 
+    event L1CancelCT(
+        address _requester,
+        uint256 _totalAmount,
+        uint256 indexed _saleCount,
+        uint256 _l2chainId
+    );
+
     modifier onlyEOA() {
         require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
         _;
@@ -300,6 +307,12 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _minGasLimit
         );
 
+        emit L1CancelCT(
+            msg.sender, 
+            _totalAmount, 
+            _salecount,
+            _l2chainId
+        );
     }
 
 
