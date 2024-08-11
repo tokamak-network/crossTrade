@@ -243,12 +243,10 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     {
         require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
 
-        uint256 ctAmount;
+        uint256 ctAmount = _ctAmount;
         if(_ctAmount == 0) {
             ctAmount = dealData[_saleCount].ctAmount;
-        } else {
-            ctAmount = _ctAmount;
-        }
+        } 
 
         dealData[_saleCount].provider = _from;
         address l2token = dealData[_saleCount].l2token;

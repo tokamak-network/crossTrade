@@ -81,7 +81,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
-        require(cancelL1[l2HashValue] == address(0), "already cancel");
         
         uint256 ctAmount = _initialctAmount;
 
@@ -170,7 +169,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
-        require(cancelL1[l2HashValue] == address(0), "already cancel");
         
         uint256 ctAmount = _initialctAmount;
 
@@ -232,9 +230,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     {
         require(successCT[_hash] == true, "not provide");
         require(provideAccount[_hash] != address(0), "not provide");
-        require(cancelL1[_hash] == address(0), "already cancel");
         
-        uint256 ctAmount = 0;
+        uint256 ctAmount;
         if (editCtAmount[_hash] > 0) {
             ctAmount = editCtAmount[_hash];
         }
