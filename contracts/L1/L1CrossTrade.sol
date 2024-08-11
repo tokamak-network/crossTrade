@@ -466,7 +466,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             return abi.encodeWithSignature("cancelCT(address,uint256,uint256)", 
                 to,
                 saleCount,
-                chainId
+                chainId,
+                byteValue
             );
         }
     }

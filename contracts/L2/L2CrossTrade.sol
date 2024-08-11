@@ -280,10 +280,12 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _msgSender Address where cancellation was requested
     /// @param _salecount Number generated upon request
     /// @param _chainId chainId of l1token
+    /// @param _hash Hash value generated upon request
     function cancelCT(
         address _msgSender,
         uint256 _salecount,
-        uint256 _chainId
+        uint256 _chainId,
+        bytes32 _hash
     )
         external
         nonReentrant
@@ -291,6 +293,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         providerCheck(_salecount)
     {
         require(dealData[_salecount].requester == _msgSender, "your not seller");
+        require(dealData[_salecount].hashValue == _hash, "Hash values do not match");
 
         dealData[_salecount].provider = _msgSender;
         uint256 totalAmount = dealData[_salecount].totalAmount;
