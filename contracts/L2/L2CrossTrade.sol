@@ -148,6 +148,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonReentrant
     {
         require(registerCheck[_l1chainId][_l1token][_l2token] == true, "not register token");
+        require(_totalAmount >= _ctAmount, "The totalAmount value must be greater than ctAmount");
         
         unchecked {
             ++saleCount;
