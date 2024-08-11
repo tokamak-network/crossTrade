@@ -14,10 +14,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     using SafeERC20 for IERC20;
 
     event EditCT(
+        address _l1token,
+        address _l2token,
         address _requester,
+        uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
-        uint256 _l2chainId
+        uint256 _l2chainId,
+        bytes32 _hash
     );
 
     event ProvideCT(
@@ -33,10 +37,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     );
 
     event L1CancelCT(
+        address _l1token,
+        address _l2token,
         address _requester,
         uint256 _totalAmount,
         uint256 indexed _saleCount,
-        uint256 _l2chainId
+        uint256 _l2chainId,
+        bytes32 _hash
     );
 
     modifier onlyEOA() {
@@ -308,10 +315,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
         emit L1CancelCT(
+            _l1token,
+            _l2token,
             msg.sender, 
             _totalAmount, 
             _salecount,
-            _l2chainId
+            _l2chainId,
+            l2HashValue
         );
     }
 
@@ -390,10 +400,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         editCtAmount[l2HashValue] = _editedctAmount;
 
         emit EditCT(
+            _l1token,
+            _l2token,
             msg.sender, 
+            _totalAmount,
             _editedctAmount, 
             _salecount,
-            _l2chainId
+            _l2chainId,
+            l2HashValue
         );
     }
 
