@@ -28,7 +28,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
-        uint256 _l2chainId
+        uint256 _l2chainId,
+        bytes32 _hash
     );
 
     event L1CancelCT(
@@ -126,7 +127,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _totalAmount,
             ctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            _hash
         );
     }
 
@@ -208,7 +210,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _totalAmount,
             ctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            _hash
         );
     }
 
