@@ -81,6 +81,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
+        uint256 thisChainId = _getChainID();
         bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
@@ -88,7 +89,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _totalAmount,
             _initialctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
@@ -169,6 +171,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
+        uint256 thisChainId = _getChainID();
         bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
@@ -176,7 +179,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _totalAmount,
             _initialctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
@@ -291,14 +295,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
-         bytes32 l2HashValue = getHash(
+        uint256 thisChainId = _getChainID();
+        bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
             msg.sender,
             _totalAmount,
             _initialctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
@@ -396,6 +402,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
+        uint256 thisChainId = _getChainID();
         bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
@@ -403,7 +410,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _totalAmount,
             _initialctAmount,
             _salecount,
-            _l2chainId
+            _l2chainId,
+            thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
@@ -430,7 +438,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _totalAmount Total amount requested by l2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
-    /// @param _l2chainId request requested chainId
+    /// @param _startChainId Starting chainId of the corresponding HashValue
+    /// @param _endChainId The chainId where this contract was deployed
     function getHash(
         address _l1token,
         address _l2token,
@@ -438,13 +447,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
-        uint256 _l2chainId
+        uint256 _startChainId,
+        uint256 _endChainId
     )
         public
-        view
+        pure
         returns (bytes32)
     {
-        uint256 l1chainId = _getChainID();
         return keccak256(
             abi.encode(
                 _l1token, 
@@ -453,8 +462,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
-                l1chainId, 
-                _l2chainId
+                _startChainId, 
+                _endChainId
             )
         );
     }

@@ -324,7 +324,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount provided to L2
     /// @param _saleCount Number generated upon request
-    /// @param _l1chainId chainId of l1token
+    /// @param _startChainId The chainId where this contract was deployed
+    /// @param _endChainId Destination chainID
     function getHash(
         address _l1token,
         address _l2token,
@@ -332,13 +333,13 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
-        uint256 _l1chainId
+        uint256 _startChainId,
+        uint256 _endChainId
     )
         public
-        view
+        pure
         returns (bytes32)
     {
-        uint256 l2chainId = _getChainID();
         return keccak256(
             abi.encode(
                 _l1token, 
@@ -347,8 +348,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
-                _l1chainId, 
-                l2chainId
+                _startChainId, 
+                _endChainId
             )
         );
     }
@@ -375,14 +376,14 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
-    /// @param _l1chainId chainId of l1token
+    /// @param _endChainId chainId of l1token
     function _request(
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
-        uint256 _l1chainId
+        uint256 _endChainId
     )
         private
         returns (bytes32 hashValue)
@@ -393,6 +394,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
 
+        uint256 startChainId = _getChainID();
+
         hashValue = getHash(
             _l1token,
             _l2token,
@@ -400,7 +403,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _totalAmount,
             _ctAmount,
             _saleCount,
-            _l1chainId
+            startChainId,
+            _endChainId
         );
 
         dealData[_saleCount] = RequestData({
@@ -410,7 +414,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             provider: address(0),
             totalAmount: _totalAmount,
             ctAmount: _ctAmount,
-            chainId: _l1chainId,
+            chainId: _endChainId,
             hashValue: hashValue
         });
 
