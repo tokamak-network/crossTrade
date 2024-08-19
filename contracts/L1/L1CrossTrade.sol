@@ -296,7 +296,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         nonReentrant
     {
         uint256 thisChainId = _getChainID();
-        
+
         bytes32 l2HashValue = getHash(
             _l1token,
             _l2token,
@@ -496,7 +496,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
                 byteValue
             );
         } else {
-            return abi.encodeWithSignature("cancelCT(address,uint256,uint256)", 
+            return abi.encodeWithSignature("cancelCT(address,uint256,uint256,uint256)", 
                 to,
                 saleCount,
                 chainId,
