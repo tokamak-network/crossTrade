@@ -403,10 +403,14 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     )
         external
         view
+        returns (uint256 modify)
     {
-        require(
-            _crossDomainMessenger == address(crossDomainMessenger), "crossDomainMessenger error");
-        require(_xDomainMessageSender == chainData[_chainId].l1CrossTradeContract, "xDomainMessageSender error");
+        if (_crossDomainMessenger != address(crossDomainMessenger)) {
+            modify == 1;
+        } else if (_xDomainMessageSender != chainData[_chainId].l1CrossTradeContract) {
+            modify == 2;
+        }
+        modify == 3;
     }
 
 
