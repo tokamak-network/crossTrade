@@ -406,11 +406,11 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         returns (uint256 modify)
     {
         if (_crossDomainMessenger != address(crossDomainMessenger)) {
-            modify == 1;
+            return modify = 1;
         } else if (_xDomainMessageSender != chainData[_chainId].l1CrossTradeContract) {
-            modify == 2;
+            return modify = 2;
         }
-        modify == 3;
+        return modify = 3;
     }
 
 
