@@ -12,7 +12,7 @@ import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
 // import "hardhat/console.sol";
 
-contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, ReentrancyGuard {
+contract L2CrossTradeOwner is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 
@@ -314,6 +314,103 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             chainId,
             _hash
         );
+    }
+
+    function claimOwnerCT(
+        address _from,
+        uint256 _ctAmount,
+        uint256 _saleCount,
+        uint256 _chainId,
+        bytes32 _hash
+    )
+        external
+        onlyOwner
+        nonReentrant
+        providerCheck(_saleCount)
+    {
+        require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
+
+        uint256 ctAmount = _ctAmount;
+        if(_ctAmount == 0) {
+            ctAmount = dealData[_saleCount].ctAmount;
+        } 
+
+        dealData[_saleCount].provider = _from;
+        address l2token = dealData[_saleCount].l2token;
+        uint256 totalAmount = dealData[_saleCount].totalAmount;
+
+        if(l2token == legacyERC20ETH) {
+            (bool sent, ) = payable(_from).call{value: totalAmount}("");
+            require(sent, "claim fail");
+        } else {
+            IERC20(l2token).safeTransfer(_from,totalAmount);
+        }
+
+        uint256 chainId = _getChainID();
+
+        emit ProviderClaimCT(
+            dealData[_saleCount].l1token,
+            l2token,
+            dealData[_saleCount].requester,
+            _from,
+            totalAmount,
+            ctAmount,
+            _saleCount,
+            chainId,
+            _hash
+        );
+    }
+
+    function cancelOwnerCT(
+        address _msgSender,
+        uint256 _salecount,
+        uint256 _chainId,
+        bytes32 _hash
+    )
+        external
+        onlyOwner
+        nonReentrant
+        providerCheck(_salecount)
+    {
+        require(dealData[_salecount].requester == _msgSender, "your not seller");
+        require(dealData[_salecount].hashValue == _hash, "Hash values do not match");
+
+        dealData[_salecount].provider = _msgSender;
+        uint256 totalAmount = dealData[_salecount].totalAmount;
+        
+        if (dealData[_salecount].l2token == legacyERC20ETH) {
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
+            require(sent, "cancel refund fail");
+        } else {
+            IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
+        }
+
+        uint256 chainId = _getChainID();
+
+        emit CancelCT(
+            _msgSender, 
+            totalAmount, 
+            _salecount,
+            chainId,
+            _hash
+        );
+    }
+
+    function checkModify(
+        address _crossDomainMessenger,
+        address _xDomainMessageSender,
+        uint256 _chainId
+    )
+        external
+        view
+        returns (uint256 modify)
+    {
+        if (_crossDomainMessenger != address(crossDomainMessenger)) {
+            return modify = 1;
+        } else if (_xDomainMessageSender != chainData[_chainId].l1CrossTradeContract) {
+            return modify = 2;
+        }
+        return modify = 3;
     }
 
 
