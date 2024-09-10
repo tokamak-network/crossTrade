@@ -9,7 +9,24 @@ dotenv.config();
 const config: HardhatUserConfig = {
   // solidity: "0.8.20",
   solidity: {
-    version: '0.8.24',
+    compilers: [
+      {
+        version: '0.8.24',
+        settings: {
+          viaIR: true,
+          optimizer: {
+              enabled: true,
+              runs: 100000000, //4294967295,
+              details: {
+                  yul: true,
+              },
+          },
+        }
+      },
+      {
+        version: '0.4.17'
+      }
+    ],
     settings: {
       // evmVersion: "cancun",
       viaIR: true,
