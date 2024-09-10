@@ -176,15 +176,18 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
 
     let mockUSDT : any;
     let l2mockUSDT : any;
+    let l2mockUSDTAddr : any;
 
     let tokenName = "USD Coin"
     let tokenSymbol = "USDC"
     let tokenCurrency = "USD"
     let tokenDecimals = 6
 
-    let usdtName = ""
-    let usdtSymbol = ""
-    let usdtDecimals = 
+    let usdtName = "Tether USD"
+    let usdtSymbol = "USDT"
+    let usdtDecimals = 6
+
+    let usdtInitial = ethers.utils.parseUnits('100', 6)
 
     let editTime = 180
 
@@ -554,12 +557,71 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
         )
 
         mockUSDT = await mockUSDTDep.deploy(
-          "ERC20",
-          "Test"
+          usdtInitial,
+          usdtName,
+          usdtSymbol,
+          usdtDecimals
         )
-        await erc20Token.deployed()
+        await mockUSDT.deployed()
+
+        let usdtBalance = await mockUSDT.balanceOf(l1Wallet.address)
+        console.log("usdtBalance :", usdtBalance);
       })
 
+      it("createOptimismMintableERC20", async () => {
+        let name = await mockUSDT.name()
+        let symbol = await mockUSDT.symbol()
+
+        const tx = await OptimismMintableERC20TokenFactory.connect(l2Wallet).createStandardL2Token(
+          mockUSDT.address,
+          name,
+          symbol
+        )
+
+        const receipt = await tx.wait()
+        const event = receipt.events.find(
+          (e: Event) => e.event === 'StandardL2TokenCreated'
+        )
+        // console.log(event)
+      
+        if (!event) {
+          throw new Error('Unable to find StandardL2TokenCreated event')
+        }
+        l2mockUSDTAddr = event.args.localToken
+      })
+
+      it("set l2mockUSDT", async () => {
+        l2mockUSDT = new ethers.Contract(
+          l2mockUSDTAddr,
+          L2StandardERC20_ABI.abi,
+          l2Wallet
+        )
+      })
+
+
+      it("Deposit to L2 MockUSDT", async () => {
+        const approvalTx = await messenger.approveERC20(
+          mockUSDT.address,
+          l2mockUSDT.address,
+          tenUSDC
+        )
+        await approvalTx.wait()
+
+        const depositTx = await messenger.depositERC20(
+          mockUSDT.address,
+          l2mockUSDT.address,
+          tenUSDC
+        )
+        await depositTx.wait()
+
+        const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
+        if (messageReceipt.receiptStatus !== 1) {
+          throw new Error('deposit failed')
+        }
+
+        // let l2TONbalance = await l2mockTON.balanceOf(l2Wallet.address)
+        // console.log("l2TONbalance :", Number(l2TONbalance))
+      })
 
     })
 
@@ -779,23 +841,23 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
 
     describe("CrossTrade Test", () => {
       describe("requestNonRegisteredToken Test", () => {
-        it("requestNonRegisteredToken(USDC,TON) in L2", async () => {
-          let beforel2Balance = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
-          let beforeL2CrossTradeBalance = await L2fiatTokenV2_2.balanceOf(L2CrossTradeContract.address)
+        it("requestNonRegisteredToken(USDT) in L2", async () => {
+          let beforel2Balance = await l2mockUSDT.balanceOf(l2Wallet.address)
+          let beforeL2CrossTradeBalance = await l2mockUSDT.balanceOf(L2CrossTradeContract.address)
           
-          const providerApproveTx = await L2fiatTokenV2_2.connect(l2Wallet).approve(L2CrossTradeContract.address, tenUSDC)
+          const providerApproveTx = await l2mockUSDT.connect(l2Wallet).approve(L2CrossTradeContract.address, tenUSDC)
           await providerApproveTx.wait()
           
           await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
             mockTON.address,
-            L2fiatTokenV2_2.address,
+            l2mockUSDT.address,
             tenUSDC,
             tenETH,
             l1ChainId
           )).wait()
 
-          let afterl2Balance = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
-          let afterL2CrossTradeBalance = await L2fiatTokenV2_2.balanceOf(L2CrossTradeContract.address)
+          let afterl2Balance = await l2mockUSDT.balanceOf(l2Wallet.address)
+          let afterL2CrossTradeBalance = await l2mockUSDT.balanceOf(L2CrossTradeContract.address)
     
           const saleCount = await L2CrossTradeProxy.saleCount()
           expect(saleCount).to.be.equal(1);
@@ -815,9 +877,9 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
           }
         })
   
-        it("providerCT(USDC,TON) in L1", async () => {
-          let beforel2Balance = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
-          let beforel2BalanceUser1 = await L2fiatTokenV2_2.balanceOf(l2user1.address)
+        it("providerCT(TON) in L1", async () => {
+          let beforel2Balance = await l2mockUSDT.balanceOf(l2Wallet.address)
+          let beforel2BalanceUser1 = await l2mockUSDT.balanceOf(l2user1.address)
     
           let beforel2NativeTokenBalance = await mockTON.balanceOf(
             l1user1.address
@@ -833,14 +895,14 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
         
           const saleCount = await L2CrossTradeProxy.saleCount()
     
-          let beforeL2CrossTradeBalance = await L2fiatTokenV2_2.balanceOf(L2CrossTradeContract.address)
+          let beforeL2CrossTradeBalance = await l2mockUSDT.balanceOf(L2CrossTradeContract.address)
     
           let saleInformation = await L2CrossTradeContract.dealData(saleCount)
           // console.log("1")
     
           const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
             mockTON.address,
-            L2fiatTokenV2_2.address,
+            l2mockUSDT.address,
             l2Wallet.address,
             tenUSDC,
             tenETH,
@@ -858,8 +920,8 @@ describe("Provide(TON)-Request(USDC)-Titan", function () {
             throw new Error('provide failed')
           }
     
-          let afterl2Balance = await L2fiatTokenV2_2.balanceOf(l2Wallet.address)
-          let afterl2BalanceUser1 = await L2fiatTokenV2_2.balanceOf(l2user1.address)
+          let afterl2Balance = await l2mockUSDT.balanceOf(l2Wallet.address)
+          let afterl2BalanceUser1 = await l2mockUSDT.balanceOf(l2user1.address)
     
           let afterl2NativeTokenBalance = await mockTON.balanceOf(
             l1user1.address
