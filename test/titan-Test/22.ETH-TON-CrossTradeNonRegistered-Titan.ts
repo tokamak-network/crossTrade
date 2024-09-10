@@ -45,7 +45,7 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
-describe("Provide(USDC)-Request(TON)-Titan", function () {
+describe("Provide(ETH)-Request(USDC)-Titan", function () {
     
     const erc20ABI = [
         {
@@ -128,6 +128,7 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
     const fiveETH = ethers.utils.parseUnits('5', 18)
     const tenETH = ethers.utils.parseUnits('10', 18)
     const hundETH = ethers.utils.parseUnits('100', 18)
+    const dotOne = ethers.utils.parseUnits('1', 17)
 
     const tenUSDC = ethers.utils.parseUnits('10', 6)
 
@@ -464,6 +465,20 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
     })
 
     describe("Prepare CrossTradeTest", () => {
+      it("ERC20 mint", async () => {
+        let ERC20Balance = await erc20Token.balanceOf(
+          l1Wallet.address
+        )
+
+        if (Number(ERC20Balance.toString()) < Number(hundETH)) {
+          const tx = await erc20Token.connect(l1Wallet).mint(
+            l1Wallet.address,
+            hundETH
+          )
+          await tx.wait()
+        }
+      })
+
       it("TON mint", async () => {
         let TONBalance = await mockTON.balanceOf(
           l1Wallet.address
@@ -477,7 +492,31 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
         }
       })
 
-      it("createOptimismMintableERC20", async () => {
+      it("createOptimismMintableERC20 ERC20", async () => {
+        let name = await erc20Token.name()
+        let symbol = await erc20Token.symbol()
+
+        const tx = await OptimismMintableERC20TokenFactory.connect(l2Wallet).createStandardL2Token(
+          erc20Token.address,
+          name,
+          symbol
+        )
+
+        const receipt = await tx.wait()
+        const event = receipt.events.find(
+          (e: Event) => e.event === 'StandardL2TokenCreated'
+        )
+        // console.log(event)
+      
+        if (!event) {
+          throw new Error('Unable to find StandardL2TokenCreated event')
+        }
+        // console.log("mockTON.address :", mockTON.address);
+        l2erc20Addr = event.args.localToken
+        // console.log(`Deployed to ${l2mockTONAddr}`)
+      })
+
+      it("createOptimismMintableERC20 TON", async () => {
         let name = await mockTON.name()
         let symbol = await mockTON.symbol()
 
@@ -501,13 +540,13 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
         // console.log(`Deployed to ${l2mockTONAddr}`)
       })
 
-      // it("set l2ERC20Token", async () => {
-      //   l2erc20Token = new ethers.Contract(
-      //     l2erc20Addr,
-      //     L2StandardERC20_ABI.abi,
-      //     l2Wallet
-      //   )
-      // })
+      it("set l2ERC20Token", async () => {
+        l2erc20Token = new ethers.Contract(
+          l2erc20Addr,
+          L2StandardERC20_ABI.abi,
+          l2Wallet
+        )
+      })
 
       it("set l2TON", async () => {
         l2mockTON = new ethers.Contract(
@@ -653,12 +692,6 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           hundETH
         )
         await tx.wait()
-
-        await L1fiatTokenV2_2.mint(
-          l1Wallet.address,
-          tenETH
-        )
-        await tx.wait()
       })
   
       it("mint L1 wallet", async () => {
@@ -773,10 +806,10 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           await providerApproveTx.wait()
           
           await (await L2CrossTradeContract.connect(l2Wallet).requestNonRegisteredToken(
-            L1fiatTokenV2_2.address,
+            zeroAddr,
             l2mockTON.address,
             tenETH,
-            tenUSDC,
+            dotOne,
             l1ChainId
           )).wait()
 
@@ -801,21 +834,17 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           }
         })
   
-        it("providerCT(USDC) in L1", async () => {
+        it("providerCT(ETH) in L1", async () => {
           let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
           let beforel2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
     
-          let beforel2NativeTokenBalance = await L1fiatTokenV2_2.balanceOf(
-            l1user1.address
-          )
+          let beforel2NativeTokenBalance = await l1user1.getBalance()
           // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-          let beforel2NativeTokenBalanceWallet = await L1fiatTokenV2_2.balanceOf(
-            l1Wallet.address
-          )
+          let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
         
-          const providerApproveTx = await L1fiatTokenV2_2.connect(l1user1).approve(L1CrossTradeContract.address, tenUSDC)
-          await providerApproveTx.wait()
+          // const providerApproveTx = await mockTON.connect(l1user1).approve(L1CrossTradeContract.address, tenETH)
+          // await providerApproveTx.wait()
         
           const saleCount = await L2CrossTradeProxy.saleCount()
     
@@ -825,15 +854,18 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           // console.log("1")
     
           const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
-            L1fiatTokenV2_2.address,
+            zeroAddr,
             l2mockTON.address,
             l2Wallet.address,
             tenETH,
-            tenUSDC,
+            dotOne,
             saleCount,
             l2ChainId,
             200000,
-            saleInformation.hashValue
+            saleInformation.hashValue,
+            {
+              value: dotOne
+            }
           )
           await providerTx.wait()
           // console.log("2")
@@ -847,14 +879,10 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
           let afterl2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
     
-          let afterl2NativeTokenBalance = await L1fiatTokenV2_2.balanceOf(
-            l1user1.address
-          )
+          let afterl2NativeTokenBalance = await l1user1.getBalance()
           // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
     
-          let afterl2NativeTokenBalanceWallet = await L1fiatTokenV2_2.balanceOf(
-            l1Wallet.address
-          )
+          let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
           // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
     
           expect(afterl2Balance).to.be.equal(beforel2Balance)
@@ -863,7 +891,7 @@ describe("Provide(USDC)-Request(TON)-Titan", function () {
           expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
           expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
     
-          let afterL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeContract.address)
+          let afterL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
 
           expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
     
