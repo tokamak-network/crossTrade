@@ -52,7 +52,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
 
     /// @notice Provides information that matches the hash value requested in L2
-    ///         %% WARING %%
+    ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
     ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
@@ -269,7 +269,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
 
     /// @notice Cancels the request requested by the requester.
-    ///         %% WARING %%
+    ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
@@ -377,7 +377,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     }
         
     /// @notice This is a function that changes the value that the requester wants to receive.
-    ///         %% WARING %%
+    ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
