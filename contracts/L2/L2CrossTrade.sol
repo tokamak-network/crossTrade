@@ -129,6 +129,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     }
 
     /// @notice Token transaction request registered in register
+    ///         %% WARNING %%
+    ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
@@ -179,6 +181,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     }
 
     /// @notice Token transaction request not registered in register
+    ///         %% WARNING %%
+    ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
