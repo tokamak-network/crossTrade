@@ -56,6 +56,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
     ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
+    ///         And We do not support ERC20, which is specially created and incurs a fee when transferring.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor requester's address
@@ -192,6 +195,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
@@ -300,6 +305,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
