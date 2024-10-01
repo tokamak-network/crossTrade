@@ -131,6 +131,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @notice Token transaction request registered in register
     ///         %% WARNING %%
     ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
+    ///         And RegisteredToken is currently scheduled to be registered based on the same token, 
+    ///         so it is logical that totalAmount >= ctAmount is greater.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
