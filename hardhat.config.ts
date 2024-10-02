@@ -54,12 +54,17 @@ const config: HardhatUserConfig = {
       ],
     },
     sepolia: {
-      url: `${process.env.ETH_NODE_URI_sepolia}`,
+      url: `https://ethereum-sepolia-rpc.publicnode.com`,
       accounts: [`${process.env.PRIVATE_KEY}`],
+      gasPrice:"auto"
     },
     titanSepolia: {
-      url: 'https://rpc.thanos-sepolia-test.tokamak.network',
+      url: 'https://rpc.titan-sepolia.tokamak.network',
       accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    thanosSepolia:{
+      url: 'https://rpc.thanos-sepolia.tokamak.network',
+      accounts: [`${process.env.PRIVATE_KEY}`]
     },
     devnetL1: {
       url: 'http://localhost:9545',
