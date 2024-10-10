@@ -12,7 +12,7 @@ import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
 // import "hardhat/console.sol";
 
-contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorage, ReentrancyGuard {
+contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 

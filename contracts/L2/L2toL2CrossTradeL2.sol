@@ -296,25 +296,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
     }
     
-
-    // // this is the message the TargetContract is waiting for from L1.
-    // function handleDepositL1CT(){
-    //     address _from,
-    //     uint256 _ctAmount, 
-    //     uint256 _salecount,
-    //     uint256 _l1ChainId,
-    //     uint256 _l2SourceChainId,
-    //     bytes32 _hash
-    // }
-    //     external
-    //     nonReentrant
-    //     checkL1(_l1ChainId)
-    //     providerCheck(_salecount)
-    // {
-    //     require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
-
-    // }
-
     /// @notice When providing a function called from L1, the amount is given to the provider.
     /// @param _from provider Address
     /// @param _ctAmount Amount paid by L1

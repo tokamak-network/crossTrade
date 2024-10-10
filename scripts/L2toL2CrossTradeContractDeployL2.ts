@@ -10,7 +10,7 @@ async function main() {
   //   process.env.Titan_L1_URL
   // )
   console.log("l2toL2proxy:....")
-  const L2CrossTradeProxyDep = await ethers.getContractFactory("L2CrossTradeProxy");
+  const L2CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxy");
   let L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy();
   console.log('L2CrossTradeProxy' , await L2CrossTradeProxy.getAddress())
 

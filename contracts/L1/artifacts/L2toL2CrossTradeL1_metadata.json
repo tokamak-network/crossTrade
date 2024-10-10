@@ -37,55 +37,6 @@
 					{
 						"indexed": false,
 						"internalType": "address",
-						"name": "_requester",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_totalAmount",
-						"type": "uint256"
-					},
-					{
-						"indexed": true,
-						"internalType": "uint256",
-						"name": "_saleCount",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l2SourceChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l2TargetChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "bytes32",
-						"name": "_hash",
-						"type": "bytes32"
-					}
-				],
-				"name": "CancelCT",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "address",
 						"name": "_l1token",
 						"type": "address"
 					},
@@ -128,7 +79,62 @@
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "_l1ChainId",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "EditCT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_saleCount",
 						"type": "uint256"
 					},
 					{
@@ -146,11 +152,11 @@
 					{
 						"indexed": false,
 						"internalType": "bytes32",
-						"name": "_hashValue",
+						"name": "_hash",
 						"type": "bytes32"
 					}
 				],
-				"name": "NonRequestCT",
+				"name": "L1CancelCT",
 				"type": "event"
 			},
 			{
@@ -207,12 +213,6 @@
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
 						"name": "_l2SourceChainId",
 						"type": "uint256"
 					},
@@ -229,80 +229,7 @@
 						"type": "bytes32"
 					}
 				],
-				"name": "ProviderClaimCT",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "_l1token",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "_l2SourceToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "_l2TargetToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "_requester",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_totalAmount",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_ctAmount",
-						"type": "uint256"
-					},
-					{
-						"indexed": true,
-						"internalType": "uint256",
-						"name": "_saleCount",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l2SourceChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "_l2TargetChainId",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "bytes32",
-						"name": "_hashValue",
-						"type": "bytes32"
-					}
-				],
-				"name": "RequestCT",
+				"name": "ProvideCT",
 				"type": "event"
 			},
 			{
@@ -455,8 +382,28 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_msgSender",
+						"name": "_l1token",
 						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_initialctAmount",
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
@@ -465,7 +412,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_l1ChainId",
+						"name": "_l2SourceChainId",
 						"type": "uint256"
 					},
 					{
@@ -474,14 +421,38 @@
 						"type": "uint256"
 					},
 					{
+						"internalType": "uint32",
+						"name": "_minGasLimit",
+						"type": "uint32"
+					},
+					{
 						"internalType": "bytes32",
 						"name": "_hash",
 						"type": "bytes32"
 					}
 				],
-				"name": "cancelCT",
+				"name": "cancel",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "cancelL1",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -496,7 +467,17 @@
 				"outputs": [
 					{
 						"internalType": "address",
-						"name": "l1CrossTradeContract",
+						"name": "crossDomainMessenger",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "l2CrossTradeContract",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "legacyERC20ETH",
 						"type": "address"
 					},
 					{
@@ -511,113 +492,17 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "_from",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_ctAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_saleCount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_l2TargetChainId",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bytes32",
-						"name": "_hash",
+						"name": "",
 						"type": "bytes32"
 					}
 				],
-				"name": "claimCT",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "crossDomainMessenger",
+				"name": "editCtAmount",
 				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
 					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
-					}
-				],
-				"name": "dealData",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "l1token",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "l2SourceToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "l2TargetToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "requester",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "provider",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "totalAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "ctAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "l2TargetChainId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "hashValue",
-						"type": "bytes32"
 					}
 				],
 				"stateMutability": "view",
@@ -642,7 +527,22 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_l1ChainId",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_initialctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_editedctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_salecount",
 						"type": "uint256"
 					},
 					{
@@ -654,9 +554,14 @@
 						"internalType": "uint256",
 						"name": "_l2TargetChainId",
 						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
 					}
 				],
-				"name": "deleteToken",
+				"name": "editFee",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -807,19 +712,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "legacyERC20ETH",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "pauseProxy",
 				"outputs": [
 					{
@@ -834,36 +726,17 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "proxyImplementation",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "bytes32",
 						"name": "",
 						"type": "bytes32"
 					}
 				],
-				"name": "registerCheck",
+				"name": "provideAccount",
 				"outputs": [
 					{
-						"internalType": "bool",
+						"internalType": "address",
 						"name": "",
-						"type": "bool"
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -887,8 +760,23 @@
 						"type": "address"
 					},
 					{
+						"internalType": "address",
+						"name": "_requestor",
+						"type": "address"
+					},
+					{
 						"internalType": "uint256",
-						"name": "_l1ChainId",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_initialctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_salecount",
 						"type": "uint256"
 					},
 					{
@@ -900,11 +788,40 @@
 						"internalType": "uint256",
 						"name": "_l2TargetChainId",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_minGasLimit",
+						"type": "uint32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
 					}
 				],
-				"name": "registerToken",
+				"name": "provideCT",
 				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "proxyImplementation",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -941,87 +858,29 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "_l1token",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "_l2SourceToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "_l2TargetToken",
-						"type": "address"
-					},
-					{
 						"internalType": "uint256",
-						"name": "_totalAmount",
+						"name": "_salecount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_ctAmount",
+						"name": "_l2SourceChainId",
 						"type": "uint256"
 					},
 					{
-						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
+						"internalType": "uint32",
+						"name": "_minGasLimit",
+						"type": "uint32"
 					},
 					{
-						"internalType": "uint256",
-						"name": "_l2TargetChainId",
-						"type": "uint256"
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
 					}
 				],
-				"name": "requestNonRegisteredToken",
+				"name": "resendCancelMessage",
 				"outputs": [],
-				"stateMutability": "payable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_l1token",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "_l2SourceToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "_l2TargetToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_totalAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_ctAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_l1ChainId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_l2TargetChainId",
-						"type": "uint256"
-					}
-				],
-				"name": "requestRegisteredToken",
-				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -1043,19 +902,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "saleCount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "bytes4",
@@ -1069,6 +915,25 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "successCT",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -1144,47 +1009,45 @@
 						"account": "address to add"
 					}
 				},
-				"cancelCT(address,uint256,uint256,uint256,bytes32)": {
+				"cancel(address,address,address,uint256,uint256,uint256,uint256,uint256,uint32,bytes32)": {
 					"params": {
 						"_hash": "Hash value generated upon request",
-						"_l1ChainId": "chainId of l1token",
-						"_l2TargetChainId": "chainId of l2Target",
-						"_msgSender": "Address where cancellation was requested",
-						"_salecount": "Number generated upon request"
+						"_initialctAmount": "ctAmount requested when creating the initial request",
+						"_l1token": "Address of requested l1token",
+						"_l2SourceChainId": "request requested chainId",
+						"_l2SourceToken": "Address of requested l2SourceToken",
+						"_l2TargetChainId": "request  Target chainId",
+						"_l2TargetToken": "Address of requested l2TargetToken",
+						"_minGasLimit": "minGasLimit",
+						"_salecount": "Number generated upon request",
+						"_totalAmount": "Total amount requested by l2"
 					}
 				},
-				"claimCT(address,uint256,uint256,uint256,uint256,bytes32)": {
+				"editFee(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes32)": {
 					"params": {
-						"_ctAmount": "Amount paid by L1",
-						"_from": "provider Address",
+						"_editedctAmount": "The amount that the requester requested to edit",
 						"_hash": "Hash value generated upon request",
-						"_l1ChainId": "chainId of l1token",
-						"_l2TargetChainId": "chainId of l2Target",
-						"_saleCount": "Number generated upon request"
-					}
-				},
-				"deleteToken(address,address,address,uint256,uint256,uint256)": {
-					"params": {
-						"_l1ChainId": "chainId of l1token",
-						"_l1token": "l1token Address",
-						"_l2SourceChainId": "chainId of l2Source",
-						"_l2SourceToken": "_l2SourceToken Address",
-						"_l2TargetChainId": "chainId of l2Target",
-						"_l2TargetToken": "_l2TargetToken Address"
+						"_initialctAmount": "ctAmount requested when creating the initial request",
+						"_l1token": "Address of requested l1token",
+						"_l2SourceChainId": "request requested chainId",
+						"_l2SourceToken": "Address of requested l2SourceToken",
+						"_l2TargetToken": "Address of requested l2TargetToken",
+						"_salecount": "Number generated upon request",
+						"_totalAmount": "Total amount requested by l2"
 					}
 				},
 				"getHash(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)": {
 					"params": {
-						"_ctAmount": "Amount provided to L2",
-						"_l1ChainId": "Destination chainID",
-						"_l1token": "l1token Address",
-						"_l2SourceChainId": "The chainId where this contract was deployed",
-						"_l2SourceToken": "l2SourceToken Address",
-						"_l2TargetChainId": "The chainId where this contract was deployed",
-						"_l2TargetToken": "l2TargetToken Address",
-						"_requestor": "requester's address",
+						"_ctAmount": "Amount to be received from L1",
+						"_l1ChainId": "The chainId where this contract was deployed",
+						"_l1token": "Address of requested l1token",
+						"_l2SourceChainId": "Starting chainId of the corresponding HashValue",
+						"_l2SourceToken": "Address of requested l2SourceToken",
+						"_l2TargetChainId": "s",
+						"_l2TargetToken": "Address of requested l2TargetToken",
+						"_requestor": "This is the address of the request.",
 						"_saleCount": "Number generated upon request",
-						"_totalAmount": "Amount provided to L2"
+						"_totalAmount": "Total amount requested by l2"
 					}
 				},
 				"getRoleAdmin(bytes32)": {
@@ -1202,14 +1065,19 @@
 						"account": "address to check"
 					}
 				},
-				"registerToken(address,address,address,uint256,uint256,uint256)": {
+				"provideCT(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint32,bytes32)": {
 					"params": {
-						"_l1ChainId": "chainId of l1token",
-						"_l1token": "l1token Address",
-						"_l2SourceChainId": "chainId of l2Source",
-						"_l2SourceToken": "_l2SourceToken Address",
-						"_l2TargetChainId": "chainId of l2Target",
-						"_l2TargetToken": "_l2TargetToken Address"
+						"_hash": "Hash value generated upon request",
+						"_initialctAmount": "ctAmount requested when creating the initial request",
+						"_l1token": "Address of requested l1token",
+						"_l2SourceChainId": "request requested l2SourcechainId",
+						"_l2SourceToken": "Address of requested l2Source",
+						"_l2TargetChainId": "request requested l2TargetChainId",
+						"_l2TargetToken": "Address of requested l2Target",
+						"_minGasLimit": "minGasLimit",
+						"_requestor": "requester's address",
+						"_salecount": "Number generated upon request",
+						"_totalAmount": "Total amount requested by l2"
 					}
 				},
 				"removeAdmin(address)": {
@@ -1221,26 +1089,12 @@
 				"renounceRole(bytes32,address)": {
 					"details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event."
 				},
-				"requestNonRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
+				"resendCancelMessage(uint256,uint256,uint32,bytes32)": {
 					"params": {
-						"_ctAmount": "Amount to be received from L1",
-						"_l1ChainId": "chainId of l1token",
-						"_l1token": "l1token Address",
-						"_l2SourceToken": "_l2SourceToken Address",
-						"_l2TargetChainId": "chainId of l2TargetToken",
-						"_l2TargetToken": "_l2TargetToken Address",
-						"_totalAmount": "Amount provided to L2"
-					}
-				},
-				"requestRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
-					"params": {
-						"_ctAmount": "Amount to be received from L1",
-						"_l1ChainId": "chainId of l1token",
-						"_l1token": "l1token Address",
-						"_l2SourceToken": "_l2SourceToken Address",
-						"_l2TargetChainId": "chainId of l2TargetToken",
-						"_l2TargetToken": "_l2TargetToken Address",
-						"_totalAmount": "Amount provided to L2"
+						"_hash": "Hash value generated upon request",
+						"_l2SourceChainId": "request requested chainId",
+						"_minGasLimit": "minGasLimit",
+						"_salecount": "Number generated upon request"
 					}
 				},
 				"revokeRole(bytes32,address)": {
@@ -1261,26 +1115,20 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"cancelCT(address,uint256,uint256,uint256,bytes32)": {
-					"notice": "When canceling a function called from L1, the amount is given to the requester."
+				"cancel(address,address,address,uint256,uint256,uint256,uint256,uint256,uint32,bytes32)": {
+					"notice": "Cancels the request requested by the requester.         %% WARNING %%         Even if it does not match the request made in L2,          the transaction in L1 will pass if only the hash value of the input information matches.          Please be aware of double-check the request made in L2 and execute the cancel in L1."
 				},
-				"claimCT(address,uint256,uint256,uint256,uint256,bytes32)": {
-					"notice": "When providing a function called from L1, the amount is given to the provider."
-				},
-				"deleteToken(address,address,address,uint256,uint256,uint256)": {
-					"notice": "Register L1token and L2token and use them in requestRegisteredToken"
+				"editFee(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes32)": {
+					"notice": "This is a function that changes the value that the requester wants to receive.         %% WARNING %%         Even if it does not match the request made in L2,          the transaction in L1 will pass if only the hash value of the input information matches.          Please be aware of double-check the request made in L2 and execute the editFee in L1."
 				},
 				"getHash(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)": {
-					"notice": "Function that calculates hash value in L2CrossTradeContract"
+					"notice": "Create a Hash value and check if it matches the Hash value created upon request in L2."
 				},
-				"registerToken(address,address,address,uint256,uint256,uint256)": {
-					"notice": "Register L1token and L2token and use them in requestRegisteredToken"
+				"provideCT(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint32,bytes32)": {
+					"notice": "Provides information that matches the hash value requested in L2         %% WARNING %%         Even if it does not match the request made in L2,          the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)         Please be aware of double-check the request made in L2 and execute the provideCT in L1."
 				},
-				"requestNonRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
-					"notice": "Token transaction request not registered in register"
-				},
-				"requestRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
-					"notice": "Token transaction request registered in register"
+				"resendCancelMessage(uint256,uint256,uint32,bytes32)": {
+					"notice": "If the cancel function succeeds in L1 but fails in L2, this function calls the transaction in L2 again."
 				}
 			},
 			"version": 1
@@ -1288,7 +1136,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/L2/L2toL2CrossTradeL2.sol": "L2toL2CrossTradeL2"
+			"contracts/L1/L2toL2CrossTradeL1.sol": "L2toL2CrossTradeL1"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -1343,20 +1191,28 @@
 				"dweb:/ipfs/QmeJQCtZrQjtJLr6u7ZHWeH3pBnjtLWzvRrKViAi7UZqxL"
 			]
 		},
-		"contracts/L2/L2toL2CrossTradeL2.sol": {
-			"keccak256": "0x879c903f966edf8aba871f536f44ac09c9120d22860069cfd55a5127307812de",
-			"license": "Unlicense",
+		"contracts/L1/IL1StandardBridge.sol": {
+			"keccak256": "0x2e22c8ef3de8ca00a797811d43fe41e9a8714a0ca4da1f6e8bc5939a6c8b5172",
+			"license": "MIT",
 			"urls": [
-				"bzz-raw://283f786f4b7265bac7517f6f77873e1bf6947f0f46c56f5569c8a67ec9a1d719",
-				"dweb:/ipfs/QmWf4ZyuH6rJaBjFg7emB7qgR2Ap3dEwwrLeb2XfEUyYvF"
+				"bzz-raw://e3bbe2f2ba12b38519d3f10b984f30e21bf259591e1c4d0ca0f3d4e06db74611",
+				"dweb:/ipfs/QmSWapu3NHBxxCsaDrsXireP17NsbEgnjpohm8pr7JFMD5"
 			]
 		},
-		"contracts/L2/L2toL2CrossTradeStorage.sol": {
-			"keccak256": "0xd88161a10827f2e84bcc4b699ee6e361d9f66a58ddb9988845fe4755b9753a00",
+		"contracts/L1/L2toL2CrossTradeL1.sol": {
+			"keccak256": "0x52b5ce84c0b1eee9c8ddb1e5ad55b0c263e5f855b37e010c3a75e3dd9ac85e0d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f96138f52447cb8a6eb1aafefee138a190cb8b1ed7608b511893822397599d73",
+				"dweb:/ipfs/QmYq6gv7L29gcED9a2HNR9T7Enc1auSEk7nVn1wdbnEs8j"
+			]
+		},
+		"contracts/L1/L2toL2CrossTradeStorageL1.sol": {
+			"keccak256": "0x14da89246e2d79b549041a7ca29f0e1ca20aac29ef8fbcd9f9b5ad928bccd9c5",
 			"license": "Unlicense",
 			"urls": [
-				"bzz-raw://47d8ebe7b8e28db898f1f84a82b6c3839b39992ca8633bbc477400bf8ddc24be",
-				"dweb:/ipfs/QmZ6UHXjQLrpF8zVJwT4CCTj8726XyHvud2XHuGJsMADMz"
+				"bzz-raw://d5c7ab86db930f53be8d3b77e3edc88bcf14b1c605e24e46ecb12a26db2a48b5",
+				"dweb:/ipfs/QmYncukyKsJH3pgR5CpcgkT6MBscYpjTXVmdkoTU3ADj9Y"
 			]
 		},
 		"contracts/common/AccessRoleCommon.sol": {
@@ -1383,20 +1239,12 @@
 				"dweb:/ipfs/QmcmKRNAtnBVFADpf5mjuq6e6rLgYLjUMHaRkn3YY3mdtG"
 			]
 		},
-		"contracts/interfaces/IL2CrossDomainMessenger.sol": {
-			"keccak256": "0x09ccbb8f6988976ad5f7e2c76047bf0c573d2b9c57b8705306a7bf3c0624957b",
+		"contracts/interfaces/IL1CrossDomainMessenger.sol": {
+			"keccak256": "0x1aa87e00ecf54899e17fb2d943b1b44ce4ac71eecaea17889c6be94e95579025",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1b1495b279c979faca08447dea4f96685df7f709770ec6d71dad68b0023a8640",
-				"dweb:/ipfs/QmQTCkSbji1C5Pk5XmVJnPNXdeWrvyk8Pq2YW6N11igTKD"
-			]
-		},
-		"contracts/interfaces/IOptimismMintableERC20.sol": {
-			"keccak256": "0x6f8133b39efcbcbd5088f195dfacf1bedc3146508429c3865443909af735a04c",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://adc36971e2e120458769f050428d9d2b0504516660345020c2521ee46e6d8abf",
-				"dweb:/ipfs/QmPbFusQkZgGKpU8Fv5JoqL4oVeJtM3yqnhRGLY9eZT5zZ"
+				"bzz-raw://f3920abc5ae04dd0fb54375e959a064bea47ee3099782c9709ad6c032d704937",
+				"dweb:/ipfs/QmWcFuHZfjiJGPdkwBkpMR5chbBcyo5VvCrBZzCNSKzg45"
 			]
 		},
 		"contracts/libraries/SafeERC20.sol": {

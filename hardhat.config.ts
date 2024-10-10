@@ -140,6 +140,42 @@ const config: HardhatUserConfig = {
     tokenPrice: "1",       // ETH per ETH
     token: "ETH"
   },
+
+  etherscan: {
+
+    apiKey: {
+      titanSepolia: "abcde",
+      thanosSepolia: "abcde",
+      bscTestnet: "abcd",
+      sepolia: "ApyKey"
+    },
+    customChains: [
+      {
+        network: "titanSepolia",
+        chainId: 55007,
+        urls: {
+            apiURL: "https://explorer.titan-sepolia.tokamak.network/api",
+            browserURL: "https://explorer.titan-sepolia.tokamak.network/",
+        },
+      },
+      {
+        network: "thanosSepolia",
+        chainId: 111551119090,
+        urls: {
+            apiURL: "https://explorer.thanos-sepolia.tokamak.network/api",
+            browserURL: "https://explorer.thanos-sepolia.tokamak.network/",
+        },
+      },
+      {
+        network: "sepolia",
+        chainId: 11155111,
+        urls: {
+            apiURL: "https://api-sepolia.etherscan.io/api",
+            browserURL: "https://sepolia.etherscan.io/",
+        },
+      }
+    ]
+  }
 };
 
 export default config;
