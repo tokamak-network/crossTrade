@@ -14,24 +14,24 @@ async function main() {
   console.log(await L2crossTradeSource.crossDomainMessenger())
   console.log("request token")
   console.log("resgister token:")
-  // await L2crossTradeSource.requestRegisteredToken(
+  await L2crossTradeSource.requestRegisteredToken(
+    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
+    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+    "1900000000000000000",
+    "100000000000000000",
+    "11155111",
+    "111551119090",
+  )
+
+  // await L2crossTradeSource.registerToken(
   //   "0x42d3b260c761cD5da022dB56Fe2F89c4A909b04A",
   //   "0x79E0d92670106c85E9067b56B8F674340dCa0Bbd",
   //   "0x17Db5E789eca4Cd8DC45a310A4c5De45E47437aC",
-  //   "5000000000000000000",
-  //   "2000000000000000000",
   //   "11155111",
+  //   "55007",
   //   "111551119090"
   // )
-
-  await L2crossTradeSource.registerToken(
-    "0x42d3b260c761cD5da022dB56Fe2F89c4A909b04A",
-    "0x79E0d92670106c85E9067b56B8F674340dCa0Bbd",
-    "0x17Db5E789eca4Cd8DC45a310A4c5De45E47437aC",
-    "11155111",
-    "55007",
-    "111551119090"
-  )
   console.log("token registered");
 }
 

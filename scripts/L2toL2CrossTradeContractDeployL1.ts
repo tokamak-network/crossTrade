@@ -13,26 +13,24 @@ async function main() {
   // const L1CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxyL1");
   // let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
   // console.log('L1CrossTradeProxy' , await L1CrossTradeProxy.getAddress())
+  // await L1CrossTradeProxy.waitForDeployment();
+  // console.log("deploy logic")
+  // const L1CrossTradeLogicDep = await ethers.getContractFactory("L2toL2CrossTradeL1");
+  // let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
+  // let addressct = await L1CrossTradeLogic.getAddress(); 
+  // console.log('L1CrossTradeLogic' , addressct)
+  // await L1CrossTradeLogic.waitForDeployment()
 
-  console.log("deploy logic")
-  const L1CrossTradeLogicDep = await ethers.getContractFactory("L2toL2CrossTradeL1");
-  let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
-  let addressct = await L1CrossTradeLogic.getAddress(); 
-  console.log('L1CrossTradeLogic' , addressct)
-  await L1CrossTradeLogic.waitForDeployment()
-  // const L1CrossTradeProxyLogic = new ethers.Contract(
-  //   L1CrossTradeProxy.address,
-  //   L1CrossTradeProxy_ABI.abi,
-  //   l1Provider
-  // ) 
   
-  // console.log("upgrade proxy to logic...")
-  // await L1CrossTradeProxy.upgradeTo(addressct);
-  // console.log("upgraded")
+  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0xFAfCe7Ebd6B1e142f7C03050Ee19F2Ce43673901");
 
-  // let imp2 = await L1CrossTradeProxy.implementation()
-  // console.log('check upgradeAddress : ', imp2)
-  // console.log('upgradeTo done')
+  console.log("upgrade proxy to logic...")
+  await L1CrossTradeProxy.upgradeTo("0xBd15BcE1492B2e1D5C03F44C18A65A3596af18d7");
+  console.log("upgraded")
+
+  let imp2 = await L1CrossTradeProxy.implementation()
+  console.log('check upgradeAddress : ', imp2)
+  console.log('upgradeTo done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere

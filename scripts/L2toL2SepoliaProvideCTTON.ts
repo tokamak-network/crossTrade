@@ -26,13 +26,13 @@ async function main() {
   // )
 
   let computedHash = await L1crossTradeSource.getHash(
-    "0x0000000000000000000000000000000000000000",
-    "0x0000000000000000000000000000000000000000",
-    "0x4200000000000000000000000000000000000486",
+    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
+    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "333000000000000",
-    "222000000000000",
-    "4",
+    "1230000000000000000",
+    "230000000000000000",
+    "3",
     "11155111",
     "55007",
     "111551119090"
@@ -44,18 +44,17 @@ async function main() {
   console.log("provideCt token:")
   // console.log(await L1crossTradeSource.chainData("55007"))
   let res = await L1crossTradeSource.provideCT(
-    "0x0000000000000000000000000000000000000000",
-    "0x0000000000000000000000000000000000000000",
-    "0x4200000000000000000000000000000000000486",
+    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
+    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "333000000000000",
-    "222000000000000",
-    "4",
+    "1230000000000000000",
+    "230000000000000000",
+    "3",
     "55007",
     "111551119090",
     "200000",
     computedHash,
-    {value:"222000000000000"}
   )
   console.log("resss:",res)
   console.log("token provided");

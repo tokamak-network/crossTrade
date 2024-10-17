@@ -9,28 +9,31 @@ async function main() {
   // const l1Provider = new ethers.providers.StaticJsonRpcProvider(
   //   process.env.Titan_L1_URL
   // )
-  // console.log("l2toL2proxy:....")
-  // const L2CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxy");
-  // let L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy();
-  // console.log('L2CrossTradeProxy' , await L2CrossTradeProxy.getAddress())
+  console.log("l2toL2proxy:....")
+  const TestingBridge = await ethers.getContractFactory("TestingBridgeContract");
+  let TestingBridgeContract = await TestingBridge.deploy();
+  console.log('L2CrossTradeProxy' , await TestingBridgeContract.getAddress())
 
   // console.log("l2toL2CrossTrade:....")
+  // // L2CrossTradeProxy = await ethers.getContractAt("L2CrossTradeProxy","0xf7571F832b831dDbBA3F618A19EDC18F959673b4");
   // let L2toL2CrossTradeLogicContract = await ethers.getContractFactory("L2toL2CrossTradeL2");
   // let L2toL2CrossTradeLogic = await L2toL2CrossTradeLogicContract.deploy();
   // let addressLogic = await L2toL2CrossTradeLogic.getAddress()
   // console.log('L2toL2CrossTradeLogic' , addressLogic)
   // await L2toL2CrossTradeLogic.waitForDeployment()
 
- 
-  let L2CrossTradeProxy = await ethers.getContractAt("L2CrossTradeProxy","0x668bCe2498c252F9eB0ef631d16630e9F30ab833");
+  // // const L1CrossTradeProxyLogic = new ethers.Contract(
+  // //   L1CrossTradeProxy.address,
+  // //   L1CrossTradeProxy_ABI.abi,
+  // //   l1Provider
+  // // ) 
+  // console.log("upgrade proxy to logic...")
+  // await L2CrossTradeProxy.upgradeTo(addressLogic);
+  // console.log("upgraded")
 
-  console.log("upgrade proxy to logic...")
-  await L2CrossTradeProxy.upgradeTo("0x09DC690B70711E1fe5E1045Fd00F3dCbF18f16e8");
-  console.log("upgraded")
-
-  let imp2 = await L2CrossTradeProxy.implementation()
-  console.log('check upgradeAddress : ', imp2)
-  console.log('upgradeTo done')
+  // let imp2 = await L2CrossTradeProxy.implementation()
+  // console.log('check upgradeAddress : ', imp2)
+  // console.log('upgradeTo done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere

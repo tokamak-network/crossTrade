@@ -13,7 +13,7 @@ contract L2toL2CrossTradeStorageL1 {
         address l1TON;
     }
     
-    mapping(uint256 => address) l1StandardBridge;
+    mapping(uint256 => address) public l1StandardBridge;
     //hashValue => bool -> Check whether provision has been made using the hash value.
     mapping(bytes32 => bool) public successCT;
     //hashValue => address -> Store address requesting cancel using hash value

@@ -147,7 +147,7 @@ const config: HardhatUserConfig = {
       titanSepolia: "abcde",
       thanosSepolia: "abcde",
       bscTestnet: "abcd",
-      sepolia: "ApyKey"
+      sepolia: `${process.env.SEPOLIA_APY_KEY}`
     },
     customChains: [
       {

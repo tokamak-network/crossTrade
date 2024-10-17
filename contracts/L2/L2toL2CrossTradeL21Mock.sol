@@ -19,35 +19,35 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     event RequestCT(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         address _requester,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hashValue
     );
 
     event NonRequestCT(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         address _requester,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hashValue
     );
 
     event ProviderClaimCT(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         address _requester,
         address _provider,
         uint256 _totalAmount,
@@ -55,7 +55,7 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hash
     );
     
@@ -65,7 +65,7 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hash
     );
 
@@ -110,17 +110,17 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
-    /// @param _l2TargetToken _l2TargetToken Address
+    /// @param _l2DestinationToken _l2DestinationToken Address
     /// @param _l1ChainId chainId of l1token
     /// @param _l2SourceChainId chainId of l2Source
-    /// @param _l2TargetChainId chainId of l2Target
+    /// @param _l2DestinationChainId chainId of l2Destination
     function registerToken(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId
+        uint256 _l2DestinationChainId
 
     )
         external
@@ -129,10 +129,10 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             _l1token,
             _l2SourceToken,
-            _l2TargetToken
+            _l2DestinationToken
         ));
         require(registerCheck[id] == false, "already registerToken");
         registerCheck[id] = true;
@@ -141,17 +141,17 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
-    /// @param _l2TargetToken _l2TargetToken Address
+    /// @param _l2DestinationToken _l2DestinationToken Address
     /// @param _l1ChainId chainId of l1token
     /// @param _l2SourceChainId chainId of l2Source
-    /// @param _l2TargetChainId chainId of l2Target
+    /// @param _l2DestinationChainId chainId of l2Destination
     function deleteToken(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId
+        uint256 _l2DestinationChainId
     )
         external
         onlyOwner
@@ -159,10 +159,10 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             _l1token,
             _l2SourceToken,
-            _l2TargetToken
+            _l2DestinationToken
         ));
         require(registerCheck[id] != false, "already deleteToken");
         registerCheck[id] = false;
@@ -171,19 +171,19 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Token transaction request registered in register
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
-    /// @param _l2TargetToken _l2TargetToken Address
+    /// @param _l2DestinationToken _l2DestinationToken Address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1ChainId chainId of l1token
-    /// @param _l2TargetChainId chainId of l2TargetToken
+    /// @param _l2DestinationChainId chainId of l2DestinationToken
     function requestRegisteredToken(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
-        uint256 _l2TargetChainId
+        uint256 _l2DestinationChainId
     )
         external
         payable
@@ -197,10 +197,10 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             _l1token,
             _l2SourceToken,
-            _l2TargetToken
+            _l2DestinationToken
         ));
 
         require(registerCheck[id] == true, "not register token");
@@ -213,26 +213,26 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         bytes32 hashValue = _request(
             _l1token,
             _l2SourceToken,
-            _l2TargetToken,
+            _l2DestinationToken,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1ChainId,
-            _l2TargetChainId
+            _l2DestinationChainId
         );
 
 
         emit RequestCT(
             _l1token,
             _l2SourceToken,
-            _l2TargetToken,
+            _l2DestinationToken,
             msg.sender,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             hashValue
         );
     }
@@ -240,19 +240,19 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Token transaction request not registered in register
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
-    /// @param _l2TargetToken _l2TargetToken Address
+    /// @param _l2DestinationToken _l2DestinationToken Address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1ChainId chainId of l1token
-    /// @param _l2TargetChainId chainId of l2TargetToken
+    /// @param _l2DestinationChainId chainId of l2DestinationToken
     function requestNonRegisteredToken(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
-        uint256 _l2TargetChainId
+        uint256 _l2DestinationChainId
     )
         external
         payable
@@ -270,32 +270,32 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         bytes32 hashValue = _request(
             _l1token,
             _l2SourceToken,
-            _l2TargetToken,
+            _l2DestinationToken,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1ChainId,
-            _l2TargetChainId
+            _l2DestinationChainId
         );
 
         emit NonRequestCT(
             _l1token,
             _l2SourceToken,
-            _l2TargetToken,
+            _l2DestinationToken,
             msg.sender,
             _totalAmount,
             _ctAmount,
             saleCount,
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             hashValue
         );
 
     }
     
 
-    // // this is the message the TargetContract is waiting for from L1.
+    // // this is the message the DestinationContract is waiting for from L1.
     // function handleDepositL1CT(){
     //     address _from,
     //     uint256 _ctAmount, 
@@ -318,14 +318,14 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @param _ctAmount Amount paid by L1
     /// @param _saleCount Number generated upon request
     /// @param _l1ChainId chainId of l1token
-    /// @param _l2TargetChainId chainId of l2Target
+    /// @param _l2DestinationChainId chainId of l2Destination
     /// @param _hash Hash value generated upon request
     function claimCT(
         address _from,
         uint256 _ctAmount,
         uint256 _saleCount,
         uint256 _l1ChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hash
     )
         external
@@ -361,13 +361,13 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @param _msgSender Address where cancellation was requested
     /// @param _salecount Number generated upon request
     /// @param _l1ChainId chainId of l1token
-    /// @param _l2TargetChainId chainId of l2Target
+    /// @param _l2DestinationChainId chainId of l2Destination
     /// @param _hash Hash value generated upon request
     function cancelCT(
         address _msgSender,
         uint256 _salecount,
         uint256 _l1ChainId,
-        uint256 _l2TargetChainId,
+        uint256 _l2DestinationChainId,
         bytes32 _hash
     )
         external
@@ -396,7 +396,7 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
             _salecount,
             _l1ChainId,
             _l2SourceChainId,
-            _l2TargetChainId,
+            _l2DestinationChainId,
             _hash
         );
 
@@ -406,25 +406,25 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Function that calculates hash value in L2CrossTradeContract
     /// @param _l1token l1token Address
     /// @param _l2SourceToken l2SourceToken Address
-    /// @param _l2TargetToken l2TargetToken Address
+    /// @param _l2DestinationToken l2DestinationToken Address
     /// @param _requestor requester's address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount provided to L2
     /// @param _saleCount Number generated upon request
     /// @param _l1ChainId Destination chainID
     /// @param _l2SourceChainId The chainId where this contract was deployed
-    /// @param _l2TargetChainId The chainId where this contract was deployed
+    /// @param _l2DestinationChainId The chainId where this contract was deployed
     function getHash(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         address _requestor,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
-        uint256 _l2TargetChainId
+        uint256 _l2DestinationChainId
     )
         public
         pure
@@ -434,14 +434,14 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
             abi.encode(
                 _l1token, 
                 _l2SourceToken,
-                _l2TargetToken,
+                _l2DestinationToken,
                 _requestor, 
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
                 _l1ChainId,
                 _l2SourceChainId,
-                _l2TargetChainId
+                _l2DestinationChainId
             )
         );
     }
@@ -465,22 +465,22 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
     /// @notice Token transaction request
     /// @param _l1token l1token Address
     /// @param _l2SourceToken l2SourceToken Address
-    /// @param _l2TargetToken l2TargetToken Address
+    /// @param _l2DestinationToken l2DestinationToken Address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
     /// @param l1ChainId chainId of l1token
-    /// @param l2TargetChainId chainId of l2TargetToken
+    /// @param l2DestinationChainId chainId of l2DestinationToken
 
     function _request(
         address _l1token,
         address _l2SourceToken,
-        address _l2TargetToken,
+        address _l2DestinationToken,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
         uint256 l1ChainId,
-        uint256 l2TargetChainId
+        uint256 l2DestinationChainId
     )
         private
         returns (bytes32 hashValue)
@@ -496,26 +496,26 @@ contract L2toL2CrossTradeL2Mock is ProxyStorage, AccessibleCommon, L2toL2CrossTr
         hashValue = getHash(
             _l1token,
             _l2SourceToken,
-            _l2TargetToken,
+            _l2DestinationToken,
             msg.sender,
             _totalAmount,
             _ctAmount,
             _saleCount,
             l2SourceChainId,
-            l2TargetChainId,
+            l2DestinationChainId,
             l1ChainId
         );
 
         dealData[_saleCount] = RequestData({
             l1token: _l1token,
             l2SourceToken: _l2SourceToken,
-            l2TargetToken: _l2TargetToken,
+            l2DestinationToken: _l2DestinationToken,
             requester: msg.sender,
             provider: address(0),
             totalAmount: _totalAmount,
             ctAmount: _ctAmount,
             l1ChainId: l1ChainId,
-            l2TargetChainId: l2TargetChainId,
+            l2DestinationChainId: l2DestinationChainId,
             hashValue: hashValue
         });
 

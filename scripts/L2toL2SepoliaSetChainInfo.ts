@@ -38,7 +38,7 @@ async function main() {
   //   "0x0000000000000000000000000000000000000000",
   //   "111551119090"
   // )
-  console.log("setted")
+  console.log("set")
   let res = await L1crossTradeSource.provideCT(
     "0x0000000000000000000000000000000000000000",
     "0x0000000000000000000000000000000000000000",
