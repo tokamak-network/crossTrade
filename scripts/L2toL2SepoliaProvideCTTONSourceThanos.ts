@@ -27,15 +27,15 @@ async function main() {
 
   let computedHash = await L1crossTradeSource.getHash(
     "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
-    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
+    "1400000000000000000",
+    "300000000000000000",
+    "5",
     "11155111",
-    "55007",
-    "111551119090"
+    "111551119090",
+    "55007"
   )
   console.log(computedHash)
   // console.log("approve before request");
@@ -45,14 +45,14 @@ async function main() {
   // console.log(await L1crossTradeSource.chainData("55007"))
   let res = await L1crossTradeSource.provideCT(
     "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
-    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
-    "55007",
+    "1400000000000000000",
+    "300000000000000000",
+    "5",
     "111551119090",
+    "55007",
     "200000",
     computedHash,
   )

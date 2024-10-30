@@ -149,6 +149,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                 "0x" // encode the hash
             );
         } else {
+            // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
+            // make a different case of usdt (check if usdt) or with type.
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).approve(l1StandardBridge[_l2DestinationChainId],ctAmount);
 
@@ -178,46 +180,48 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     }
 
 
-    // /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
-    // /// @param _salecount Number generated upon request
-    // /// @param _l2chainId request requested chainId
-    // /// @param _minGasLimit minGasLimit
-    // /// @param _hash Hash value generated upon request
-    // function resendProvideCTMessage(
-    //     uint256 _salecount,
-    //     uint256 _l2chainId,
-    //     uint32 _minGasLimit,
-    //     bytes32 _hash
-    // )
-    //     external
-    //     onlyEOA
-    //     nonReentrant
-    // {
-    //     require(successCT[_hash] == true, "not provide");
-    //     require(provideAccount[_hash] != address(0), "not provide");
+    /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
+    /// @param _salecount Number generated upon request
+    /// @param _l2SourceChainId request requested l2SourcechainId
+    /// @param _l2DestinationChainId request requested l2DestinationChainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
+    function resendProvideCTMessage(
+        uint256 _salecount,
+        uint256 _l2SourceChainId,
+        uint256 _l2DestinationChainId,
+        uint32 _minGasLimit,
+        bytes32 _hash
+    )
+        external
+        onlyEOA
+        nonReentrant
+    {
+        require(successCT[_hash] == true, "not provide");
+        require(provideAccount[_hash] != address(0), "not provide");
         
-    //     uint256 ctAmount;
-    //     if (editCtAmount[_hash] > 0) {
-    //         ctAmount = editCtAmount[_hash];
-    //     }
+        uint256 ctAmount;
+        if (editCtAmount[_hash] > 0) {
+            ctAmount = editCtAmount[_hash];
+        }
 
-    //     bytes memory message;
+        bytes memory message;
 
-    //     message = makeEncodeWithSignature(
-    //         CLAIM_CT,
-    //         provideAccount[_hash],
-    //         ctAmount,
-    //         _salecount,
-    //         _l2DestinationChainId,
-    //         _hash
-    //     );
+        message = makeEncodeWithSignature(
+            CLAIM_CT,
+            provideAccount[_hash],
+            ctAmount,
+            _salecount,
+            _l2DestinationChainId,
+            _hash
+        );
 
-    //     IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-    //         chainData[_l2chainId].l2CrossTradeContract, 
-    //         message, 
-    //         _minGasLimit
-    //     );
-    // }
+        IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
+            chainData[_l2SourceChainId].l2CrossTradeContract, 
+            message, 
+            _minGasLimit
+        );
+    }
 
 
 
@@ -304,40 +308,43 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     }
 
 
-    // /// @notice If the cancel function succeeds in L1 but fails in L2, this function calls the transaction in L2 again.
-    // /// @param _salecount Number generated upon request
-    // /// @param _l2SourceChainId request requested chainId
-    // /// @param _minGasLimit minGasLimit
-    // /// @param _hash Hash value generated upon request
-    // function resendCancelMessage(
-    //     uint256 _salecount,
-    //     uint256 _l2SourceChainId,
-    //     uint32 _minGasLimit,
-    //     bytes32 _hash
-    // )
-    //     external
-    //     onlyEOA
-    //     nonReentrant
-    // {
-    //     address cancelL1Address = cancelL1[_hash];
-    //     require(successCT[_hash] == true, "not cancel");
-    //     require(cancelL1Address != address(0), "not cancel");
-    //     bytes memory message;
+    /// @notice If the cancel function succeeds in L1 but fails in L2, this function calls the transaction in L2 again.
+    /// @param _salecount Number generated upon request
+    /// @param _l2SourceChainId request requested chainId
+    /// @param _l2DestinationChainId request  Destination chainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
+    function resendCancelMessage(
+        uint256 _salecount,
+        uint256 _l2SourceChainId,
+        uint256 _l2DestinationChainId,
+        uint32 _minGasLimit,
+        bytes32 _hash
+    )
+        external
+        onlyEOA
+        nonReentrant
+    {
+        address cancelL1Address = cancelL1[_hash];
+        require(successCT[_hash] == true, "not cancel");
+        require(cancelL1Address != address(0), "not cancel");
+        bytes memory message;
 
-    //     message = makeEncodeWithSignature(
-    //         CANCEL_CT,
-    //         cancelL1Address,
-    //         0,
-    //         _salecount,
-    //         _hash
-    //     );
+        message = makeEncodeWithSignature(
+            CANCEL_CT,
+            cancelL1Address,
+            0,
+            _salecount,
+            _l2DestinationChainId,
+            _hash
+        );
 
-    //     IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
-    //         chainData[_l2SourceChainId].l2CrossTradeContract, 
-    //         message, 
-    //         _minGasLimit
-    //     );
-    // }
+        IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
+            chainData[_l2SourceChainId].l2CrossTradeContract, 
+            message, 
+            _minGasLimit
+        );
+    }
         
     /// @notice This is a function that changes the value that the requester wants to receive.
     ///         %% WARNING %%

@@ -30,9 +30,9 @@ async function main() {
     "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
+    "1310000000000000000",
+    "200000000000000000",
+    "12",
     "11155111",
     "55007",
     "111551119090"
@@ -43,14 +43,8 @@ async function main() {
   // console.log("approved");
   console.log("provideCt token:")
   // console.log(await L1crossTradeSource.chainData("55007"))
-  let res = await L1crossTradeSource.provideCT(
-    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
-    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
-    "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
+  let res = await L1crossTradeSource.resendProvideCTMessage(
+    "12",
     "55007",
     "111551119090",
     "200000",

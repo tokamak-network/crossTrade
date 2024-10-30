@@ -133,11 +133,14 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l1token,
             _l2SourceToken,
             _l2DestinationToken
+            // msg.sender,
         ));
         require(registerCheck[id] == false, "already registerToken");
         registerCheck[id] = true;
 
-        // registerCheck[msg.sender][id]
+        // registerCheck[msg.sender][id] => this is for the frontend
+        // have a seperate function  getRegisterCheck() and dont input the id but the params
+        // 
     }
     
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
@@ -313,10 +316,10 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     )
         external
         nonReentrant
-       /// checkL1(_l1ChainId)
-       /// providerCheck(_saleCount)
+        checkL1(_l1ChainId)
+        providerCheck(_saleCount)
     {
-       /// require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
+        require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
 
         uint256 ctAmount = _ctAmount;
         if(_ctAmount == 0) {
@@ -334,23 +337,22 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             IERC20(l2SourceToken).safeTransfer(_from,totalAmount);
         }
 
-        // uint256 _l2SourceChainId = _getChainID();
+        uint256 _l2SourceChainId = _getChainID();
 
-        // emit ProviderClaimCT(
-        //     dealData[_saleCount].l1token,
-        //     l2SourceToken,
-        //     dealData[_saleCount].l2DestinationToken,
-        //     dealData[_saleCount].requester,
-        //     _from,
-        //     totalAmount,
-        //     ctAmount,
-        //     _saleCount,
-        //     _l1ChainId,
-        //     _l2SourceChainId,
-        //     _l2DestinationChainId,
-        //     _hash
-        // );
-
+        emit ProviderClaimCT(
+            dealData[_saleCount].l1token,
+            l2SourceToken,
+            dealData[_saleCount].l2DestinationToken,
+            dealData[_saleCount].requester,
+            _from,
+            totalAmount,
+            ctAmount,
+            _saleCount,
+            _l1ChainId,
+            _l2SourceChainId,
+            _l2DestinationChainId,
+            _hash
+        );
     }
 
     /// @notice When canceling a function called from L1, the amount is given to the requester.
@@ -497,9 +499,9 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _totalAmount,
             _ctAmount,
             _saleCount,
+            l1ChainId,
             l2SourceChainId,
-            l2DestinationChainId,
-            l1ChainId
+            l2DestinationChainId
         );
 
         dealData[_saleCount] = RequestData({

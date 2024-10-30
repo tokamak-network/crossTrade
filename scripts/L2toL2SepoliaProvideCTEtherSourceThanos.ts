@@ -8,7 +8,7 @@ import Usdc_ABI from '../../artifacts/contracts/mockUsdc/v2/FiatTokenV2_2.sol/Fi
 
 async function main() {
 
-  let L1crossTradeSource = await ethers.getContractAt("L2toL2CrossTradeL1","0xfafce7ebd6b1e142f7c03050ee19f2ce43673901");
+  let L1crossTradeSource = await ethers.getContractAt("L2toL2CrossTradeL1","0xFAfCe7Ebd6B1e142f7C03050Ee19F2Ce43673901");
   // let UsdContract = await ethers.getContractAt("FiatTokenV2_2","0x42d3b260c761cD5da022dB56Fe2F89c4A909b04A")
   // console.log("name: ",await UsdContract.name());
   // console.log(await L1crossTradeSource.crossDomainMessenger())
@@ -26,16 +26,16 @@ async function main() {
   // )
 
   let computedHash = await L1crossTradeSource.getHash(
-    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
-    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+    "0x0000000000000000000000000000000000000000",
+    "0x4200000000000000000000000000000000000486",
+    "0x0000000000000000000000000000000000000000",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
+    "330000000000000",
+    "220000000000000",
+    "2",
     "11155111",
-    "55007",
-    "111551119090"
+    "111551119090",
+    "55007"
   )
   console.log(computedHash)
   // console.log("approve before request");
@@ -44,17 +44,18 @@ async function main() {
   console.log("provideCt token:")
   // console.log(await L1crossTradeSource.chainData("55007"))
   let res = await L1crossTradeSource.provideCT(
-    "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044",
-    "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+    "0x0000000000000000000000000000000000000000",
+    "0x4200000000000000000000000000000000000486",
+    "0x0000000000000000000000000000000000000000",
     "0xB4032ff3335F0E54Fb0291793B35955e5dA30B0C",
-    "1350000000000000000",
-    "250000000000000000",
-    "14",
-    "55007",
+    "330000000000000",
+    "220000000000000",
+    "2",
     "111551119090",
+    "55007",
     "200000",
     computedHash,
+    {value:"220000000000000"}
   )
   console.log("resss:",res)
   console.log("token provided");

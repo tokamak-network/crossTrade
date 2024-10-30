@@ -8,16 +8,16 @@ contract L2toL2CrossTradeProxy is Proxy, L2toL2CrossTradeStorage {
 
     /// @notice L2CrossTrade initial settings
     /// @param _crossDomainMessenger crossDomainMessenger address
-    /// @param _legacyERC20 legacyERC20 address 
+    /// @param _legacyERC20ETH legacyERC20ETH address 
     function initialize(
         address _crossDomainMessenger,
-        address _legacyERC20
+        address _legacyERC20ETH
     ) 
         external
         onlyOwner
     {
         crossDomainMessenger = _crossDomainMessenger;
-        legacyERC20ETH = _legacyERC20;
+        legacyERC20ETH = _legacyERC20ETH;
     }
 
     /// @notice Store addresses for chainId
