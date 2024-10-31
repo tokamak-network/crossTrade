@@ -58,12 +58,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         bytes32 _hash
     );
 
-    // event EditCT(
-    //     address _requester,
-    //     uint256 _ctAmount,
-    //     uint256 indexed _saleCount
-    // );
-
     //=======modifier========
 
     modifier onlyEOA() {
@@ -88,11 +82,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         require(_amount > 0 , "input amount need nonZero");
         _;
     }
-
-    // modifier nonZeroAddr(address _addr) {
-    //     require(_addr != address(0) , "nonZeroAddr");
-    //     _;
-    // }
 
     //=======external========
 
@@ -361,13 +350,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             )
         );
     }
-
-    // //=======Temporary view for testing ========
-    // function getChainID() public view returns (uint256 id) {
-    //     assembly {
-    //         id := chainid()
-    //     }
-    // }
 
     //=======internal========
 
