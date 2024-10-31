@@ -13,6 +13,14 @@ If you have already called the provideCT function, but the transaction failed in
 
 And after providingCT is called, you cannot edit or cancel.
 
+## Contract Address on mainnet 
+- L1CrossTradeProxy : [0x23DDf582c26Da5FDb7514aD22e7D74A369faD117](https://etherscan.io/address/0x23DDf582c26Da5FDb7514aD22e7D74A369faD117#code)
+- L1CrossTrade : [0x26947c3dc054c5220fe3f999e2f9109eaea17e26](https://etherscan.io/address/0x26947c3dc054c5220fe3f999e2f9109eaea17e26)
+
+## Contract Address on Titan
+- L2CrossTradeProxy : [0xD6e99ec486Afc8ae26d36a6Ab6240D1e0ecf0271](https://explorer.titan.tokamak.network/address/0xD6e99ec486Afc8ae26d36a6Ab6240D1e0ecf0271)
+- L2CrossTrade : [0xC597fE33d2066c9929a4AF3a0004f5ec55d39E06](https://explorer.titan.tokamak.network/address/0xC597fE33d2066c9929a4AF3a0004f5ec55d39E06)
+
 ## Contract function
 
 ### L1CrossTradeContract
