@@ -219,22 +219,22 @@
   },
   "ast": {
     "absolutePath": "src/dispute/interfaces/IBigStepper.sol",
-    "id": 58017,
+    "id": 65727,
     "exportedSymbols": {
       "IBigStepper": [
-        58016
+        65726
       ],
       "IPreimageOracle": [
-        56303
+        64127
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:3341:100",
+    "src": "32:3341:118",
     "nodes": [
       {
-        "id": 57993,
+        "id": 65703,
         "nodeType": "PragmaDirective",
-        "src": "32:24:100",
+        "src": "32:24:118",
         "nodes": [],
         "literals": [
           "solidity",
@@ -244,24 +244,24 @@
         ]
       },
       {
-        "id": 57995,
+        "id": 65705,
         "nodeType": "ImportDirective",
-        "src": "58:76:100",
+        "src": "58:76:118",
         "nodes": [],
         "absolutePath": "src/cannon/interfaces/IPreimageOracle.sol",
         "file": "src/cannon/interfaces/IPreimageOracle.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 58017,
-        "sourceUnit": 56304,
+        "scope": 65727,
+        "sourceUnit": 64128,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 57994,
+              "id": 65704,
               "name": "IPreimageOracle",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 56303,
-              "src": "67:15:100",
+              "referencedDeclaration": 64127,
+              "src": "67:15:118",
               "typeDescriptions": {}
             },
             "nameLocation": "-1:-1:-1"
@@ -270,19 +270,19 @@
         "unitAlias": ""
       },
       {
-        "id": 58016,
+        "id": 65726,
         "nodeType": "ContractDefinition",
-        "src": "2494:878:100",
+        "src": "2494:878:118",
         "nodes": [
           {
-            "id": 58008,
+            "id": 65718,
             "nodeType": "FunctionDefinition",
-            "src": "3062:171:100",
+            "src": "3062:171:118",
             "nodes": [],
             "documentation": {
-              "id": 57997,
+              "id": 65707,
               "nodeType": "StructuredDocumentation",
-              "src": "2522:535:100",
+              "src": "2522:535:118",
               "text": "@notice Performs a single instruction step from a given prestate and returns the poststate\n         hash.\n @param _stateData The preimage of the prestate hash.\n @param _proof A proof for the inclusion of the prestate's memory in the merkle tree.\n @param _localContext The local key context for the preimage oracle. Optional, can be set as a constant\n                      if the caller only requires one set of local keys.\n @return postState_ The poststate hash after the instruction step."
             },
             "functionSelector": "836e7b32",
@@ -290,20 +290,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "step",
-            "nameLocation": "3071:4:100",
+            "nameLocation": "3071:4:118",
             "parameters": {
-              "id": 58004,
+              "id": 65714,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 57999,
+                  "id": 65709,
                   "mutability": "mutable",
                   "name": "_stateData",
-                  "nameLocation": "3100:10:100",
+                  "nameLocation": "3100:10:118",
                   "nodeType": "VariableDeclaration",
-                  "scope": 58008,
-                  "src": "3085:25:100",
+                  "scope": 65718,
+                  "src": "3085:25:118",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -311,10 +311,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 57998,
+                    "id": 65708,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3085:5:100",
+                    "src": "3085:5:118",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -324,13 +324,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 58001,
+                  "id": 65711,
                   "mutability": "mutable",
                   "name": "_proof",
-                  "nameLocation": "3135:6:100",
+                  "nameLocation": "3135:6:118",
                   "nodeType": "VariableDeclaration",
-                  "scope": 58008,
-                  "src": "3120:21:100",
+                  "scope": 65718,
+                  "src": "3120:21:118",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -338,10 +338,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 58000,
+                    "id": 65710,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3120:5:100",
+                    "src": "3120:5:118",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -351,13 +351,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 58003,
+                  "id": 65713,
                   "mutability": "mutable",
                   "name": "_localContext",
-                  "nameLocation": "3159:13:100",
+                  "nameLocation": "3159:13:118",
                   "nodeType": "VariableDeclaration",
-                  "scope": 58008,
-                  "src": "3151:21:100",
+                  "scope": 65718,
+                  "src": "3151:21:118",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -365,10 +365,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 58002,
+                    "id": 65712,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3151:7:100",
+                    "src": "3151:7:118",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -377,21 +377,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3075:103:100"
+              "src": "3075:103:118"
             },
             "returnParameters": {
-              "id": 58007,
+              "id": 65717,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 58006,
+                  "id": 65716,
                   "mutability": "mutable",
                   "name": "postState_",
-                  "nameLocation": "3221:10:100",
+                  "nameLocation": "3221:10:118",
                   "nodeType": "VariableDeclaration",
-                  "scope": 58008,
-                  "src": "3213:18:100",
+                  "scope": 65718,
+                  "src": "3213:18:118",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -399,10 +399,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 58005,
+                    "id": 65715,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3213:7:100",
+                    "src": "3213:7:118",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -411,22 +411,22 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3212:20:100"
+              "src": "3212:20:118"
             },
-            "scope": 58016,
+            "scope": 65726,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 58015,
+            "id": 65725,
             "nodeType": "FunctionDefinition",
-            "src": "3304:66:100",
+            "src": "3304:66:118",
             "nodes": [],
             "documentation": {
-              "id": 58009,
+              "id": 65719,
               "nodeType": "StructuredDocumentation",
-              "src": "3239:60:100",
+              "src": "3239:60:118",
               "text": "@notice Returns the preimage oracle used by the stepper."
             },
             "functionSelector": "7dc0d1d0",
@@ -434,55 +434,55 @@
             "kind": "function",
             "modifiers": [],
             "name": "oracle",
-            "nameLocation": "3313:6:100",
+            "nameLocation": "3313:6:118",
             "parameters": {
-              "id": 58010,
+              "id": 65720,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "3319:2:100"
+              "src": "3319:2:118"
             },
             "returnParameters": {
-              "id": 58014,
+              "id": 65724,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 58013,
+                  "id": 65723,
                   "mutability": "mutable",
                   "name": "oracle_",
-                  "nameLocation": "3361:7:100",
+                  "nameLocation": "3361:7:118",
                   "nodeType": "VariableDeclaration",
-                  "scope": 58015,
-                  "src": "3345:23:100",
+                  "scope": 65725,
+                  "src": "3345:23:118",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IPreimageOracle_$56303",
+                    "typeIdentifier": "t_contract$_IPreimageOracle_$64127",
                     "typeString": "contract IPreimageOracle"
                   },
                   "typeName": {
-                    "id": 58012,
+                    "id": 65722,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 58011,
+                      "id": 65721,
                       "name": "IPreimageOracle",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 56303,
-                      "src": "3345:15:100"
+                      "referencedDeclaration": 64127,
+                      "src": "3345:15:118"
                     },
-                    "referencedDeclaration": 56303,
-                    "src": "3345:15:100",
+                    "referencedDeclaration": 64127,
+                    "src": "3345:15:118",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IPreimageOracle_$56303",
+                      "typeIdentifier": "t_contract$_IPreimageOracle_$64127",
                       "typeString": "contract IPreimageOracle"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "3344:25:100"
+              "src": "3344:25:118"
             },
-            "scope": 58016,
+            "scope": 65726,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -494,22 +494,22 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 57996,
+          "id": 65706,
           "nodeType": "StructuredDocumentation",
-          "src": "136:2358:100",
+          "src": "136:2358:118",
           "text": "@title IBigStepper\n @notice An interface for a contract with a state transition function that\n         will accept a pre state and return a post state.\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⠶⢅⠒⢄⢔⣶⡦⣤⡤⠄⣀⠀⠀⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠨⡏⠀⠀⠈⠢⣙⢯⣄⠀⢨⠯⡺⡘⢄⠀⠀⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣶⡆⠀⠀⠀⠀⠈⠓⠬⡒⠡⣀⢙⡜⡀⠓⠄⠀⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡷⠿⣧⣀⡀⠀⠀⠀⠀⠀⠀⠉⠣⣞⠩⠥⠀⠼⢄⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠉⢹⣶⠒⠒⠂⠈⠉⠁⠘⡆⠀⣿⣿⠫⡄⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢶⣤⣀⡀⠀⠀⢸⡿⠀⠀⠀⠀⠀⢀⠞⠀⠀⢡⢨⢀⡄⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡒⣿⢿⡤⠝⡣⠉⠁⠚⠛⠀⠤⠤⣄⡰⠁⠀⠀⠀⠉⠙⢸⠀⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⢯⡌⡿⡇⠘⡷⠀⠁⠀⠀⢀⣰⠢⠲⠛⣈⣸⠦⠤⠶⠴⢬⣐⣊⡂⠀\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡪⡗⢫⠞⠀⠆⣀⠻⠤⠴⠐⠚⣉⢀⠦⠂⠋⠁⠀⠁⠀⠀⠀⠀⢋⠉⠇⠀\n ⠀⠀⠀⠀⣀⡤⠐⠒⠘⡹⠉⢸⠇⠸⠀⠀⠀⠀⣀⣤⠴⠚⠉⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠼⠀⣾⠀\n ⠀⠀⠀⡰⠀⠉⠉⠀⠁⠀⠀⠈⢇⠈⠒⠒⠘⠈⢀⢡⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⢸⡄\n ⠀⠀⠸⣿⣆⠤⢀⡀⠀⠀⠀⠀⢘⡌⠀⠀⣀⣀⣀⡈⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⢸⡇\n ⠀⠀⢸⣀⠀⠉⠒⠐⠛⠋⠭⠭⠍⠉⠛⠒⠒⠒⠀⠒⠚⠛⠛⠛⠩⠭⠭⠭⠭⠤⠤⠤⠤⠤⠭⠭⠉⠓⡆\n ⠀⠀⠘⠿⣷⣶⣤⣤⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇\n ⠀⠀⠀⠀⠀⠉⠙⠛⠛⠻⠿⢿⣿⣿⣷⣶⣶⣶⣤⣤⣀⣁⣛⣃⣒⠿⠿⠿⠤⠠⠄⠤⠤⢤⣛⣓⣂⣻⡇\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠙⠛⠻⠿⠿⠿⢿⣿⣿⣿⣷⣶⣶⣾⣿⣿⣿⣿⠿⠟⠁\n ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠈⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀"
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          58016
+          65726
         ],
         "name": "IBigStepper",
-        "nameLocation": "2504:11:100",
-        "scope": 58017,
+        "nameLocation": "2504:11:118",
+        "scope": 65727,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 100
+  "id": 118
 }
