@@ -10,139 +10,139 @@
   },
   "ast": {
     "absolutePath": "src/libraries/DisputeErrors.sol",
-    "id": 41367,
+    "id": 40584,
     "exportedSymbols": {
       "AlreadyChallenged": [
-        41357
+        40574
       ],
       "BlockHashNotPresent": [
-        41366
+        40583
       ],
       "BlockNumberOOB": [
-        41363
+        40580
       ],
       "BondAmount": [
-        41400
+        40617
       ],
       "BondTooLow": [
-        41309
+        40526
       ],
       "CannotDefendRootClaim": [
-        41312
+        40529
       ],
       "Claim": [
-        41396
+        40613
       ],
       "ClaimAlreadyExists": [
-        41315
+        40532
       ],
       "ClaimAlreadyResolved": [
-        41351
+        40568
       ],
       "ClaimHash": [
-        41398
+        40615
       ],
       "Clock": [
-        41408
+        40625
       ],
       "ClockNotExpired": [
-        41327
+        40544
       ],
       "ClockTimeExceeded": [
-        41324
+        40541
       ],
       "Duration": [
-        41404
+        40621
       ],
       "GameAlreadyExists": [
-        41300
+        40517
       ],
       "GameDepthExceeded": [
-        41330
+        40547
       ],
       "GameId": [
-        41406
+        40623
       ],
       "GameNotInProgress": [
-        41321
+        40538
       ],
       "GameStatus": [
-        41419
+        40636
       ],
       "GameType": [
-        41412
+        40629
       ],
       "GameTypes": [
-        41445
+        40662
       ],
       "Hash": [
-        41394
+        40611
       ],
       "InvalidClaim": [
-        41318
+        40535
       ],
       "InvalidLocalIdent": [
-        41345
+        40562
       ],
       "InvalidParent": [
-        41333
-      ],
-      "InvalidPrestate": [
-        41336
-      ],
-      "InvalidSignature": [
-        41354
-      ],
-      "L1HeadTooOld": [
-        41342
-      ],
-      "LibClock": [
         40550
       ],
+      "InvalidPrestate": [
+        40553
+      ],
+      "InvalidSignature": [
+        40571
+      ],
+      "L1HeadTooOld": [
+        40559
+      ],
+      "LibClock": [
+        40019
+      ],
       "LibGameId": [
-        40592
+        40061
       ],
       "LibHashing": [
-        40614
+        40083
       ],
       "LibPosition": [
-        40772
+        40241
       ],
       "NoImplementation": [
-        41294
+        40511
       ],
       "NotOwner": [
-        41360
+        40577
       ],
       "OutOfOrderResolution": [
-        41348
+        40565
       ],
       "Position": [
-        41410
+        40627
       ],
       "Timestamp": [
-        41402
+        40619
       ],
       "UnexpectedRootClaim": [
-        41306
+        40523
       ],
       "VMStatus": [
-        41414
+        40631
       ],
       "VMStatuses": [
-        41479
+        40696
       ],
       "ValidStep": [
-        41339
+        40556
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:4049:92",
+    "src": "32:4049:81",
     "nodes": [
       {
-        "id": 41287,
+        "id": 40504,
         "nodeType": "PragmaDirective",
-        "src": "32:24:92",
+        "src": "32:24:81",
         "nodes": [],
         "literals": [
           "solidity",
@@ -152,617 +152,617 @@
         ]
       },
       {
-        "id": 41288,
+        "id": 40505,
         "nodeType": "ImportDirective",
-        "src": "58:28:92",
+        "src": "58:28:81",
         "nodes": [],
         "absolutePath": "src/libraries/DisputeTypes.sol",
         "file": "./DisputeTypes.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 41367,
-        "sourceUnit": 41480,
+        "scope": 40584,
+        "sourceUnit": 40697,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 41294,
+        "id": 40511,
         "nodeType": "ErrorDefinition",
-        "src": "428:42:92",
+        "src": "428:42:81",
         "nodes": [],
         "documentation": {
-          "id": 41289,
+          "id": 40506,
           "nodeType": "StructuredDocumentation",
-          "src": "284:144:92",
+          "src": "284:144:81",
           "text": "@notice Thrown when a dispute game is attempted to be created with an unsupported game type.\n @param gameType The unsupported game type."
         },
         "errorSelector": "44265d6f",
         "name": "NoImplementation",
-        "nameLocation": "434:16:92",
+        "nameLocation": "434:16:81",
         "parameters": {
-          "id": 41293,
+          "id": 40510,
           "nodeType": "ParameterList",
           "parameters": [
             {
               "constant": false,
-              "id": 41292,
+              "id": 40509,
               "mutability": "mutable",
               "name": "gameType",
-              "nameLocation": "460:8:92",
+              "nameLocation": "460:8:81",
               "nodeType": "VariableDeclaration",
-              "scope": 41294,
-              "src": "451:17:92",
+              "scope": 40511,
+              "src": "451:17:81",
               "stateVariable": false,
               "storageLocation": "default",
               "typeDescriptions": {
-                "typeIdentifier": "t_userDefinedValueType$_GameType_$41412",
+                "typeIdentifier": "t_userDefinedValueType$_GameType_$40629",
                 "typeString": "GameType"
               },
               "typeName": {
-                "id": 41291,
+                "id": 40508,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 41290,
+                  "id": 40507,
                   "name": "GameType",
                   "nameLocations": [
-                    "451:8:92"
+                    "451:8:81"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 41412,
-                  "src": "451:8:92"
+                  "referencedDeclaration": 40629,
+                  "src": "451:8:81"
                 },
-                "referencedDeclaration": 41412,
-                "src": "451:8:92",
+                "referencedDeclaration": 40629,
+                "src": "451:8:81",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_GameType_$41412",
+                  "typeIdentifier": "t_userDefinedValueType$_GameType_$40629",
                   "typeString": "GameType"
                 }
               },
               "visibility": "internal"
             }
           ],
-          "src": "450:19:92"
+          "src": "450:19:81"
         }
       },
       {
-        "id": 41300,
+        "id": 40517,
         "nodeType": "ErrorDefinition",
-        "src": "625:35:92",
+        "src": "625:35:81",
         "nodes": [],
         "documentation": {
-          "id": 41295,
+          "id": 40512,
           "nodeType": "StructuredDocumentation",
-          "src": "472:153:92",
+          "src": "472:153:81",
           "text": "@notice Thrown when a dispute game that already exists is attempted to be created.\n @param uuid The UUID of the dispute game that already exists."
         },
         "errorSelector": "014f6fe5",
         "name": "GameAlreadyExists",
-        "nameLocation": "631:17:92",
+        "nameLocation": "631:17:81",
         "parameters": {
-          "id": 41299,
+          "id": 40516,
           "nodeType": "ParameterList",
           "parameters": [
             {
               "constant": false,
-              "id": 41298,
+              "id": 40515,
               "mutability": "mutable",
               "name": "uuid",
-              "nameLocation": "654:4:92",
+              "nameLocation": "654:4:81",
               "nodeType": "VariableDeclaration",
-              "scope": 41300,
-              "src": "649:9:92",
+              "scope": 40517,
+              "src": "649:9:81",
               "stateVariable": false,
               "storageLocation": "default",
               "typeDescriptions": {
-                "typeIdentifier": "t_userDefinedValueType$_Hash_$41394",
+                "typeIdentifier": "t_userDefinedValueType$_Hash_$40611",
                 "typeString": "Hash"
               },
               "typeName": {
-                "id": 41297,
+                "id": 40514,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 41296,
+                  "id": 40513,
                   "name": "Hash",
                   "nameLocations": [
-                    "649:4:92"
+                    "649:4:81"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 41394,
-                  "src": "649:4:92"
+                  "referencedDeclaration": 40611,
+                  "src": "649:4:81"
                 },
-                "referencedDeclaration": 41394,
-                "src": "649:4:92",
+                "referencedDeclaration": 40611,
+                "src": "649:4:81",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Hash_$41394",
+                  "typeIdentifier": "t_userDefinedValueType$_Hash_$40611",
                   "typeString": "Hash"
                 }
               },
               "visibility": "internal"
             }
           ],
-          "src": "648:11:92"
+          "src": "648:11:81"
         }
       },
       {
-        "id": 41306,
+        "id": 40523,
         "nodeType": "ErrorDefinition",
-        "src": "865:43:92",
+        "src": "865:43:81",
         "nodes": [],
         "documentation": {
-          "id": 41301,
+          "id": 40518,
           "nodeType": "StructuredDocumentation",
-          "src": "662:203:92",
+          "src": "662:203:81",
           "text": "@notice Thrown when the root claim has an unexpected VM status.\n         Some games can only start with a root-claim with a specific status.\n @param rootClaim is the claim that was unexpected."
         },
         "errorSelector": "f40239db",
         "name": "UnexpectedRootClaim",
-        "nameLocation": "871:19:92",
+        "nameLocation": "871:19:81",
         "parameters": {
-          "id": 41305,
+          "id": 40522,
           "nodeType": "ParameterList",
           "parameters": [
             {
               "constant": false,
-              "id": 41304,
+              "id": 40521,
               "mutability": "mutable",
               "name": "rootClaim",
-              "nameLocation": "897:9:92",
+              "nameLocation": "897:9:81",
               "nodeType": "VariableDeclaration",
-              "scope": 41306,
-              "src": "891:15:92",
+              "scope": 40523,
+              "src": "891:15:81",
               "stateVariable": false,
               "storageLocation": "default",
               "typeDescriptions": {
-                "typeIdentifier": "t_userDefinedValueType$_Claim_$41396",
+                "typeIdentifier": "t_userDefinedValueType$_Claim_$40613",
                 "typeString": "Claim"
               },
               "typeName": {
-                "id": 41303,
+                "id": 40520,
                 "nodeType": "UserDefinedTypeName",
                 "pathNode": {
-                  "id": 41302,
+                  "id": 40519,
                   "name": "Claim",
                   "nameLocations": [
-                    "891:5:92"
+                    "891:5:81"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 41396,
-                  "src": "891:5:92"
+                  "referencedDeclaration": 40613,
+                  "src": "891:5:81"
                 },
-                "referencedDeclaration": 41396,
-                "src": "891:5:92",
+                "referencedDeclaration": 40613,
+                "src": "891:5:81",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Claim_$41396",
+                  "typeIdentifier": "t_userDefinedValueType$_Claim_$40613",
                   "typeString": "Claim"
                 }
               },
               "visibility": "internal"
             }
           ],
-          "src": "890:17:92"
+          "src": "890:17:81"
         }
       },
       {
-        "id": 41309,
+        "id": 40526,
         "nodeType": "ErrorDefinition",
-        "src": "1223:19:92",
+        "src": "1223:19:81",
         "nodes": [],
         "documentation": {
-          "id": 41307,
+          "id": 40524,
           "nodeType": "StructuredDocumentation",
-          "src": "1106:117:92",
+          "src": "1106:117:81",
           "text": "@notice Thrown when a supplied bond is too low to cover the\n         cost of the next possible counter claim."
         },
         "errorSelector": "6e360f94",
         "name": "BondTooLow",
-        "nameLocation": "1229:10:92",
+        "nameLocation": "1229:10:81",
         "parameters": {
-          "id": 41308,
+          "id": 40525,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1239:2:92"
+          "src": "1239:2:81"
         }
       },
       {
-        "id": 41312,
+        "id": 40529,
         "nodeType": "ErrorDefinition",
-        "src": "1315:30:92",
+        "src": "1315:30:81",
         "nodes": [],
         "documentation": {
-          "id": 41310,
+          "id": 40527,
           "nodeType": "StructuredDocumentation",
-          "src": "1244:71:92",
+          "src": "1244:71:81",
           "text": "@notice Thrown when a defense against the root claim is attempted."
         },
         "errorSelector": "a42637bc",
         "name": "CannotDefendRootClaim",
-        "nameLocation": "1321:21:92",
+        "nameLocation": "1321:21:81",
         "parameters": {
-          "id": 41311,
+          "id": 40528,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1342:2:92"
+          "src": "1342:2:81"
         }
       },
       {
-        "id": 41315,
+        "id": 40532,
         "nodeType": "ErrorDefinition",
-        "src": "1425:27:92",
+        "src": "1425:27:81",
         "nodes": [],
         "documentation": {
-          "id": 41313,
+          "id": 40530,
           "nodeType": "StructuredDocumentation",
-          "src": "1347:78:92",
+          "src": "1347:78:81",
           "text": "@notice Thrown when a claim is attempting to be made that already exists."
         },
         "errorSelector": "80497e3b",
         "name": "ClaimAlreadyExists",
-        "nameLocation": "1431:18:92",
+        "nameLocation": "1431:18:81",
         "parameters": {
-          "id": 41314,
+          "id": 40531,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1449:2:92"
+          "src": "1449:2:81"
         }
       },
       {
-        "id": 41318,
+        "id": 40535,
         "nodeType": "ErrorDefinition",
-        "src": "1508:21:92",
+        "src": "1508:21:81",
         "nodes": [],
         "documentation": {
-          "id": 41316,
+          "id": 40533,
           "nodeType": "StructuredDocumentation",
-          "src": "1454:54:92",
+          "src": "1454:54:81",
           "text": "@notice Thrown when a given claim is invalid (0)."
         },
         "errorSelector": "ed3c247c",
         "name": "InvalidClaim",
-        "nameLocation": "1514:12:92",
+        "nameLocation": "1514:12:81",
         "parameters": {
-          "id": 41317,
+          "id": 40534,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1526:2:92"
+          "src": "1526:2:81"
         }
       },
       {
-        "id": 41321,
+        "id": 40538,
         "nodeType": "ErrorDefinition",
-        "src": "1665:26:92",
+        "src": "1665:26:81",
         "nodes": [],
         "documentation": {
-          "id": 41319,
+          "id": 40536,
           "nodeType": "StructuredDocumentation",
-          "src": "1531:134:92",
+          "src": "1531:134:81",
           "text": "@notice Thrown when an action that requires the game to be `IN_PROGRESS` is invoked when\n         the game is not in progress."
         },
         "errorSelector": "67fe1950",
         "name": "GameNotInProgress",
-        "nameLocation": "1671:17:92",
+        "nameLocation": "1671:17:81",
         "parameters": {
-          "id": 41320,
+          "id": 40537,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1688:2:92"
+          "src": "1688:2:81"
         }
       },
       {
-        "id": 41324,
+        "id": 40541,
         "nodeType": "ErrorDefinition",
-        "src": "1779:26:92",
+        "src": "1779:26:81",
         "nodes": [],
         "documentation": {
-          "id": 41322,
+          "id": 40539,
           "nodeType": "StructuredDocumentation",
-          "src": "1693:86:92",
+          "src": "1693:86:81",
           "text": "@notice Thrown when a move is attempted to be made after the clock has timed out."
         },
         "errorSelector": "3381d114",
         "name": "ClockTimeExceeded",
-        "nameLocation": "1785:17:92",
+        "nameLocation": "1785:17:81",
         "parameters": {
-          "id": 41323,
+          "id": 40540,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1802:2:92"
+          "src": "1802:2:81"
         }
       },
       {
-        "id": 41327,
+        "id": 40544,
         "nodeType": "ErrorDefinition",
-        "src": "1879:24:92",
+        "src": "1879:24:81",
         "nodes": [],
         "documentation": {
-          "id": 41325,
+          "id": 40542,
           "nodeType": "StructuredDocumentation",
-          "src": "1807:72:92",
+          "src": "1807:72:81",
           "text": "@notice Thrown when the game is attempted to be resolved too early."
         },
         "errorSelector": "f2440b53",
         "name": "ClockNotExpired",
-        "nameLocation": "1885:15:92",
+        "nameLocation": "1885:15:81",
         "parameters": {
-          "id": 41326,
+          "id": 40543,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "1900:2:92"
+          "src": "1900:2:81"
         }
       },
       {
-        "id": 41330,
+        "id": 40547,
         "nodeType": "ErrorDefinition",
-        "src": "2006:26:92",
+        "src": "2006:26:81",
         "nodes": [],
         "documentation": {
-          "id": 41328,
+          "id": 40545,
           "nodeType": "StructuredDocumentation",
-          "src": "1905:101:92",
+          "src": "1905:101:81",
           "text": "@notice Thrown when a move is attempted to be made at or greater than the max depth of the game."
         },
         "errorSelector": "56f57b2b",
         "name": "GameDepthExceeded",
-        "nameLocation": "2012:17:92",
+        "nameLocation": "2012:17:81",
         "parameters": {
-          "id": 41329,
+          "id": 40546,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2029:2:92"
+          "src": "2029:2:81"
         }
       },
       {
-        "id": 41333,
+        "id": 40550,
         "nodeType": "ErrorDefinition",
-        "src": "2108:22:92",
+        "src": "2108:22:81",
         "nodes": [],
         "documentation": {
-          "id": 41331,
+          "id": 40548,
           "nodeType": "StructuredDocumentation",
-          "src": "2034:74:92",
+          "src": "2034:74:81",
           "text": "@notice Thrown when a step is attempted above the maximum game depth."
         },
         "errorSelector": "5f53dd98",
         "name": "InvalidParent",
-        "nameLocation": "2114:13:92",
+        "nameLocation": "2114:13:81",
         "parameters": {
-          "id": 41332,
+          "id": 40549,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2127:2:92"
+          "src": "2127:2:81"
         }
       },
       {
-        "id": 41336,
+        "id": 40553,
         "nodeType": "ErrorDefinition",
-        "src": "2199:24:92",
+        "src": "2199:24:81",
         "nodes": [],
         "documentation": {
-          "id": 41334,
+          "id": 40551,
           "nodeType": "StructuredDocumentation",
-          "src": "2132:67:92",
+          "src": "2132:67:81",
           "text": "@notice Thrown when an invalid prestate is supplied to `step`."
         },
         "errorSelector": "696550ff",
         "name": "InvalidPrestate",
-        "nameLocation": "2205:15:92",
+        "nameLocation": "2205:15:81",
         "parameters": {
-          "id": 41335,
+          "id": 40552,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2220:2:92"
+          "src": "2220:2:81"
         }
       },
       {
-        "id": 41339,
+        "id": 40556,
         "nodeType": "ErrorDefinition",
-        "src": "2313:18:92",
+        "src": "2313:18:81",
         "nodes": [],
         "documentation": {
-          "id": 41337,
+          "id": 40554,
           "nodeType": "StructuredDocumentation",
-          "src": "2225:88:92",
+          "src": "2225:88:81",
           "text": "@notice Thrown when a step is made that computes the expected post state correctly."
         },
         "errorSelector": "fb4e40dd",
         "name": "ValidStep",
-        "nameLocation": "2319:9:92",
+        "nameLocation": "2319:9:81",
         "parameters": {
-          "id": 41338,
+          "id": 40555,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2328:2:92"
+          "src": "2328:2:81"
         }
       },
       {
-        "id": 41342,
+        "id": 40559,
         "nodeType": "ErrorDefinition",
-        "src": "2471:21:92",
+        "src": "2471:21:81",
         "nodes": [],
         "documentation": {
-          "id": 41340,
+          "id": 40557,
           "nodeType": "StructuredDocumentation",
-          "src": "2333:138:92",
+          "src": "2333:138:81",
           "text": "@notice Thrown when a game is attempted to be initialized with an L1 head that does\n         not contain the disputed output root."
         },
         "errorSelector": "13809ba5",
         "name": "L1HeadTooOld",
-        "nameLocation": "2477:12:92",
+        "nameLocation": "2477:12:81",
         "parameters": {
-          "id": 41341,
+          "id": 40558,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2489:2:92"
+          "src": "2489:2:81"
         }
       },
       {
-        "id": 41345,
+        "id": 40562,
         "nodeType": "ErrorDefinition",
-        "src": "2588:26:92",
+        "src": "2588:26:81",
         "nodes": [],
         "documentation": {
-          "id": 41343,
+          "id": 40560,
           "nodeType": "StructuredDocumentation",
-          "src": "2494:94:92",
+          "src": "2494:94:81",
           "text": "@notice Thrown when an invalid local identifier is passed to the `addLocalData` function."
         },
         "errorSelector": "ff137e65",
         "name": "InvalidLocalIdent",
-        "nameLocation": "2594:17:92",
+        "nameLocation": "2594:17:81",
         "parameters": {
-          "id": 41344,
+          "id": 40561,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2611:2:92"
+          "src": "2611:2:81"
         }
       },
       {
-        "id": 41348,
+        "id": 40565,
         "nodeType": "ErrorDefinition",
-        "src": "2671:29:92",
+        "src": "2671:29:81",
         "nodes": [],
         "documentation": {
-          "id": 41346,
+          "id": 40563,
           "nodeType": "StructuredDocumentation",
-          "src": "2616:55:92",
+          "src": "2616:55:81",
           "text": "@notice Thrown when resolving claims out of order."
         },
         "errorSelector": "9a076646",
         "name": "OutOfOrderResolution",
-        "nameLocation": "2677:20:92",
+        "nameLocation": "2677:20:81",
         "parameters": {
-          "id": 41347,
+          "id": 40564,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2697:2:92"
+          "src": "2697:2:81"
         }
       },
       {
-        "id": 41351,
+        "id": 40568,
         "nodeType": "ErrorDefinition",
-        "src": "2776:29:92",
+        "src": "2776:29:81",
         "nodes": [],
         "documentation": {
-          "id": 41349,
+          "id": 40566,
           "nodeType": "StructuredDocumentation",
-          "src": "2702:74:92",
+          "src": "2702:74:81",
           "text": "@notice Thrown when resolving a claim that has already been resolved."
         },
         "errorSelector": "f1a94581",
         "name": "ClaimAlreadyResolved",
-        "nameLocation": "2782:20:92",
+        "nameLocation": "2782:20:81",
         "parameters": {
-          "id": 41350,
+          "id": 40567,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "2802:2:92"
+          "src": "2802:2:81"
         }
       },
       {
-        "id": 41354,
+        "id": 40571,
         "nodeType": "ErrorDefinition",
-        "src": "3077:25:92",
+        "src": "3077:25:81",
         "nodes": [],
         "documentation": {
-          "id": 41352,
+          "id": 40569,
           "nodeType": "StructuredDocumentation",
-          "src": "3003:74:92",
+          "src": "3003:74:81",
           "text": "@notice Thrown when an invalid signature is submitted to `challenge`."
         },
         "errorSelector": "8baa579f",
         "name": "InvalidSignature",
-        "nameLocation": "3083:16:92",
+        "nameLocation": "3083:16:81",
         "parameters": {
-          "id": 41353,
+          "id": 40570,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "3099:2:92"
+          "src": "3099:2:81"
         }
       },
       {
-        "id": 41357,
+        "id": 40574,
         "nodeType": "ErrorDefinition",
-        "src": "3235:26:92",
+        "src": "3235:26:81",
         "nodes": [],
         "documentation": {
-          "id": 41355,
+          "id": 40572,
           "nodeType": "StructuredDocumentation",
-          "src": "3104:131:92",
+          "src": "3104:131:81",
           "text": "@notice Thrown when a signature that has already been used to support the\n         `rootClaim` is submitted to `challenge`."
         },
         "errorSelector": "f1082a93",
         "name": "AlreadyChallenged",
-        "nameLocation": "3241:17:92",
+        "nameLocation": "3241:17:81",
         "parameters": {
-          "id": 41356,
+          "id": 40573,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "3258:2:92"
+          "src": "3258:2:81"
         }
       },
       {
-        "id": 41360,
+        "id": 40577,
         "nodeType": "ErrorDefinition",
-        "src": "3601:17:92",
+        "src": "3601:17:81",
         "nodes": [],
         "documentation": {
-          "id": 41358,
+          "id": 40575,
           "nodeType": "StructuredDocumentation",
-          "src": "3459:142:92",
+          "src": "3459:142:81",
           "text": "@notice Thrown when a function that is protected by the `onlyOwner` modifier\n          is called from an account other than the owner."
         },
         "errorSelector": "30cd7471",
         "name": "NotOwner",
-        "nameLocation": "3607:8:92",
+        "nameLocation": "3607:8:81",
         "parameters": {
-          "id": 41359,
+          "id": 40576,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "3615:2:92"
+          "src": "3615:2:81"
         }
       },
       {
-        "id": 41363,
+        "id": 40580,
         "nodeType": "ErrorDefinition",
-        "src": "3938:23:92",
+        "src": "3938:23:81",
         "nodes": [],
         "documentation": {
-          "id": 41361,
+          "id": 40578,
           "nodeType": "StructuredDocumentation",
-          "src": "3816:122:92",
+          "src": "3816:122:81",
           "text": "@notice Thrown when a block that is out of the range of the `BLOCKHASH` opcode\n         is attempted to be loaded."
         },
         "errorSelector": "d82756d8",
         "name": "BlockNumberOOB",
-        "nameLocation": "3944:14:92",
+        "nameLocation": "3944:14:81",
         "parameters": {
-          "id": 41362,
+          "id": 40579,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "3958:2:92"
+          "src": "3958:2:81"
         }
       },
       {
-        "id": 41366,
+        "id": 40583,
         "nodeType": "ErrorDefinition",
-        "src": "4052:28:92",
+        "src": "4052:28:81",
         "nodes": [],
         "documentation": {
-          "id": 41364,
+          "id": 40581,
           "nodeType": "StructuredDocumentation",
-          "src": "3963:89:92",
+          "src": "3963:89:81",
           "text": "@notice Thrown when a block hash is attempted to be loaded that has not been stored."
         },
         "errorSelector": "37cf2705",
         "name": "BlockHashNotPresent",
-        "nameLocation": "4058:19:92",
+        "nameLocation": "4058:19:81",
         "parameters": {
-          "id": 41365,
+          "id": 40582,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "4077:2:92"
+          "src": "4077:2:81"
         }
       }
     ],
     "license": "MIT"
   },
-  "id": 92
+  "id": 81
 }

@@ -589,79 +589,79 @@
   },
   "ast": {
     "absolutePath": "src/dispute/interfaces/IDisputeGame.sol",
-    "id": 65870,
+    "id": 58160,
     "exportedSymbols": {
       "BondAmount": [
-        68187
+        60201
       ],
       "Claim": [
-        68183
+        60197
       ],
       "ClaimHash": [
-        68185
+        60199
       ],
       "Clock": [
-        68195
+        60209
       ],
       "Duration": [
-        68191
+        60205
       ],
       "GameId": [
-        68193
+        60207
       ],
       "GameStatus": [
-        68205
+        60219
       ],
       "GameType": [
-        68199
+        60213
       ],
       "GameTypes": [
-        68231
+        60245
       ],
       "Hash": [
-        68181
+        60195
       ],
       "IBondManager": [
-        65792
+        58082
       ],
       "IDisputeGame": [
-        65869
+        58159
       ],
       "IInitializable": [
-        66105
+        58395
       ],
       "LibClock": [
-        66149
+        58439
       ],
       "LibGameId": [
-        66191
+        58481
       ],
       "LibHashing": [
-        66213
+        58503
       ],
       "LibPosition": [
-        66371
+        58661
       ],
       "Position": [
-        68197
+        60211
       ],
       "Timestamp": [
-        68189
+        60203
       ],
       "VMStatus": [
-        68201
+        60215
       ],
       "VMStatuses": [
-        68265
+        60279
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:3106:120",
+    "src": "32:3106:102",
     "nodes": [
       {
-        "id": 65794,
+        "id": 58084,
         "nodeType": "PragmaDirective",
-        "src": "32:24:120",
+        "src": "32:24:102",
         "nodes": [],
         "literals": [
           "solidity",
@@ -671,24 +671,24 @@
         ]
       },
       {
-        "id": 65796,
+        "id": 58086,
         "nodeType": "ImportDirective",
-        "src": "58:50:120",
+        "src": "58:50:102",
         "nodes": [],
         "absolutePath": "src/dispute/interfaces/IBondManager.sol",
         "file": "./IBondManager.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 65870,
-        "sourceUnit": 65793,
+        "scope": 58160,
+        "sourceUnit": 58083,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 65795,
+              "id": 58085,
               "name": "IBondManager",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 65792,
-              "src": "67:12:120",
+              "referencedDeclaration": 58082,
+              "src": "67:12:102",
               "typeDescriptions": {}
             },
             "nameLocation": "-1:-1:-1"
@@ -697,24 +697,24 @@
         "unitAlias": ""
       },
       {
-        "id": 65798,
+        "id": 58088,
         "nodeType": "ImportDirective",
-        "src": "109:54:120",
+        "src": "109:54:102",
         "nodes": [],
         "absolutePath": "src/dispute/interfaces/IInitializable.sol",
         "file": "./IInitializable.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 65870,
-        "sourceUnit": 66106,
+        "scope": 58160,
+        "sourceUnit": 58396,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 65797,
+              "id": 58087,
               "name": "IInitializable",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 66105,
-              "src": "118:14:120",
+              "referencedDeclaration": 58395,
+              "src": "118:14:102",
               "typeDescriptions": {}
             },
             "nameLocation": "-1:-1:-1"
@@ -723,90 +723,90 @@
         "unitAlias": ""
       },
       {
-        "id": 65799,
+        "id": 58089,
         "nodeType": "ImportDirective",
-        "src": "165:40:120",
+        "src": "165:40:102",
         "nodes": [],
         "absolutePath": "src/libraries/DisputeTypes.sol",
         "file": "src/libraries/DisputeTypes.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 65870,
-        "sourceUnit": 68266,
+        "scope": 58160,
+        "sourceUnit": 60280,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 65869,
+        "id": 58159,
         "nodeType": "ContractDefinition",
-        "src": "293:2844:120",
+        "src": "293:2844:102",
         "nodes": [
           {
-            "id": 65808,
+            "id": 58098,
             "nodeType": "EventDefinition",
-            "src": "454:42:120",
+            "src": "454:42:102",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 65803,
+              "id": 58093,
               "nodeType": "StructuredDocumentation",
-              "src": "340:109:120",
+              "src": "340:109:102",
               "text": "@notice Emitted when the game is resolved.\n @param status The status of the game after resolution."
             },
             "eventSelector": "5e186f09b9c93491f14e277eea7faa5de6a2d4bda75a79af7a3684fbfb42da60",
             "name": "Resolved",
-            "nameLocation": "460:8:120",
+            "nameLocation": "460:8:102",
             "parameters": {
-              "id": 65807,
+              "id": 58097,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65806,
+                  "id": 58096,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "status",
-                  "nameLocation": "488:6:120",
+                  "nameLocation": "488:6:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65808,
-                  "src": "469:25:120",
+                  "scope": 58098,
+                  "src": "469:25:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_GameStatus_$68205",
+                    "typeIdentifier": "t_enum$_GameStatus_$60219",
                     "typeString": "enum GameStatus"
                   },
                   "typeName": {
-                    "id": 65805,
+                    "id": 58095,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65804,
+                      "id": 58094,
                       "name": "GameStatus",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68205,
-                      "src": "469:10:120"
+                      "referencedDeclaration": 60219,
+                      "src": "469:10:102"
                     },
-                    "referencedDeclaration": 68205,
-                    "src": "469:10:120",
+                    "referencedDeclaration": 60219,
+                    "src": "469:10:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_GameStatus_$68205",
+                      "typeIdentifier": "t_enum$_GameStatus_$60219",
                       "typeString": "enum GameStatus"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "468:27:120"
+              "src": "468:27:102"
             }
           },
           {
-            "id": 65815,
+            "id": 58105,
             "nodeType": "FunctionDefinition",
-            "src": "673:66:120",
+            "src": "673:66:102",
             "nodes": [],
             "documentation": {
-              "id": 65809,
+              "id": 58099,
               "nodeType": "StructuredDocumentation",
-              "src": "502:166:120",
+              "src": "502:166:102",
               "text": "@notice Returns the timestamp that the DisputeGame contract was created at.\n @return createdAt_ The timestamp that the DisputeGame contract was created at."
             },
             "functionSelector": "cf09e0d0",
@@ -814,68 +814,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "createdAt",
-            "nameLocation": "682:9:120",
+            "nameLocation": "682:9:102",
             "parameters": {
-              "id": 65810,
+              "id": 58100,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "691:2:120"
+              "src": "691:2:102"
             },
             "returnParameters": {
-              "id": 65814,
+              "id": 58104,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65813,
+                  "id": 58103,
                   "mutability": "mutable",
                   "name": "createdAt_",
-                  "nameLocation": "727:10:120",
+                  "nameLocation": "727:10:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65815,
-                  "src": "717:20:120",
+                  "scope": 58105,
+                  "src": "717:20:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Timestamp_$68189",
+                    "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
                     "typeString": "Timestamp"
                   },
                   "typeName": {
-                    "id": 65812,
+                    "id": 58102,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65811,
+                      "id": 58101,
                       "name": "Timestamp",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68189,
-                      "src": "717:9:120"
+                      "referencedDeclaration": 60203,
+                      "src": "717:9:102"
                     },
-                    "referencedDeclaration": 68189,
-                    "src": "717:9:120",
+                    "referencedDeclaration": 60203,
+                    "src": "717:9:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Timestamp_$68189",
+                      "typeIdentifier": "t_userDefinedValueType$_Timestamp_$60203",
                       "typeString": "Timestamp"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "716:22:120"
+              "src": "716:22:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65822,
+            "id": 58112,
             "nodeType": "FunctionDefinition",
-            "src": "857:61:120",
+            "src": "857:61:102",
             "nodes": [],
             "documentation": {
-              "id": 65816,
+              "id": 58106,
               "nodeType": "StructuredDocumentation",
-              "src": "745:107:120",
+              "src": "745:107:102",
               "text": "@notice Returns the current status of the game.\n @return status_ The current status of the game."
             },
             "functionSelector": "200d2ed2",
@@ -883,68 +883,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "status",
-            "nameLocation": "866:6:120",
+            "nameLocation": "866:6:102",
             "parameters": {
-              "id": 65817,
+              "id": 58107,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "872:2:120"
+              "src": "872:2:102"
             },
             "returnParameters": {
-              "id": 65821,
+              "id": 58111,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65820,
+                  "id": 58110,
                   "mutability": "mutable",
                   "name": "status_",
-                  "nameLocation": "909:7:120",
+                  "nameLocation": "909:7:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65822,
-                  "src": "898:18:120",
+                  "scope": 58112,
+                  "src": "898:18:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_GameStatus_$68205",
+                    "typeIdentifier": "t_enum$_GameStatus_$60219",
                     "typeString": "enum GameStatus"
                   },
                   "typeName": {
-                    "id": 65819,
+                    "id": 58109,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65818,
+                      "id": 58108,
                       "name": "GameStatus",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68205,
-                      "src": "898:10:120"
+                      "referencedDeclaration": 60219,
+                      "src": "898:10:102"
                     },
-                    "referencedDeclaration": 68205,
-                    "src": "898:10:120",
+                    "referencedDeclaration": 60219,
+                    "src": "898:10:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_GameStatus_$68205",
+                      "typeIdentifier": "t_enum$_GameStatus_$60219",
                       "typeString": "enum GameStatus"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "897:20:120"
+              "src": "897:20:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65829,
+            "id": 58119,
             "nodeType": "FunctionDefinition",
-            "src": "1198:63:120",
+            "src": "1198:63:102",
             "nodes": [],
             "documentation": {
-              "id": 65823,
+              "id": 58113,
               "nodeType": "StructuredDocumentation",
-              "src": "924:269:120",
+              "src": "924:269:102",
               "text": "@notice Getter for the game type.\n @dev The reference impl should be entirely different depending on the type (fault, validity)\n      i.e. The game type should indicate the security model.\n @return gameType_ The type of proof system being used."
             },
             "functionSelector": "bbdc02db",
@@ -952,68 +952,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "gameType",
-            "nameLocation": "1207:8:120",
+            "nameLocation": "1207:8:102",
             "parameters": {
-              "id": 65824,
+              "id": 58114,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1215:2:120"
+              "src": "1215:2:102"
             },
             "returnParameters": {
-              "id": 65828,
+              "id": 58118,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65827,
+                  "id": 58117,
                   "mutability": "mutable",
                   "name": "gameType_",
-                  "nameLocation": "1250:9:120",
+                  "nameLocation": "1250:9:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65829,
-                  "src": "1241:18:120",
+                  "scope": 58119,
+                  "src": "1241:18:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_GameType_$68199",
+                    "typeIdentifier": "t_userDefinedValueType$_GameType_$60213",
                     "typeString": "GameType"
                   },
                   "typeName": {
-                    "id": 65826,
+                    "id": 58116,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65825,
+                      "id": 58115,
                       "name": "GameType",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68199,
-                      "src": "1241:8:120"
+                      "referencedDeclaration": 60213,
+                      "src": "1241:8:102"
                     },
-                    "referencedDeclaration": 68199,
-                    "src": "1241:8:120",
+                    "referencedDeclaration": 60213,
+                    "src": "1241:8:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_GameType_$68199",
+                      "typeIdentifier": "t_userDefinedValueType$_GameType_$60213",
                       "typeString": "GameType"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1240:20:120"
+              "src": "1240:20:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65836,
+            "id": 58126,
             "nodeType": "FunctionDefinition",
-            "src": "1426:62:120",
+            "src": "1426:62:102",
             "nodes": [],
             "documentation": {
-              "id": 65830,
+              "id": 58120,
               "nodeType": "StructuredDocumentation",
-              "src": "1267:154:120",
+              "src": "1267:154:102",
               "text": "@notice Getter for the root claim.\n @dev `clones-with-immutable-args` argument #1\n @return rootClaim_ The root claim of the DisputeGame."
             },
             "functionSelector": "bcef3b55",
@@ -1021,68 +1021,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "rootClaim",
-            "nameLocation": "1435:9:120",
+            "nameLocation": "1435:9:102",
             "parameters": {
-              "id": 65831,
+              "id": 58121,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1444:2:120"
+              "src": "1444:2:102"
             },
             "returnParameters": {
-              "id": 65835,
+              "id": 58125,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65834,
+                  "id": 58124,
                   "mutability": "mutable",
                   "name": "rootClaim_",
-                  "nameLocation": "1476:10:120",
+                  "nameLocation": "1476:10:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65836,
-                  "src": "1470:16:120",
+                  "scope": 58126,
+                  "src": "1470:16:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   },
                   "typeName": {
-                    "id": 65833,
+                    "id": 58123,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65832,
+                      "id": 58122,
                       "name": "Claim",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68183,
-                      "src": "1470:5:120"
+                      "referencedDeclaration": 60197,
+                      "src": "1470:5:102"
                     },
-                    "referencedDeclaration": 68183,
-                    "src": "1470:5:120",
+                    "referencedDeclaration": 60197,
+                    "src": "1470:5:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                      "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                       "typeString": "Claim"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1469:18:120"
+              "src": "1469:18:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65842,
+            "id": 58132,
             "nodeType": "FunctionDefinition",
-            "src": "1687:69:120",
+            "src": "1687:69:102",
             "nodes": [],
             "documentation": {
-              "id": 65837,
+              "id": 58127,
               "nodeType": "StructuredDocumentation",
-              "src": "1494:188:120",
+              "src": "1494:188:102",
               "text": "@notice Getter for the extra data.\n @dev `clones-with-immutable-args` argument #2\n @return extraData_ Any extra data supplied to the dispute game contract by the creator."
             },
             "functionSelector": "609d3334",
@@ -1090,26 +1090,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "extraData",
-            "nameLocation": "1696:9:120",
+            "nameLocation": "1696:9:102",
             "parameters": {
-              "id": 65838,
+              "id": 58128,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1705:2:120"
+              "src": "1705:2:102"
             },
             "returnParameters": {
-              "id": 65841,
+              "id": 58131,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65840,
+                  "id": 58130,
                   "mutability": "mutable",
                   "name": "extraData_",
-                  "nameLocation": "1744:10:120",
+                  "nameLocation": "1744:10:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65842,
-                  "src": "1731:23:120",
+                  "scope": 58132,
+                  "src": "1731:23:102",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -1117,10 +1117,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 65839,
+                    "id": 58129,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1731:5:120",
+                    "src": "1731:5:102",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -1129,22 +1129,22 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1730:25:120"
+              "src": "1730:25:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65849,
+            "id": 58139,
             "nodeType": "FunctionDefinition",
-            "src": "1893:73:120",
+            "src": "1893:73:102",
             "nodes": [],
             "documentation": {
-              "id": 65843,
+              "id": 58133,
               "nodeType": "StructuredDocumentation",
-              "src": "1762:126:120",
+              "src": "1762:126:102",
               "text": "@notice Returns the address of the `BondManager` used.\n @return bondManager_ The address of the `BondManager` used."
             },
             "functionSelector": "363cc427",
@@ -1152,68 +1152,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "bondManager",
-            "nameLocation": "1902:11:120",
+            "nameLocation": "1902:11:102",
             "parameters": {
-              "id": 65844,
+              "id": 58134,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1913:2:120"
+              "src": "1913:2:102"
             },
             "returnParameters": {
-              "id": 65848,
+              "id": 58138,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65847,
+                  "id": 58137,
                   "mutability": "mutable",
                   "name": "bondManager_",
-                  "nameLocation": "1952:12:120",
+                  "nameLocation": "1952:12:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65849,
-                  "src": "1939:25:120",
+                  "scope": 58139,
+                  "src": "1939:25:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IBondManager_$65792",
+                    "typeIdentifier": "t_contract$_IBondManager_$58082",
                     "typeString": "contract IBondManager"
                   },
                   "typeName": {
-                    "id": 65846,
+                    "id": 58136,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65845,
+                      "id": 58135,
                       "name": "IBondManager",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 65792,
-                      "src": "1939:12:120"
+                      "referencedDeclaration": 58082,
+                      "src": "1939:12:102"
                     },
-                    "referencedDeclaration": 65792,
-                    "src": "1939:12:120",
+                    "referencedDeclaration": 58082,
+                    "src": "1939:12:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IBondManager_$65792",
+                      "typeIdentifier": "t_contract$_IBondManager_$58082",
                       "typeString": "contract IBondManager"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1938:27:120"
+              "src": "1938:27:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65856,
+            "id": 58146,
             "nodeType": "FunctionDefinition",
-            "src": "2427:57:120",
+            "src": "2427:57:102",
             "nodes": [],
             "documentation": {
-              "id": 65850,
+              "id": 58140,
               "nodeType": "StructuredDocumentation",
-              "src": "1972:450:120",
+              "src": "1972:450:102",
               "text": "@notice If all necessary information has been gathered, this function should mark the game\n         status as either `CHALLENGER_WINS` or `DEFENDER_WINS` and return the status of\n         the resolved game. It is at this stage that the bonds should be awarded to the\n         necessary parties.\n @dev May only be called if the `status` is `IN_PROGRESS`.\n @return status_ The status of the game after resolution."
             },
             "functionSelector": "2810e1d6",
@@ -1221,68 +1221,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "resolve",
-            "nameLocation": "2436:7:120",
+            "nameLocation": "2436:7:102",
             "parameters": {
-              "id": 65851,
+              "id": 58141,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2443:2:120"
+              "src": "2443:2:102"
             },
             "returnParameters": {
-              "id": 65855,
+              "id": 58145,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65854,
+                  "id": 58144,
                   "mutability": "mutable",
                   "name": "status_",
-                  "nameLocation": "2475:7:120",
+                  "nameLocation": "2475:7:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65856,
-                  "src": "2464:18:120",
+                  "scope": 58146,
+                  "src": "2464:18:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_GameStatus_$68205",
+                    "typeIdentifier": "t_enum$_GameStatus_$60219",
                     "typeString": "enum GameStatus"
                   },
                   "typeName": {
-                    "id": 65853,
+                    "id": 58143,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65852,
+                      "id": 58142,
                       "name": "GameStatus",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68205,
-                      "src": "2464:10:120"
+                      "referencedDeclaration": 60219,
+                      "src": "2464:10:102"
                     },
-                    "referencedDeclaration": 68205,
-                    "src": "2464:10:120",
+                    "referencedDeclaration": 60219,
+                    "src": "2464:10:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_GameStatus_$68205",
+                      "typeIdentifier": "t_enum$_GameStatus_$60219",
                       "typeString": "enum GameStatus"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "2463:20:120"
+              "src": "2463:20:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 65868,
+            "id": 58158,
             "nodeType": "FunctionDefinition",
-            "src": "3029:106:120",
+            "src": "3029:106:102",
             "nodes": [],
             "documentation": {
-              "id": 65857,
+              "id": 58147,
               "nodeType": "StructuredDocumentation",
-              "src": "2490:534:120",
+              "src": "2490:534:102",
               "text": "@notice A compliant implementation of this interface should return the components of the\n         game UUID's preimage provided in the cwia payload. The preimage of the UUID is\n         constructed as `keccak256(gameType . rootClaim . extraData)` where `.` denotes\n         concatenation.\n @return gameType_ The type of proof system being used.\n @return rootClaim_ The root claim of the DisputeGame.\n @return extraData_ Any extra data supplied to the dispute game contract by the creator."
             },
             "functionSelector": "fa24f743",
@@ -1290,46 +1290,46 @@
             "kind": "function",
             "modifiers": [],
             "name": "gameData",
-            "nameLocation": "3038:8:120",
+            "nameLocation": "3038:8:102",
             "parameters": {
-              "id": 65858,
+              "id": 58148,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "3046:2:120"
+              "src": "3046:2:102"
             },
             "returnParameters": {
-              "id": 65867,
+              "id": 58157,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 65861,
+                  "id": 58151,
                   "mutability": "mutable",
                   "name": "gameType_",
-                  "nameLocation": "3081:9:120",
+                  "nameLocation": "3081:9:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65868,
-                  "src": "3072:18:120",
+                  "scope": 58158,
+                  "src": "3072:18:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_GameType_$68199",
+                    "typeIdentifier": "t_userDefinedValueType$_GameType_$60213",
                     "typeString": "GameType"
                   },
                   "typeName": {
-                    "id": 65860,
+                    "id": 58150,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65859,
+                      "id": 58149,
                       "name": "GameType",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68199,
-                      "src": "3072:8:120"
+                      "referencedDeclaration": 60213,
+                      "src": "3072:8:102"
                     },
-                    "referencedDeclaration": 68199,
-                    "src": "3072:8:120",
+                    "referencedDeclaration": 60213,
+                    "src": "3072:8:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_GameType_$68199",
+                      "typeIdentifier": "t_userDefinedValueType$_GameType_$60213",
                       "typeString": "GameType"
                     }
                   },
@@ -1337,33 +1337,33 @@
                 },
                 {
                   "constant": false,
-                  "id": 65864,
+                  "id": 58154,
                   "mutability": "mutable",
                   "name": "rootClaim_",
-                  "nameLocation": "3098:10:120",
+                  "nameLocation": "3098:10:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65868,
-                  "src": "3092:16:120",
+                  "scope": 58158,
+                  "src": "3092:16:102",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   },
                   "typeName": {
-                    "id": 65863,
+                    "id": 58153,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 65862,
+                      "id": 58152,
                       "name": "Claim",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68183,
-                      "src": "3092:5:120"
+                      "referencedDeclaration": 60197,
+                      "src": "3092:5:102"
                     },
-                    "referencedDeclaration": 68183,
-                    "src": "3092:5:120",
+                    "referencedDeclaration": 60197,
+                    "src": "3092:5:102",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                      "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                       "typeString": "Claim"
                     }
                   },
@@ -1371,13 +1371,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 65866,
+                  "id": 58156,
                   "mutability": "mutable",
                   "name": "extraData_",
-                  "nameLocation": "3123:10:120",
+                  "nameLocation": "3123:10:102",
                   "nodeType": "VariableDeclaration",
-                  "scope": 65868,
-                  "src": "3110:23:120",
+                  "scope": 58158,
+                  "src": "3110:23:102",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -1385,10 +1385,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 65865,
+                    "id": 58155,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3110:5:120",
+                    "src": "3110:5:102",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -1397,9 +1397,9 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3071:63:120"
+              "src": "3071:63:102"
             },
-            "scope": 65869,
+            "scope": 58159,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -1409,38 +1409,38 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 65801,
+              "id": 58091,
               "name": "IInitializable",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 66105,
-              "src": "319:14:120"
+              "referencedDeclaration": 58395,
+              "src": "319:14:102"
             },
-            "id": 65802,
+            "id": 58092,
             "nodeType": "InheritanceSpecifier",
-            "src": "319:14:120"
+            "src": "319:14:102"
           }
         ],
         "canonicalName": "IDisputeGame",
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 65800,
+          "id": 58090,
           "nodeType": "StructuredDocumentation",
-          "src": "207:86:120",
+          "src": "207:86:102",
           "text": "@title IDisputeGame\n @notice The generic interface for a DisputeGame contract."
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          65869,
-          66105
+          58159,
+          58395
         ],
         "name": "IDisputeGame",
-        "nameLocation": "303:12:120",
-        "scope": 65870,
+        "nameLocation": "303:12:102",
+        "scope": 58160,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 120
+  "id": 102
 }

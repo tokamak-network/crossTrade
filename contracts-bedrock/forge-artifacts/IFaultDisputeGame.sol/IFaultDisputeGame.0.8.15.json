@@ -1049,76 +1049,76 @@
   },
   "ast": {
     "absolutePath": "src/dispute/interfaces/IFaultDisputeGame.sol",
-    "id": 66098,
+    "id": 58388,
     "exportedSymbols": {
       "BondAmount": [
-        68187
+        60201
       ],
       "Claim": [
-        68183
+        60197
       ],
       "ClaimHash": [
-        68185
+        60199
       ],
       "Clock": [
-        68195
+        60209
       ],
       "Duration": [
-        68191
+        60205
       ],
       "GameId": [
-        68193
+        60207
       ],
       "GameStatus": [
-        68205
+        60219
       ],
       "GameType": [
-        68199
+        60213
       ],
       "GameTypes": [
-        68231
+        60245
       ],
       "Hash": [
-        68181
+        60195
       ],
       "IDisputeGame": [
-        65869
+        58159
       ],
       "IFaultDisputeGame": [
-        66097
+        58387
       ],
       "LibClock": [
-        66149
+        58439
       ],
       "LibGameId": [
-        66191
+        58481
       ],
       "LibHashing": [
-        66213
+        58503
       ],
       "LibPosition": [
-        66371
+        58661
       ],
       "Position": [
-        68197
+        60211
       ],
       "Timestamp": [
-        68189
+        60203
       ],
       "VMStatus": [
-        68201
+        60215
       ],
       "VMStatuses": [
-        68265
+        60279
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:5240:122",
+    "src": "32:5240:104",
     "nodes": [
       {
-        "id": 65986,
+        "id": 58276,
         "nodeType": "PragmaDirective",
-        "src": "32:24:122",
+        "src": "32:24:104",
         "nodes": [],
         "literals": [
           "solidity",
@@ -1128,24 +1128,24 @@
         ]
       },
       {
-        "id": 65988,
+        "id": 58278,
         "nodeType": "ImportDirective",
-        "src": "58:50:122",
+        "src": "58:50:104",
         "nodes": [],
         "absolutePath": "src/dispute/interfaces/IDisputeGame.sol",
         "file": "./IDisputeGame.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 66098,
-        "sourceUnit": 65870,
+        "scope": 58388,
+        "sourceUnit": 58160,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 65987,
+              "id": 58277,
               "name": "IDisputeGame",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 65869,
-              "src": "67:12:122",
+              "referencedDeclaration": 58159,
+              "src": "67:12:104",
               "typeDescriptions": {}
             },
             "nameLocation": "-1:-1:-1"
@@ -1154,39 +1154,39 @@
         "unitAlias": ""
       },
       {
-        "id": 65989,
+        "id": 58279,
         "nodeType": "ImportDirective",
-        "src": "110:40:122",
+        "src": "110:40:104",
         "nodes": [],
         "absolutePath": "src/libraries/DisputeTypes.sol",
         "file": "src/libraries/DisputeTypes.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 66098,
-        "sourceUnit": 68266,
+        "scope": 58388,
+        "sourceUnit": 60280,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 66097,
+        "id": 58387,
         "nodeType": "ContractDefinition",
-        "src": "246:5025:122",
+        "src": "246:5025:104",
         "nodes": [
           {
-            "id": 66006,
+            "id": 58296,
             "nodeType": "StructDefinition",
-            "src": "432:145:122",
+            "src": "432:145:104",
             "nodes": [],
             "canonicalName": "IFaultDisputeGame.ClaimData",
             "members": [
               {
                 "constant": false,
-                "id": 65994,
+                "id": 58284,
                 "mutability": "mutable",
                 "name": "parentIndex",
-                "nameLocation": "466:11:122",
+                "nameLocation": "466:11:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66006,
-                "src": "459:18:122",
+                "scope": 58296,
+                "src": "459:18:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1194,10 +1194,10 @@
                   "typeString": "uint32"
                 },
                 "typeName": {
-                  "id": 65993,
+                  "id": 58283,
                   "name": "uint32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "459:6:122",
+                  "src": "459:6:104",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint32",
                     "typeString": "uint32"
@@ -1207,13 +1207,13 @@
               },
               {
                 "constant": false,
-                "id": 65996,
+                "id": 58286,
                 "mutability": "mutable",
                 "name": "countered",
-                "nameLocation": "492:9:122",
+                "nameLocation": "492:9:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66006,
-                "src": "487:14:122",
+                "scope": 58296,
+                "src": "487:14:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1221,10 +1221,10 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 65995,
+                  "id": 58285,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
-                  "src": "487:4:122",
+                  "src": "487:4:104",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bool",
                     "typeString": "bool"
@@ -1234,33 +1234,33 @@
               },
               {
                 "constant": false,
-                "id": 65999,
+                "id": 58289,
                 "mutability": "mutable",
                 "name": "claim",
-                "nameLocation": "517:5:122",
+                "nameLocation": "517:5:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66006,
-                "src": "511:11:122",
+                "scope": 58296,
+                "src": "511:11:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                  "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                   "typeString": "Claim"
                 },
                 "typeName": {
-                  "id": 65998,
+                  "id": 58288,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 65997,
+                    "id": 58287,
                     "name": "Claim",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 68183,
-                    "src": "511:5:122"
+                    "referencedDeclaration": 60197,
+                    "src": "511:5:104"
                   },
-                  "referencedDeclaration": 68183,
-                  "src": "511:5:122",
+                  "referencedDeclaration": 60197,
+                  "src": "511:5:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   }
                 },
@@ -1268,33 +1268,33 @@
               },
               {
                 "constant": false,
-                "id": 66002,
+                "id": 58292,
                 "mutability": "mutable",
                 "name": "position",
-                "nameLocation": "541:8:122",
+                "nameLocation": "541:8:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66006,
-                "src": "532:17:122",
+                "scope": 58296,
+                "src": "532:17:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Position_$68197",
+                  "typeIdentifier": "t_userDefinedValueType$_Position_$60211",
                   "typeString": "Position"
                 },
                 "typeName": {
-                  "id": 66001,
+                  "id": 58291,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 66000,
+                    "id": 58290,
                     "name": "Position",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 68197,
-                    "src": "532:8:122"
+                    "referencedDeclaration": 60211,
+                    "src": "532:8:104"
                   },
-                  "referencedDeclaration": 68197,
-                  "src": "532:8:122",
+                  "referencedDeclaration": 60211,
+                  "src": "532:8:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Position_$68197",
+                    "typeIdentifier": "t_userDefinedValueType$_Position_$60211",
                     "typeString": "Position"
                   }
                 },
@@ -1302,33 +1302,33 @@
               },
               {
                 "constant": false,
-                "id": 66005,
+                "id": 58295,
                 "mutability": "mutable",
                 "name": "clock",
-                "nameLocation": "565:5:122",
+                "nameLocation": "565:5:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66006,
-                "src": "559:11:122",
+                "scope": 58296,
+                "src": "559:11:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Clock_$68195",
+                  "typeIdentifier": "t_userDefinedValueType$_Clock_$60209",
                   "typeString": "Clock"
                 },
                 "typeName": {
-                  "id": 66004,
+                  "id": 58294,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 66003,
+                    "id": 58293,
                     "name": "Clock",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 68195,
-                    "src": "559:5:122"
+                    "referencedDeclaration": 60209,
+                    "src": "559:5:104"
                   },
-                  "referencedDeclaration": 68195,
-                  "src": "559:5:122",
+                  "referencedDeclaration": 60209,
+                  "src": "559:5:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Clock_$68195",
+                    "typeIdentifier": "t_userDefinedValueType$_Clock_$60209",
                     "typeString": "Clock"
                   }
                 },
@@ -1336,26 +1336,26 @@
               }
             ],
             "name": "ClaimData",
-            "nameLocation": "439:9:122",
-            "scope": 66097,
+            "nameLocation": "439:9:104",
+            "scope": 58387,
             "visibility": "public"
           },
           {
-            "id": 66014,
+            "id": 58304,
             "nodeType": "StructDefinition",
-            "src": "731:108:122",
+            "src": "731:108:104",
             "nodes": [],
             "canonicalName": "IFaultDisputeGame.OutputProposal",
             "members": [
               {
                 "constant": false,
-                "id": 66008,
+                "id": 58298,
                 "mutability": "mutable",
                 "name": "index",
-                "nameLocation": "771:5:122",
+                "nameLocation": "771:5:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66014,
-                "src": "763:13:122",
+                "scope": 58304,
+                "src": "763:13:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1363,10 +1363,10 @@
                   "typeString": "uint128"
                 },
                 "typeName": {
-                  "id": 66007,
+                  "id": 58297,
                   "name": "uint128",
                   "nodeType": "ElementaryTypeName",
-                  "src": "763:7:122",
+                  "src": "763:7:104",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint128",
                     "typeString": "uint128"
@@ -1376,13 +1376,13 @@
               },
               {
                 "constant": false,
-                "id": 66010,
+                "id": 58300,
                 "mutability": "mutable",
                 "name": "l2BlockNumber",
-                "nameLocation": "794:13:122",
+                "nameLocation": "794:13:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66014,
-                "src": "786:21:122",
+                "scope": 58304,
+                "src": "786:21:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1390,10 +1390,10 @@
                   "typeString": "uint128"
                 },
                 "typeName": {
-                  "id": 66009,
+                  "id": 58299,
                   "name": "uint128",
                   "nodeType": "ElementaryTypeName",
-                  "src": "786:7:122",
+                  "src": "786:7:104",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint128",
                     "typeString": "uint128"
@@ -1403,33 +1403,33 @@
               },
               {
                 "constant": false,
-                "id": 66013,
+                "id": 58303,
                 "mutability": "mutable",
                 "name": "outputRoot",
-                "nameLocation": "822:10:122",
+                "nameLocation": "822:10:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66014,
-                "src": "817:15:122",
+                "scope": 58304,
+                "src": "817:15:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_userDefinedValueType$_Hash_$68181",
+                  "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
                   "typeString": "Hash"
                 },
                 "typeName": {
-                  "id": 66012,
+                  "id": 58302,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 66011,
+                    "id": 58301,
                     "name": "Hash",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 68181,
-                    "src": "817:4:122"
+                    "referencedDeclaration": 60195,
+                    "src": "817:4:104"
                   },
-                  "referencedDeclaration": 68181,
-                  "src": "817:4:122",
+                  "referencedDeclaration": 60195,
+                  "src": "817:4:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Hash_$68181",
+                    "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
                     "typeString": "Hash"
                   }
                 },
@@ -1437,46 +1437,46 @@
               }
             ],
             "name": "OutputProposal",
-            "nameLocation": "738:14:122",
-            "scope": 66097,
+            "nameLocation": "738:14:104",
+            "scope": 58387,
             "visibility": "public"
           },
           {
-            "id": 66021,
+            "id": 58311,
             "nodeType": "StructDefinition",
-            "src": "1529:96:122",
+            "src": "1529:96:104",
             "nodes": [],
             "canonicalName": "IFaultDisputeGame.OutputProposals",
             "members": [
               {
                 "constant": false,
-                "id": 66017,
+                "id": 58307,
                 "mutability": "mutable",
                 "name": "starting",
-                "nameLocation": "1577:8:122",
+                "nameLocation": "1577:8:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66021,
-                "src": "1562:23:122",
+                "scope": 58311,
+                "src": "1562:23:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_OutputProposal_$66014_storage_ptr",
+                  "typeIdentifier": "t_struct$_OutputProposal_$58304_storage_ptr",
                   "typeString": "struct IFaultDisputeGame.OutputProposal"
                 },
                 "typeName": {
-                  "id": 66016,
+                  "id": 58306,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 66015,
+                    "id": 58305,
                     "name": "OutputProposal",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 66014,
-                    "src": "1562:14:122"
+                    "referencedDeclaration": 58304,
+                    "src": "1562:14:104"
                   },
-                  "referencedDeclaration": 66014,
-                  "src": "1562:14:122",
+                  "referencedDeclaration": 58304,
+                  "src": "1562:14:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_OutputProposal_$66014_storage_ptr",
+                    "typeIdentifier": "t_struct$_OutputProposal_$58304_storage_ptr",
                     "typeString": "struct IFaultDisputeGame.OutputProposal"
                   }
                 },
@@ -1484,33 +1484,33 @@
               },
               {
                 "constant": false,
-                "id": 66020,
+                "id": 58310,
                 "mutability": "mutable",
                 "name": "disputed",
-                "nameLocation": "1610:8:122",
+                "nameLocation": "1610:8:104",
                 "nodeType": "VariableDeclaration",
-                "scope": 66021,
-                "src": "1595:23:122",
+                "scope": 58311,
+                "src": "1595:23:104",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_OutputProposal_$66014_storage_ptr",
+                  "typeIdentifier": "t_struct$_OutputProposal_$58304_storage_ptr",
                   "typeString": "struct IFaultDisputeGame.OutputProposal"
                 },
                 "typeName": {
-                  "id": 66019,
+                  "id": 58309,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 66018,
+                    "id": 58308,
                     "name": "OutputProposal",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 66014,
-                    "src": "1595:14:122"
+                    "referencedDeclaration": 58304,
+                    "src": "1595:14:104"
                   },
-                  "referencedDeclaration": 66014,
-                  "src": "1595:14:122",
+                  "referencedDeclaration": 58304,
+                  "src": "1595:14:104",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_OutputProposal_$66014_storage_ptr",
+                    "typeIdentifier": "t_struct$_OutputProposal_$58304_storage_ptr",
                     "typeString": "struct IFaultDisputeGame.OutputProposal"
                   }
                 },
@@ -1518,39 +1518,39 @@
               }
             ],
             "name": "OutputProposals",
-            "nameLocation": "1536:15:122",
-            "scope": 66097,
+            "nameLocation": "1536:15:104",
+            "scope": 58387,
             "visibility": "public"
           },
           {
-            "id": 66031,
+            "id": 58321,
             "nodeType": "EventDefinition",
-            "src": "1887:87:122",
+            "src": "1887:87:104",
             "nodes": [],
             "anonymous": false,
             "documentation": {
-              "id": 66022,
+              "id": 58312,
               "nodeType": "StructuredDocumentation",
-              "src": "1631:251:122",
+              "src": "1631:251:104",
               "text": "@notice Emitted when a new claim is added to the DAG by `claimant`\n @param parentIndex The index within the `claimData` array of the parent claim\n @param claim The claim being added\n @param claimant The address of the claimant"
             },
             "eventSelector": "9b3245740ec3b155098a55be84957a4da13eaf7f14a8bc6f53126c0b9350f2be",
             "name": "Move",
-            "nameLocation": "1893:4:122",
+            "nameLocation": "1893:4:104",
             "parameters": {
-              "id": 66030,
+              "id": 58320,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66024,
+                  "id": 58314,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "parentIndex",
-                  "nameLocation": "1914:11:122",
+                  "nameLocation": "1914:11:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66031,
-                  "src": "1898:27:122",
+                  "scope": 58321,
+                  "src": "1898:27:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1558,10 +1558,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66023,
+                    "id": 58313,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1898:7:122",
+                    "src": "1898:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1571,34 +1571,34 @@
                 },
                 {
                   "constant": false,
-                  "id": 66027,
+                  "id": 58317,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "claim",
-                  "nameLocation": "1941:5:122",
+                  "nameLocation": "1941:5:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66031,
-                  "src": "1927:19:122",
+                  "scope": 58321,
+                  "src": "1927:19:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   },
                   "typeName": {
-                    "id": 66026,
+                    "id": 58316,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 66025,
+                      "id": 58315,
                       "name": "Claim",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68183,
-                      "src": "1927:5:122"
+                      "referencedDeclaration": 60197,
+                      "src": "1927:5:104"
                     },
-                    "referencedDeclaration": 68183,
-                    "src": "1927:5:122",
+                    "referencedDeclaration": 60197,
+                    "src": "1927:5:104",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                      "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                       "typeString": "Claim"
                     }
                   },
@@ -1606,14 +1606,14 @@
                 },
                 {
                   "constant": false,
-                  "id": 66029,
+                  "id": 58319,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "claimant",
-                  "nameLocation": "1964:8:122",
+                  "nameLocation": "1964:8:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66031,
-                  "src": "1948:24:122",
+                  "scope": 58321,
+                  "src": "1948:24:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1621,10 +1621,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 66028,
+                    "id": 58318,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1948:7:122",
+                    "src": "1948:7:104",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1634,18 +1634,18 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1897:76:122"
+              "src": "1897:76:104"
             }
           },
           {
-            "id": 66040,
+            "id": 58330,
             "nodeType": "FunctionDefinition",
-            "src": "2181:69:122",
+            "src": "2181:69:104",
             "nodes": [],
             "documentation": {
-              "id": 66032,
+              "id": 58322,
               "nodeType": "StructuredDocumentation",
-              "src": "1980:196:122",
+              "src": "1980:196:104",
               "text": "@notice Attack a disagreed upon `Claim`.\n @param _parentIndex Index of the `Claim` to attack in the `claimData` array.\n @param _claim The `Claim` at the relative attack position."
             },
             "functionSelector": "c55cd0c7",
@@ -1653,20 +1653,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "attack",
-            "nameLocation": "2190:6:122",
+            "nameLocation": "2190:6:104",
             "parameters": {
-              "id": 66038,
+              "id": 58328,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66034,
+                  "id": 58324,
                   "mutability": "mutable",
                   "name": "_parentIndex",
-                  "nameLocation": "2205:12:122",
+                  "nameLocation": "2205:12:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66040,
-                  "src": "2197:20:122",
+                  "scope": 58330,
+                  "src": "2197:20:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1674,10 +1674,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66033,
+                    "id": 58323,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2197:7:122",
+                    "src": "2197:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1687,61 +1687,61 @@
                 },
                 {
                   "constant": false,
-                  "id": 66037,
+                  "id": 58327,
                   "mutability": "mutable",
                   "name": "_claim",
-                  "nameLocation": "2225:6:122",
+                  "nameLocation": "2225:6:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66040,
-                  "src": "2219:12:122",
+                  "scope": 58330,
+                  "src": "2219:12:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   },
                   "typeName": {
-                    "id": 66036,
+                    "id": 58326,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 66035,
+                      "id": 58325,
                       "name": "Claim",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68183,
-                      "src": "2219:5:122"
+                      "referencedDeclaration": 60197,
+                      "src": "2219:5:104"
                     },
-                    "referencedDeclaration": 68183,
-                    "src": "2219:5:122",
+                    "referencedDeclaration": 60197,
+                    "src": "2219:5:104",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                      "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                       "typeString": "Claim"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "2196:36:122"
+              "src": "2196:36:104"
             },
             "returnParameters": {
-              "id": 66039,
+              "id": 58329,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2249:0:122"
+              "src": "2249:0:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66049,
+            "id": 58339,
             "nodeType": "FunctionDefinition",
-            "src": "2454:69:122",
+            "src": "2454:69:104",
             "nodes": [],
             "documentation": {
-              "id": 66041,
+              "id": 58331,
               "nodeType": "StructuredDocumentation",
-              "src": "2256:193:122",
+              "src": "2256:193:104",
               "text": "@notice Defend an agreed upon `Claim`.\n @param _parentIndex Index of the claim to defend in the `claimData` array.\n @param _claim The `Claim` at the relative defense position."
             },
             "functionSelector": "35fef567",
@@ -1749,20 +1749,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "defend",
-            "nameLocation": "2463:6:122",
+            "nameLocation": "2463:6:104",
             "parameters": {
-              "id": 66047,
+              "id": 58337,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66043,
+                  "id": 58333,
                   "mutability": "mutable",
                   "name": "_parentIndex",
-                  "nameLocation": "2478:12:122",
+                  "nameLocation": "2478:12:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66049,
-                  "src": "2470:20:122",
+                  "scope": 58339,
+                  "src": "2470:20:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1770,10 +1770,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66042,
+                    "id": 58332,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2470:7:122",
+                    "src": "2470:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1783,61 +1783,61 @@
                 },
                 {
                   "constant": false,
-                  "id": 66046,
+                  "id": 58336,
                   "mutability": "mutable",
                   "name": "_claim",
-                  "nameLocation": "2498:6:122",
+                  "nameLocation": "2498:6:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66049,
-                  "src": "2492:12:122",
+                  "scope": 58339,
+                  "src": "2492:12:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                    "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                     "typeString": "Claim"
                   },
                   "typeName": {
-                    "id": 66045,
+                    "id": 58335,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 66044,
+                      "id": 58334,
                       "name": "Claim",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68183,
-                      "src": "2492:5:122"
+                      "referencedDeclaration": 60197,
+                      "src": "2492:5:104"
                     },
-                    "referencedDeclaration": 68183,
-                    "src": "2492:5:122",
+                    "referencedDeclaration": 60197,
+                    "src": "2492:5:104",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Claim_$68183",
+                      "typeIdentifier": "t_userDefinedValueType$_Claim_$60197",
                       "typeString": "Claim"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "2469:36:122"
+              "src": "2469:36:104"
             },
             "returnParameters": {
-              "id": 66048,
+              "id": 58338,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2522:0:122"
+              "src": "2522:0:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66061,
+            "id": 58351,
             "nodeType": "FunctionDefinition",
-            "src": "3452:110:122",
+            "src": "3452:110:104",
             "nodes": [],
             "documentation": {
-              "id": 66050,
+              "id": 58340,
               "nodeType": "StructuredDocumentation",
-              "src": "2529:918:122",
+              "src": "2529:918:104",
               "text": "@notice Perform an instruction step via an on-chain fault proof processor.\n @dev This function should point to a fault proof processor in order to execute\n      a step in the fault proof program on-chain. The interface of the fault proof\n      processor contract should adhere to the `IBigStepper` interface.\n @param _claimIndex The index of the challenged claim within `claimData`.\n @param _isAttack Whether or not the step is an attack or a defense.\n @param _stateData The stateData of the step is the preimage of the claim at the given\n        prestate, which is at `_stateIndex` if the move is an attack and `_claimIndex` if\n        the move is a defense. If the step is an attack on the first instruction, it is\n        the absolute prestate of the fault proof VM.\n @param _proof Proof to access memory nodes in the VM's merkle state tree."
             },
             "functionSelector": "d8cc1a3c",
@@ -1845,20 +1845,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "step",
-            "nameLocation": "3461:4:122",
+            "nameLocation": "3461:4:104",
             "parameters": {
-              "id": 66059,
+              "id": 58349,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66052,
+                  "id": 58342,
                   "mutability": "mutable",
                   "name": "_claimIndex",
-                  "nameLocation": "3474:11:122",
+                  "nameLocation": "3474:11:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66061,
-                  "src": "3466:19:122",
+                  "scope": 58351,
+                  "src": "3466:19:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1866,10 +1866,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66051,
+                    "id": 58341,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3466:7:122",
+                    "src": "3466:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1879,13 +1879,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 66054,
+                  "id": 58344,
                   "mutability": "mutable",
                   "name": "_isAttack",
-                  "nameLocation": "3492:9:122",
+                  "nameLocation": "3492:9:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66061,
-                  "src": "3487:14:122",
+                  "scope": 58351,
+                  "src": "3487:14:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1893,10 +1893,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 66053,
+                    "id": 58343,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3487:4:122",
+                    "src": "3487:4:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1906,13 +1906,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 66056,
+                  "id": 58346,
                   "mutability": "mutable",
                   "name": "_stateData",
-                  "nameLocation": "3518:10:122",
+                  "nameLocation": "3518:10:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66061,
-                  "src": "3503:25:122",
+                  "scope": 58351,
+                  "src": "3503:25:104",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1920,10 +1920,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 66055,
+                    "id": 58345,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3503:5:122",
+                    "src": "3503:5:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -1933,13 +1933,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 66058,
+                  "id": 58348,
                   "mutability": "mutable",
                   "name": "_proof",
-                  "nameLocation": "3545:6:122",
+                  "nameLocation": "3545:6:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66061,
-                  "src": "3530:21:122",
+                  "scope": 58351,
+                  "src": "3530:21:104",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1947,10 +1947,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 66057,
+                    "id": 58347,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3530:5:122",
+                    "src": "3530:5:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -1959,28 +1959,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3465:87:122"
+              "src": "3465:87:104"
             },
             "returnParameters": {
-              "id": 66060,
+              "id": 58350,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "3561:0:122"
+              "src": "3561:0:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66071,
+            "id": 58361,
             "nodeType": "FunctionDefinition",
-            "src": "3927:92:122",
+            "src": "3927:92:104",
             "nodes": [],
             "documentation": {
-              "id": 66062,
+              "id": 58352,
               "nodeType": "StructuredDocumentation",
-              "src": "3568:354:122",
+              "src": "3568:354:104",
               "text": "@notice Posts the requested local data to the VM's `PreimageOralce`.\n @param _ident The local identifier of the data to post.\n @param _l2BlockNumber The L2 block number being disputed. This serves as the local context for the\n                       `PreimageOracle` key.\n @param _partOffset The offset of the data to post."
             },
             "functionSelector": "f8f43ff6",
@@ -1988,20 +1988,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "addLocalData",
-            "nameLocation": "3936:12:122",
+            "nameLocation": "3936:12:104",
             "parameters": {
-              "id": 66069,
+              "id": 58359,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66064,
+                  "id": 58354,
                   "mutability": "mutable",
                   "name": "_ident",
-                  "nameLocation": "3957:6:122",
+                  "nameLocation": "3957:6:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66071,
-                  "src": "3949:14:122",
+                  "scope": 58361,
+                  "src": "3949:14:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2009,10 +2009,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66063,
+                    "id": 58353,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3949:7:122",
+                    "src": "3949:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2022,13 +2022,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 66066,
+                  "id": 58356,
                   "mutability": "mutable",
                   "name": "_l2BlockNumber",
-                  "nameLocation": "3973:14:122",
+                  "nameLocation": "3973:14:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66071,
-                  "src": "3965:22:122",
+                  "scope": 58361,
+                  "src": "3965:22:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2036,10 +2036,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66065,
+                    "id": 58355,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3965:7:122",
+                    "src": "3965:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2049,13 +2049,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 66068,
+                  "id": 58358,
                   "mutability": "mutable",
                   "name": "_partOffset",
-                  "nameLocation": "3997:11:122",
+                  "nameLocation": "3997:11:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66071,
-                  "src": "3989:19:122",
+                  "scope": 58361,
+                  "src": "3989:19:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2063,10 +2063,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66067,
+                    "id": 58357,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3989:7:122",
+                    "src": "3989:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2075,28 +2075,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3948:61:122"
+              "src": "3948:61:104"
             },
             "returnParameters": {
-              "id": 66070,
+              "id": 58360,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "4018:0:122"
+              "src": "4018:0:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66077,
+            "id": 58367,
             "nodeType": "FunctionDefinition",
-            "src": "4511:60:122",
+            "src": "4511:60:104",
             "nodes": [],
             "documentation": {
-              "id": 66072,
+              "id": 58362,
               "nodeType": "StructuredDocumentation",
-              "src": "4025:481:122",
+              "src": "4025:481:104",
               "text": "@notice Resolves the subgame rooted at the given claim index.\n @dev This function must be called bottom-up in the DAG\n      A subgame is a tree of claims that has a maximum depth of 1.\n      A subgame root claims is valid if, and only if, all of its child claims are invalid.\n      At the deepest level in the DAG, a claim is invalid if there's a successful step against it.\n @param _claimIndex The index of the subgame root claim to resolve."
             },
             "functionSelector": "fdffbb28",
@@ -2104,20 +2104,20 @@
             "kind": "function",
             "modifiers": [],
             "name": "resolveClaim",
-            "nameLocation": "4520:12:122",
+            "nameLocation": "4520:12:104",
             "parameters": {
-              "id": 66075,
+              "id": 58365,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66074,
+                  "id": 58364,
                   "mutability": "mutable",
                   "name": "_claimIndex",
-                  "nameLocation": "4541:11:122",
+                  "nameLocation": "4541:11:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66077,
-                  "src": "4533:19:122",
+                  "scope": 58367,
+                  "src": "4533:19:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2125,10 +2125,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66073,
+                    "id": 58363,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "4533:7:122",
+                    "src": "4533:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2137,28 +2137,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "4532:21:122"
+              "src": "4532:21:104"
             },
             "returnParameters": {
-              "id": 66076,
+              "id": 58366,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "4570:0:122"
+              "src": "4570:0:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66084,
+            "id": 58374,
             "nodeType": "FunctionDefinition",
-            "src": "4884:55:122",
+            "src": "4884:55:104",
             "nodes": [],
             "documentation": {
-              "id": 66078,
+              "id": 58368,
               "nodeType": "StructuredDocumentation",
-              "src": "4577:302:122",
+              "src": "4577:302:104",
               "text": "@notice An L1 block hash that contains the disputed output root, fetched from the\n         `BlockOracle` and verified by referencing the timestamp associated with the\n         first L2 Output Proposal in the `L2OutputOracle` that contains the disputed\n         L2 block number."
             },
             "functionSelector": "6361506d",
@@ -2166,68 +2166,68 @@
             "kind": "function",
             "modifiers": [],
             "name": "l1Head",
-            "nameLocation": "4893:6:122",
+            "nameLocation": "4893:6:104",
             "parameters": {
-              "id": 66079,
+              "id": 58369,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "4899:2:122"
+              "src": "4899:2:104"
             },
             "returnParameters": {
-              "id": 66083,
+              "id": 58373,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66082,
+                  "id": 58372,
                   "mutability": "mutable",
                   "name": "l1Head_",
-                  "nameLocation": "4930:7:122",
+                  "nameLocation": "4930:7:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66084,
-                  "src": "4925:12:122",
+                  "scope": 58374,
+                  "src": "4925:12:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_userDefinedValueType$_Hash_$68181",
+                    "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
                     "typeString": "Hash"
                   },
                   "typeName": {
-                    "id": 66081,
+                    "id": 58371,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 66080,
+                      "id": 58370,
                       "name": "Hash",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 68181,
-                      "src": "4925:4:122"
+                      "referencedDeclaration": 60195,
+                      "src": "4925:4:104"
                     },
-                    "referencedDeclaration": 68181,
-                    "src": "4925:4:122",
+                    "referencedDeclaration": 60195,
+                    "src": "4925:4:104",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_userDefinedValueType$_Hash_$68181",
+                      "typeIdentifier": "t_userDefinedValueType$_Hash_$60195",
                       "typeString": "Hash"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "4924:14:122"
+              "src": "4924:14:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66090,
+            "id": 58380,
             "nodeType": "FunctionDefinition",
-            "src": "5032:72:122",
+            "src": "5032:72:104",
             "nodes": [],
             "documentation": {
-              "id": 66085,
+              "id": 58375,
               "nodeType": "StructuredDocumentation",
-              "src": "4945:82:122",
+              "src": "4945:82:104",
               "text": "@notice The l2BlockNumber of the disputed output root in the `L2OutputOracle`."
             },
             "functionSelector": "8b85902b",
@@ -2235,26 +2235,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "l2BlockNumber",
-            "nameLocation": "5041:13:122",
+            "nameLocation": "5041:13:104",
             "parameters": {
-              "id": 66086,
+              "id": 58376,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "5054:2:122"
+              "src": "5054:2:104"
             },
             "returnParameters": {
-              "id": 66089,
+              "id": 58379,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66088,
+                  "id": 58378,
                   "mutability": "mutable",
                   "name": "l2BlockNumber_",
-                  "nameLocation": "5088:14:122",
+                  "nameLocation": "5088:14:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66090,
-                  "src": "5080:22:122",
+                  "scope": 58380,
+                  "src": "5080:22:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2262,10 +2262,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66087,
+                    "id": 58377,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "5080:7:122",
+                    "src": "5080:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2274,22 +2274,22 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "5079:24:122"
+              "src": "5079:24:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 66096,
+            "id": 58386,
             "nodeType": "FunctionDefinition",
-            "src": "5197:72:122",
+            "src": "5197:72:104",
             "nodes": [],
             "documentation": {
-              "id": 66091,
+              "id": 58381,
               "nodeType": "StructuredDocumentation",
-              "src": "5110:82:122",
+              "src": "5110:82:104",
               "text": "@notice The l1BlockNumber that Cannon was ran from to generate the root claim."
             },
             "functionSelector": "298c9005",
@@ -2297,26 +2297,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "l1BlockNumber",
-            "nameLocation": "5206:13:122",
+            "nameLocation": "5206:13:104",
             "parameters": {
-              "id": 66092,
+              "id": 58382,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "5219:2:122"
+              "src": "5219:2:104"
             },
             "returnParameters": {
-              "id": 66095,
+              "id": 58385,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 66094,
+                  "id": 58384,
                   "mutability": "mutable",
                   "name": "l1BlockNumber_",
-                  "nameLocation": "5253:14:122",
+                  "nameLocation": "5253:14:104",
                   "nodeType": "VariableDeclaration",
-                  "scope": 66096,
-                  "src": "5245:22:122",
+                  "scope": 58386,
+                  "src": "5245:22:104",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2324,10 +2324,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 66093,
+                    "id": 58383,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "5245:7:122",
+                    "src": "5245:7:104",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2336,9 +2336,9 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "5244:24:122"
+              "src": "5244:24:104"
             },
-            "scope": 66097,
+            "scope": 58387,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -2348,39 +2348,39 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 65991,
+              "id": 58281,
               "name": "IDisputeGame",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 65869,
-              "src": "277:12:122"
+              "referencedDeclaration": 58159,
+              "src": "277:12:104"
             },
-            "id": 65992,
+            "id": 58282,
             "nodeType": "InheritanceSpecifier",
-            "src": "277:12:122"
+            "src": "277:12:104"
           }
         ],
         "canonicalName": "IFaultDisputeGame",
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 65990,
+          "id": 58280,
           "nodeType": "StructuredDocumentation",
-          "src": "152:94:122",
+          "src": "152:94:104",
           "text": "@title IFaultDisputeGame\n @notice The interface for a fault proof backed dispute game."
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          66097,
-          65869,
-          66105
+          58387,
+          58159,
+          58395
         ],
         "name": "IFaultDisputeGame",
-        "nameLocation": "256:17:122",
-        "scope": 66098,
+        "nameLocation": "256:17:104",
+        "scope": 58388,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 122
+  "id": 104
 }
