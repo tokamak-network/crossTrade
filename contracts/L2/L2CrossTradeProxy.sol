@@ -23,7 +23,7 @@ contract L2CrossTradeProxy is Proxy, L2CrossTradeStorage {
     /// @notice Store addresses for chainId
     /// @param _l1CrossTrade L1CrossTradeProxy address for chainId
     /// @param _l1legacyERC20 l1legacyERC20 address for chainId
-    /// @param _chainId store chainId
+    /// @param _chainId store L1chainId
     function setChainInfo(
         address _l1CrossTrade,
         address _l1legacyERC20,
