@@ -410,20 +410,20 @@ import {
         let registerCheck = await L2CrossTradeContract.registerCheck(
             l1ChainId,
             l2NativeTokenContract.address,
-            zeroAddr
+            predeployedAddress.LegacyERC20ETH
         )
         expect(registerCheck).to.be.equal(false)
 
         await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
             l2NativeTokenContract.address,
-            zeroAddr,
+            predeployedAddress.LegacyERC20ETH,
             l1ChainId
         )).wait()
 
         registerCheck = await L2CrossTradeContract.registerCheck(
             l1ChainId,
             l2NativeTokenContract.address,
-            zeroAddr
+            predeployedAddress.LegacyERC20ETH
         )
         expect(registerCheck).to.be.equal(true)
       })
@@ -432,8 +432,8 @@ import {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
         
-        await (await L2CrossTradeContract.connect(l2Wallet).requestCT(
-          zeroAddr,
+        await (await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
+          l2NativeTokenContract.address,
           predeployedAddress.LegacyERC20ETH,
           threeETH,
           twoETH,
@@ -501,6 +501,7 @@ import {
           l2Wallet.address,
           threeETH,
           twoETH,
+          0,
           saleCount,
           chainId,
           200000,
