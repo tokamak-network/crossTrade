@@ -12,10 +12,10 @@ import { ethers } from "hardhat";
 import { BytesLike, Event } from 'ethers'
 
 import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../src'
-import L1FastWithdrawProxy_ABI from "../artifacts/contracts/L1/L1FastWithdrawProxy.sol/L1FastWithdrawProxy.json"
-import L1FastWithdraw_ABI from "../artifacts/contracts/L1/L1FastWithdraw.sol/L1FastWithdraw.json"
-import L2FastWithdrawProxy_ABI from "../artifacts/contracts/L2/L2FastWithdrawProxy.sol/L2FastWithdrawProxy.json"
-import L2FastWithdraw_ABI from "../artifacts/contracts/L2/L2FastWithdraw.sol/L2FastWithdraw.json"
+import L1CrossTradeProxy_ABI from "../artifacts/contracts/L1/L1CrossTradeProxy.sol/L1CrossTradeProxy.json"
+import L1CrossTrade_ABI from "../artifacts/contracts/L1/L1CrossTrade.sol/L1CrossTrade.json"
+import L2CrossTradeProxy_ABI from "../artifacts/contracts/L2/L2CrossTradeProxy.sol/L2CrossTradeProxy.json"
+import L2CrossTrade_ABI from "../artifacts/contracts/L2/L2CrossTrade.sol/L2CrossTrade.json"
 import L1StandardBridgeABI from '../contracts-bedrock/forge-artifacts/L1StandardBridge.sol/L1StandardBridge.json'
 import OptimismMintableERC20TokenFactoryABI from '../contracts-bedrock/forge-artifacts/OptimismMintableERC20Factory.sol/OptimismMintableERC20Factory.json'
 import OptimismMintableERC20TokenABI from '../contracts-bedrock/forge-artifacts/OptimismMintableERC20.sol/OptimismMintableERC20.json'
@@ -25,7 +25,7 @@ import dotenv from "dotenv" ;
 
 dotenv.config();
 
-describe("ERC20 FastWithdraw Test", function () {
+describe("ERC20 CrossTrade Test", function () {
   let network = "devnetL1"
   let deployedAddress = require('./data/deployed.'+network+'.json');
   let predeployedAddress = require('./data/predeployed.'+network+'.json');
@@ -115,15 +115,15 @@ describe("ERC20 FastWithdraw Test", function () {
 
   const zeroAddr = '0x'.padEnd(42, '0')
 
-  // let L1FastWithdrawLogicDep : any;
-  let L1FastWithdrawLogic : any;
-  let L1FastWithdrawProxy : any;
-  let L1FastWithdrawContract : any;
+  // let L1CrossTradeLogicDep : any;
+  let L1CrossTradeLogic : any;
+  let L1CrossTradeProxy : any;
+  let L1CrossTradeContract : any;
 
-  // let L2FastWithdrawProxyDep : any;
-  let L2FastWithdrawLogic : any;
-  let L2FastWithdrawProxy : any;
-  let L2FastWithdrawContract : any;
+  // let L2CrossTradeProxyDep : any;
+  let L2CrossTradeLogic : any;
+  let L2CrossTradeProxy : any;
+  let L2CrossTradeContract : any;
   
   let deployer : any;
 
@@ -155,7 +155,9 @@ describe("ERC20 FastWithdraw Test", function () {
 
   let l2NativeTokenContract : any;
   let L1StandardBridgeContract : any;
-  let L2FastWithdrawBalance : any;
+  let L2CrossTradeBalance : any;
+
+  let editTime = 180
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -246,127 +248,135 @@ describe("ERC20 FastWithdraw Test", function () {
       // console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
     })
     
-    it("L1FastWithdrawLogic", async () => {
-      const L1FastWithdrawLogicDep = new ethers.ContractFactory(
-        L1FastWithdraw_ABI.abi,
-        L1FastWithdraw_ABI.bytecode,
+    it("L1CrossTradeLogic", async () => {
+      const L1CrossTradeLogicDep = new ethers.ContractFactory(
+        L1CrossTrade_ABI.abi,
+        L1CrossTrade_ABI.bytecode,
         l1Wallet
       )
 
-      L1FastWithdrawLogic = await L1FastWithdrawLogicDep.deploy()
-      await L1FastWithdrawLogic.deployed()
+      L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy()
+      await L1CrossTradeLogic.deployed()
 
-      // console.log("L1FasitWithdrawLogic :", L1FastWithdrawLogic.address);
+      // console.log("L1FasitWithdrawLogic :", L1CrossTradeLogic.address);
     })
 
-    it("L1FastWithdrawProxy", async () => {
-      const L1FastWithdrawProxyDep = new ethers.ContractFactory(
-        L1FastWithdrawProxy_ABI.abi,
-        L1FastWithdrawProxy_ABI.bytecode,
+    it("L1CrossTradeProxy", async () => {
+      const L1CrossTradeProxyDep = new ethers.ContractFactory(
+        L1CrossTradeProxy_ABI.abi,
+        L1CrossTradeProxy_ABI.bytecode,
         l1Wallet
       )
 
-      L1FastWithdrawProxy = await L1FastWithdrawProxyDep.deploy()
-      await L1FastWithdrawProxy.deployed()
-      // console.log("L1FastWithdrawProxy :", L1FastWithdrawProxy.address);
+      L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy()
+      await L1CrossTradeProxy.deployed()
+      // console.log("L1CrossTradeProxy :", L1CrossTradeProxy.address);
     })
 
-    it("L1FastWithdrawProxy upgradeTo", async () => {
-      await (await L1FastWithdrawProxy.upgradeTo(L1FastWithdrawLogic.address)).wait();
-      let imp2 = await L1FastWithdrawProxy.implementation()
-      if(L1FastWithdrawLogic.address !== imp2) {
-        console.log("===========L1FastWithdrawProxy upgradeTo ERROR!!===========")
+    it("L1CrossTradeProxy upgradeTo", async () => {
+      await (await L1CrossTradeProxy.upgradeTo(L1CrossTradeLogic.address)).wait();
+      let imp2 = await L1CrossTradeProxy.implementation()
+      if(L1CrossTradeLogic.address !== imp2) {
+        console.log("===========L1CrossTradeProxy upgradeTo ERROR!!===========")
       }
     })
 
-    it("set L1FastWithdraw", async () => {
-      L1FastWithdrawContract = new ethers.Contract(
-        L1FastWithdrawProxy.address,
-        L1FastWithdraw_ABI.abi,
+    it("set L1CrossTrade", async () => {
+      L1CrossTradeContract = new ethers.Contract(
+        L1CrossTradeProxy.address,
+        L1CrossTrade_ABI.abi,
         l1Wallet
       )
     })
 
-    it("L2FastWithdrawLogic", async () => {
-      const L2FastWithdrawLogicDep = new ethers.ContractFactory(
-        L2FastWithdraw_ABI.abi,
-        L2FastWithdraw_ABI.bytecode,
+    it("L2CrossTradeLogic", async () => {
+      const L2CrossTradeLogicDep = new ethers.ContractFactory(
+        L2CrossTrade_ABI.abi,
+        L2CrossTrade_ABI.bytecode,
         l2Wallet
       )
 
-      L2FastWithdrawLogic = await L2FastWithdrawLogicDep.deploy()
-      await L2FastWithdrawLogic.deployed()
+      L2CrossTradeLogic = await L2CrossTradeLogicDep.deploy()
+      await L2CrossTradeLogic.deployed()
 
-      // console.log("L2FasitWithdrawLogic :", L2FastWithdrawLogic.address);
+      // console.log("L2FasitWithdrawLogic :", L2CrossTradeLogic.address);
     })
 
-    it("L2FastWithdrawProxy", async () => {
-      const L2FastWithdrawProxyDep = new ethers.ContractFactory(
-        L2FastWithdrawProxy_ABI.abi,
-        L2FastWithdrawProxy_ABI.bytecode,
+    it("L2CrossTradeProxy", async () => {
+      const L2CrossTradeProxyDep = new ethers.ContractFactory(
+        L2CrossTradeProxy_ABI.abi,
+        L2CrossTradeProxy_ABI.bytecode,
         l2Wallet
       )
 
-      L2FastWithdrawProxy = await L2FastWithdrawProxyDep.deploy()
-      await L2FastWithdrawProxy.deployed()
-      // console.log("L2FastWithdrawProxy :", L2FastWithdrawProxy.address);
+      L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy()
+      await L2CrossTradeProxy.deployed()
+      // console.log("L2CrossTradeProxy :", L2CrossTradeProxy.address);
     })
 
-    it("L2FastWithdrawProxy upgradeTo", async () => {
-      await (await L2FastWithdrawProxy.upgradeTo(L2FastWithdrawLogic.address)).wait();
-      let imp2 = await L2FastWithdrawProxy.implementation()
-      if(L2FastWithdrawLogic.address !== imp2) {
-        console.log("===========L2FastWithdrawProxy upgradeTo ERROR!!===========")
+    it("L2CrossTradeProxy upgradeTo", async () => {
+      await (await L2CrossTradeProxy.upgradeTo(L2CrossTradeLogic.address)).wait();
+      let imp2 = await L2CrossTradeProxy.implementation()
+      if(L2CrossTradeLogic.address !== imp2) {
+        console.log("===========L2CrossTradeProxy upgradeTo ERROR!!===========")
       }
     })
 
-    it("set L2FastWithdraw", async () => {
-      L2FastWithdrawContract = new ethers.Contract(
-        L2FastWithdrawProxy.address,
-        L2FastWithdraw_ABI.abi,
+    it("set L2CrossTrade", async () => {
+      L2CrossTradeContract = new ethers.Contract(
+        L2CrossTradeProxy.address,
+        L2CrossTrade_ABI.abi,
         l2Wallet
       )
     })
 
-    it("L1FastWithdraw initialize", async () => {
-      await (await L1FastWithdrawProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger,
-        L2FastWithdrawContract.address,
-        zeroAddr,
-        l2NativeTokenContract.address
+    it("L1CrossTrade initialize", async () => {
+      await (await L1CrossTradeProxy.connect(l1Wallet).initialize(
+        l1Contracts.L1CrossDomainMessenger
       )).wait()
 
-      const checkL1Inform = await L1FastWithdrawProxy.crossDomainMessenger()
+      const checkL1Inform = await L1CrossTradeProxy.crossDomainMessenger()
       if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
-        console.log("===========L1FastWithdraw initialize ERROR!!===========")
+        console.log("===========L1CrossTrade initialize ERROR!!===========")
       }
     })
 
-    it("L2FastWithdraw initialize", async () => {
-      await (await L2FastWithdrawProxy.connect(l2Wallet).initialize(
+
+    it("L1CrossTrade set chainInfo", async () => {
+      await (await L1CrossTradeProxy.connect(l1Wallet).chainInfo(
+        L2CrossTradeContract.address,
+        zeroAddr,
+        l2NativeTokenContract.address,
+        l2ChainId,
+        editTime
+      )).wait()
+    })
+
+    it("L2CrossTrade initialize", async () => {
+      await (await L2CrossTradeProxy.connect(l2Wallet).initialize(
         l2CrossDomainMessengerAddr,
-        L1FastWithdrawContract.address,
+        L1CrossTradeContract.address,
         predeployedAddress.LegacyERC20ETH,
         l2NativeTokenContract.address
       )).wait();
     
-      const checkL2Inform = await L2FastWithdrawProxy.crossDomainMessenger()
+      const checkL2Inform = await L2CrossTradeProxy.crossDomainMessenger()
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
-        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+        console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
-      let tx = await L2FastWithdrawContract.saleCount()
+      let tx = await L2CrossTradeContract.saleCount()
       expect(tx).to.be.equal(0)
-      tx = await L2FastWithdrawContract.l1fastWithdrawContract()
-      if(tx !== L1FastWithdrawContract.address){
-        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+      tx = await L2CrossTradeContract.l1CrossTradeContract()
+      if(tx !== L1CrossTradeContract.address){
+        console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.legacyERC20ETH()
+      tx = await L2CrossTradeContract.legacyERC20ETH()
       if(tx !== predeployedAddress.LegacyERC20ETH){
-        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+        console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
-      tx = await L2FastWithdrawContract.nativeL1token()
+      tx = await L2CrossTradeContract.nativeL1token()
       if(tx !== l2NativeTokenContract.address){
-        console.log("===========L2FastWithdraw initialize ERROR!!===========")
+        console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
     })
 
@@ -457,28 +467,29 @@ describe("ERC20 FastWithdraw Test", function () {
 
     it("requestFW (ERC20) in L2", async () => {
       let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let beforeL2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+      let beforeL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
 
-      let tx = await l2MockERC20.connect(l2Wallet).approve(L2FastWithdrawContract.address, threeETH)
+      let tx = await l2MockERC20.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
       await tx.wait()
 
-      await (await L2FastWithdrawContract.connect(l2Wallet).requestFW(
+      await (await L2CrossTradeContract.connect(l2Wallet).requestFW(
         zeroAddr,
         l2MockERC20.address,
         threeETH,
-        twoETH
+        twoETH,
+        l1ChainId
       )).wait()
 
       let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let afterL2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+      let afterL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
 
       expect(beforel2MockBalance).to.be.gt(afterl2MockBalance)
-      expect(afterL2FastWithdrawBalance).to.be.gt(beforeL2FastWithdrawBalance)
+      expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
 
-      const saleCount = await L2FastWithdrawProxy.saleCount()
+      const saleCount = await L2CrossTradeProxy.saleCount()
       expect(saleCount).to.be.equal(1);
       
-      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      let saleInformation = await L2CrossTradeContract.dealData(saleCount)
       if(saleInformation.requester !== l2Wallet.address) {
         console.log("===========requestFW Fail!!===========")
       } 
@@ -491,19 +502,25 @@ describe("ERC20 FastWithdraw Test", function () {
       let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
       let beforel2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
 
-      let beforeL2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+      let beforeL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
 
-      const providerApproveTx = await MockERC20.connect(l1user1).approve(L1FastWithdrawContract.address, twoETH)
+      const providerApproveTx = await MockERC20.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
       await providerApproveTx.wait()
 
-      const saleCount = await L2FastWithdrawProxy.saleCount()
+      const saleCount = await L2CrossTradeProxy.saleCount()
+      let chainId = await L2CrossTradeContract.getChainID()
+      let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
-      const providerTx = await L1FastWithdrawContract.connect(l1user1).provideFW(
+      const providerTx = await L1CrossTradeContract.connect(l1user1).provideFW(
         MockERC20.address,
+        l2MockERC20.address,
         l2Wallet.address,
+        threeETH,
         twoETH,
         saleCount,
-        200000
+        chainId,
+        200000,
+        saleInformation.hashValue
       )
       await providerTx.wait()
 
@@ -515,7 +532,7 @@ describe("ERC20 FastWithdraw Test", function () {
       let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
       let afterl2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
 
-      let afterL2FastWithdrawBalance = await l2MockERC20.balanceOf(L2FastWithdrawContract.address)
+      let afterL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
 
       expect(afterl2Balance).to.be.gt(beforel2Balance)
       expect(beforel2BalanceUser1).to.be.gt(afterl2BalanceUser1)
@@ -523,9 +540,9 @@ describe("ERC20 FastWithdraw Test", function () {
       expect(beforel2MockBalance).to.be.equal(afterl2MockBalance)
       expect(afterl2MockBalanceUser1).to.be.gt(beforel2MockBalanceUser1)
       
-      expect(beforeL2FastWithdrawBalance).to.be.gt(afterL2FastWithdrawBalance)
+      expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
 
-      let saleInformation = await L2FastWithdrawContract.dealData(saleCount)
+      saleInformation = await L2CrossTradeContract.dealData(saleCount)
       if(saleInformation.provider !== l2user1.address) {
         console.log("===========Provider Fail!!===========")
       } 

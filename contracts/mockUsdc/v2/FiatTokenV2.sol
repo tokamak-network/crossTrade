@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.24;
 
 import { FiatTokenV1_1 } from "../v1.1/FiatTokenV1_1.sol";
 import { EIP712 } from "../util/EIP712.sol";

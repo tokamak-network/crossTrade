@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+import "hardhat-gas-reporter";
 import dotenv from "dotenv" ;
 
 dotenv.config();
@@ -8,23 +9,60 @@ dotenv.config();
 const config: HardhatUserConfig = {
   // solidity: "0.8.20",
   solidity: {
-    version: '0.8.20',
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 100,
+    compilers: [
+      {
+        version: '0.8.24',
+        settings: {
+          viaIR: true,
+          optimizer: {
+              enabled: true,
+              runs: 100000000, //4294967295,
+              details: {
+                  yul: true,
+              },
+          },
+        }
       },
+      {
+        version: '0.4.17'
+      }
+    ],
+    settings: {
+      // evmVersion: "cancun",
+      viaIR: true,
+      optimizer: {
+          enabled: true,
+          runs: 100000000, //4294967295,
+          details: {
+              yul: true,
+          },
+      },
+      // optimizer: {
+      //   enabled: true,
+      //   runs: 100,
+      // },
     },
   },
   networks: {
+    // hardhat: {
+    //   evmVersion: "Dencun",
+    // },
     mainnet: {
       url: process.env.L1_RPC || 'https://mainnet-l1-rehearsal.optimism.io',
       accounts: [
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       ],
     },
+    sepolia: {
+      url: `${process.env.ETH_NODE_URI_sepolia}`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    titanSepolia: {
+      url: 'https://rpc.thanos-sepolia-test.tokamak.network',
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
     devnetL1: {
-      url: 'http://localhost:8545',
+      url: 'http://localhost:9545',
       accounts: [
         // warning: keys 0 - 12 (incl) are used by the system
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', // 0
@@ -50,7 +88,7 @@ const config: HardhatUserConfig = {
       ],
     },
     devnetL2: {
-      url: 'http://localhost:9545',
+      url: 'http://localhost:8545',
       accounts: [
         // warning: keys 0 - 12 (incl) are used by the system
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', // 0
@@ -74,8 +112,29 @@ const config: HardhatUserConfig = {
         'de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0', // 18
         'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e', // 19
       ],
+    },
+    titan: {
+      url: 'http://localhost:9545',
+      accounts: [
+        'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+      ],
     }
-  }
+  },
+  gasReporter: {
+    // enabled: true,
+    // currency: 'USD',
+    // gasPrice: 21,
+    // optimismHardfork: 'ecotone',
+    // coinmarketcap: `${process.env.COINMARKETCAP_API_KEY}`
+    // includeIntrinsicGas: false,
+    offline: true,
+    L2: "optimism",
+    gasPrice: .00325,      // gwei (L2)
+    baseFee: 35,           // gwei (L1)
+    blobBaseFee: 20,       // gwei (L1)
+    tokenPrice: "1",       // ETH per ETH
+    token: "ETH"
+  },
 };
 
 export default config;
