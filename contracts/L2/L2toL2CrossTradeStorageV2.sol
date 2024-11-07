@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.24;
 
-contract L2toL2CrossTradeStorage {
+contract L2toL2CrossTradeStorageV2 {
     struct RequestData {
         address l1token;
         address l2SourceToken;
@@ -26,8 +26,10 @@ contract L2toL2CrossTradeStorage {
     uint256 public saleCount;
 
     mapping(uint256 => RequestData) public dealData;
-    // mapping(uint256 => mapping(address => mapping(address => bool))) public registerCheck;
-    mapping(bytes32 => bool) public registerCheck;
+    mapping(address => mapping(uint256 => mapping(bytes32 => bool))) public registerCheck;
+
+    // should we have an array with ids for a msg.sender ??
+    // mapping(address => array[bytes32]) with all the values an address has ? or a mapping
 
 
     //chainId => ChainData
