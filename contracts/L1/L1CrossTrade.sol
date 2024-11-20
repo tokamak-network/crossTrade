@@ -56,11 +56,15 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
     ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
+    ///         And We do not support ERC20, which is specially created and incurs a fee when transferring.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor requester's address
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
+    /// @param _editedAmount input the edited amount
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -71,6 +75,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _requestor,
         uint256 _totalAmount,
         uint256 _initialctAmount,
+        uint256 _editedAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -92,13 +97,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
+        require(l2HashValue == _hash, "Hash values do not match");
         require(successCT[l2HashValue] == false, "already sold");
         
         uint256 ctAmount = _initialctAmount;
 
-        if (editCtAmount[l2HashValue] > 0) {
-            ctAmount = editCtAmount[l2HashValue];
+        if (_editedAmount > 0) {
+            require(editCtAmount[l2HashValue] == _editedAmount, "The edited amount does not match");
+            ctAmount = _editedAmount;
         }
 
         bytes memory message;
@@ -119,90 +125,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             message, 
             _minGasLimit
         );
-
-        if (chainData[_l2chainId].l1TON == _l1token) {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
-        } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
-            require(sent, "claim fail");
-        } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
-        }
-
-        emit ProvideCT(
-            _l1token,
-            _l2token,
-            _requestor,
-            msg.sender,
-            _totalAmount,
-            ctAmount,
-            _salecount,
-            _l2chainId,
-            _hash
-        );
-    }
-
-
-    /// @notice This is a function created to test the reprovide function. This is for testing purposes only and will be deleted upon final distribution.
-    /// @param _l1token Address of requested l1token
-    /// @param _l2token Address of requested l2token
-    /// @param _requestor requester's address
-    /// @param _totalAmount Total amount requested by l2
-    /// @param _initialctAmount ctAmount requested when creating the initial request
-    /// @param _salecount Number generated upon request
-    /// @param _l2chainId request requested chainId
-    /// @param _minGasLimit minGasLimit
-    /// @param _hash Hash value generated upon request
-    function provideTest(
-        address _l1token,
-        address _l2token,
-        address _requestor,
-        uint256 _totalAmount,
-        uint256 _initialctAmount,
-        uint256 _salecount,
-        uint256 _l2chainId,
-        uint32 _minGasLimit,
-        bytes32 _hash
-    )
-        external
-        payable
-        onlyEOA
-        nonReentrant
-    {
-        uint256 thisChainId = _getChainID();
-        bytes32 l2HashValue = getHash(
-            _l1token,
-            _l2token,
-            _requestor,
-            _totalAmount,
-            _initialctAmount,
-            _salecount,
-            _l2chainId,
-            thisChainId
-        );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
-        
-        uint256 ctAmount = _initialctAmount;
-
-        if (editCtAmount[l2HashValue] > 0) {
-            ctAmount = editCtAmount[l2HashValue];
-        }
-
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
-            CLAIM_CT,
-            msg.sender,
-            ctAmount,
-            _salecount,
-            l2HashValue
-        );
-        
-        provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
 
         if (chainData[_l2chainId].l1TON == _l1token) {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
@@ -275,6 +197,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
@@ -383,6 +307,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2

@@ -1,4 +1,5 @@
 # CrossTrade
+
 ![Contract Composition](https://github.com/tokamak-network/crossTrade/blob/2nd_Audit/img/CrossTrade%20Composition.drawio.png)
 
 It consists of a CrossTrade-related proxy and logic contract in L1, and a CrossTrade-related proxy and logic contract in L2.
@@ -11,6 +12,22 @@ So, when creating a transaction in L1, the hash value generated in L2 is also in
 If you have already called the provideCT function, but the transaction failed in L2 and you paid in L1 but did not receive the money in L2, you can call the function in L2 again using reprovideCT.
 
 And after providingCT is called, you cannot edit or cancel.
+
+## Contract Addresses on Ethereum 
+- L1CrossTradeProxy: [0x23DDf582c26Da5FDb7514aD22e7D74A369faD117](https://etherscan.io/address/0x23DDf582c26Da5FDb7514aD22e7D74A369faD117#code)
+- L1CrossTrade: [0x26947c3dc054c5220fe3f999e2f9109eaea17e26](https://etherscan.io/address/0x26947c3dc054c5220fe3f999e2f9109eaea17e26)
+
+## Contract Addresses on Titan
+- L2CrossTradeProxy: [0xD6e99ec486Afc8ae26d36a6Ab6240D1e0ecf0271](https://explorer.titan.tokamak.network/address/0xD6e99ec486Afc8ae26d36a6Ab6240D1e0ecf0271)
+- L2CrossTrade: [0xC597fE33d2066c9929a4AF3a0004f5ec55d39E06](https://explorer.titan.tokamak.network/address/0xC597fE33d2066c9929a4AF3a0004f5ec55d39E06)
+
+## Contract Addresses on Sepolia 
+- L1CrossTradeProx: [0x57BD88F20003185CB136f859e7724DD75910FD75](https://sepolia.etherscan.io/address/0x57BD88F20003185CB136f859e7724DD75910FD75)
+- L1CrossTrade : [0xA3139764F343f44A7809dA51DC3a34C3d94450d0](https://sepolia.etherscan.io/address/0xA3139764F343f44A7809dA51DC3a34C3d94450d0)
+
+## Contract Addresses on Titan Sepolia
+- L2CrossTradeProxy: [0x2270BF371160810DfE48777987De96E641952144](https://explorer.titan-sepolia.tokamak.network/address/0x2270BF371160810DfE48777987De96E641952144)
+- L2CrossTrade: [0x656Cd3f9fe074a71Cb19707CDEd5e020F71db097](https://explorer.titan-sepolia.tokamak.network/address/0x656Cd3f9fe074a71Cb19707CDEd5e020F71db097)
 
 ## Contract function
 

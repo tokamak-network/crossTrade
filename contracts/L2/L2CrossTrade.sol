@@ -58,12 +58,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         bytes32 _hash
     );
 
-    // event EditCT(
-    //     address _requester,
-    //     uint256 _ctAmount,
-    //     uint256 indexed _saleCount
-    // );
-
     //=======modifier========
 
     modifier onlyEOA() {
@@ -88,11 +82,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         require(_amount > 0 , "input amount need nonZero");
         _;
     }
-
-    // modifier nonZeroAddr(address _addr) {
-    //     require(_addr != address(0) , "nonZeroAddr");
-    //     _;
-    // }
 
     //=======external========
 
@@ -129,6 +118,10 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     }
 
     /// @notice Token transaction request registered in register
+    ///         %% WARNING %%
+    ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
+    ///         And In the current version, we plan to register RegisteredToken based on the same token as the current one, 
+    ///         so it is logical that totalAmount >= ctAmount is greater.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
@@ -179,6 +172,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     }
 
     /// @notice Token transaction request not registered in register
+    ///         %% WARNING %%
+    ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _totalAmount Amount provided to L2
@@ -197,7 +192,9 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonZero(_totalAmount)
         nonZero(_ctAmount)
         nonReentrant
-    {        
+    {
+        require(chainData[_l1chainId].l1CrossTradeContract != address(0), "This chain is not supported.");
+
         unchecked {
             ++saleCount;
         }
@@ -353,13 +350,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             )
         );
     }
-
-    // //=======Temporary view for testing ========
-    // function getChainID() public view returns (uint256 id) {
-    //     assembly {
-    //         id := chainid()
-    //     }
-    // }
 
     //=======internal========
 
