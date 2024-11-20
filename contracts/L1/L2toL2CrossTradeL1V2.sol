@@ -90,7 +90,7 @@ contract L2toL2CrossTradeL1V2 is ProxyStorage, AccessibleCommon, L2toL2CrossTrad
         uint32 _minGasLimit,
         bytes32 _hash
     )
-        external
+        public
         payable
         onlyEOA
         nonReentrant
@@ -154,8 +154,8 @@ contract L2toL2CrossTradeL1V2 is ProxyStorage, AccessibleCommon, L2toL2CrossTrad
             // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
             // make a different case of usdt (check if usdt) or with type.
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).approve(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],ctAmount);
-
+            // IERC20(_l1token).forceApprove(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],ctAmount);
+            SafeERC20.forceApprove(_l1token,l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId], ctAmount);
             IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositERC20To(
                 _l1token,
                 _l2DestinationToken,
@@ -182,6 +182,70 @@ contract L2toL2CrossTradeL1V2 is ProxyStorage, AccessibleCommon, L2toL2CrossTrad
     }
 
 
+    /// @notice Provides information that matches the hash value requested in L2
+    ///         %% WARNING %%
+    ///         Even if it does not match the request made in L2, 
+    ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
+    ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
+    /// @param _l1token Address of requested l1token
+    /// @param _l2SourceToken Address of requested l2Source
+    /// @param _l2DestinationToken Address of requested l2Destination
+    /// @param _requestor requester's address
+    /// @param _totalAmount Total amount requested by l2
+    /// @param _initialctAmount ctAmount requested when creating the initial request
+    /// @param _salecount Number generated upon request
+    /// @param _l2SourceChainId request requested l2SourcechainId
+    /// @param _l2DestinationChainId request requested l2DestinationChainId
+    /// @param _minGasLimit minGasLimit
+    /// @param _hash Hash value generated upon request
+    function registeredProvideCT(
+        address _l1token,
+        address _l2SourceToken,
+        address _l2DestinationToken,
+        address _requestor,
+        address _creatorAddressChainData,
+        address _creatorAddressBridge,
+        address _crossDomainMessenger,
+        address _l2CrossTradeContract,
+        address _l1StandardBridge,
+        uint256 _totalAmount,
+        uint256 _initialctAmount,
+        uint256 _salecount,
+        uint256 _l2SourceChainId,
+        uint256 _l2DestinationChainId,
+        uint32 _minGasLimit,
+        bytes32 _hash
+    )
+        external
+        payable
+        onlyEOA
+        nonReentrant
+    {
+        require(_crossDomainMessenger == chainData[_creatorAddressChainData][_l2SourceChainId].crossDomainMessenger,
+        "CrossDomainMessenger does not match the creatorAddress's crossDomainMessenger");
+        require(_l2CrossTradeContract == chainData[_creatorAddressChainData][_l2SourceChainId].l2CrossTradeContract,
+        "l2CrossTradeContract does not match the creatorAddress's l2CrossTradeContract"); 
+        require(_l1StandardBridge == l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],
+        "l1StandardBridge provided does not match the creatorAddress's l1StandardBridge");
+
+        // after the checks, we can call the normal provideCT;
+        provideCT(_l1token,
+        _l2SourceToken,
+        _l2DestinationToken,
+        _requestor,
+        _creatorAddressChainData,
+        _creatorAddressBridge,
+        _totalAmount,
+        _initialctAmount,
+        _salecount,
+        _l2SourceChainId,
+        _l2DestinationChainId,
+        _minGasLimit,
+        _hash
+        );
+    }
+
+
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
     /// @param _salecount Number generated upon request
     /// @param _l2SourceChainId request requested l2SourcechainId
@@ -190,7 +254,6 @@ contract L2toL2CrossTradeL1V2 is ProxyStorage, AccessibleCommon, L2toL2CrossTrad
     /// @param _hash Hash value generated upon request
     function resendProvideCTMessage(
         address _creatorAddressChainData,
-        address _creatorAddressBridge,
         uint256 _salecount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
