@@ -62,7 +62,8 @@ const config: HardhatUserConfig = {
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     devnetL1: {
-      url: 'http://localhost:9545',
+      // url: 'http://localhost:9545', //titan
+      url: 'http://localhost:8545',
       accounts: [
         // warning: keys 0 - 12 (incl) are used by the system
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', // 0
@@ -88,7 +89,8 @@ const config: HardhatUserConfig = {
       ],
     },
     devnetL2: {
-      url: 'http://localhost:8545',
+      // url: 'http://localhost:8545',
+      url: 'http://localhost:9545',
       accounts: [
         // warning: keys 0 - 12 (incl) are used by the system
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', // 0
