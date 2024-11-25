@@ -99,8 +99,9 @@ describe("CrossTradeNativeTONTest", function () {
   const l1user1 = new ethers.Wallet(privateKey2, l1Provider)
   console.log('l1user1 :', l1user1.address)
   const l2Wallet = new ethers.Wallet(privateKey, l2Provider)
-  // console.log('l2Wallet :', l2Wallet.address)
+  console.log('l2Wallet :', l2Wallet.address)
   const l2user1 = new ethers.Wallet(privateKey2, l2Provider)
+  console.log('l2user1 :', l2user1.address)
 
   const ETH = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
 
