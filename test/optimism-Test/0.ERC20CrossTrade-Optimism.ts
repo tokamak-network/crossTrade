@@ -21,6 +21,9 @@ import OptimismMintableERC20TokenFactoryABI from '../../contracts-bedrock/forge-
 import OptimismMintableERC20TokenABI from '../../contracts-bedrock/forge-artifacts/OptimismMintableERC20.sol/OptimismMintableERC20.json'
 import MockERC20ABI from '../../contracts-bedrock/forge-artifacts/MockERC20Token.sol/MockERC20Token.json'
 import MockTON_ABI from "../../artifacts/contracts/Mock/MockTON.sol/MockTON.json"
+import MockERC20_ABI from "../../artifacts/contracts/MockERC20Token.sol/MockERC20Token.json"
+
+
 
 import dotenv from "dotenv" ;
 
@@ -161,6 +164,7 @@ describe("ERC20 CrossTrade Optimism", function () {
   let mockTON : any;
   let l2mockTON : any;
   let l2mockTONAddr : any;
+  let erc20Token : any;
 
   let editTime = 180
   
@@ -281,30 +285,43 @@ describe("ERC20 CrossTrade Optimism", function () {
       console.log("Deploy TON complete")
     })
 
-
-    it("l2NativeTokenContract", async () => {
-      l2NativeTokenContract = new ethers.Contract(
-        l2NativeToken,
-        erc20ABI,
-        l1Wallet
+    it("deploy MockERC20", async () => {
+      const erc20TokenDep = new ethers.ContractFactory(
+          MockERC20_ABI.abi,
+          MockERC20_ABI.bytecode,
+          l1Wallet
       )
 
-      // let tx = await l2NativeTokenContract.balanceOf(
+      erc20Token = await erc20TokenDep.deploy(
+        "ERC20",
+        "Test"
+      )
+      await erc20Token.deployed()
+
+      await erc20Token.connect(l1Wallet).mint(
+        l1Wallet.address,
+        hundETH
+      )
+
+      // let tx = await erc20Token.balanceOf(
       //   l1Wallet.address
       // )
-      // console.log('TON balance in L1(Wallet):', Number(tx.toString()))
-      // tx = await l2NativeTokenContract.balanceOf(
+      // console.log('ERC20 balance in L1(Wallet):', Number(tx.toString()))
+      
+      // tx = await erc20Token.balanceOf(
       //   l1user1.address
       // )
-      // console.log('TON balance in L1(user1):', Number(tx.toString()))
+      // console.log('ERC20 balance in L1(user1):', Number(tx.toString()))
+
       // let l1Balance = await l1Wallet.getBalance()
       // console.log('l1 native balance: (ETH) (Wallet)', l1Balance.toString())
       // let l2Balance = await l2Wallet.getBalance()
-      // console.log('l2 native balance: (TON) (Wallet)', l2Balance.toString())
+      // console.log('l2 native balance: (ETH) (Wallet)', l2Balance.toString())
+
       // l1Balance = await l1user1.getBalance()
       // console.log('l1 native balance: (ETH) (user1)', l1Balance.toString())
       // l2Balance = await l2user1.getBalance()
-      // console.log('l2 native balance: (TON) (user1)', l2Balance.toString())
+      // console.log('l2 native balance: (ETH) (user1)', l2Balance.toString())
     })
     
     it("L1CrossTradeLogic", async () => {
