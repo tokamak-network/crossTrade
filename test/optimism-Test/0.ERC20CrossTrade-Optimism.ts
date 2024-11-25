@@ -22,7 +22,7 @@ import OptimismMintableERC20TokenABI from '../../contracts-bedrock/forge-artifac
 import MockERC20ABI from '../../contracts-bedrock/forge-artifacts/MockERC20Token.sol/MockERC20Token.json'
 import MockTON_ABI from "../../artifacts/contracts/Mock/MockTON.sol/MockTON.json"
 import MockERC20_ABI from "../../artifacts/contracts/MockERC20Token.sol/MockERC20Token.json"
-
+import L2StandardERC20_ABI from "../../artifacts/contracts/Mock/L2StandardERC20.sol/L2StandardERC20.json"
 
 
 import dotenv from "dotenv" ;
@@ -165,6 +165,10 @@ describe("ERC20 CrossTrade Optimism", function () {
   let l2mockTON : any;
   let l2mockTONAddr : any;
   let erc20Token : any;
+  let OptimismMintableERC20TokenFactory : any;
+
+  let l2erc20Token : any;
+  let l2erc20Addr : any;
 
   let editTime = 180
   
@@ -406,34 +410,36 @@ describe("ERC20 CrossTrade Optimism", function () {
       )
     })
 
-    it("L1CrossTrade initialize", async () => {
-      await (await L1CrossTradeProxy.connect(l1Wallet).initialize(
-        l1Contracts.L1CrossDomainMessenger
-      )).wait()
-
-      const checkL1Inform = await L1CrossTradeProxy.crossDomainMessenger()
-      if(checkL1Inform !== l1Contracts.L1CrossDomainMessenger){
-        console.log("===========L1CrossTrade initialize ERROR!!===========")
-      }
-    })
-
-
-    it("L1CrossTrade set chainInfo", async () => {
-      await (await L1CrossTradeProxy.connect(l1Wallet).chainInfo(
+    it("L1CrossTrade setChainInfo", async () => {
+      await (await L1CrossTradeProxy.connect(l1Wallet).setChainInfo(
+        l1Contracts.L1CrossDomainMessenger,
         L2CrossTradeContract.address,
         zeroAddr,
-        l2NativeTokenContract.address,
-        l2ChainId,
-        editTime
+        mockTON.address,
+        l2ChainId
       )).wait()
+
+      let tx = await L1CrossTradeProxy.chainData(l2ChainId)
+      // console.log("tx :", tx);
+
+      if(tx.crossDomainMessenger !== l1Contracts.L1CrossDomainMessenger){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.l2CrossTradeContract !== L2CrossTradeContract.address){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.legacyERC20ETH !== zeroAddr){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.l1TON !== mockTON.address){
+        console.log("===========L1CrossTrade chainInfo ERROR!!===========")
+      }
     })
 
     it("L2CrossTrade initialize", async () => {
       await (await L2CrossTradeProxy.connect(l2Wallet).initialize(
         l2CrossDomainMessengerAddr,
-        L1CrossTradeContract.address,
-        predeployedAddress.LegacyERC20ETH,
-        l2NativeTokenContract.address
+        zeroAddr
       )).wait();
     
       const checkL2Inform = await L2CrossTradeProxy.crossDomainMessenger()
@@ -442,17 +448,33 @@ describe("ERC20 CrossTrade Optimism", function () {
       }
       let tx = await L2CrossTradeContract.saleCount()
       expect(tx).to.be.equal(0)
-      tx = await L2CrossTradeContract.l1CrossTradeContract()
-      if(tx !== L1CrossTradeContract.address){
-        console.log("===========L2CrossTrade initialize ERROR!!===========")
-      }
       tx = await L2CrossTradeContract.legacyERC20ETH()
-      if(tx !== predeployedAddress.LegacyERC20ETH){
+      if(tx !== zeroAddr){
         console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
-      tx = await L2CrossTradeContract.nativeL1token()
-      if(tx !== l2NativeTokenContract.address){
-        console.log("===========L2CrossTrade initialize ERROR!!===========")
+      // tx = await L2CrossTradeContract.nativeL1token()
+      // if(tx !== l2NativeTokenContract.address){
+      //   console.log("===========L2CrossTrade initialize ERROR!!===========")
+      // }
+    })
+
+    it("L2CrossTrade setChainInfo", async () => {
+      await (await L2CrossTradeProxy.connect(l2Wallet).setChainInfo(
+        L1CrossTradeContract.address,
+        mockTON.address,
+        l1ChainId
+      )).wait()
+
+      // console.log("l1ChainId : ", l1ChainId)
+
+      let tx = await L2CrossTradeProxy.chainData(l1ChainId)
+      // console.log("tx : ", tx)
+      // console.log("L1CrossTradeContract.address : ", L1CrossTradeContract.address)
+      if(tx.l1CrossTradeContract !== L1CrossTradeContract.address){
+        console.log("===========L2CrossTrade chainInfo ERROR!!===========")
+      }
+      if(tx.l1TON !== mockTON.address){
+        console.log("===========L2CrossTrade chainInfo ERROR!!===========")
       }
     })
 
@@ -505,124 +527,92 @@ describe("ERC20 CrossTrade Optimism", function () {
         l1Wallet
       )
     })
+
+    it("set the OptimismMintableERC20Factory", async () => {
+      OptimismMintableERC20TokenFactory = new ethers.Contract(
+        predeployedAddress.OptimismMintableERC20Factory,
+        OptimismMintableERC20TokenFactoryABI.abi,
+        l2Wallet
+      )
+      // console.log(OptimismMintableERC20TokenFactory)
+    })
   });
 
-  describe("FW ERC20 Test", () => {
-    it("Deposit ERC20 to L2", async () => {
-      let beforel1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
-      let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-
-      let approved = await MockERC20.connect(l1Wallet).approve(L1StandardBridgeContract.address, tenETH)
-      await approved.wait()
-
-      let deposited = await L1StandardBridgeContract.connect(l1Wallet).depositERC20(
-        MockERC20.address,
-        l2MockERC20.address,
-        tenETH,
-        20000,
-        '0x'
+  describe("Prepare CrossTrade Test", () => {
+    it("ERC20 mint", async () => {
+      let ERC20Balance = await erc20Token.balanceOf(
+        l1Wallet.address
       )
-      const depositTx = await deposited.wait()
-      // console.log(
-      //   'depositTx Tx:',
-      //   depositTx.transactionHash,
-      //   ' Block',
-      //   depositTx.blockNumber,
-      //   ' hash',
-      //   deposited.hash
-      // )
+
+      if (Number(ERC20Balance.toString()) < Number(hundETH)) {
+        const tx = await erc20Token.connect(l1Wallet).mint(
+          l1Wallet.address,
+          hundETH
+        )
+        await tx.wait()
+      }
+    })
+
+    it("createOptimismMintableERC20", async () => {
+      let name = await erc20Token.name()
+      let symbol = await erc20Token.symbol()
+
+      const tx = await OptimismMintableERC20TokenFactory.connect(l2Wallet).createStandardL2Token(
+        erc20Token.address,
+        name,
+        symbol
+      )
+
+      const receipt = await tx.wait()
+      const event = receipt.events.find(
+        (e: Event) => e.event === 'StandardL2TokenCreated'
+      )
+      // console.log(event)
     
-      await messenger.waitForMessageStatus(depositTx.transactionHash, MessageStatus.RELAYED)
-
-      let afterl1MockBalance = await MockERC20.balanceOf(l1Wallet.address)
-      let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-
-      expect(beforel1MockBalance).to.be.gt(afterl1MockBalance)
-      expect(afterl2MockBalance).to.be.gt(beforel2MockBalance)
+      if (!event) {
+        throw new Error('Unable to find StandardL2TokenCreated event')
+      }
+      // console.log("mockTON.address :", mockTON.address);
+      l2erc20Addr = event.args.localToken
+      // console.log(`Deployed to ${l2mockTONAddr}`)
     })
 
-    it("requestFW (ERC20) in L2", async () => {
-      let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let beforeL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
-
-      let tx = await l2MockERC20.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
-      await tx.wait()
-
-      await (await L2CrossTradeContract.connect(l2Wallet).requestFW(
-        zeroAddr,
-        l2MockERC20.address,
-        threeETH,
-        twoETH,
-        l1ChainId
-      )).wait()
-
-      let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let afterL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
-
-      expect(beforel2MockBalance).to.be.gt(afterl2MockBalance)
-      expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
-
-      const saleCount = await L2CrossTradeProxy.saleCount()
-      expect(saleCount).to.be.equal(1);
-      
-      let saleInformation = await L2CrossTradeContract.dealData(saleCount)
-      if(saleInformation.requester !== l2Wallet.address) {
-        console.log("===========requestFW Fail!!===========")
-      } 
-    })
-
-    it("providerFW(ERC20) in L1", async () => {
-      let beforel2Balance = await MockERC20.balanceOf(l1Wallet.address)
-      let beforel2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
-
-      let beforel2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let beforel2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
-
-      let beforeL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
-
-      const providerApproveTx = await MockERC20.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-      await providerApproveTx.wait()
-
-      const saleCount = await L2CrossTradeProxy.saleCount()
-      let chainId = await L2CrossTradeContract.getChainID()
-      let saleInformation = await L2CrossTradeContract.dealData(saleCount)
-
-      const providerTx = await L1CrossTradeContract.connect(l1user1).provideFW(
-        MockERC20.address,
-        l2MockERC20.address,
-        l2Wallet.address,
-        threeETH,
-        twoETH,
-        saleCount,
-        chainId,
-        200000,
-        saleInformation.hashValue
+    it("set l2ERC20Token", async () => {
+      l2erc20Token = new ethers.Contract(
+        l2erc20Addr,
+        L2StandardERC20_ABI.abi,
+        l2Wallet
       )
-      await providerTx.wait()
-
-      await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
-
-      let afterl2Balance = await MockERC20.balanceOf(l1Wallet.address)
-      let afterl2BalanceUser1 = await MockERC20.balanceOf(l2user1.address)
-
-      let afterl2MockBalance = await l2MockERC20.balanceOf(l2Wallet.address)
-      let afterl2MockBalanceUser1 = await l2MockERC20.balanceOf(l2user1.address)
-
-      let afterL2CrossTradeBalance = await l2MockERC20.balanceOf(L2CrossTradeContract.address)
-
-      expect(afterl2Balance).to.be.gt(beforel2Balance)
-      expect(beforel2BalanceUser1).to.be.gt(afterl2BalanceUser1)
-      
-      expect(beforel2MockBalance).to.be.equal(afterl2MockBalance)
-      expect(afterl2MockBalanceUser1).to.be.gt(beforel2MockBalanceUser1)
-      
-      expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
-
-      saleInformation = await L2CrossTradeContract.dealData(saleCount)
-      if(saleInformation.provider !== l2user1.address) {
-        console.log("===========Provider Fail!!===========")
-      } 
     })
+
+    it("Deposit to L2 MockTON", async () => {
+      const approvalTx = await messenger.approveERC20(
+        erc20Token.address,
+        l2erc20Token.address,
+        tenETH
+      )
+      await approvalTx.wait()
+
+      const depositTx = await messenger.depositERC20(
+        erc20Token.address,
+        l2erc20Token.address,
+        tenETH
+      )
+      await depositTx.wait()
+
+      const messageReceipt = await messenger.waitForMessageReceipt(depositTx)
+      if (messageReceipt.receiptStatus !== 1) {
+        throw new Error('deposit failed')
+      }
+
+      // let l2TONbalance = await l2mockTON.balanceOf(l2Wallet.address)
+      // console.log("l2TONbalance :", Number(l2TONbalance))
+    })
+
+  })
+
+  describe("CrossTrade ERC20 Test", () => {
+
   })
 
 });
