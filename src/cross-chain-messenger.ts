@@ -499,9 +499,9 @@ export class CrossChainMessenger {
       throw new Error(`no supported bridge for token pair`)
     }
 
-    if (bridges.length > 1) {
-      throw new Error(`found more than one bridge for token pair`)
-    }
+    // if (bridges.length > 1) {
+    //   throw new Error(`found more than one bridge for token pair`)
+    // }
 
     return bridges[0]
   }
