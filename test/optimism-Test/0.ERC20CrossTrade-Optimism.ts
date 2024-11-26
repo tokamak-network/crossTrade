@@ -586,7 +586,7 @@ describe("ERC20 CrossTrade Optimism", function () {
       )
     })
 
-    it("Deposit to L2 MockTON", async () => {
+    it("Deposit to L2 ERC20Token", async () => {
       const approvalTx = await messenger.approveERC20(
         erc20Token.address,
         l2erc20Token.address,

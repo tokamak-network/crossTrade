@@ -89,7 +89,7 @@ const config: HardhatUserConfig = {
       ],
     },
     devnetL2: {
-      // url: 'http://localhost:8545',
+      // url: 'http://localhost:8545',  //titan
       url: 'http://localhost:9545',
       accounts: [
         // warning: keys 0 - 12 (incl) are used by the system
