@@ -632,11 +632,14 @@ describe("TON CrossTrade Optimism", function () {
       })
 
       it("approve TON in L1", async () => {
-        const providerApproveTx = await mockTON.connect(l1user1).approve(
-          L1CrossTradeContract.address, 
-          twoETH
-        )
-        await providerApproveTx.wait()
+        let allowance = await mockTON.allowance(l1user1.address, L1CrossTradeContract.address)
+        if ((Number(allowance.toString()) <= Number(twoETH)) ) {
+          const providerApproveTx = await mockTON.connect(l1user1).approve(
+            L1CrossTradeContract.address, 
+            twoETH
+          )
+          await providerApproveTx.wait()
+        }
       })
 
       it("wait the Call", async () => {
