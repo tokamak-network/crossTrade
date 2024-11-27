@@ -468,23 +468,23 @@ describe("ETH CrossTrade Optimism", function () {
     describe("registerToken & requestRegisteredToken Test", () => {
       it("registerToken can't use common user", async () => {
         await expect(L2CrossTradeContract.connect(l2user1).registerToken(
-          erc20Token.address,
-          l2erc20Token.address,
+          zeroAddr,
+          zeroAddr,
           l1ChainId
         )).to.be.rejectedWith("Accessible: Caller is not an admin")
       })
 
       it("registerToken can only Owner", async () => {          
         await (await L2CrossTradeContract.connect(l2Wallet).registerToken(
-          erc20Token.address,
-          l2erc20Token.address,
+          zeroAddr,
+          zeroAddr,
           l1ChainId
         )).wait();
   
         let check = await L2CrossTradeContract.registerCheck(
           l1ChainId,
-          erc20Token.address,
-          l2erc20Token.address
+          zeroAddr,
+          zeroAddr
         )
         // console.log("l1tokenAddr :", l1tokenAddr)
         // console.log("l2NativeToken :", l2NativeToken)
@@ -496,29 +496,29 @@ describe("ETH CrossTrade Optimism", function () {
 
       it("The same value cannot be registerToken twice.", async () => {
         await expect(L2CrossTradeContract.connect(l2Wallet).registerToken(
-          erc20Token.address,
-          l2erc20Token.address,
+          zeroAddr,
+          zeroAddr,
           l1ChainId
         )).to.be.rejectedWith("already registerToken")
       })
 
       it("requestRegisteredToken(Request ERC20) in L2", async () => {
-        let beforel2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
-        let beforeL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
-        
-        const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeContract.address, threeETH)
-        await providerApproveTx.wait()
+        let beforel2Balance = await l2Wallet.getBalance()
+        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
         
         await (await L2CrossTradeContract.connect(l2Wallet).requestRegisteredToken(
-          erc20Token.address,
-          l2erc20Token.address,
+          zeroAddr,
+          zeroAddr,
           threeETH,
           twoETH,
-          l1ChainId
+          l1ChainId,
+          {
+            value: threeETH
+          }
         )).wait()
 
-        let afterl2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
-        let afterL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
+        let afterl2Balance = await await l2Wallet.getBalance()
+          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
   
         const saleCount = await L2CrossTradeProxy.saleCount()
         expect(saleCount).to.be.equal(1);
@@ -527,46 +527,25 @@ describe("ETH CrossTrade Optimism", function () {
         expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
       })
 
-      it("faucet ERC20 to user1 in L1", async () => {
-        let erc20TokenBalance = await erc20Token.balanceOf(
-          l1user1.address
-        )
-  
-        if (Number(erc20TokenBalance.toString()) < Number(twoETH)) {
-          const tx = await erc20Token.connect(l1Wallet).mint(
-            l1user1.address,
-            twoETH
-          )
-          await tx.wait()
-        }
-      })
-
       it("providerCT(ERC20) in L1", async () => {
-        let beforel2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
-        let beforel2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
+        let beforel2Balance = await l2Wallet.getBalance()
+        let beforel2BalanceUser1 = await l2user1.getBalance()
   
-        let beforel2NativeTokenBalance = await erc20Token.balanceOf(
-          l1user1.address
-        )
+        let beforel2NativeTokenBalance = await l1user1.getBalance()
         // console.log("beforel2NativeTokenBalance(Provider) : ", beforel2NativeTokenBalance.toString())
-        let beforel2NativeTokenBalanceWallet = await erc20Token.balanceOf(
-          l1Wallet.address
-        )
+        let beforel2NativeTokenBalanceWallet = await l1Wallet.getBalance()
         // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
-      
-        const providerApproveTx = await erc20Token.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-        await providerApproveTx.wait()
       
         const saleCount = await L2CrossTradeProxy.saleCount()
   
-        let beforeL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
+        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
   
         let saleInformation = await L2CrossTradeContract.dealData(saleCount)
         // console.log("1")
   
         const providerTx = await L1CrossTradeContract.connect(l1user1).provideCT(
-          erc20Token.address,
-          l2erc20Token.address,
+          zeroAddr,
+          zeroAddr,
           l2Wallet.address,
           threeETH,
           twoETH,
@@ -574,7 +553,10 @@ describe("ETH CrossTrade Optimism", function () {
           saleCount,
           l2ChainId,
           200000,
-          saleInformation.hashValue
+          saleInformation.hashValue,
+          {
+            value: twoETH
+          }
         )
         await providerTx.wait()
         // console.log("2")
@@ -585,17 +567,13 @@ describe("ETH CrossTrade Optimism", function () {
           throw new Error('provide failed')
         }
   
-        let afterl2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
-        let afterl2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
+        let afterl2Balance = await l2Wallet.getBalance()
+        let afterl2BalanceUser1 = await l2user1.getBalance()
   
-        let afterl2NativeTokenBalance = await erc20Token.balanceOf(
-          l1user1.address
-        )
+        let afterl2NativeTokenBalance = await l1user1.getBalance()
         // console.log("afterl2NativeTokenBalance(Provider) : ", afterl2NativeTokenBalance.toString())
   
-        let afterl2NativeTokenBalanceWallet = await erc20Token.balanceOf(
-          l1Wallet.address
-        )
+        let afterl2NativeTokenBalanceWallet = await l1Wallet.getBalance()
         // console.log("afterl2NativeTokenBalanceWallet(Requester) : ", afterl2NativeTokenBalanceWallet.toString())
   
         expect(afterl2Balance).to.be.equal(beforel2Balance)
@@ -604,7 +582,7 @@ describe("ETH CrossTrade Optimism", function () {
         expect(beforel2NativeTokenBalance).to.be.gt(afterl2NativeTokenBalance)
         expect(afterl2NativeTokenBalanceWallet).to.be.gt(beforel2NativeTokenBalanceWallet)
   
-        let afterL2CrossTradeBalance = await l2erc20Token.balanceOf(L2CrossTradeContract.address)
+        let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
 
         expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
   
