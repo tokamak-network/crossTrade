@@ -573,3 +573,77 @@ function _request(
     npx hardhat test test/addTest/2.MappingCrossTradeTest.ts --network devnetL1
 
     ```
+
+
+## How to Test (Optimism)
+1. **Install the required utilities**
+    ```solidity
+    brew install make jq just
+    ```
+
+2. **version check**
+    ```solidity
+    go version
+    jq --version
+    make --version
+    ```
+    - go : ^1.21
+    - jq : ^1.6
+    - make : ^3	
+
+
+3. **optimism git clone**
+    ```solidity
+    git clone https://github.com/ethereum-optimism/optimism.git
+    cd optimism
+    ```
+
+4. **execute the docker**
+    ```solidity
+    make devnet-up
+    ```
+
+5. **hardhat.config.ts check**
+    ```solidity
+    devnetL1: {
+        url: 'http://localhost:8545',
+    }
+    devnetL2: {
+        url: 'http://localhost:9545',
+    }
+    ```
+
+2. **crossTrade Test**
+    - git clone https://github.com/tokamak-network/crossTrade/tree/main
+    - npm install --force
+    - .env.example copy .env and setting
+    - update json
+    ```solidity
+    #Optimism git repository
+    ./packages/contract-bedrock/deployments/31337-deploy.json contents of the file copy
+
+    #crossTrade git repository
+    ./test/data/deployed.devnetL1.json contents of the file paste
+
+    #Optimism git repository
+    https://github.com/ethereum-optimism/optimism/blob/129032f15b76b0d2a940443a39433de931a97a44/packages/contracts-bedrock/src/constants.ts contents of the file copy
+
+    #crossTrade git repository
+    ./test/data/predeployed.devnetL1.json contents of the file paste
+    ```
+
+    - start the test
+
+    ```solidity
+
+    # run test
+    # 0. ERC20 request, provide test
+    npx hardhat test test/optimism-Test/0.ERC20CrossTrade-Optimism.ts --network devnetL1 
+
+    # 1. TON request, provide test
+    npx hardhat test test/optimism-Test/1.TONCrossTrade-Optimism.ts --network devnetL1 
+
+    # 2. ETH test
+    npx hardhat test test/optimism-Test/2.ETHCrossTrade-Optimism.ts --network devnetL1
+
+    ```
