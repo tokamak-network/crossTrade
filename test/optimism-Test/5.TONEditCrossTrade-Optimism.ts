@@ -699,7 +699,7 @@ describe("TON CrossTrade Optimism", function () {
           l2Wallet.address,
           threeETH,
           twoETH,
-          0,
+          oneETH,
           saleCount,
           l2ChainId,
           300000,
