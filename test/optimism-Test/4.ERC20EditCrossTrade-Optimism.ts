@@ -689,6 +689,29 @@ describe("ERC20 CrossTrade Optimism", function () {
         }
       })
 
+      it("editFee(ERC20) in L1", async () => {
+        const saleCount = await L2CrossTradeProxy.saleCount()
+        let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+        let beforeEditAmount = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+        expect(beforeEditAmount).to.be.equal(0)
+
+        const editTx = await L1CrossTradeContract.connect(l1Wallet).editFee(
+          erc20Token.address,
+          l2erc20Token.address,
+          threeETH,
+          twoETH,
+          oneETH,
+          saleCount,
+          l2ChainId,
+          saleInformation.hashValue
+        )
+        await editTx.wait()
+
+        let afterEditAmount = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+        expect(afterEditAmount).to.be.equal(oneETH)
+      })
+
       it("providerCT(ERC20) in L1", async () => {
         let beforel2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
         let beforel2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
@@ -718,7 +741,7 @@ describe("ERC20 CrossTrade Optimism", function () {
           l2Wallet.address,
           threeETH,
           twoETH,
-          0,
+          oneETH,
           saleCount,
           l2ChainId,
           200000,
