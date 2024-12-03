@@ -647,6 +647,35 @@ describe("TON CrossTrade Optimism", function () {
         // console.log("wait time");
       })
 
+      it("editFee(ERC20) in L1", async () => {
+        const saleCount = await L2CrossTradeProxy.saleCount()
+        let saleInformation = await L2CrossTradeContract.dealData(saleCount)
+
+        let beforeEditAmount = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+        expect(beforeEditAmount).to.be.equal(0)
+
+        const editTx = await L1CrossTradeContract.connect(l1Wallet).editFee(
+          mockTON.address,
+          l2mockTON.address,
+          threeETH,
+          twoETH,
+          oneETH,
+          saleCount,
+          l2ChainId,
+          saleInformation.hashValue
+        )
+        await editTx.wait()
+
+        let afterEditAmount = await L1CrossTradeContract.editCtAmount(saleInformation.hashValue)
+        expect(afterEditAmount).to.be.equal(oneETH)
+      })
+
+      it("wait the Call", async () => {
+        sleep(3000);
+        // console.log("wait time");
+      })
+
+
       it("providerCT(TON) in L1", async () => {
         let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
         let beforel2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)
