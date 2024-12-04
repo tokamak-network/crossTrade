@@ -171,6 +171,11 @@ describe("ETH CrossTrade Optimism", function () {
   let l2erc20Addr : any;
 
   let editTime = 180
+
+  function sleep(ms: any) {
+    const wakeUpTime = Date.now() + ms;
+    while (Date.now() < wakeUpTime) {}
+  }
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -502,7 +507,7 @@ describe("ETH CrossTrade Optimism", function () {
         )).to.be.rejectedWith("already registerToken")
       })
 
-      it("requestRegisteredToken(Request ERC20) in L2", async () => {
+      it("requestRegisteredToken(Request ETH) in L2", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeContract.address)
         
@@ -527,7 +532,7 @@ describe("ETH CrossTrade Optimism", function () {
         expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
       })
 
-      it("editFee(ERC20) in L1", async () => {
+      it("editFee(ETH) in L1", async () => {
         const saleCount = await L2CrossTradeProxy.saleCount()
         let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
@@ -550,8 +555,12 @@ describe("ETH CrossTrade Optimism", function () {
         expect(afterEditAmount).to.be.equal(oneETH)
       })
 
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
 
-      it("providerCT(ERC20) in L1", async () => {
+      it("providerCT(ETH) in L1", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforel2BalanceUser1 = await l2user1.getBalance()
   
@@ -576,7 +585,7 @@ describe("ETH CrossTrade Optimism", function () {
           oneETH,
           saleCount,
           l2ChainId,
-          200000,
+          400000,
           saleInformation.hashValue,
           {
             value: oneETH
