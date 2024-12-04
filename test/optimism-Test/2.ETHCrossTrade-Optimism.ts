@@ -560,12 +560,14 @@ describe("ETH CrossTrade Optimism", function () {
         )
         await providerTx.wait()
         // console.log("2")
-        const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+        // const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+
+        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
 
         // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-        if (messageReceipt.receiptStatus !== 1) {
-          throw new Error('provide failed')
-        }
+        // if (messageReceipt.receiptStatus !== 1) {
+        //   throw new Error('provide failed')
+        // }
   
         let afterl2Balance = await l2Wallet.getBalance()
         let afterl2BalanceUser1 = await l2user1.getBalance()

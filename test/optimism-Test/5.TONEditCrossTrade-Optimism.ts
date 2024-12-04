@@ -626,28 +626,7 @@ describe("TON CrossTrade Optimism", function () {
         expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
       })
 
-      it("wait the Call", async () => {
-        sleep(3000);
-        // console.log("wait time");
-      })
-
-      it("approve TON in L1", async () => {
-        let allowance = await mockTON.allowance(l1user1.address, L1CrossTradeContract.address)
-        if ((Number(allowance.toString()) <= Number(twoETH)) ) {
-          const providerApproveTx = await mockTON.connect(l1user1).approve(
-            L1CrossTradeContract.address, 
-            twoETH
-          )
-          await providerApproveTx.wait()
-        }
-      })
-
-      it("wait the Call", async () => {
-        sleep(3000);
-        // console.log("wait time");
-      })
-
-      it("editFee(ERC20) in L1", async () => {
+      it("editFee(TON) in L1", async () => {
         const saleCount = await L2CrossTradeProxy.saleCount()
         let saleInformation = await L2CrossTradeContract.dealData(saleCount)
 
@@ -671,7 +650,24 @@ describe("TON CrossTrade Optimism", function () {
       })
 
       it("wait the Call", async () => {
-        sleep(3000);
+        sleep(5000);
+        // console.log("wait time");
+      })
+
+      it("approve TON in L1", async () => {
+        let allowance = await mockTON.allowance(l1user1.address, L1CrossTradeContract.address)
+        if ((Number(allowance.toString()) <= Number(twoETH)) ) {
+          const providerApproveTx = await mockTON.connect(l1user1).approve(
+            L1CrossTradeContract.address, 
+            twoETH
+          )
+          await providerApproveTx.wait()
+          // console.log("approve execute")
+        }
+      })
+
+      it("wait the Call", async () => {
+        sleep(5000);
         // console.log("wait time");
       })
 
@@ -702,16 +698,18 @@ describe("TON CrossTrade Optimism", function () {
           oneETH,
           saleCount,
           l2ChainId,
-          300000,
+          400000,
           saleInformation.hashValue
         )
         await providerTx.wait()
-        const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+        // const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
 
-        // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-        if (messageReceipt.receiptStatus !== 1) {
-          throw new Error('provide failed')
-        }
+        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+        // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+
+        // if (messageReceipt.receiptStatus !== 1) {
+        //   throw new Error('provide failed')
+        // }
   
         let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
         let afterl2BalanceUser1 = await l2mockTON.balanceOf(l2user1.address)

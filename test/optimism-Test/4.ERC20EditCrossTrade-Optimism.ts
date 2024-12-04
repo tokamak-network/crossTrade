@@ -723,7 +723,7 @@ describe("ERC20 CrossTrade Optimism", function () {
         // console.log("wait time");
       })
 
-      it("approve TON in L1", async () => {
+      it("approve ERC20 in L1", async () => {
         let allowance = await erc20Token.allowance(l1user1.address, L1CrossTradeContract.address)
         if ((Number(allowance.toString()) <= Number(twoETH)) ) {
           const providerApproveTx = await erc20Token.connect(l1user1).approve(
@@ -773,12 +773,13 @@ describe("ERC20 CrossTrade Optimism", function () {
         )
         await providerTx.wait()
         // console.log("2")
-        const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+        // const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
 
+        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
         // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-        if (messageReceipt.receiptStatus !== 1) {
-          throw new Error('provide failed')
-        }
+        // if (messageReceipt.receiptStatus !== 1) {
+        //   throw new Error('provide failed')
+        // }
   
         let afterl2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
         let afterl2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
