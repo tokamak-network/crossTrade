@@ -171,6 +171,12 @@ describe("ERC20 CrossTrade Optimism", function () {
   let l2erc20Addr : any;
 
   let editTime = 180
+
+  function sleep(ms: any) {
+    const wakeUpTime = Date.now() + ms;
+    while (Date.now() < wakeUpTime) {}
+  }
+  
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -712,6 +718,27 @@ describe("ERC20 CrossTrade Optimism", function () {
         expect(afterEditAmount).to.be.equal(oneETH)
       })
 
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
+
+      it("approve TON in L1", async () => {
+        let allowance = await erc20Token.allowance(l1user1.address, L1CrossTradeContract.address)
+        if ((Number(allowance.toString()) <= Number(twoETH)) ) {
+          const providerApproveTx = await erc20Token.connect(l1user1).approve(
+            L1CrossTradeContract.address, 
+            twoETH
+          )
+          await providerApproveTx.wait()
+        }
+      })
+
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
+
       it("providerCT(ERC20) in L1", async () => {
         let beforel2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
         let beforel2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
@@ -724,9 +751,6 @@ describe("ERC20 CrossTrade Optimism", function () {
           l1Wallet.address
         )
         // console.log("beforel2NativeTokenBalanceWallet(Requester) : ", beforel2NativeTokenBalanceWallet.toString())
-      
-        const providerApproveTx = await erc20Token.connect(l1user1).approve(L1CrossTradeContract.address, twoETH)
-        await providerApproveTx.wait()
       
         const saleCount = await L2CrossTradeProxy.saleCount()
   
