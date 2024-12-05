@@ -171,6 +171,11 @@ describe("ETH CrossTrade Optimism", function () {
   let l2erc20Addr : any;
 
   let editTime = 180
+
+  function sleep(ms: any) {
+    const wakeUpTime = Date.now() + ms;
+    while (Date.now() < wakeUpTime) {}
+  }
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -526,7 +531,12 @@ describe("ETH CrossTrade Optimism", function () {
         expect(beforel2Balance).to.be.gt(afterl2Balance)
         expect(afterL2CrossTradeBalance).to.be.gt(beforeL2CrossTradeBalance)
       })
-      
+
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
+
 
       it("Cancel(ERC20) in L1", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
