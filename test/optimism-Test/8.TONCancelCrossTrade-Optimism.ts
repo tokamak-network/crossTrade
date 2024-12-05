@@ -627,25 +627,9 @@ describe("TON CrossTrade Optimism", function () {
       })
 
       it("wait the Call", async () => {
-        sleep(3000);
+        sleep(5000);
         // console.log("wait time");
       })
-
-      // it("approve TON in L1", async () => {
-      //   let allowance = await mockTON.allowance(l1user1.address, L1CrossTradeContract.address)
-      //   if ((Number(allowance.toString()) <= Number(twoETH)) ) {
-      //     const providerApproveTx = await mockTON.connect(l1user1).approve(
-      //       L1CrossTradeContract.address, 
-      //       twoETH
-      //     )
-      //     await providerApproveTx.wait()
-      //   }
-      // })
-
-      // it("wait the Call", async () => {
-      //   sleep(3000);
-      //   // console.log("wait time");
-      // })
 
       it("cancel(TON) in L1", async () => {
         let beforel2Balance = await l2mockTON.balanceOf(l2Wallet.address)
@@ -665,6 +649,8 @@ describe("TON CrossTrade Optimism", function () {
           saleInformation.hashValue
         )
         await cancelTx.wait()
+
+        await messenger.waitForMessageStatus(cancelTx.hash, MessageStatus.RELAYED)
 
         let afterl2Balance = await l2mockTON.balanceOf(l2Wallet.address)
         let afterL2Contract = await l2mockTON.balanceOf(L2CrossTradeContract.address)
