@@ -425,20 +425,17 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         view
         returns (bytes memory)
     {
-        uint256 chainId = _getChainID();
         if (number == CLAIM_CT) {
-            return abi.encodeWithSignature("claimCT(address,uint256,uint256,uint256,bytes32)", 
+            return abi.encodeWithSignature("claimCT(address,uint256,uint256,bytes32)", 
                 to, 
                 amount,
                 saleCount,
-                chainId,
                 byteValue
             );
         } else {
-            return abi.encodeWithSignature("cancelCT(address,uint256,uint256,bytes32)", 
+            return abi.encodeWithSignature("cancelCT(address,uint256,bytes32)", 
                 to,
                 saleCount,
-                chainId,
                 byteValue
             );
         }

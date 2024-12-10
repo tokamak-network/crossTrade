@@ -23,8 +23,6 @@ contract L2CrossTradeStorageV1 {
 
     //saleCount => ChainData
     mapping(uint256 => RequestData) public dealData;
-    // mapping(uint256 => mapping(address => mapping(address => bool))) public registerCheck;
-    mapping(address => mapping(bytes=> bool)) public registerCheck;
     
 
 
