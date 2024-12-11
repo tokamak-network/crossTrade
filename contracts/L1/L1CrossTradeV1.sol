@@ -422,7 +422,7 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         bytes32 byteValue
     )
         private
-        view
+        pure
         returns (bytes memory)
     {
         if (number == CLAIM_CT) {
