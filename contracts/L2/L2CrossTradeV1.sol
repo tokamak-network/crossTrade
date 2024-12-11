@@ -75,15 +75,13 @@ contract L2CrossTradeV1 is  L2CrossTradeStorageV1 {
     function initialize(
         address _crossDomainMessenger,
         address _l1CrossTradeContract,
-        address _nativeTokenL2,
-        uint256 _chainId
+        address _nativeTokenL2
     ) 
         external
     {   require(isInitialized == false, "Already initialized");
         crossDomainMessenger = _crossDomainMessenger;
         l1CrossTradeContract = _l1CrossTradeContract;
         nativeTokenL2 = _nativeTokenL2;
-        chainIdL1 = _chainId;
         isInitialized = true;
     }
 

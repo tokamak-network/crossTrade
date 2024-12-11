@@ -18,7 +18,7 @@ contract L2CrossTradeStorageV1 {
     address public nativeTokenL2;
     bool public isInitialized;
 
-    uint256 public chainIdL1;
+    // uint256 public chainIdL1;
     uint256 public saleCount;
 
     //saleCount => ChainData
