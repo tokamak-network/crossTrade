@@ -72,6 +72,9 @@ contract L2CrossTradeV1 is  L2CrossTradeStorageV1 {
 
    //=======external========
 
+    /// @param _crossDomainMessenger Enter the CrossDomainMessenger address of L2
+    /// @param _l1CrossTradeContract Enter the CrossTradeContract address deployed in L1
+    /// @param _nativeTokenL2 Enter nativeToken address of L2
     function initialize(
         address _crossDomainMessenger,
         address _l1CrossTradeContract,
