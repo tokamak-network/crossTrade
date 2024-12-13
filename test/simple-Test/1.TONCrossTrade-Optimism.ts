@@ -457,7 +457,7 @@ describe("TON CrossTrade Optimism", function () {
         const providerApproveTx = await l2mockTON.connect(l2Wallet).approve(L2CrossTradeV1.address, threeETH)
         await providerApproveTx.wait()
         
-        await (await L2CrossTradeV1.connect(l2Wallet).requestRegisteredToken(
+        await (await L2CrossTradeV1.connect(l2Wallet).request(
           mockTON.address,
           l2mockTON.address,
           threeETH,
@@ -515,7 +515,7 @@ describe("TON CrossTrade Optimism", function () {
         let beforeL2CrossTradeBalance = await l2mockTON.balanceOf(L2CrossTradeV1.address)
         let saleInformation = await L2CrossTradeV1.dealData(saleCount)
   
-        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCT(
+        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCTOP(
           mockTON.address,
           l2mockTON.address,
           l2Wallet.address,

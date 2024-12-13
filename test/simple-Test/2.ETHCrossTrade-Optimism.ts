@@ -163,6 +163,11 @@ describe("ETH CrossTrade Optimism", function () {
   let l2erc20Addr : any;
 
   let editTime = 180
+
+  function sleep(ms: any) {
+    const wakeUpTime = Date.now() + ms;
+    while (Date.now() < wakeUpTime) {}
+  }
   
   before('create fixture loader', async () => {
     // [deployer] = await ethers.getSigners();
@@ -385,7 +390,7 @@ describe("ETH CrossTrade Optimism", function () {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
         
-        await (await L2CrossTradeV1.connect(l2Wallet).requestRegisteredToken(
+        await (await L2CrossTradeV1.connect(l2Wallet).request(
           zeroAddr,
           zeroAddr,
           threeETH,
@@ -408,6 +413,11 @@ describe("ETH CrossTrade Optimism", function () {
     })
 
     describe("Provide Test", () => {
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
+
       it("providerCT(ETH) in L1", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforel2BalanceUser1 = await l2user1.getBalance()
@@ -424,7 +434,7 @@ describe("ETH CrossTrade Optimism", function () {
         let saleInformation = await L2CrossTradeV1.dealData(saleCount)
         // console.log("1")
   
-        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCT(
+        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCTOP(
           zeroAddr,
           zeroAddr,
           l2Wallet.address,
@@ -441,14 +451,14 @@ describe("ETH CrossTrade Optimism", function () {
         )
         await providerTx.wait()
         // console.log("2")
-        // const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+        const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
 
-        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+        // await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
 
         // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-        // if (messageReceipt.receiptStatus !== 1) {
-        //   throw new Error('provide failed')
-        // }
+        if (messageReceipt.receiptStatus !== 1) {
+          throw new Error('provide failed')
+        }
   
         let afterl2Balance = await l2Wallet.getBalance()
         let afterl2BalanceUser1 = await l2user1.getBalance()
