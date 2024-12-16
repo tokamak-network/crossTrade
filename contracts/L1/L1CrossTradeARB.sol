@@ -4,10 +4,10 @@ pragma solidity 0.8.24;
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
 
-import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
-import { L1CrossTradeStorageV1 } from "./L1CrossTradeStorageV1.sol";
+import { IInbox } from "../interfaces/IInbox.sol";
+import { L1CrossTradeStorageARB } from "./L1CrossTradeStorageARB.sol";
 
-contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
+contract L1CrossTradeARB is L1CrossTradeStorageARB {
 
     using SafeERC20 for IERC20;
 
@@ -68,7 +68,38 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         });
     }
 
-   
+    function calculateSubmissionCost(bytes memory _data) public view returns (uint256) {
+        uint256 l1BaseFee = block.basefee;
+        uint256 calldataGas = 140 * _data.length;
+        uint256 overhead = 6000;
+        uint256 totalGas = calldataGas + overhead;
+        return (totalGas * l1BaseFee * 120) / 100; // 20% buffer
+    }
+
+    function getRequiredETH(
+        bytes memory _message,
+        uint256 _gasLimit,
+        uint256 _maxFeePerGas
+    ) public view returns (uint256) {
+        uint256 submissionCost = calculateSubmissionCost(_message);
+        uint256 executionCost = _gasLimit * _maxFeePerGas;
+        return submissionCost + executionCost;
+    }
+
+    function getTotalRequiredETH(
+        bytes memory _message,
+        uint256 _gasLimit,
+        uint256 _maxFeePerGas,
+        address _token,
+        uint256 _amount
+    ) public view returns (uint256) {
+        uint256 gasCosts = getRequiredETH(_message, _gasLimit, _maxFeePerGas);
+        if (_token == address(0)) {
+            return gasCosts + _amount;
+        }
+        return gasCosts;
+    }
+
     /// @notice Provides information that matches the hash value requested in L2
     ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
@@ -87,7 +118,7 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
     /// @param _hash Hash value generated upon request
-    function provideCTOP(
+    function provideCT(
         address _l1token,
         address _l2token,
         address _requestor,
@@ -97,6 +128,8 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
@@ -137,21 +170,33 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         provideAccount[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
         
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
-        );
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
 
-        // using this we can remove chainData all together ( we give the value through params in the contract)
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+
         if (_l1token == address(0)) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
+            require(msg.value == totalGasCost + ctAmount, "CT: Exact ETH required");
+            
+            (bool sent, ) = payable(_requestor).call{value: ctAmount}("");
             require(sent, "claim fail");
         } else {
+            require(msg.value == totalGasCost, "CT: Exact ETH required");
+
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         }
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: totalGasCost}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
+        );
 
         emit ProvideCT(
             _l1token,
@@ -166,18 +211,23 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         );
     }
 
+
+
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
     /// @param _hash Hash value generated upon request
-    function resendProvideCTMessageOP(
+    function resendProvideCTMessage(
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
+        payable
         onlyEOA
     {
         require(successCT[_hash] == true, "not provide");
@@ -188,9 +238,7 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
             ctAmount = editCtAmount[_hash];
         }
 
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        bytes memory message = makeEncodeWithSignature(
             CLAIM_CT,
             provideAccount[_hash],
             ctAmount,
@@ -198,12 +246,22 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
             _hash
         );
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
-        );
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
 
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
+        );
     }
 
     /// @notice Cancels the request requested by the requester.
@@ -221,7 +279,7 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
     /// @param _hash Hash value generated upon request
-    function cancelOP( 
+    function cancel( 
         address _l1token,
         address _l2token,
         uint256 _totalAmount,
@@ -229,9 +287,12 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
+        payable
         onlyEOA
     {
         uint256 thisChainId = _getChainID();
@@ -249,9 +310,7 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
 
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        bytes memory message = makeEncodeWithSignature(
             CANCEL_CT,
             msg.sender,
             0,
@@ -259,13 +318,24 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
             _hash
         );
 
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
+
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
         cancelL1[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
         );
 
         emit L1CancelCT(
@@ -284,22 +354,26 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
+    /// @param _maxSubmissionCost maxSubmissionCost for retryable ticket
+    /// @param _maxFeePerGas maxFeePerGas for L2 execution
     /// @param _hash Hash value generated upon request
-    function resendCancelMessageOP(
+    function resendCancelMessage(
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
+        payable
         onlyEOA
     {
         address cancelL1Address = cancelL1[_hash];
         require(successCT[_hash] == true, "not cancel");
         require(cancelL1Address != address(0), "not cancel");
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        
+        bytes memory message = makeEncodeWithSignature(
             CANCEL_CT,
             cancelL1Address,
             0,
@@ -307,10 +381,21 @@ contract L1CrossTradeV1 is  L1CrossTradeStorageV1 {
             _hash
         );
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
+
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
         );
     }
         

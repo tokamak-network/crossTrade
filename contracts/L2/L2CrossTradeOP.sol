@@ -3,12 +3,12 @@ pragma solidity 0.8.24;
 
 import "../libraries/SafeERC20.sol";
 
-import { L2CrossTradeStorageV1 } from "./L2CrossTradeStorageV1.sol";
+import { L2CrossTradeStorageOP } from "./L2CrossTradeStorageOP.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 
 // import "hardhat/console.sol";
 
-contract L2CrossTradeV1 is  L2CrossTradeStorageV1 {
+contract L2CrossTradeOP is  L2CrossTradeStorageOP {
 
     using SafeERC20 for IERC20;
 

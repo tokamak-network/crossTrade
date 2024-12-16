@@ -95,22 +95,144 @@
 
 
 
-//     function callDynamicFunction(
+//     // function callDynamicFunction(
+//     //     address targetAddress,
+//     //     string memory functionSignature, // "functionName(paramType1,paramType2,...)"
+//     //     bytes memory encodedParameters,
+//     //     uint256 _minGasLimit
+//     // ) internal {
+//     //     // Compute the function selector (first 4 bytes of keccak256 hash)
+//     //     bytes4 selector = bytes4(keccak256(bytes(functionSignature)));
+
+//     //     // Combine selector and encoded parameters
+//     //     bytes memory data = abi.encodePacked(selector, encodedParameters);
+
+//     //     (bool success, bytes memory returnData) = targetAddress.call{gas: _minGasLimit}(data);
+
+//     //     require(success, "Call to target address failed");
+//     // }
+
+//     function callDynamicFunctionWithMessageV2(
 //         address targetAddress,
-//         string memory functionSignature, // "functionName(paramType1,paramType2,...)"
-//         bytes memory encodedParameters,
+//         string memory functionSignature, 
+//         bytes[] memory params,           
+//         uint256 messageIndex,
+//         uint256 msgValue,  // msgValue parameter => 0 if not payable
+//         bool isPayable,    // flag to indicate if function is payable
 //         uint256 _minGasLimit
 //     ) internal {
-//         // Compute the function selector (first 4 bytes of keccak256 hash)
+//         params[messageIndex] = message;
+//         bytes memory encodedParameters = abi.encode(params);
 //         bytes4 selector = bytes4(keccak256(bytes(functionSignature)));
-
-//         // Combine selector and encoded parameters
 //         bytes memory data = abi.encodePacked(selector, encodedParameters);
 
-//         (bool success, bytes memory returnData) = targetAddress.call{gas: _minGasLimit}(data);
+//         bool success;
+//         bytes memory returnData;
+
+//         if (isPayable) {
+//             // Arbitrum case - payable function or others...
+//             (success, returnData) = targetAddress.call{value: msgValue, gas: _minGasLimit}(data);
+//         } else {
+//             // Optimism case - non-payable function or others...
+//             (success, returnData) = targetAddress.call{gas: _minGasLimit}(data);
+//         }
 
 //         require(success, "Call to target address failed");
 //     }
+
+//     function callDynamicFunctionWithMessage(
+//     address targetAddress,
+//     string memory functionSignature, 
+//     bytes[] memory params,           
+//     uint256 messageIndex,
+//     uint256 ctAmount,
+//     uint256 _salecount,
+//     bytes32 l2HashValue,
+//     uint256 _minGasLimit,
+//     bytes message
+// ) internal {
+
+
+
+//     //  message at the specified index
+//     params[messageIndex] = message;
+
+//     // Encode function params
+//     bytes memory encodedParameters = abi.encode(params);
+
+//     // Compute the function selector
+//     bytes4 selector = bytes4(keccak256(bytes(functionSignature)));
+
+//     // Combine selector and encoded parameters
+//     bytes memory data = abi.encodePacked(selector, encodedParameters);
+
+//     (bool success, bytes memory returnData) = targetAddress.call{gas: _minGasLimit}(data);
+//     require(success, "Call to target address failed");
+// }
+
+
+// function callFunctionDynamicWithMessage(
+//     address targetAddress,
+//     string memory functionSignature, // e.g"sendMessage(uint256,address,bytes)"
+//     bytes[] memory params,            
+//     uint256 messageIndex,            // Index where the dynamic `message` should be inserted in params array
+//     bytes memory message,            
+//     uint256 _minGasLimit
+// ) external {
+    
+//     params[messageIndex] = message;
+
+//     // Compute the function selector (first 4 bytes of keccak256 hash)
+//     bytes4 selector = bytes4(keccak256(bytes(functionSignature)));
+
+//     // Dynamically encode all parameters
+//     bytes memory encodedParams = encodeParams(params);
+
+//     // Combine selector and parameters
+//     bytes memory data = abi.encodePacked(selector, encodedParams);
+
+//     // Make the call
+//     (bool success, bytes memory returnData) = targetAddress.call{gas: _minGasLimit}(data);
+//     require(success, "Call failed");
+// }
+
+// function encodeParams(bytes[] memory params) internal pure returns (bytes memory) {
+//     bytes memory encoded;
+//     for (uint256 i = 0; i < params.length; i++) {
+//         encoded = abi.encodePacked(encoded, params[i]);
+//     }
+//     return encoded;
+// }
+
+
+
+
+
+
+//     function execute() external {
+//         // Function signature for the target function
+//         string memory functionSignature = "someFunction(address,bytes,uint256)";
+        
+//         // Initialize parameter array (length based on the number of params in the function signature)
+//         bytes;
+
+//         // Set static parameters
+//         params[0] = abi.encode(msg.sender);  // param1 (address)
+//         params[2] = abi.encode(uint256(42)); // param3 (uint256)
+
+//         // Call the dynamic function
+//         callDynamicFunctionWithMessage(
+//             targetAddress,  // Address of the target contract
+//             functionSignature,
+//             params,
+//             1,              // `message` is at index 1 in the parameter list
+//             100,            // ctAmount
+//             5,              // _salecount
+//             keccak256("example"), // l2HashValue
+//             100000          // _minGasLimit
+//         );
+//     }
+
 
 //     /// @notice Provides information that matches the hash value requested in L2
 //     ///         %% WARNING %%

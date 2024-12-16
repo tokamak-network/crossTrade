@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.24;
 
-contract L2CrossTradeStorageV1 {
+contract L2CrossTradeStorageARB {
     struct RequestData {
         address l1token;
         address l2token;
@@ -14,7 +14,7 @@ contract L2CrossTradeStorageV1 {
     }
 
     address public l1CrossTradeContract;
-    address public crossDomainMessenger;
+    // address public crossDomainMessenger;
     address public nativeTokenL2;
     bool public isInitialized;
 

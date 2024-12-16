@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.24;
 
-contract L1CrossTradeStorageV1 {
+contract L1CrossTradeStorageARB {
 
     uint8 internal constant CLAIM_CT = 1;
     uint8 internal constant CANCEL_CT = 2;
