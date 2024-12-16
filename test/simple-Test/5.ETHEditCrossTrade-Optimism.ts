@@ -380,7 +380,7 @@ describe("ETH CrossTrade Optimism", function () {
         let beforel2Balance = await l2Wallet.getBalance()
         let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
         
-        await (await L2CrossTradeV1.connect(l2Wallet).requestRegisteredToken(
+        await (await L2CrossTradeV1.connect(l2Wallet).request(
           zeroAddr,
           zeroAddr,
           threeETH,
@@ -447,7 +447,7 @@ describe("ETH CrossTrade Optimism", function () {
         let saleInformation = await L2CrossTradeV1.dealData(saleCount)
         // console.log("1")
   
-        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCT(
+        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCTOP(
           zeroAddr,
           zeroAddr,
           l2Wallet.address,

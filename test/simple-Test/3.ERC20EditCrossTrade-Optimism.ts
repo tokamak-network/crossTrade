@@ -466,7 +466,7 @@ describe("ERC20 CrossTrade Optimism", function () {
         const providerApproveTx = await l2erc20Token.connect(l2Wallet).approve(L2CrossTradeV1.address, threeETH)
         await providerApproveTx.wait()
         
-        await (await L2CrossTradeV1.connect(l2Wallet).requestRegisteredToken(
+        await (await L2CrossTradeV1.connect(l2Wallet).request(
           erc20Token.address,
           l2erc20Token.address,
           threeETH,
@@ -500,6 +500,11 @@ describe("ERC20 CrossTrade Optimism", function () {
     })
 
     describe("Edit & Provide Test", () => {
+      it("wait the Call", async () => {
+        sleep(5000);
+        // console.log("wait time");
+      })
+
       it("editFee(ERC20) in L1", async () => {
         const saleCount = await L2CrossTradeV1.saleCount()
         let saleInformation = await L2CrossTradeV1.dealData(saleCount)
@@ -564,7 +569,7 @@ describe("ERC20 CrossTrade Optimism", function () {
         let saleInformation = await L2CrossTradeV1.dealData(saleCount)
         // console.log("1")
   
-        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCT(
+        const providerTx = await L1CrossTradeV1.connect(l1user1).provideCTOP(
           erc20Token.address,
           l2erc20Token.address,
           l2Wallet.address,
@@ -578,13 +583,13 @@ describe("ERC20 CrossTrade Optimism", function () {
         )
         await providerTx.wait()
         // console.log("2")
-        // const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
+        const messageReceipt = await messenger.waitForMessageReceipt(providerTx)
 
-        await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
+        // await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.RELAYED)
         // const messageReceipt = await messenger.waitForMessageStatus(providerTx.hash, MessageStatus.READY_FOR_RELAY)
-        // if (messageReceipt.receiptStatus !== 1) {
-        //   throw new Error('provide failed')
-        // }
+        if (messageReceipt.receiptStatus !== 1) {
+          throw new Error('provide failed')
+        }
   
         let afterl2Balance = await l2erc20Token.balanceOf(l2Wallet.address)
         let afterl2BalanceUser1 = await l2erc20Token.balanceOf(l2user1.address)
