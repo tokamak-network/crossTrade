@@ -12,8 +12,8 @@ import { ethers } from "hardhat";
 import { BytesLike, Event } from 'ethers'
 
 import { CrossChainMessenger, MessageStatus, NativeTokenBridgeAdapter, NumberLike } from '../../src'
-import L2CrossTradeV1_ABI from "../../artifacts/contracts/L2/L2CrossTradeV1.sol/L2CrossTradeV1.json"
-import L1CrossTradeV1_ABI from "../../artifacts/contracts/L1/L1CrossTradeV1.sol/L1CrossTradeV1.json"
+import L2CrossTradeOP_ABI from "../../artifacts/contracts/L2/L2CrossTradeOP.sol/L2CrossTradeOP.json"
+import L1CrossTradeOP_ABI from "../../artifacts/contracts/L1/L1CrossTradeOP.sol/L1CrossTradeOP.json"
 import L1StandardBridgeABI from '../../contracts-bedrock/forge-artifacts/L1StandardBridge.sol/L1StandardBridge.json'
 import OptimismMintableERC20TokenFactoryABI from '../../contracts-bedrock/forge-artifacts/OptimismMintableERC20Factory.sol/OptimismMintableERC20Factory.json'
 import OptimismMintableERC20TokenABI from '../../contracts-bedrock/forge-artifacts/OptimismMintableERC20.sol/OptimismMintableERC20.json'
@@ -117,8 +117,8 @@ describe("ETH CrossTrade Optimism", function () {
 
   const zeroAddr = '0x'.padEnd(42, '0')
 
-  let L1CrossTradeV1 : any;
-  let L2CrossTradeV1 : any;
+  let L1CrossTradeOP : any;
+  let L2CrossTradeOP : any;
   
   let deployer : any;
 
@@ -304,60 +304,60 @@ describe("ETH CrossTrade Optimism", function () {
       )
     })
     
-    it("L1CrossTradeV1", async () => {
+    it("L1CrossTradeOP", async () => {
       const L1CrossTradeLogicDep = new ethers.ContractFactory(
-        L1CrossTradeV1_ABI.abi,
-        L1CrossTradeV1_ABI.bytecode,
+        L1CrossTradeOP_ABI.abi,
+        L1CrossTradeOP_ABI.bytecode,
         l1Wallet
       )
 
-      L1CrossTradeV1 = await L1CrossTradeLogicDep.deploy()
-      await L1CrossTradeV1.deployed()
+      L1CrossTradeOP = await L1CrossTradeLogicDep.deploy()
+      await L1CrossTradeOP.deployed()
     })
 
-    it("L2CrossTradeV1", async () => {
+    it("L2CrossTradeOP", async () => {
       const L2CrossTradeLogicDep = new ethers.ContractFactory(
-        L2CrossTradeV1_ABI.abi,
-        L2CrossTradeV1_ABI.bytecode,
+        L2CrossTradeOP_ABI.abi,
+        L2CrossTradeOP_ABI.bytecode,
         l2Wallet
       )
 
-      L2CrossTradeV1 = await L2CrossTradeLogicDep.deploy()
-      await L2CrossTradeV1.deployed()
+      L2CrossTradeOP = await L2CrossTradeLogicDep.deploy()
+      await L2CrossTradeOP.deployed()
     })
 
     it("L1CrossTrade setChainInfo", async () => {
-      await (await L1CrossTradeV1.connect(l1Wallet).setChainInfo(
+      await (await L1CrossTradeOP.connect(l1Wallet).setChainInfo(
         l1Contracts.L1CrossDomainMessenger,
-        L2CrossTradeV1.address,
+        L2CrossTradeOP.address,
         l2ChainId
       )).wait()
 
-      let tx = await L1CrossTradeV1.chainData(l2ChainId)
+      let tx = await L1CrossTradeOP.chainData(l2ChainId)
       // console.log("tx :", tx);
 
       if(tx.crossDomainMessenger !== l1Contracts.L1CrossDomainMessenger){
         console.log("===========L1CrossTrade chainInfo ERROR!!===========")
       }
-      if(tx.l2CrossTradeContract !== L2CrossTradeV1.address){
+      if(tx.l2CrossTradeContract !== L2CrossTradeOP.address){
         console.log("===========L1CrossTrade chainInfo ERROR!!===========")
       }
     })
 
     it("L2CrossTrade initialize", async () => {
-      await (await L2CrossTradeV1.connect(l2Wallet).initialize(
+      await (await L2CrossTradeOP.connect(l2Wallet).initialize(
         l2CrossDomainMessengerAddr,
-        L1CrossTradeV1.address,
+        L1CrossTradeOP.address,
         zeroAddr
       )).wait();
     
-      const checkL2Inform = await L2CrossTradeV1.crossDomainMessenger()
+      const checkL2Inform = await L2CrossTradeOP.crossDomainMessenger()
       if(checkL2Inform !== l2CrossDomainMessengerAddr){
         console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
-      let tx = await L2CrossTradeV1.saleCount()
+      let tx = await L2CrossTradeOP.saleCount()
       expect(tx).to.be.equal(0)
-      tx = await L2CrossTradeV1.nativeTokenL2()
+      tx = await L2CrossTradeOP.nativeTokenL2()
       if(tx !== zeroAddr){
         console.log("===========L2CrossTrade initialize ERROR!!===========")
       }
@@ -378,9 +378,9 @@ describe("ETH CrossTrade Optimism", function () {
     describe("Request Test", () => {
       it("request(Request ETH) in L2", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
-        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
+        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeOP.address)
         
-        await (await L2CrossTradeV1.connect(l2Wallet).request(
+        await (await L2CrossTradeOP.connect(l2Wallet).request(
           zeroAddr,
           zeroAddr,
           threeETH,
@@ -392,9 +392,9 @@ describe("ETH CrossTrade Optimism", function () {
         )).wait()
 
         let afterl2Balance = await await l2Wallet.getBalance()
-          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
+          let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeOP.address)
   
-        const saleCount = await L2CrossTradeV1.saleCount()
+        const saleCount = await L2CrossTradeOP.saleCount()
         expect(saleCount).to.be.equal(1);
   
         expect(beforel2Balance).to.be.gt(afterl2Balance)
@@ -411,12 +411,12 @@ describe("ETH CrossTrade Optimism", function () {
     describe("Cancel Test", () => {
       it("Cancel(ERC20) in L1", async () => {
         let beforel2Balance = await l2Wallet.getBalance()
-        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
+        let beforeL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeOP.address)
 
-        const saleCount = await L2CrossTradeV1.saleCount()
-        let saleInformation = await L2CrossTradeV1.dealData(saleCount)
+        const saleCount = await L2CrossTradeOP.saleCount()
+        let saleInformation = await L2CrossTradeOP.dealData(saleCount)
 
-        const cancelTx = await L1CrossTradeV1.connect(l1Wallet).cancelOP(
+        const cancelTx = await L1CrossTradeOP.connect(l1Wallet).cancelOP(
           zeroAddr,
           zeroAddr,
           threeETH,
@@ -431,7 +431,7 @@ describe("ETH CrossTrade Optimism", function () {
 
 
         let afterl2Balance = await l2Wallet.getBalance()
-        let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeV1.address)
+        let afterL2CrossTradeBalance = await l2Provider.getBalance(L2CrossTradeOP.address)
 
         expect(afterl2Balance).to.be.gt(beforel2Balance)
         expect(beforeL2CrossTradeBalance).to.be.gt(afterL2CrossTradeBalance)
