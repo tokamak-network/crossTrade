@@ -9,25 +9,24 @@ async function main() {
   // const l1Provider = new ethers.providers.StaticJsonRpcProvider(
   //   process.env.Titan_L1_URL
   // )
-
-  // const L1CrossTradeProxyDep = await ethers.getContractFactory("L1CrossTradeProxy");
+  // console.log("deploy l1ct proxy")
+  // const L1CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxyL1");
   // let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
   // console.log('L1CrossTradeProxy' , await L1CrossTradeProxy.getAddress())
+  // await L1CrossTradeProxy.waitForDeployment();
 
-  // const L1CrossTradeLogicDep = await ethers.getContractFactory("L1CrossTrade");
+  // console.log("deploy logic")
+  // const L1CrossTradeLogicDep = await ethers.getContractFactory("L2toL2CrossTradeL1");
   // let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
-  // console.log('L1CrossTradeLogic' , await L1CrossTradeLogic.getAddress())
+  // let addressct = await L1CrossTradeLogic.getAddress(); 
+  // console.log('L1CrossTradeLogic' , addressct)
+  // await L1CrossTradeLogic.waitForDeployment()
 
-  // const L1CrossTradeProxyLogic = new ethers.Contract(
-  //   L1CrossTradeProxy.address,
-  //   L1CrossTradeProxy_ABI.abi,
-  //   l1Provider
-  // ) 
   
-  let L1CrossTradeProxy = await ethers.getContractAt("L1CrossTradeProxy","0x00a13E2ED2c847D5Cf8e63D96749d73DED3DB4Fc");
+  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0xFAfCe7Ebd6B1e142f7C03050Ee19F2Ce43673901");
 
   console.log("upgrade proxy to logic...")
-  await L1CrossTradeProxy.upgradeTo("0xF5A8d00Fb9344607077642CD0795c6fCa7271547");
+  await L1CrossTradeProxy.upgradeTo("0x6A3b4E3e83b873D9de9880D8d3AC2A4164B043D7");
   console.log("upgraded")
 
   let imp2 = await L1CrossTradeProxy.implementation()

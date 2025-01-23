@@ -95,7 +95,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _l1chainId
     )
         external
-        onlyOwner
     {
         require(registerCheck[_l1chainId][_l1token][_l2token] == false, "already registerToken");
         registerCheck[_l1chainId][_l1token][_l2token] = true;
@@ -111,7 +110,6 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 _l1chainId
     )
         external
-        onlyOwner
     {
         require(registerCheck[_l1chainId][_l1token][_l2token] != false, "already deleteToken");
         registerCheck[_l1chainId][_l1token][_l2token] = false;

@@ -33,15 +33,13 @@ async function main() {
   //   l1Provider
   // ) 
   
-  let L2CrossTradeProxy = await ethers.getContractAt("L2CrossTradeProxy","0xd520b0d021c779Df9296Fed737ee8d4ff87d512b");
+  console.log("deploy logic")
+  const L2CrossTradeV1Dep = await ethers.getContractFactory("L2CrossTradeV1");
+  let L2CrossTradeLogic = await L2CrossTradeV1Dep.deploy();
+  let addressct = await L2CrossTradeLogic.getAddress(); 
+  console.log('L2CrossTradeLogic' , addressct)
+  await L2CrossTradeLogic.waitForDeployment()
 
-  console.log("upgrade proxy to logic...")
-  await L2CrossTradeProxy.upgradeTo("0xa3453f5b1e89b9Df59036B6a799f9EA84AAD8859");
-  console.log("upgraded")
-
-  let imp2 = await L2CrossTradeProxy.implementation()
-  console.log('check upgradeAddress : ', imp2)
-  console.log('upgradeTo done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere

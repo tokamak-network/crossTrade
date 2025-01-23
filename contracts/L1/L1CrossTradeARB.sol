@@ -4,12 +4,10 @@ pragma solidity 0.8.24;
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
 
-import { AccessibleCommon } from "../common/AccessibleCommon.sol";
-import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
-import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
-import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
+import { IInbox } from "../interfaces/IInbox.sol";
+import { L1CrossTradeStorageARB } from "./L1CrossTradeStorageARB.sol";
 
-contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuard {
+contract L1CrossTradeARB is L1CrossTradeStorageARB {
 
     using SafeERC20 for IERC20;
 
@@ -51,16 +49,71 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         _;
     }
 
+    /// @notice Store addresses for chainId
+    /// @param _crossDomainMessenger crossDomainMessenger address for chainId
+    /// @param _l2CrossTrade L2CrossTradeProxy address for chainId
+    /// @param _l2chainId store chainId
+    function setChainInfo(
+        address _crossDomainMessenger,
+        address _l2CrossTrade,
+        uint256 _l2chainId
+    )
+        external
+    {   
+        require(chainData[_l2chainId].crossDomainMessenger == address(0) && chainData[_l2chainId].l2CrossTradeContract == address(0),
+        "ChainData already set"); 
+        chainData[_l2chainId] = ChainIdData({
+            crossDomainMessenger: _crossDomainMessenger,
+            l2CrossTradeContract: _l2CrossTrade
+        });
+    }
+
+    function calculateSubmissionCost(bytes memory _data) public view returns (uint256) {
+        uint256 l1BaseFee = block.basefee;
+        uint256 calldataGas = 140 * _data.length;
+        uint256 overhead = 6000;
+        uint256 totalGas = calldataGas + overhead;
+        return (totalGas * l1BaseFee * 120) / 100; // 20% buffer
+    }
+
+    function getRequiredETH(
+        bytes memory _message,
+        uint256 _gasLimit,
+        uint256 _maxFeePerGas
+    ) public view returns (uint256) {
+        uint256 submissionCost = calculateSubmissionCost(_message);
+        uint256 executionCost = _gasLimit * _maxFeePerGas;
+        return submissionCost + executionCost;
+    }
+
+    function getTotalRequiredETH(
+        bytes memory _message,
+        uint256 _gasLimit,
+        uint256 _maxFeePerGas,
+        address _token,
+        uint256 _amount
+    ) public view returns (uint256) {
+        uint256 gasCosts = getRequiredETH(_message, _gasLimit, _maxFeePerGas);
+        if (_token == address(0)) {
+            return gasCosts + _amount;
+        }
+        return gasCosts;
+    }
+
     /// @notice Provides information that matches the hash value requested in L2
     ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
     ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
+    ///         And We do not support ERC20, which is specially created and incurs a fee when transferring.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor requester's address
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
+    /// @param _editedAmount input the edited amount
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -71,116 +124,17 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _requestor,
         uint256 _totalAmount,
         uint256 _initialctAmount,
+        uint256 _editedAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
-        bytes32 _hash
-    )
-        external
-        payable
-        onlyEOA  
-        nonReentrant
-    {
-        uint256 thisChainId = _getChainID();
-        bytes32 l2HashValue = getHash(
-            _l1token,
-            _l2token,
-            _requestor,
-            _totalAmount,
-            _initialctAmount,
-            _salecount,
-            _l2chainId,
-            thisChainId
-        );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
-        
-        uint256 ctAmount = _initialctAmount;
-
-        if (editCtAmount[l2HashValue] > 0) {
-            ctAmount = editCtAmount[l2HashValue];
-        }
-
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
-            CLAIM_CT,
-            msg.sender,
-            ctAmount,
-            _salecount,
-            l2HashValue
-        );
-        
-        provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
-        
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
-        );
-
-        if (chainData[_l2chainId].l1TON == _l1token) {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
-        } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
-            require(sent, "claim fail");
-        } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
-        }
-
-
-
-        if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
-            require(sent, "claim fail");
-        } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
-        }
-
-        emit ProvideCT(
-            _l1token,
-            _l2token,
-            _requestor,
-            msg.sender,
-            _totalAmount,
-            ctAmount,
-            _salecount,
-            _l2chainId,
-            _hash
-        );
-    }
-
-
-    /// @notice This is a function created to test the reprovide function. This is for testing purposes only and will be deleted upon final distribution.
-    /// @param _l1token Address of requested l1token
-    /// @param _l2token Address of requested l2token
-    /// @param _requestor requester's address
-    /// @param _totalAmount Total amount requested by l2
-    /// @param _initialctAmount ctAmount requested when creating the initial request
-    /// @param _salecount Number generated upon request
-    /// @param _l2chainId request requested chainId
-    /// @param _minGasLimit minGasLimit
-    /// @param _hash Hash value generated upon request
-    function provideTest(
-        address _l1token,
-        address _l2token,
-        address _requestor,
-        uint256 _totalAmount,
-        uint256 _initialctAmount,
-        uint256 _salecount,
-        uint256 _l2chainId,
-        uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
         payable
         onlyEOA
-        nonReentrant
     {
         uint256 thisChainId = _getChainID();
         bytes32 l2HashValue = getHash(
@@ -193,15 +147,16 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
+        require(l2HashValue == _hash, "Hash values do not match");
         require(successCT[l2HashValue] == false, "already sold");
         
         uint256 ctAmount = _initialctAmount;
 
-        if (editCtAmount[l2HashValue] > 0) {
-            ctAmount = editCtAmount[l2HashValue];
+        if (_editedAmount > 0) {
+            require(editCtAmount[l2HashValue] == _editedAmount, "The edited amount does not match");
+            ctAmount = _editedAmount;
         }
-
+        
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -214,17 +169,34 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         
         provideAccount[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
+        
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
 
-        if (chainData[_l2chainId].l1TON == _l1token) {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
-        } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+
+        if (_l1token == address(0)) {
+            require(msg.value == totalGasCost + ctAmount, "CT: Exact ETH required");
+            
+            (bool sent, ) = payable(_requestor).call{value: ctAmount}("");
             require(sent, "claim fail");
         } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
+            require(msg.value == totalGasCost, "CT: Exact ETH required");
+
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
+            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
         }
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: totalGasCost}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
+        );
 
         emit ProvideCT(
             _l1token,
@@ -238,6 +210,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
     }
+
+
 
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
     /// @param _salecount Number generated upon request
@@ -248,13 +222,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
-    
-    
         external
+        payable
         onlyEOA
-        nonReentrant
     {
         require(successCT[_hash] == true, "not provide");
         require(provideAccount[_hash] != address(0), "not provide");
@@ -264,9 +238,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             ctAmount = editCtAmount[_hash];
         }
 
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        bytes memory message = makeEncodeWithSignature(
             CLAIM_CT,
             provideAccount[_hash],
             ctAmount,
@@ -274,10 +246,21 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
+
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
         );
     }
 
@@ -286,6 +269,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
@@ -302,11 +287,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
+        payable
         onlyEOA
-        nonReentrant
     {
         uint256 thisChainId = _getChainID();
 
@@ -323,9 +310,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         require(l2HashValue == _hash, "Hash values do not match.");
         require(successCT[l2HashValue] == false, "already sold");
 
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        bytes memory message = makeEncodeWithSignature(
             CANCEL_CT,
             msg.sender,
             0,
@@ -333,13 +318,24 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
 
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
+
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
         cancelL1[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
         );
 
         emit L1CancelCT(
@@ -358,23 +354,26 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
+    /// @param _maxSubmissionCost maxSubmissionCost for retryable ticket
+    /// @param _maxFeePerGas maxFeePerGas for L2 execution
     /// @param _hash Hash value generated upon request
     function resendCancelMessage(
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
+        uint256 _maxSubmissionCost,
+        uint256 _maxFeePerGas,
         bytes32 _hash
     )
         external
+        payable
         onlyEOA
-        nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
         require(successCT[_hash] == true, "not cancel");
         require(cancelL1Address != address(0), "not cancel");
-        bytes memory message;
-
-        message = makeEncodeWithSignature(
+        
+        bytes memory message = makeEncodeWithSignature(
             CANCEL_CT,
             cancelL1Address,
             0,
@@ -382,10 +381,21 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
 
-        IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
-            chainData[_l2chainId].l2CrossTradeContract, 
-            message, 
-            _minGasLimit
+        uint256 minRequired = calculateSubmissionCost(message);
+        require(_maxSubmissionCost >= minRequired, "Submission cost too low");
+
+        uint256 totalGasCost = _maxSubmissionCost + (_minGasLimit * _maxFeePerGas);
+        require(msg.value == totalGasCost, "CT: Exact ETH required");
+
+        IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
+            chainData[_l2chainId].l2CrossTradeContract,
+            0,
+            _maxSubmissionCost,
+            msg.sender,
+            msg.sender,
+            _minGasLimit,
+            _maxFeePerGas,
+            message
         );
     }
         
@@ -394,6 +404,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
+    ///         And Here, there is no need to input a hash value and check it, 
+    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _totalAmount Total amount requested by l2
@@ -414,7 +426,6 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )  
         external
         onlyEOA
-        nonReentrant
     {
         uint256 thisChainId = _getChainID();
         bytes32 l2HashValue = getHash(
@@ -499,20 +510,17 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         view
         returns (bytes memory)
     {
-        uint256 chainId = _getChainID();
         if (number == CLAIM_CT) {
-            return abi.encodeWithSignature("claimCT(address,uint256,uint256,uint256,bytes32)", 
+            return abi.encodeWithSignature("claimCT(address,uint256,uint256,bytes32)", 
                 to, 
                 amount,
                 saleCount,
-                chainId,
                 byteValue
             );
         } else {
-            return abi.encodeWithSignature("cancelCT(address,uint256,uint256,bytes32)", 
+            return abi.encodeWithSignature("cancelCT(address,uint256,bytes32)", 
                 to,
                 saleCount,
-                chainId,
                 byteValue
             );
         }

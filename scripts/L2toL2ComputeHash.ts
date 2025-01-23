@@ -8,8 +8,7 @@ import Usdc_ABI from '../../artifacts/contracts/mockUsdc/v2/FiatTokenV2_2.sol/Fi
 
 async function main() {
 
-  let L1crossTradeSource = await ethers.getContractAt("L2toL2CrossTradeL1","0x36d1dc2ebc5702fe3a511b3a66953ce687ddab72");
-  let UsdContract = await ethers.getContractAt("FiatTokenV2_2","0x42d3b260c761cD5da022dB56Fe2F89c4A909b04A")
+  let L1crossTradeSource = await ethers.getContractAt("L1CrossTradeV1","0x9d4c4E8beE049DF7Bbfe8e4B81cf94B27c036328");
   console.log("name: ",await UsdContract.name());
   // console.log(await L1crossTradeSource.crossDomainMessenger())
   console.log("provideCt token")

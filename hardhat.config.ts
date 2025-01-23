@@ -53,6 +53,10 @@ const config: HardhatUserConfig = {
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       ],
     },
+    arbitrumSepolia: {
+      url: `https://endpoints.omniatech.io/v1/arbitrum/sepolia/public`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
     sepolia: {
       url: `https://ethereum-sepolia-rpc.publicnode.com`,
       accounts: [`${process.env.PRIVATE_KEY}`],
