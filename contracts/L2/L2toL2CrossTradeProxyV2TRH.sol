@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import { Proxy } from "../proxy/Proxy.sol";
 import { L2toL2CrossTradeStorageV2 } from "./L2toL2CrossTradeStorageV2.sol";
 
-contract L2toL2CrossTradeProxyV2 is Proxy, L2toL2CrossTradeStorageV2 {
+contract L2toL2CrossTradeProxyV2TRH is Proxy, L2toL2CrossTradeStorageV2 {
 
     /// @notice L2CrossTrade initial settings
     /// @param _crossDomainMessenger crossDomainMessenger address
