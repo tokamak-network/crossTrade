@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
 import "../libraries/SafeERC20.sol";
 import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
-import { L2toL2CrossTradeStorageV2 } from "./L2toL2CrossTradeStorageV2.sol";
+import { L2toL2CrossTradeStorageV2TRH } from "./L2toL2CrossTradeStorageV2TRH.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
 // import "hardhat/console.sol";
 
-contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageV2, ReentrancyGuard {
+contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageV2TRH, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 
@@ -83,22 +83,21 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         _;
     }
 
-    modifier checkL1(uint256 chainId) {
+    modifier checkL1(uint256 _chainId) {
         require(
-            msg.sender == address(crossDomainMessenger) && 
-            IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[chainId].l1CrossTradeContract, 
+            msg.sender == address(crossDomainMessenger) && IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[_chainId].l1CrossTradeContract, 
             "only call l1FastWithdraw"
         );
         _;
     }
 
-    modifier providerCheck(uint256 saleCount) {
-        require(dealData[saleCount].provider == address(0), "already sold");
+    modifier providerCheck(uint256 _saleCount) {
+        require(dealData[_saleCount].provider == address(0), "already sold");
         _;
     }
 
-    modifier nonZero(uint256 amount) {
-        require(amount > 0, "input amount need nonZero");
+    modifier nonZero(uint256 _amount) {
+        require(_amount > 0 , "input amount need nonZero");
         _;
     }
 
@@ -123,19 +122,29 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         uint256 _l1ChainId,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId
+
     )
         external
     {
-        bytes32 id = _generateTokenId(
-            _l1token,
-            _l2SourceToken,
-            _l2DestinationToken,
+        bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2DestinationChainId
-        );
-        require(!registerCheck[msg.sender][_l2DestinationChainId][id], "already registered");
+            _l2DestinationChainId,// tagetChainId = l1ChainId (to suport L2->L1)
+            _l1token,
+            _l2SourceToken,
+            _l2DestinationToken
+            // msg.sender, I feel like Ids needs to be simmilar for all useres... so no need to put it here
+            // depends who is setting them.
+        ));
+        require(registerCheck[msg.sender][_l2DestinationChainId][id] == false, "already registerToken");
         registerCheck[msg.sender][_l2DestinationChainId][id] = true;
+
+        // registerCheck[msg.sender][id]=> bool  => this is for the frontend
+        // registerCheck[id][msg.sender]
+        // 
+        // have a seperate function  getRegisterCheck() and dont input the id but the params
+        // registerCheck[msg.sender][array[ids]]
+        // when delete move the element to the end, make it none.
     }
     
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
@@ -155,14 +164,14 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
     )
         external
     {
-        bytes32 id = _generateTokenId(
-            _l1token,
-            _l2SourceToken,
-            _l2DestinationToken,
+        bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2DestinationChainId
-        );
+            _l2DestinationChainId,
+            _l1token,
+            _l2SourceToken,
+            _l2DestinationToken
+        ));
         require(registerCheck[msg.sender][_l2DestinationChainId][id] != false, "already deleteToken");
         registerCheck[msg.sender][_l2DestinationChainId][id] = false;
     }
@@ -194,14 +203,14 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
     {
 
         uint256 _l2SourceChainId = _getChainID();
-        bytes32 id = _generateTokenId(
-            _l1token,
-            _l2SourceToken,
-            _l2DestinationToken,
+        bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2DestinationChainId
-        );
+            _l2DestinationChainId,
+            _l1token,
+            _l2SourceToken,
+            _l2DestinationToken
+        ));
 
         require(registerCheck[msg.sender][_l2DestinationChainId][id] == true, "not register token");
         require(_totalAmount >= _ctAmount, "The totalAmount value must be greater than ctAmount");
@@ -326,7 +335,12 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         address l2SourceToken = dealData[_saleCount].l2SourceToken;
         uint256 totalAmount = dealData[_saleCount].totalAmount;
 
-        _handleTokenTransfer(l2SourceToken, _from, _from, totalAmount);
+        if(l2SourceToken == legacyERC20ETH) {
+            (bool sent, ) = payable(_from).call{value: totalAmount}("");
+            require(sent, "claim fail");
+        } else {
+            IERC20(l2SourceToken).safeTransfer(_from,totalAmount);
+        }
 
         uint256 _l2SourceChainId = _getChainID();
 
@@ -370,7 +384,12 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         dealData[_salecount].provider = _msgSender;
         uint256 totalAmount = dealData[_salecount].totalAmount;
         
-        _handleTokenTransfer(dealData[_salecount].l2SourceToken, _msgSender, _msgSender, totalAmount);
+        if (dealData[_salecount].l2SourceToken == legacyERC20ETH) {
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
+            require(sent, "cancel refund fail");
+        } else {
+            IERC20(dealData[_salecount].l2SourceToken).safeTransfer(_msgSender,totalAmount);
+        }
 
         uint256 _l2SourceChainId = _getChainID();
 
@@ -469,7 +488,11 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         private
         returns (bytes32 hashValue)
     {
-        _handleTokenDeposit(_l2SourceToken, _totalAmount);
+        if (_l2SourceToken == legacyERC20ETH) {
+            require(msg.value == _totalAmount, "CT: nativeTON need amount");
+        } else {
+            IERC20(_l2SourceToken).safeTransferFrom(msg.sender,address(this),_totalAmount);
+        }
 
         uint256 l2SourceChainId = _getChainID();
 
@@ -499,51 +522,5 @@ contract L2toL2CrossTradeL2V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
             hashValue: hashValue
         });
 
-    }
-
-    // Helper function to validate and transfer tokens
-    function _handleTokenTransfer(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) private {
-        if(token == legacyERC20ETH) {
-            (bool sent, ) = payable(to).call{value: amount}("");
-            require(sent, "ETH transfer failed");
-        } else {
-            IERC20(token).safeTransfer(to, amount);
-        }
-    }
-
-    // Helper function to handle token deposits
-    function _handleTokenDeposit(
-        address token,
-        uint256 amount
-    ) private {
-        if(token == legacyERC20ETH) {
-            require(msg.value == amount, "CT: ETH amount mismatch");
-        } else {
-            IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-        }
-    }
-
-    // Helper function to generate token registration ID
-    function _generateTokenId(
-        address l1token,
-        address l2SourceToken,
-        address l2DestinationToken,
-        uint256 l1ChainId,
-        uint256 l2SourceChainId,
-        uint256 l2DestinationChainId
-    ) private pure returns (bytes32) {
-        return keccak256(abi.encode(
-            l1ChainId,
-            l2SourceChainId,
-            l2DestinationChainId,
-            l1token,
-            l2SourceToken,
-            l2DestinationToken
-        ));
     }
 }

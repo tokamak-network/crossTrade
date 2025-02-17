@@ -6,12 +6,12 @@ import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
-import { L2toL2CrossTradeStorageL1V2 } from "./L2toL2CrossTradeStorageL1V2.sol";
+import { L2toL2CrossTradeStorageL1V2TRH } from "./L2toL2CrossTradeStorageL1V2TRH.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 import { IL1StandardBridge } from "./IL1StandardBridge.sol";
 
 
-contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageL1V2, ReentrancyGuard {
+contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageL1V2TRH, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 
@@ -59,69 +59,6 @@ contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         _;
     }
 
-    modifier validateHashAndStatus(bytes32 _hash) {
-        require(successCT[_hash] == false, "already sold");
-        _;
-    }
-
-    modifier validateHashMatch(bytes32 _calculatedHash, bytes32 _providedHash) {
-        require(_calculatedHash == _providedHash, "Hash values do not match");
-        _;
-    }
-
-    function validateBridgeParams(
-        address _crossDomainMessenger,
-        address _l2CrossTradeContract,
-        address _l1StandardBridge,
-        address _creatorAddressChainData,
-        address _creatorAddressBridge,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId
-    ) private view {
-        require(
-            _crossDomainMessenger == chainData[_creatorAddressChainData][_l2SourceChainId].crossDomainMessenger,
-            "Invalid CrossDomainMessenger"
-        );
-        require(
-            _l2CrossTradeContract == chainData[_creatorAddressChainData][_l2SourceChainId].l2CrossTradeContract,
-            "Invalid l2CrossTradeContract"
-        );
-        require(
-            _l1StandardBridge == l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],
-            "Invalid l1StandardBridge"
-        );
-    }
-
-    function handleTokenTransfer(
-        address _l1token,
-        address _creatorAddressChainData,
-        address _creatorAddressBridge,
-        address _requestor,
-        address _l2DestinationToken,
-        uint256 _l2DestinationChainId,
-        uint256 _ctAmount,
-        uint32 _minGasLimit
-    ) private {
-        if (chainData[_creatorAddressChainData][_l2DestinationChainId].legacyERC20ETH == _l1token) {
-            require(msg.value == _ctAmount, "CT: ETH need same amount");
-            IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositETHTo{value: _ctAmount}(
-                _requestor,
-                _minGasLimit,
-                "0x"
-            );
-        } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), _ctAmount);
-            IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositERC20To(
-                _l1token,
-                _l2DestinationToken,
-                _requestor,
-                _ctAmount,
-                _minGasLimit,
-                "0x"
-            );
-        }
-    }
-
     /// @notice Provides information that matches the hash value requested in L2
     ///         %% WARNING %%
     ///         Even if it does not match the request made in L2, 
@@ -157,53 +94,77 @@ contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         payable
         onlyEOA
         nonReentrant
-        validateHashMatch(
-            getHash(
-                _l1token,
-                _l2SourceToken,
-                _l2DestinationToken,
-                _requestor,
-                _totalAmount,
-                _initialctAmount,
-                _salecount,
-                _getChainID(),
-                _l2SourceChainId,
-                _l2DestinationChainId
-            ),
-            _hash
-        )
-        validateHashAndStatus(_hash)
     {
-        uint256 ctAmount = editCtAmount[_hash] > 0 ? editCtAmount[_hash] : _initialctAmount;
+        uint256 l1ChainId = _getChainID();
+        bytes32 l2HashValue = getHash(
+            _l1token,
+            _l2SourceToken,
+            _l2DestinationToken,
+            _requestor,
+            _totalAmount,
+            _initialctAmount,
+            _salecount,
+            l1ChainId,
+            _l2SourceChainId,
+            _l2DestinationChainId
+        );
+        require(l2HashValue == _hash, "Hash values do not match.");
+        require(successCT[l2HashValue] == false, "already sold");
+        
+        uint256 ctAmount = _initialctAmount;
 
-        bytes memory message = makeEncodeWithSignature(
+        if (editCtAmount[l2HashValue] > 0) {
+            ctAmount = editCtAmount[l2HashValue];
+        }
+
+        bytes memory message;
+
+        message = makeEncodeWithSignature(
             CLAIM_CT,
             msg.sender,
             ctAmount,
             _salecount,
             _l2DestinationChainId,
-            _hash
+            l2HashValue
         );
         
-        provideAccount[_hash] = msg.sender;
-        successCT[_hash] = true;
+        provideAccount[l2HashValue] = msg.sender;
+        successCT[l2HashValue] = true;
         
+        // check the message before the deposit is initiated
+
+        //sendMessage to the sourceChain 
         IL1CrossDomainMessenger(chainData[_creatorAddressChainData][_l2SourceChainId].crossDomainMessenger).sendMessage(
             chainData[_creatorAddressChainData][_l2SourceChainId].l2CrossTradeContract, 
             message, 
             _minGasLimit
         );
 
-        handleTokenTransfer(
-            _l1token,
-            _creatorAddressChainData,
-            _creatorAddressBridge,
-            _requestor,
-            _l2DestinationToken,
-            _l2DestinationChainId,
-            ctAmount,
-            _minGasLimit
-        );
+
+        //deposit tokens to the DestinationChain 
+        // might need to go thorugh the portal
+        if (chainData[_creatorAddressChainData][_l2SourceChainId].legacyERC20ETH == _l1token){
+            require(msg.value == ctAmount, "CT: ETH need same amount");
+             IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositETHTo{value: ctAmount}(
+                _requestor,
+                _minGasLimit,
+                "0x" // encode the hash
+            );
+        } else {
+            // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
+            // make a different case of usdt (check if usdt) or with type.
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
+            // IERC20(_l1token).forceApprove(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],ctAmount);
+            // SafeERC20.forceApprove(_l1token,l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId], ctAmount);
+            IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositERC20To(
+                _l1token,
+                _l2DestinationToken,
+                _requestor,
+                ctAmount,
+                _minGasLimit,
+                "0x" // encode the hash
+            );
+        }
 
         emit ProvideCT(
             _l1token,
@@ -260,16 +221,14 @@ contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
         onlyEOA
         nonReentrant
     {
-        validateBridgeParams(
-            _crossDomainMessenger,
-            _l2CrossTradeContract,
-            _l1StandardBridge,
-            _creatorAddressChainData,
-            _creatorAddressBridge,
-            _l2SourceChainId,
-            _l2DestinationChainId
-        );
+        require(_crossDomainMessenger == chainData[_creatorAddressChainData][_l2SourceChainId].crossDomainMessenger,
+        "CrossDomainMessenger does not match the creatorAddress's crossDomainMessenger");
+        require(_l2CrossTradeContract == chainData[_creatorAddressChainData][_l2SourceChainId].l2CrossTradeContract,
+        "l2CrossTradeContract does not match the creatorAddress's l2CrossTradeContract"); 
+        require(_l1StandardBridge == l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],
+        "l1StandardBridge provided does not match the creatorAddress's l1StandardBridge");
 
+        // after the checks, we can call the normal provideCT;
         provideCT(_l1token,
         _l2SourceToken,
         _l2DestinationToken,
