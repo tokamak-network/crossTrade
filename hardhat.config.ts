@@ -70,6 +70,11 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.thanos-sepolia.tokamak.network',
       accounts: [`${process.env.PRIVATE_KEY}`]
     },
+    optimismSepolia: {
+      url: `https://sepolia.optimism.io`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+
     devnetL1: {
       url: 'http://localhost:9545',
       accounts: [
@@ -122,12 +127,7 @@ const config: HardhatUserConfig = {
         'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e', // 19
       ],
     },
-    titan: {
-      url: 'http://localhost:9545',
-      accounts: [
-        'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-      ],
-    }
+   
   },
   gasReporter: {
     // enabled: true,
@@ -147,7 +147,8 @@ const config: HardhatUserConfig = {
 
   etherscan: {
 
-    apiKey: {
+    apiKey: { 
+      optimismSepolia: `${process.env.OP_SEPOLIA_APY_KEY}`,
       titanSepolia: "abcde",
       thanosSepolia: "abcde",
       bscTestnet: "abcd",
@@ -155,11 +156,11 @@ const config: HardhatUserConfig = {
     },
     customChains: [
       {
-        network: "titanSepolia",
-        chainId: 55007,
+        network: "optimismSepolia",
+        chainId: 11155420,
         urls: {
-            apiURL: "https://explorer.titan-sepolia.tokamak.network/api",
-            browserURL: "https://explorer.titan-sepolia.tokamak.network/",
+          apiURL: "https://api-sepolia-optimistic.etherscan.io/api",
+          browserURL: "https://sepolia-optimistic.etherscan.io"
         },
       },
       {

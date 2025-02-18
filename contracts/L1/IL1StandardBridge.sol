@@ -7,6 +7,10 @@ contract IL1StandardBridge {
 
     function depositETH(uint32 _minGasLimit, bytes calldata _extraData) external payable onlyEOA {}
     function depositETHTo(address _to, uint32 _minGasLimit, bytes calldata _extraData) external payable {}
+
+    function bridgeETHTo(address _to, uint32 _minGasLimit, bytes calldata _extraData) external payable {}
+    function bridgeERC20To(address _l1Token, address _l2Token, address _to, uint256 _amount, uint32 _minGasLimit, bytes calldata _extraData) external payable {}
+
     function depositERC20(
         address _l1Token,
         address _l2Token,

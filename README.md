@@ -573,3 +573,7 @@ function _request(
     npx hardhat test test/addTest/2.MappingCrossTradeTest.ts --network devnetL1
 
     ```
+verify contract
+```solidity
+npx hardhat verify 0x45b3608C6bA1ed0F93DD902F494088d5f0D2CdC3 --network optimismSepolia
+```

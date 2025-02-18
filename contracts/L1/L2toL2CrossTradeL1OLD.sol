@@ -6,12 +6,12 @@ import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
-import { L2toL2CrossTradeStorageL1 } from "./L2toL2CrossTradeStorageL1.sol";
+import { L2toL2CrossTradeStorageL1OLD} from "./L2toL2CrossTradeStorageL1OLD.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 import { IL1StandardBridge } from "./IL1StandardBridge.sol";
 
 
-contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageL1, ReentrancyGuard {
+contract L2toL2CrossTradeL1OLD is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageL1OLD, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
 
@@ -141,10 +141,9 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
         //deposit tokens to the DestinationChain 
         // might need to go thorugh the portal
-        // needs a bit of rewark since the bridge function chaged.
         if (chainData[_l2SourceChainId].legacyERC20ETH == _l1token){
             require(msg.value == ctAmount, "CT: ETH need same amount");
-             IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+             IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).depositETHTo{value: ctAmount}(
                 _requestor,
                 _minGasLimit,
                 "0x" // encode the hash
@@ -155,7 +154,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).approve(l1StandardBridge[_l2DestinationChainId],ctAmount);
 
-            IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeERC20To(
+            IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).depositERC20To(
                 _l1token,
                 _l2DestinationToken,
                 _requestor,

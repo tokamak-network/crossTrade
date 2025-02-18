@@ -6,9 +6,7 @@ import L1CrossTradeProxy_ABI from "../artifacts/contracts/L1/L1CrossTradeProxy.s
 // dotenv.config();
 
 async function main() {
-  // const l1Provider = new ethers.providers.StaticJsonRpcProvider(
-  //   process.env.Titan_L1_URL
-  // )
+
   // console.log("deploy l1ct proxy")
   // const L1CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxyL1");
   // let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
@@ -23,10 +21,10 @@ async function main() {
   // await L1CrossTradeLogic.waitForDeployment()
 
   
-  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0xFAfCe7Ebd6B1e142f7C03050Ee19F2Ce43673901");
+  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0x8518BC1910955598dEF216EF68FcDD0ED3AF2faF");
 
   console.log("upgrade proxy to logic...")
-  await L1CrossTradeProxy.upgradeTo("0x6A3b4E3e83b873D9de9880D8d3AC2A4164B043D7");
+  await L1CrossTradeProxy.upgradeTo("0x636732f078538254D9bc4E2262d625be628572bB");
   console.log("upgraded")
 
   let imp2 = await L1CrossTradeProxy.implementation()
