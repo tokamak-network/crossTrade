@@ -131,13 +131,13 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         
         // check the message before the deposit is initiated
 
+
         //sendMessage to the sourceChain 
         IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
             chainData[_l2SourceChainId].l2CrossTradeContract, 
             message, 
             _minGasLimit
         );
-
 
         //deposit tokens to the DestinationChain 
         // might need to go thorugh the portal
@@ -146,6 +146,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             require(msg.value == ctAmount, "CT: ETH need same amount");
              IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
                 _requestor,
+                ctAmount,
                 _minGasLimit,
                 "0x" // encode the hash
             );

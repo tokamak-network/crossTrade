@@ -482,7 +482,10 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     )
         private
         returns (bytes32 hashValue)
-    {
+    {   
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // TODO GEORGE: check to be correct check with value and without value !!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!!
         if (_l2SourceToken == legacyERC20ETH) {
             require(msg.value == _totalAmount, "CT: nativeTON need amount");
         } else {
