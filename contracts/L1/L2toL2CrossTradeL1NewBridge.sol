@@ -146,12 +146,27 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
         if (chainData[_l2SourceChainId].legacyERC20ETH == _l1token){
             require(msg.value == ctAmount, "CT: ETH need same amount");
+             // op version
+            if (_l2DestinationChainId == 11155420)
+        {
+                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+                _requestor,
+                _minGasLimit,
+                "0x" // encode the hash
+            );
+        }
+
+            // trh version
+            else{
              IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
                 _requestor,
                 ctAmount,
                 _minGasLimit,
                 "0x" // encode the hash
             );
+            }
+          
+
         } else {
             // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
             // make a different case of usdt (check if usdt) or with type.
