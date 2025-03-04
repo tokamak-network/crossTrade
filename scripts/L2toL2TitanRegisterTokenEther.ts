@@ -1,30 +1,50 @@
 import { ethers } from "hardhat";
 
 import L1CrossTradeProxy_ABI from "../artifacts/contracts/L1/L1CrossTradeProxy.sol/L1CrossTradeProxy.json"
-import Usdc_ABI from '../../artifacts/contracts/mockUsdc/v2/FiatTokenV2_2.sol/FiatTokenV2_2.json'
 
 // import dotenv from "dotenv";
 // dotenv.config();
 
-async function main() {
+const L2crossTradeSourceAddress = "0xfA49361F7c250eD804300fFB1a18fC19A0E6E0e4";
 
-  let L2crossTradeSource = await ethers.getContractAt("L2toL2CrossTradeL2","0x3357C9C11e850a7B7E28d6844f131083279EdC88");
-  let UsdContract = await ethers.getContractAt("FiatTokenV2_2","0x79E0d92670106c85E9067b56B8F674340dCa0Bbd")
-  console.log("name: ",await UsdContract.name());
-  console.log(await L2crossTradeSource.crossDomainMessenger())
+
+async function main() {
+  // approve the token first then try the register token
+  // -----------------------------------------------------------
+  let L2crossTradeSource = await ethers.getContractAt("L2toL2CrossTradeL2",L2crossTradeSourceAddress);
   console.log("request token")
-  console.log("resgister token:")
-  await L2crossTradeSource.requestRegisteredToken(
-    "0x0000000000000000000000000000000000000000",
+  let tx = await L2crossTradeSource.requestNonRegisteredToken(
     "0x0000000000000000000000000000000000000000",
     "0x4200000000000000000000000000000000000486",
-    "123000000000",
-    "100000000000",
+    "0x4200000000000000000000000000000000000486",
+    "125000000000",
+    "120000000000",
     "11155111",
     "111551119090",
-    {value:"123000000000"}
+    {value:"125000000000"}
   )
+  console.log(tx.hash)
+  console.log("Waiting for transaction receipt...");
+  const receipt = await tx.wait();
+  
+  console.log("\nTransaction details:");
+  console.log("Block number:", receipt?.blockNumber);
+  console.log("Gas used:", receipt?.gasUsed.toString());
+  console.log("Status:", receipt?.status === 1 ? "Success" : "Failed");
 
+  console.log("\nEvents emitted:");
+  for (const event of receipt?.logs || []) {
+    try {
+      const decoded = L2crossTradeSource.interface.parseLog(event);
+      if (decoded) {
+        console.log("\nEvent:", decoded.name);
+        console.log("Arguments:", decoded.args);
+      }
+    } catch (e) {
+      // Skip logs that can't be decoded by this contract's interface
+      continue;
+    }
+  }
   // console.log(await L2crossTradeSource.saleCount());
 
   // await L2crossTradeSource.registerToken(

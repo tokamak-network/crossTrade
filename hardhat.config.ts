@@ -74,7 +74,11 @@ const config: HardhatUserConfig = {
       url: `https://sepolia.optimism.io`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-
+    namSDKSepolia: {
+      url: "http://k8s-opgeth-f342208321-431946750.ap-northeast-1.elb.amazonaws.com",
+      chainId: 111551119876,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
     devnetL1: {
       url: 'http://localhost:9545',
       accounts: [
@@ -128,6 +132,7 @@ const config: HardhatUserConfig = {
       ],
     },
    
+
   },
   gasReporter: {
     // enabled: true,
@@ -152,7 +157,8 @@ const config: HardhatUserConfig = {
       titanSepolia: "abcde",
       thanosSepolia: "abcde",
       bscTestnet: "abcd",
-      sepolia: `${process.env.SEPOLIA_APY_KEY}`
+      sepolia: `${process.env.SEPOLIA_APY_KEY}`,
+      namSDKSepolia: "abcde"
     },
     customChains: [
       {
@@ -178,6 +184,14 @@ const config: HardhatUserConfig = {
             apiURL: "https://api-sepolia.etherscan.io/api",
             browserURL: "https://sepolia.etherscan.io/",
         },
+      },
+      {
+        network: "namSDKSepolia",
+        chainId: 111551119876,
+        urls: {
+          apiURL: "YOUR_API_URL",  // Add if there's an explorer API
+          browserURL: "YOUR_EXPLORER_URL"  // Add if there's an explorer
+        }
       }
     ]
   }
