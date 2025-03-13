@@ -21,7 +21,7 @@ async function main() {
 
   // Get all relevant token addresses
   const tokenAddresses = [
-    "0x4200000000000000000000000000000000000486", // Legacy ERC20 ETH
+    "0x4200000000000000000000000000000000000486", 
     // Add other token addresses you want to monitor
   ];
 

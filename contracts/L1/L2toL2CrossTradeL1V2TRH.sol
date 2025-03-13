@@ -142,20 +142,22 @@ contract L2toL2CrossTradeL1V2TRH is ProxyStorage, AccessibleCommon, L2toL2CrossT
 
 
         //deposit tokens to the DestinationChain 
-        // might need to go thorugh the portal
-        if (chainData[_creatorAddressChainData][_l2SourceChainId].legacyERC20ETH == _l1token){
+        if (chainData[_creatorAddressChainData][_l2SourceChainId].legacyERC20ETH == _l1token) {
+            // For ETH transfers
             require(msg.value == ctAmount, "CT: ETH need same amount");
-             IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositETHTo{value: ctAmount}(
+            IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositETHTo{value: ctAmount}(
                 _requestor,
                 _minGasLimit,
                 "0x" // encode the hash
             );
         } else {
-            // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
-            // make a different case of usdt (check if usdt) or with type.
+            // For ERC20 token transfers
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            // IERC20(_l1token).forceApprove(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId],ctAmount);
-            // SafeERC20.forceApprove(_l1token,l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId], ctAmount);
+            
+            // Approve the bridge to spend the tokens
+            IERC20(_l1token).safeApprove(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId], 0);
+            IERC20(_l1token).safeApprove(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId], ctAmount);
+            
             IL1StandardBridge(l1StandardBridge[_creatorAddressBridge][_l2DestinationChainId]).depositERC20To(
                 _l1token,
                 _l2DestinationToken,

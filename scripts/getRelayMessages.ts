@@ -50,6 +50,7 @@ async function main() {
       console.log("Value:", ethers.formatEther(decodedInput.args._value), "ETH");
       console.log("Min Gas Limit:", decodedInput.args._minGasLimit.toString());
       
+      
       // Try to decode the message payload
       try {
         // Try multiple function signatures to find the right one
