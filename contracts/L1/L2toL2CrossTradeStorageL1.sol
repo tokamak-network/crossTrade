@@ -6,11 +6,13 @@ contract L2toL2CrossTradeStorageL1 {
     uint8 internal constant CLAIM_CT = 1;
     uint8 internal constant CANCEL_CT = 2;
 
+    address public nativeToken;
+    uint256 public optimismChainId;
+    
     struct ChainIdData {
         address crossDomainMessenger;
         address l2CrossTradeContract;
-        address legacyERC20ETH;
-        address l1TON;
+        address l2NativeTokenAddressOnL1;
     }
     
     mapping(uint256 => address) public l1StandardBridge;

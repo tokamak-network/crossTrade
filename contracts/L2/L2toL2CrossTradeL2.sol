@@ -6,7 +6,7 @@ import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2toL2CrossTradeStorage } from "./L2toL2CrossTradeStorage.sol";
-import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
+// import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 
@@ -25,8 +25,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _ctAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hashValue
     );
 
@@ -39,8 +39,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _ctAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hashValue
     );
 
@@ -54,8 +54,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _ctAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hash
     );
     
@@ -64,8 +64,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _totalAmount,
         uint256 indexed _saleCount,
         uint256 _l1ChainId,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hash
     );
 
@@ -90,8 +90,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         _;
     }
 
-    modifier providerCheck(uint256 _saleCount) {
-        require(dealData[_saleCount].provider == address(0), "already sold");
+    modifier providerCheck(uint256 _saleCount, uint256 _l2ChainId) {
+        require(dealData[_l2ChainId][_saleCount].provider == address(0), "already sold");
         _;
     }
 
@@ -212,7 +212,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         require(_totalAmount >= _ctAmount, "The totalAmount value must be greater than ctAmount");
         
         unchecked {
-            ++saleCount;
+            ++saleCountChainId[_l2DestinationChainId];
         }
 
         bytes32 hashValue = _request(
@@ -221,7 +221,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken,
             _totalAmount,
             _ctAmount,
-            saleCount,
+            saleCountChainId[_l2DestinationChainId],
             _l1ChainId,
             _l2DestinationChainId
         );
@@ -234,7 +234,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _ctAmount,
-            saleCount,
+            saleCountChainId[_l2DestinationChainId],
             _l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId,
@@ -269,7 +269,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
         uint256 _l2SourceChainId = _getChainID();
         unchecked {
-            ++saleCount;
+            ++saleCountChainId[_l2DestinationChainId];
         }
 
         bytes32 hashValue = _request(
@@ -278,7 +278,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken,
             _totalAmount,
             _ctAmount,
-            saleCount,
+            saleCountChainId[_l2DestinationChainId],
             _l1ChainId,
             _l2DestinationChainId
         );
@@ -290,7 +290,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _ctAmount,
-            saleCount,
+            saleCountChainId[_l2DestinationChainId],
             _l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId,
@@ -317,20 +317,20 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         external
         nonReentrant
         checkL1(_l1ChainId)
-        providerCheck(_saleCount)
+        providerCheck(_saleCount, _l2DestinationChainId)
     {
-        require(dealData[_saleCount].hashValue == _hash, "Hash values do not match");
+        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "Hash values do not match");
 
         uint256 ctAmount = _ctAmount;
         if(_ctAmount == 0) {
-            ctAmount = dealData[_saleCount].ctAmount;
+            ctAmount = dealData[_l2DestinationChainId][_saleCount].ctAmount;
         } 
 
-        dealData[_saleCount].provider = _from;
-        address l2SourceToken = dealData[_saleCount].l2SourceToken;
-        uint256 totalAmount = dealData[_saleCount].totalAmount;
+        dealData[_l2DestinationChainId][_saleCount].provider = _from;
+        address l2SourceToken = dealData[_l2DestinationChainId][_saleCount].l2SourceToken;
+        uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
 
-        if(l2SourceToken == legacyERC20ETH) {
+        if(l2SourceToken == nativeToken) {
             (bool sent, ) = payable(_from).call{value: totalAmount}("");
             require(sent, "claim fail");
         } else {
@@ -340,10 +340,10 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _l2SourceChainId = _getChainID();
 
         emit ProviderClaimCT(
-            dealData[_saleCount].l1token,
+            dealData[_l2DestinationChainId][_saleCount].l1token,
             l2SourceToken,
-            dealData[_saleCount].l2DestinationToken,
-            dealData[_saleCount].requester,
+            dealData[_l2DestinationChainId][_saleCount].l2DestinationToken,
+            dealData[_l2DestinationChainId][_saleCount].requester,
             _from,
             totalAmount,
             ctAmount,
@@ -357,13 +357,13 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
     /// @notice When canceling a function called from L1, the amount is given to the requester.
     /// @param _msgSender Address where cancellation was requested
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l1ChainId chainId of l1token
     /// @param _l2DestinationChainId chainId of l2Destination
     /// @param _hash Hash value generated upon request
     function cancelCT(
         address _msgSender,
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l1ChainId,
         uint256 _l2DestinationChainId,
         bytes32 _hash
@@ -371,19 +371,19 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         external
         nonReentrant
         checkL1(_l1ChainId)
-        providerCheck(_salecount)
+        providerCheck(_saleCount, _l2DestinationChainId)
     {
-        require(dealData[_salecount].requester == _msgSender, "your not seller");
-        require(dealData[_salecount].hashValue == _hash, "Hash values do not match");
+        require(dealData[_l2DestinationChainId][_saleCount].requester == _msgSender, "your not seller");
+        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "Hash values do not match");
 
-        dealData[_salecount].provider = _msgSender;
-        uint256 totalAmount = dealData[_salecount].totalAmount;
+        dealData[_l2DestinationChainId][_saleCount].provider = _msgSender;
+        uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
         
-        if (dealData[_salecount].l2SourceToken == legacyERC20ETH) {
+        if (dealData[_l2DestinationChainId][_saleCount].l2SourceToken == nativeToken) {
             (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
-            IERC20(dealData[_salecount].l2SourceToken).safeTransfer(_msgSender,totalAmount);
+            IERC20(dealData[_l2DestinationChainId][_saleCount].l2SourceToken).safeTransfer(_msgSender,totalAmount);
         }
 
         uint256 _l2SourceChainId = _getChainID();
@@ -391,7 +391,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         emit CancelCT(
             _msgSender, 
             totalAmount, 
-            _salecount,
+            _saleCount,
             _l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId,
@@ -486,8 +486,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // TODO GEORGE: check to be correct check with value and without value !!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!!
-        if (_l2SourceToken == legacyERC20ETH) {
-            require(msg.value == _totalAmount, "CT: nativeTON need amount");
+        if (_l2SourceToken == nativeToken) {
+            require(msg.value == _totalAmount, "CT: nativeToken need amount");
         } else {
             IERC20(_l2SourceToken).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
@@ -507,7 +507,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             l2DestinationChainId
         );
 
-        dealData[_saleCount] = RequestData({
+        dealData[l2DestinationChainId][_saleCount] = RequestData({
             l1token: _l1token,
             l2SourceToken: _l2SourceToken,
             l2DestinationToken: _l2DestinationToken,
@@ -521,4 +521,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         });
 
     }
+
+// I have to add a withdraw function in case tokens fail to be bridged.
+
 }
+

@@ -8,8 +8,8 @@ const ERC20_ABI = [
 async function main() {
   // Contract addresses
   const TOKEN_ADDRESS = "0x4200000000000000000000000000000000000486";
-  const SPENDER_ADDRESS = "0xfA49361F7c250eD804300fFB1a18fC19A0E6E0e4";
-  const AMOUNT = "1000000000000";
+  const SPENDER_ADDRESS = "0x6613f8652EAfdFFd95a49428313e52Cc9b77e38E";
+  const AMOUNT = "10800000000000000";
 
   // Get the token contract
   const token = await ethers.getContractAt(ERC20_ABI, TOKEN_ADDRESS);

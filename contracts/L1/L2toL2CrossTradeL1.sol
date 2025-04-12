@@ -23,8 +23,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hash
     );
 
@@ -37,8 +37,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hash
     );
 
@@ -49,8 +49,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _requester,
         uint256 _totalAmount,
         uint256 indexed _saleCount,
-        uint256 _l2SourceChainId,
-        uint256 _l2DestinationChainId,
+        uint256 indexed _l2SourceChainId,
+        uint256 indexed _l2DestinationChainId,
         bytes32 _hash
     );
 
@@ -70,7 +70,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _requestor requester's address
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested l2SourcechainId
     /// @param _l2DestinationChainId request requested l2DestinationChainId
     /// @param _minGasLimit minGasLimit
@@ -82,7 +82,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _requestor,
         uint256 _totalAmount,
         uint256 _initialctAmount,
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
         uint32 _minGasLimit,
@@ -101,7 +101,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _requestor,
             _totalAmount,
             _initialctAmount,
-            _salecount,
+            _saleCount,
             l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId
@@ -121,7 +121,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             CLAIM_CT,
             msg.sender,
             ctAmount,
-            _salecount,
+            _saleCount,
             _l2DestinationChainId,
             l2HashValue
         );
@@ -139,33 +139,52 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _minGasLimit
         );
 
-        //deposit tokens to the DestinationChain 
+        // deposit tokens to the DestinationChain 
         // might need to go thorugh the portal
-        // needs a bit of rewark since the bridge function chaged.
+        // needs a bit of rewark since the bridge function changed.
         // TODO GEORGE: check if the if checks are correct !!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
-        if (chainData[_l2SourceChainId].legacyERC20ETH == _l1token){
+        if (nativeToken == _l1token){
             require(msg.value == ctAmount, "CT: ETH need same amount");
-             IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+            if (_l2DestinationChainId == optimismChainId ){
+                  IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
                 _requestor,
-                ctAmount,
                 _minGasLimit,
                 "0x" // encode the hash
-            );
+                );
+            }else{
+                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+                    _requestor,
+                    ctAmount,
+                    _minGasLimit,
+                    "0x" // encode the hash
+                );
+            }
         } else {
+
             // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
             // make a different case of usdt (check if usdt) or with type.
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).approve(l1StandardBridge[_l2DestinationChainId],ctAmount);
 
-            IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeERC20To(
-                _l1token,
-                _l2DestinationToken,
-                _requestor,
-                ctAmount,
-                _minGasLimit,
-                "0x" // encode the hash
-            );
+            if(chainData[_l2DestinationChainId].l2NativeTokenAddressOnL1 == _l1token){
+                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeNativeTokenTo(
+                    _requestor,
+                    ctAmount,
+                    _minGasLimit,
+                    "0x" // encode the hash
+                );
+            }else{
+                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeERC20To(
+                    _l1token,
+                    _l2DestinationToken,
+                    _requestor,
+                    ctAmount,
+                    _minGasLimit,
+                    "0x" // encode the hash
+                );
+            }
+
         }
 
         emit ProvideCT(
@@ -176,7 +195,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             ctAmount,
-            _salecount,
+            _saleCount,
             _l2SourceChainId,
             _l2DestinationChainId,
             _hash
@@ -185,13 +204,13 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
 
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested l2SourcechainId
     /// @param _l2DestinationChainId request requested l2DestinationChainId
     /// @param _minGasLimit minGasLimit
     /// @param _hash Hash value generated upon request
     function resendProvideCTMessage(
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
         uint32 _minGasLimit,
@@ -215,7 +234,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             CLAIM_CT,
             provideAccount[_hash],
             ctAmount,
-            _salecount,
+            _saleCount,
             _l2DestinationChainId,
             _hash
         );
@@ -239,7 +258,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l2DestinationToken Address of requested l2DestinationToken
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested chainId
     /// @param _l2DestinationChainId request  Destination chainId
     /// @param _minGasLimit minGasLimit
@@ -250,7 +269,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2DestinationToken,
         uint256 _totalAmount,
         uint256 _initialctAmount,
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
         uint32 _minGasLimit,
@@ -269,7 +288,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _initialctAmount,
-            _salecount,
+            _saleCount,
             thisChainId,
             _l2SourceChainId,
             _l2DestinationChainId
@@ -284,7 +303,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             CANCEL_CT,
             msg.sender,
             0,
-            _salecount,
+            _saleCount,
             _l2DestinationChainId,
             _hash
         );
@@ -304,7 +323,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken,
             msg.sender, 
             _totalAmount, 
-            _salecount,
+            _saleCount,
             _l2SourceChainId,
             _l2DestinationChainId,
             l2HashValue
@@ -313,13 +332,13 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
 
     /// @notice If the cancel function succeeds in L1 but fails in L2, this function calls the transaction in L2 again.
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested chainId
     /// @param _l2DestinationChainId request  Destination chainId
     /// @param _minGasLimit minGasLimit
     /// @param _hash Hash value generated upon request
     function resendCancelMessage(
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
         uint32 _minGasLimit,
@@ -338,7 +357,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             CANCEL_CT,
             cancelL1Address,
             0,
-            _salecount,
+            _saleCount,
             _l2DestinationChainId,
             _hash
         );
@@ -361,7 +380,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount The amount that the requester requested to edit
-    /// @param _salecount Number generated upon request
+    /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested chainId
     /// @param _hash Hash value generated upon request
     function editFee(
@@ -371,7 +390,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
-        uint256 _salecount,
+        uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
         bytes32 _hash
@@ -388,7 +407,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _initialctAmount,
-            _salecount,
+            _saleCount,
             thisChainId,
             _l2SourceChainId,
             _l2DestinationChainId
@@ -406,7 +425,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender, 
             _totalAmount,
             _editedctAmount, 
-            _salecount,
+            _saleCount,
             _l2SourceChainId,
             _l2DestinationChainId,
             l2HashValue

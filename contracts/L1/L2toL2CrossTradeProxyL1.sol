@@ -16,67 +16,62 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
     //
     //
     // setchainInfo(Titan 55007)
-    // 
-    //
-    //
-    //
-    //
-    //
     //setchainInfo(Thaon 11555....)
     //
     //
     // registerProvide()
     //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
 
     function setChainInfoNew(
         address _crossDomainMessenger,
         address _l2CrossTrade,
-        address _legacyERC20ETH,
-        address _l1legacyERC20,
-        uint256 _l2chainId
-    ) external {
+        address _nativeToken,
+        uint256 _l2ChainId
+    ) external {    
 
+    }
+
+
+    function initialize(
+        address _nativeToken,
+        uint256 _optimismChainId
+    ) 
+        external
+        onlyOwner
+    {
+        nativeToken = _nativeToken;
+        optimismChainId = _optimismChainId;
     }
 
     /// @notice Store addresses for chainId
     /// @param _crossDomainMessenger crossDomainMessenger address for chainId
     /// @param _l2CrossTrade L2CrossTradeProxy address for chainId
-    /// @param _legacyERC20ETH legacyERC20ETH address for chainId
-    /// @param _l1legacyERC20 l1legacyERC20 address for chainId
-    /// @param _l2chainId store chainId
+    /// @param _l2NativeTokenAddressOnL1 nativeToken address for chainId
+    /// @param _l2ChainId store chainId
     function setChainInfo(
         address _crossDomainMessenger,
         address _l2CrossTrade,
-        address _legacyERC20ETH,
-        address _l1legacyERC20,
-        uint256 _l2chainId
+        address _l2NativeTokenAddressOnL1,
+        uint256 _l2ChainId
     )
         external
         onlyOwner
     {
-        chainData[_l2chainId] = ChainIdData({
+        chainData[_l2ChainId] = ChainIdData({
             crossDomainMessenger: _crossDomainMessenger,
             l2CrossTradeContract: _l2CrossTrade,
-            legacyERC20ETH: _legacyERC20ETH,
-            l1TON: _l1legacyERC20
+            l2NativeTokenAddressOnL1: _l2NativeTokenAddressOnL1
         });
     }
 
     function setL1StandardBridge(
-        uint256 chainId,
-        address l1StandardBridgeAddress
+        uint256 _l2ChainId,
+        address _l1StandardBridgeAddress
     )
         external
         onlyOwner
     {
-        l1StandardBridge[chainId] = l1StandardBridgeAddress;
+        l1StandardBridge[_l2ChainId] = _l1StandardBridgeAddress;
     }
 
 // will set everything with msg.sender instead of onlyOwner to avoid centralization. 

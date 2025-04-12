@@ -74,8 +74,8 @@ const config: HardhatUserConfig = {
       url: `https://sepolia.optimism.io`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    namSDKSepolia: {
-      url: "http://k8s-opgeth-f342208321-431946750.ap-northeast-1.elb.amazonaws.com",
+    g1SDKSepolia: {
+      url: "http://k8s-opgeth-ba1213b728-2030503530.ap-northeast-2.elb.amazonaws.com",
       chainId: 111551119876,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
@@ -158,7 +158,8 @@ const config: HardhatUserConfig = {
       thanosSepolia: "abcde",
       bscTestnet: "abcd",
       sepolia: `${process.env.SEPOLIA_APY_KEY}`,
-      namSDKSepolia: "abcde"
+      namSDKSepolia: "abcde",
+      g1SDKSepolia: "abcde",
     },
     customChains: [
       {
@@ -186,11 +187,11 @@ const config: HardhatUserConfig = {
         },
       },
       {
-        network: "namSDKSepolia",
+        network: "g1SDKSepolia",
         chainId: 111551119876,
         urls: {
-          apiURL: "YOUR_API_URL",  // Add if there's an explorer API
-          browserURL: "YOUR_EXPLORER_URL"  // Add if there's an explorer
+          apiURL: "http://k8s-blockscout-011c48ab60-266660264.ap-northeast-2.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-011c48ab60-266660264.ap-northeast-2.elb.amazonaws.com/"  // Add if there's an explorer
         }
       }
     ]
