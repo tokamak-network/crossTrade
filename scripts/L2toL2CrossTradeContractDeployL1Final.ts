@@ -21,10 +21,10 @@ async function main() {
   // await L1CrossTradeLogic.waitForDeployment()
 
   
-  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0xE9Fa58714217756648a5f75f398787C6b2EAbb28");
+  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0x12BdB9e42f8fb8B3343329475d5fa73735e63774");
 
   console.log("upgrade proxy to logic...")
-  await L1CrossTradeProxy.upgradeTo("0x9Ce5Fb5926ACbE8654e3B5BEF2F00348EC64DE2A");
+  await L1CrossTradeProxy.upgradeTo("0x68A76539800851E177d3E292Ad8E6C0ca9FD1134");
   console.log("upgraded")
 
   let imp2 = await L1CrossTradeProxy.implementation()

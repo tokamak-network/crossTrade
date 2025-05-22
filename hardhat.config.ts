@@ -74,9 +74,14 @@ const config: HardhatUserConfig = {
       url: `https://sepolia.optimism.io`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    g1SDKSepolia: {
-      url: "http://k8s-opgeth-ba1213b728-2030503530.ap-northeast-2.elb.amazonaws.com",
-      chainId: 111551119876,
+    ge1SDKSepolia: {
+      url: "http://k8s-opgeth-fa4be1305f-660621805.eu-central-1.elb.amazonaws.com",
+      chainId: 111551160480,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    ge2SDKSepolia: {
+      url: "http://k8s-opgeth-46cbb62707-660540118.eu-central-1.elb.amazonaws.com",
+      chainId: 111551219854,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     devnetL1: {
@@ -159,7 +164,8 @@ const config: HardhatUserConfig = {
       bscTestnet: "abcd",
       sepolia: `${process.env.SEPOLIA_APY_KEY}`,
       namSDKSepolia: "abcde",
-      g1SDKSepolia: "abcde",
+      ge1SDKSepolia: "abcde",
+      ge2SDKSepolia: "abcde",
     },
     customChains: [
       {
@@ -187,11 +193,19 @@ const config: HardhatUserConfig = {
         },
       },
       {
-        network: "g1SDKSepolia",
-        chainId: 111551119876,
+        network: "ge1SDKSepolia",
+        chainId: 111551160480,
         urls: {
-          apiURL: "http://k8s-blockscout-011c48ab60-266660264.ap-northeast-2.elb.amazonaws.com/api",  // Add if there's an explorer API
-          browserURL: "http://k8s-blockscout-011c48ab60-266660264.ap-northeast-2.elb.amazonaws.com/"  // Add if there's an explorer
+          apiURL: "http://k8s-blockscout-a272abe4d7-175640193.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-a272abe4d7-175640193.eu-central-1.elb.amazonaws.com/"  // Add if there's an explorer
+        }
+      },
+      {
+        network: "ge2SDKSepolia",
+        chainId: 111551219854,
+        urls: {
+          apiURL: "http://k8s-blockscout-04de1fc64b-302139023.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-04de1fc64b-302139023.eu-central-1.elb.amazonaws.com"  // Add if there's an explorer
         }
       }
     ]
