@@ -15,11 +15,6 @@ contract L2toL2CrossTradeStorage {
         bytes32 hashValue;
     }
 
-    struct ChainIdData {
-        address l1CrossTradeContract;
-        address l1NativeToken;
-    }
-
     address public crossDomainMessenger;
     address public nativeToken;
 
@@ -33,6 +28,6 @@ contract L2toL2CrossTradeStorage {
 
 
     //chainId => ChainData
-    mapping(uint256 => ChainIdData) public chainData;
+    mapping(uint256 => address) public l1CrossTradeContract;
 
 }

@@ -22,19 +22,14 @@ contract L2toL2CrossTradeProxy is Proxy, L2toL2CrossTradeStorage {
 
     /// @notice Store addresses for chainId
     /// @param _l1CrossTrade L1CrossTradeProxy address for chainId
-    /// @param _l1NativeToken l1NativeToken address for chainId
     /// @param _chainId store chainId
     function setChainInfo(
         address _l1CrossTrade,
-        address _l1NativeToken,
         uint256 _chainId
     )
         external
         onlyOwner
     {
-        chainData[_chainId] = ChainIdData({
-            l1CrossTradeContract: _l1CrossTrade,
-            l1NativeToken: _l1NativeToken
-        });
+        l1CrossTradeContract[_chainId] = _l1CrossTrade;
     }
 }
