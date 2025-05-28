@@ -79,9 +79,9 @@ const config: HardhatUserConfig = {
       chainId: 111551160480,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    ge2SDKSepolia: {
-      url: "http://k8s-opgeth-46cbb62707-660540118.eu-central-1.elb.amazonaws.com",
-      chainId: 111551219854,
+    ge4SDKSepolia: {
+      url: "http://k8s-opgeth-9b52f7b5d4-2008207905.eu-central-1.elb.amazonaws.com",
+      chainId: 111551171647,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     devnetL1: {
@@ -166,6 +166,7 @@ const config: HardhatUserConfig = {
       namSDKSepolia: "abcde",
       ge1SDKSepolia: "abcde",
       ge2SDKSepolia: "abcde",
+      ge4SDKSepolia: "abcde",
     },
     customChains: [
       {
@@ -201,11 +202,11 @@ const config: HardhatUserConfig = {
         }
       },
       {
-        network: "ge2SDKSepolia",
-        chainId: 111551219854,
+        network: "ge4SDKSepolia",
+        chainId: 111551171647,
         urls: {
-          apiURL: "http://k8s-blockscout-04de1fc64b-302139023.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
-          browserURL: "http://k8s-blockscout-04de1fc64b-302139023.eu-central-1.elb.amazonaws.com"  // Add if there's an explorer
+          apiURL: "http://k8s-blockscout-97126afa09-1236189323.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-97126afa09-1236189323.eu-central-1.elb.amazonaws.com"  // Add if there's an explorer
         }
       }
     ]

@@ -128,9 +128,6 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         
         provideAccount[l2HashValue] = msg.sender;
         successCT[l2HashValue] = true;
-        
-        // check the message before the deposit is initiated
-
 
         //sendMessage to the sourceChain 
         IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
@@ -139,21 +136,17 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _minGasLimit
         );
 
-        // deposit tokens to the DestinationChain 
-        // might need to go thorugh the portal
-        // needs a bit of rewark since the bridge function changed.
-        // TODO GEORGE: check if the if checks are correct !!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
-        if (nativeToken == _l1token){
+
+        if (NATIVE_TOKEN == _l1token){
             require(msg.value == ctAmount, "CT: ETH need same amount");
             if (_l2DestinationChainId == optimismChainId ){
-                  IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+                  IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
                 _requestor,
                 _minGasLimit,
                 "0x" // encode the hash
                 );
-            }else{
-                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeETHTo{value: ctAmount}(
+            } else {
+                IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
                     _requestor,
                     ctAmount,
                     _minGasLimit,
@@ -161,21 +154,11 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                 );
             }
         } else {
-
-            // depositERC20To => approve with 0 first and then approve with ctAmount for USDT
-            // make a different case of usdt (check if usdt) or with type.
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).approve(l1StandardBridge[_l2DestinationChainId],ctAmount);
 
-            if(chainData[_l2DestinationChainId].l2NativeTokenAddressOnL1 == _l1token){
-                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeNativeTokenTo(
-                    _requestor,
-                    ctAmount,
-                    _minGasLimit,
-                    "0x" // encode the hash
-                );
-            }else{
-                IL1StandardBridge(l1StandardBridge[_l2DestinationChainId]).bridgeERC20To(
+            if(usdcAddress == _l1token){
+                IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1USDCBridge,ctAmount);
+                IL1StandardBridge(chainData[_l2DestinationChainId].l1USDCBridge).bridgeERC20To(
                     _l1token,
                     _l2DestinationToken,
                     _requestor,
@@ -183,6 +166,32 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     _minGasLimit,
                     "0x" // encode the hash
                 );
+
+
+            } else {
+                IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
+
+                if(chainData[_l2DestinationChainId].l2NativeTokenAddressOnL1 == _l1token){
+
+                    IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeNativeTokenTo(
+                        _requestor,
+                        ctAmount,
+                        _minGasLimit,
+                        "0x" // encode the hash
+                    );
+                }else{
+                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
+
+                    IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
+                        _l1token,
+                        _l2DestinationToken,
+                        _requestor,
+                        ctAmount,
+                        _minGasLimit,
+                        "0x" // encode the hash
+                    );
+                }
+
             }
 
         }
