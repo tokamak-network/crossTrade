@@ -7,29 +7,29 @@ import L1CrossTradeProxy_ABI from "../artifacts/contracts/L1/L1CrossTradeProxy.s
 
 async function main() {
 
-  // console.log("deploy l1ct proxy")
-  // const L1CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxyL1");
-  // let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
-  // console.log('L1CrossTradeProxy' , await L1CrossTradeProxy.getAddress())
-  // await L1CrossTradeProxy.waitForDeployment();
+  console.log("deploy l1ct proxy")
+  const L1CrossTradeProxyDep = await ethers.getContractFactory("L2toL2CrossTradeProxyL1");
+  let L1CrossTradeProxy = await L1CrossTradeProxyDep.deploy();
+  console.log('L1CrossTradeProxy' , await L1CrossTradeProxy.getAddress())
+  await L1CrossTradeProxy.waitForDeployment();
 
-  // console.log("deploy logic")
-  // const L1CrossTradeLogicDep = await ethers.getContractFactory("L2toL2CrossTradeL1");
-  // let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
-  // let addressct = await L1CrossTradeLogic.getAddress(); 
-  // console.log('L1CrossTradeLogic' , addressct)
-  // await L1CrossTradeLogic.waitForDeployment()
+  console.log("deploy logic")
+  const L1CrossTradeLogicDep = await ethers.getContractFactory("L2toL2CrossTradeL1");
+  let L1CrossTradeLogic = await L1CrossTradeLogicDep.deploy();
+  let addressct = await L1CrossTradeLogic.getAddress(); 
+  console.log('L1CrossTradeLogic' , addressct)
+  await L1CrossTradeLogic.waitForDeployment()
 
   
-  let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0x9377349c3b987Dd0D63D0551Fd43dc7210d43b95");
+  // let L1CrossTradeProxy = await ethers.getContractAt("L2toL2CrossTradeProxyL1","0x1C5fc73342B0597827D2812Bb0955188903dA31f");
 
-  console.log("upgrade proxy to logic...")
-  await L1CrossTradeProxy.upgradeTo("0xedC00025a6551a767DD44eF7aA05Bf25e6FAb003");
-  console.log("upgraded")
+  // console.log("upgrade proxy to logic...")
+  // await L1CrossTradeProxy.upgradeTo("0xD2024182bF9E0C5191E78db7c06d8A9AFdDA21De");
+  // console.log("upgraded")
 
-  let imp2 = await L1CrossTradeProxy.implementation()
-  console.log('check upgradeAddress : ', imp2)
-  console.log('upgradeTo done')
+  // let imp2 = await L1CrossTradeProxy.implementation()
+  // console.log('check upgradeAddress : ', imp2)
+  // console.log('upgradeTo done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere

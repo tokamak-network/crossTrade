@@ -74,14 +74,14 @@ const config: HardhatUserConfig = {
       url: `https://sepolia.optimism.io`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    ge1SDKSepolia: {
-      url: "http://k8s-opgeth-fa4be1305f-660621805.eu-central-1.elb.amazonaws.com",
-      chainId: 111551160480,
+    ge11SDKSepolia: {
+      url: "http://k8s-opgeth-77100d84c4-149585002.eu-west-1.elb.amazonaws.com",
+      chainId: 111551157350,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    ge4SDKSepolia: {
-      url: "http://k8s-opgeth-9b52f7b5d4-2008207905.eu-central-1.elb.amazonaws.com",
-      chainId: 111551171647,
+    ge15SDKSepolia: {
+      url: "http://k8s-opgeth-550f030b78-906572462.eu-west-2.elb.amazonaws.com",
+      chainId: 111551216867,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     devnetL1: {
@@ -164,9 +164,8 @@ const config: HardhatUserConfig = {
       bscTestnet: "abcd",
       sepolia: `${process.env.SEPOLIA_APY_KEY}`,
       namSDKSepolia: "abcde",
-      ge1SDKSepolia: "abcde",
-      ge2SDKSepolia: "abcde",
-      ge4SDKSepolia: "abcde",
+      ge11SDKSepolia: "abcde",
+      ge15SDKSepolia: "abcde",
     },
     customChains: [
       {
@@ -194,19 +193,19 @@ const config: HardhatUserConfig = {
         },
       },
       {
-        network: "ge1SDKSepolia",
-        chainId: 111551160480,
+        network: "ge11SDKSepolia",
+        chainId: 111551157350,
         urls: {
-          apiURL: "http://k8s-blockscout-a272abe4d7-175640193.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
-          browserURL: "http://k8s-blockscout-a272abe4d7-175640193.eu-central-1.elb.amazonaws.com/"  // Add if there's an explorer
+          apiURL: "http://k8s-blockscout-a9b37cd19a-1254170311.eu-west-1.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-a9b37cd19a-1254170311.eu-west-1.elb.amazonaws.com/"  // Add if there's an explorer
         }
       },
       {
-        network: "ge4SDKSepolia",
-        chainId: 111551171647,
+        network: "ge15SDKSepolia",
+        chainId: 111551216867,
         urls: {
-          apiURL: "http://k8s-blockscout-97126afa09-1236189323.eu-central-1.elb.amazonaws.com/api",  // Add if there's an explorer API
-          browserURL: "http://k8s-blockscout-97126afa09-1236189323.eu-central-1.elb.amazonaws.com"  // Add if there's an explorer
+          apiURL: "http://k8s-blockscout-c2810d3dad-616867834.eu-west-2.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-c2810d3dad-616867834.eu-west-2.elb.amazonaws.com/"  // Add if there's an explorer
         }
       }
     ]

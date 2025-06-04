@@ -23,9 +23,7 @@ contract L2toL2CrossTradeStorage {
 
     // chainIdDestination => saleCount => RequestData
     mapping(uint256 => mapping(uint256 => RequestData)) public dealData;
-    // mapping(uint256 => mapping(address => mapping(address => bool))) public registerCheck;
     mapping(bytes32 => bool) public registerCheck;
-
 
     //chainId => ChainData
     mapping(uint256 => address) public l1CrossTradeContract;

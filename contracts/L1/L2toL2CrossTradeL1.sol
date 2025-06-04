@@ -143,14 +143,14 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                   IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
                 _requestor,
                 _minGasLimit,
-                "0x" // encode the hash
+                "0x"
                 );
             } else {
                 IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
                     _requestor,
                     ctAmount,
                     _minGasLimit,
-                    "0x" // encode the hash
+                    "0x"
                 );
             }
         } else {
@@ -164,7 +164,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     _requestor,
                     ctAmount,
                     _minGasLimit,
-                    "0x" // encode the hash
+                    "0x"
                 );
 
 
@@ -177,7 +177,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                         _requestor,
                         ctAmount,
                         _minGasLimit,
-                        "0x" // encode the hash
+                        "0x"
                     );
                 }else{
                     IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
@@ -188,7 +188,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                         _requestor,
                         ctAmount,
                         _minGasLimit,
-                        "0x" // encode the hash
+                        "0x"
                     );
                 }
 

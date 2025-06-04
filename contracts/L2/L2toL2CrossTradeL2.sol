@@ -69,14 +69,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         bytes32 _hash
     );
 
-    // event EditCT(
-    //     address _requester,
-    //     uint256 _ctAmount,
-    //     uint256 indexed _saleCount
-    // );
-
-    //=======modifier========
-
     modifier onlyEOA() {
         require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
         _;
@@ -100,13 +92,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         _;
     }
 
-    // modifier nonZeroAddr(address _addr) {
-    //     require(_addr != address(0) , "nonZeroAddr");
-    //     _;
-    // }
-
-    //=======external========
-
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
@@ -129,18 +114,14 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         bytes32 id = keccak256(abi.encode(
             _l1ChainId,
             _l2SourceChainId,
-            _l2DestinationChainId,// tagetChainId = l1ChainId (to suport L2->L1)
+            _l2DestinationChainId,
             _l1token,
             _l2SourceToken,
             _l2DestinationToken
-            // msg.sender,
         ));
         require(registerCheck[id] == false, "already registerToken");
         registerCheck[id] = true;
 
-        // registerCheck[msg.sender][id] => this is for the frontend
-        // have a seperate function  getRegisterCheck() and dont input the id but the params
-        // 
     }
     
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
@@ -444,15 +425,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         );
     }
 
-    // //=======Temporary view for testing ========
-    // function getChainID() public view returns (uint256 id) {
-    //     assembly {
-    //         id := chainid()
-    //     }
-    // }
-
-    //=======internal========
-
     /// @notice Function to calculate l1token, l2token register hash value
     function _getChainID() private view returns (uint256 id) {
         assembly {
@@ -483,9 +455,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         private
         returns (bytes32 hashValue)
     {   
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // TODO GEORGE: check to be correct check with value and without value !!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!!
         if (_l2SourceToken == nativeToken) {
             require(msg.value == _totalAmount, "CT: nativeToken need amount");
         } else {
@@ -521,8 +490,6 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         });
 
     }
-
-// I have to add a withdraw function in case tokens fail to be bridged.
 
 }
 
