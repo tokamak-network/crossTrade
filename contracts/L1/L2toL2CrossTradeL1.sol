@@ -166,8 +166,6 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     _minGasLimit,
                     "0x"
                 );
-
-
             } else {
                 IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
 

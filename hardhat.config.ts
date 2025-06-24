@@ -58,7 +58,7 @@ const config: HardhatUserConfig = {
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     sepolia: {
-      url: `https://ethereum-sepolia-rpc.publicnode.com`,
+      url: `https://eth-sepolia.public.blastapi.io`,
       accounts: [`${process.env.PRIVATE_KEY}`],
       gasPrice:"auto"
     },
