@@ -27,6 +27,13 @@ contract DeployL1CrossTrade is Script {
         console.log("Current implementation address:", implementation);
         require(implementation == address(logic), "Upgrade failed - implementation mismatch");
 
+        // Initialize the proxy
+        console.log("Initializing proxy...");
+        uint256 optimismChainId = 1155420;
+        address usdcAddress = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
+        proxy.initialize(optimismChainId, usdcAddress);
+        console.log("Proxy initialized with optimismChainId:", optimismChainId, "and USDC address:", usdcAddress);
+
         vm.stopBroadcast();
     }
 } 
