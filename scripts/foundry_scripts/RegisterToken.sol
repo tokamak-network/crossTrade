@@ -12,17 +12,17 @@ contract RegisterToken is Script {
         console.log("Registering token on L2...");
         
         // L2 Proxy address (replace with actual deployed address)
-        address proxyAddress = 0xc0c33138355e061511f8954C114edC7c9E7Bfac4;
+        address proxyAddress = vm.envAddress("L2_PROXY_ADDRESS");
         
         L2toL2CrossTradeProxy proxy = L2toL2CrossTradeProxy(proxyAddress);
         
         // Token registration parameters
-        address l1token = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
-        address l2SourceToken = 0x5fd84259d66cd46123540766be93dfe6d43130d7;
-        address l2DestinationToken = 0x4200000000000000000000000000000000000778;
-        uint256 l1ChainId = 11155111;
-        uint256 l2SourceChainId = 11155420;
-        uint256 l2DestinationChainId = 111551119090;
+        address l1token = vm.envAddress("L1_TOKEN");
+        address l2SourceToken = vm.envAddress("L2_SOURCE_TOKEN");
+        address l2DestinationToken = vm.envAddress("L2_DESTINATION_TOKEN");
+        uint256 l1ChainId = vm.envUint("L1_CHAIN_ID");
+        uint256 l2SourceChainId = vm.envUint("L2_SOURCE_CHAIN_ID");
+        uint256 l2DestinationChainId = vm.envUint("L2_DESTINATION_CHAIN_ID");
         
         console.log("Registering token with parameters:");
         console.log("L1Token:", l1token);

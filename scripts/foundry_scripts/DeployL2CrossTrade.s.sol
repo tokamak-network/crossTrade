@@ -28,18 +28,17 @@ contract DeployL2CrossTrade is Script {
         require(implementation == address(logic), "Upgrade failed - implementation mismatch");
 
   
-
         // Initialize the proxy
         console.log("Initializing proxy...");
-        address crossDomainMessanger = 0x4200000000000000000000000000000000000007;
-        address nativeToken = 0x0000000000000000000000000000000000000000;
+        address crossDomainMessanger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
+        address nativeToken = vm.envAddress("NATIVE_TOKEN");
         proxy.initialize(crossDomainMessanger, nativeToken);
         console.log("Proxy initialized with crossDomainMessanger:", crossDomainMessanger, "and nativeToken:", nativeToken);
 
         // Set chain info for L2
         console.log("Setting chain info...");
-        address l1CrossTrade = 0x1C5fc73342B0597827D2812Bb0955188903dA31f; // needs to be updated
-        uint256 chainId = 11155111; // needs to be updated  
+        address l1CrossTrade = vm.envAddress("L1_CROSS_TRADE");
+        uint256 chainId = vm.envUint("CHAIN_ID");
         proxy.setChainInfo(l1CrossTrade, chainId); 
         console.log("Chain info set - L1CrossTrade:", l1CrossTrade, "ChainId:", chainId);
 
