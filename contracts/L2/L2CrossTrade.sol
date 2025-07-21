@@ -67,7 +67,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
 
     modifier checkL1(uint256 _chainId) {
         require(
-            msg.sender == address(crossDomainMessenger) && IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[_chainId].l1CrossTradeContract, 
+            msg.sender == address(crossDomainMessenger) && IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == chainData[_chainId], 
             "only call l1FastWithdraw"
         );
         _;
@@ -193,7 +193,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         nonZero(_ctAmount)
         nonReentrant
     {
-        require(chainData[_l1chainId].l1CrossTradeContract != address(0), "This chain is not supported.");
+        require(chainData[_l1chainId] != address(0), "This chain is not supported.");
 
         unchecked {
             ++saleCount;
@@ -251,7 +251,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address l2token = dealData[_saleCount].l2token;
         uint256 totalAmount = dealData[_saleCount].totalAmount;
 
-        if(l2token == legacyERC20ETH) {
+        if(l2token == NATIVE_TOKEN) {
             (bool sent, ) = payable(_from).call{value: totalAmount}("");
             require(sent, "claim fail");
         } else {
@@ -295,7 +295,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         dealData[_salecount].provider = _msgSender;
         uint256 totalAmount = dealData[_salecount].totalAmount;
         
-        if (dealData[_salecount].l2token == legacyERC20ETH) {
+        if (dealData[_salecount].l2token == NATIVE_TOKEN) {
             (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
             require(sent, "cancel refund fail");
         } else {
@@ -378,8 +378,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         private
         returns (bytes32 hashValue)
     {
-        if (_l2token == legacyERC20ETH) {
-            require(msg.value == _totalAmount, "CT: nativeTON need amount");
+        if (_l2token == NATIVE_TOKEN) {
+            require(msg.value == _totalAmount, "CT: Native token need same amount");
         } else {
             IERC20(_l2token).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }

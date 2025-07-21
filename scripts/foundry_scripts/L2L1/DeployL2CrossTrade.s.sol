@@ -9,7 +9,6 @@ contract DeployL2CrossTrade is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address crossDomainMessenger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
-        address legacyERC20 = vm.envAddress("LEGACY_ERC20");
         vm.startBroadcast(deployerPrivateKey);
 
         console.log("Deploying L2CrossTradeProxy...");
@@ -25,12 +24,9 @@ contract DeployL2CrossTrade is Script {
         console.log("Proxy upgraded successfully");
 
         console.log("Initializing proxy...");
-        proxy.initialize(crossDomainMessenger, legacyERC20);
-        console.log("Proxy initialized with crossDomainMessenger:", crossDomainMessenger, "and legacyERC20:", legacyERC20);
-
-        // Optionally, set chain info here if needed:
-        // proxy.setChainInfo(_l1CrossTrade, _l1legacyERC20, _chainId);
-
+        proxy.initialize(crossDomainMessenger);
+        console.log("Proxy initialized with crossDomainMessenger:", crossDomainMessenger);
         vm.stopBroadcast();
     }
 } 
+// PRIVATE_KEY=0x1234567890 forge script scripts/foundry_scripts/L2L1/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --chain thanosSepolia

@@ -22,9 +22,8 @@ contract DeployL1CrossTrade is Script {
         proxy.upgradeTo(address(logic));
         console.log("Proxy upgraded successfully");
 
-        // Optionally, set chain info here if needed:
-        // proxy.setChainInfo(_crossDomainMessenger, _l2CrossTrade, _legacyERC20, _l1legacyERC20, _l2chainId);
-
         vm.stopBroadcast();
     }
-} 
+}
+
+// forge script scripts/foundry_scripts/L2L1/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --chain sepolia 

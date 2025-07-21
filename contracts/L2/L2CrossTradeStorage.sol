@@ -13,13 +13,9 @@ contract L2CrossTradeStorage {
         bytes32 hashValue;
     }
 
-    struct ChainIdData {
-        address l1CrossTradeContract;
-        address l1TON;
-    }
 
     address public crossDomainMessenger;
-    address public legacyERC20ETH;
+    address public NATIVE_TOKEN = address(0);
 
     uint256 public saleCount;
 
@@ -27,7 +23,7 @@ contract L2CrossTradeStorage {
     mapping(uint256 => RequestData) public dealData;
     mapping(uint256 => mapping(address => mapping(address => bool))) public registerCheck;
     
-    //chainId => ChainData
-    mapping(uint256 => ChainIdData) public chainData;
+    //chainId => l1CrossTradeContract
+    mapping(uint256 => address) public chainData;
 
 }
