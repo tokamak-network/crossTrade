@@ -69,6 +69,24 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         bytes32 _hash
     );
 
+    event RegisterToken(
+        address indexed _l1token,
+        address indexed _l2SourceToken,
+        address indexed _l2DestinationToken,
+        uint256 _l1ChainId,
+        uint256 _l2SourceChainId,
+        uint256 _l2DestinationChainId
+    );
+
+    event DeleteToken(
+        address indexed _l1token,
+        address indexed _l2SourceToken,
+        address indexed _l2DestinationToken,
+        uint256 _l1ChainId,
+        uint256 _l2SourceChainId,
+        uint256 _l2DestinationChainId
+    );
+
     modifier onlyEOA() {
         require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
         _;
@@ -122,6 +140,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         require(registerCheck[id] == false, "already registerToken");
         registerCheck[id] = true;
 
+        emit RegisterToken(_l1token, _l2SourceToken, _l2DestinationToken, _l1ChainId, _l2SourceChainId, _l2DestinationChainId);
+
     }
     
     /// @notice Register L1token and L2token and use them in requestRegisteredToken
@@ -152,6 +172,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         ));
         require(registerCheck[id] != false, "already deleteToken");
         registerCheck[id] = false;
+        emit DeleteToken(_l1token, _l2SourceToken, _l2DestinationToken, _l1ChainId, _l2SourceChainId, _l2DestinationChainId);
     }
 
     /// @notice Token transaction request registered in register

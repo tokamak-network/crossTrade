@@ -16,7 +16,7 @@ contract L2toL2CrossTradeStorage {
     }
 
     address public crossDomainMessenger;
-    address public nativeToken;
+    address public nativeToken = address(0);
 
     // chainIdDestination => saleCount
     mapping(uint256 => uint256) public saleCountChainId;

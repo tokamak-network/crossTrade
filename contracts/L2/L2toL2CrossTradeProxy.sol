@@ -8,16 +8,13 @@ contract L2toL2CrossTradeProxy is Proxy, L2toL2CrossTradeStorage {
 
     /// @notice L2CrossTrade initial settings
     /// @param _crossDomainMessenger crossDomainMessenger address
-    /// @param _nativeToken nativeToken address 
     function initialize(
-        address _crossDomainMessenger,
-        address _nativeToken
+        address _crossDomainMessenger
     ) 
         external
         onlyOwner
     {
         crossDomainMessenger = _crossDomainMessenger;
-        nativeToken = _nativeToken;
     }
 
     /// @notice Store addresses for chainId

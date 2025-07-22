@@ -31,9 +31,8 @@ contract DeployL2CrossTrade is Script {
         // Initialize the proxy
         console.log("Initializing proxy...");
         address crossDomainMessanger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
-        address nativeToken = vm.envAddress("NATIVE_TOKEN");
-        proxy.initialize(crossDomainMessanger, nativeToken);
-        console.log("Proxy initialized with crossDomainMessanger:", crossDomainMessanger, "and nativeToken:", nativeToken);
+        proxy.initialize(crossDomainMessanger);
+        console.log("Proxy initialized with crossDomainMessanger:", crossDomainMessanger);
 
         // Set chain info for L2
         console.log("Setting chain info...");
