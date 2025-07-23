@@ -6,9 +6,9 @@ import "../proxy/ProxyStorage.sol";
 
 import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { L2toL2CrossTradeStorage } from "./L2toL2CrossTradeStorage.sol";
-// import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
+import { EOA } from "../libraries/EOA.sol";
 
 // import "hardhat/console.sol";
 
@@ -88,7 +88,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
+        require(EOA.isSenderEOA(), "CT: Function can only be called from an EOA");
         _;
     }
 

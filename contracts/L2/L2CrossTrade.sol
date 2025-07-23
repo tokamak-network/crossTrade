@@ -9,13 +9,13 @@ import { L2CrossTradeStorage } from "./L2CrossTradeStorage.sol";
 import { IOptimismMintableERC20, ILegacyMintableERC20 } from "../interfaces/IOptimismMintableERC20.sol";
 import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
+import { EOA } from "../libraries/EOA.sol";
 
 // import "hardhat/console.sol";
 
 contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
-    // constructor
     event RequestCT(
         address _l1token,
         address _l2token,
@@ -61,7 +61,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     //=======modifier========
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
+        require(EOA.isSenderEOA(), "CT: Function can only be called from an EOA");
         _;
     }
 

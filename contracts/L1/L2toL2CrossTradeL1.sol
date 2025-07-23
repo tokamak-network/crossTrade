@@ -9,7 +9,7 @@ import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.s
 import { L2toL2CrossTradeStorageL1 } from "./L2toL2CrossTradeStorageL1.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 import { IL1StandardBridge } from "./IL1StandardBridge.sol";
-
+import { EOA } from "../libraries/EOA.sol";
 
 contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorageL1, ReentrancyGuard {
 
@@ -55,7 +55,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
+        require(EOA.isSenderEOA(), "CT: Function can only be called from an EOA");
         _;
     }
 
@@ -170,7 +170,6 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     "0x"
                 );
             } else  {
-
                 if(chainData[_l2DestinationChainId].l2NativeTokenAddressOnL1 == _l1token){
 
                     IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);

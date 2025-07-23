@@ -8,7 +8,7 @@ import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
-
+import { EOA } from "../libraries/EOA.sol";
 contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
@@ -47,7 +47,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
+        require(EOA.isSenderEOA(), "CT: Function can only be called from an EOA");
         _;
     }
 
