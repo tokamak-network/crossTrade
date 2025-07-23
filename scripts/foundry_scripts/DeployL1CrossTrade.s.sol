@@ -31,7 +31,8 @@ contract DeployL1CrossTrade is Script {
         console.log("Initializing proxy...");
         uint256 optimismChainId = 1155420;
         address usdcAddress = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
-        proxy.initialize(optimismChainId, usdcAddress);
+        address usdtAddress = 0x7169D38820dfd117C3FA1f22a697dBA58d90BA06;
+        proxy.initialize(optimismChainId, usdcAddress, usdtAddress);
         console.log("Proxy initialized with optimismChainId:", optimismChainId, "and USDC address:", usdcAddress);
 
         vm.stopBroadcast();
@@ -39,8 +40,8 @@ contract DeployL1CrossTrade is Script {
 } 
 
 
-// PRIVATE_KEY=0X1233 forge script script/foundry_scripts/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --verify --etherscan-api-key apykey --chain sepolia
-// PRIVATE_KEY=0X1233 forge script script/foundry_scripts/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --chain sepolia
+// PRIVATE_KEY=0X1233 forge script scripts/foundry_scripts/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --verify --etherscan-api-key apykey --chain sepolia
+// PRIVATE_KEY=0X1233 forge script scripts/foundry_scripts/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --chain sepolia
 
 // forge verify-contract 0xA01bD9DB74800BC3189b1dba835DB006d03aD76c contracts/L1/L2toL2CrossTradeL1.sol:L2toL2CrossTradeL1 --etherscan-api-key apyKey --chain sepolia
 // forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L1/L2toL2CrossTradeProxyL1.sol:L2toL2CrossTradeProxyL1 --etherscan-api-key APYKEY --chain sepolia
