@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "forge-std/Script.sol";
 import "../../contracts/L2/L2toL2CrossTradeProxy.sol";
 
-contract SetChainInfoL2 is Script {
+contract SetChainInfoL2_L2L2 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -33,4 +33,4 @@ contract SetChainInfoL2 is Script {
     }
 }
 
-// forge script scripts/foundry_scripts/SetChainInfoL2.sol:SetChainInfoL2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
+// forge script scripts/foundry_scripts/SetChainInfoL2_L2L2.sol:SetChainInfoL2_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "../../../contracts/L1/L1CrossTradeProxy.sol";
 import "../../../contracts/L1/L1CrossTrade.sol";
 
-contract DeployL1CrossTrade is Script {
+contract DeployL1CrossTrade_L2L1 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -26,4 +26,4 @@ contract DeployL1CrossTrade is Script {
     }
 }
 
-// forge script scripts/foundry_scripts/L2L1/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://eth-sepolia.public.blastapi.io --broadcast --chain sepolia 
+// forge script scripts/foundry_scripts/L2L1/DeployL1CrossTrade_L2L1.s.sol:DeployL1CrossTrade_L2L1 --rpc-url https://eth-sepolia.public.blastapi.io --broadcast --chain sepolia 

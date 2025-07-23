@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "../../contracts/L2/L2toL2CrossTradeProxy.sol";
 import "../../contracts/L2/L2toL2CrossTradeL2.sol";
 
-contract DeployL2CrossTrade is Script {
+contract DeployL2CrossTrade_L2L2 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -46,8 +46,8 @@ contract DeployL2CrossTrade is Script {
     }
 } 
 
-// PRIVATE_KEY=0X1233 forge script script/foundry_scripts/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --verify --etherscan-api-key apykey --chain thanosSepolia
-// PRIVATE_KEY=0X1233 forge script scripts/foundry_scripts/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
+// PRIVATE_KEY=0X1233 forge script script/foundry_scripts/DeployL2CrossTrade_L2L2.s.sol:DeployL2CrossTrade_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --verify --etherscan-api-key apykey --chain thanosSepolia
+// PRIVATE_KEY=0X1233 forge script scripts/foundry_scripts/DeployL2CrossTrade_L2L2.s.sol:DeployL2CrossTrade_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
 
 // forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --etherscan-api-key APYKEY --chain thanosSepolia
 // forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --etherscan-api-key APYKEY --chain thanosSepolia

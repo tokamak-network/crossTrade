@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "../../../contracts/L2/L2CrossTradeProxy.sol";
 import "../../../contracts/L2/L2CrossTrade.sol";
 
-contract DeployL2CrossTrade is Script {
+contract DeployL2CrossTrade_L2L1 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address crossDomainMessenger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
@@ -29,4 +29,4 @@ contract DeployL2CrossTrade is Script {
         vm.stopBroadcast();
     }
 } 
-// PRIVATE_KEY=0x1234567890 forge script scripts/foundry_scripts/L2L1/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
+// PRIVATE_KEY=0x1234567890 forge script scripts/foundry_scripts/L2L1/DeployL2CrossTrade_L2L1.s.sol:DeployL2CrossTrade_L2L1 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

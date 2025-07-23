@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "../../contracts/L2/L2toL2CrossTradeProxy.sol";
 import "../../contracts/L2/L2toL2CrossTradeL2.sol";
 
-contract RegisterToken is Script {
+contract RegisterToken_L2L2 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -48,4 +48,4 @@ contract RegisterToken is Script {
     }
 }
 
-//  forge script scripts/foundry_scripts/RegisterToken.sol:RegisterToken --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
+//  forge script scripts/foundry_scripts/RegisterToken_L2L2.sol:RegisterToken_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

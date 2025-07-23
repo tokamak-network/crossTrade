@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "forge-std/Script.sol";
 import "../../contracts/L1/L2toL2CrossTradeProxyL1.sol";
 
-contract SetChainInfoL1 is Script {
+contract SetChainInfoL1_L2L2 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -48,4 +48,4 @@ contract SetChainInfoL1 is Script {
     }
 }
 
-//  forge script scripts/foundry_scripts/SetChainInfoL1.sol:SetChainInfoL1 --rpc-url https://eth-sepolia.public.blastapi.io --broadcast --chain sepolia
+//  forge script scripts/foundry_scripts/SetChainInfoL1_L2L2.sol:SetChainInfoL1_L2L2 --rpc-url https://eth-sepolia.public.blastapi.io --broadcast --chain sepolia
