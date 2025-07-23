@@ -37,4 +37,4 @@ contract SetChainInfoL1 is Script {
         vm.stopBroadcast();
     }
 } 
-// forge script scripts/foundry_scripts/L2L1/setChainInfoL1.sol:SetChainInfoL1 --rpc-url https://eth-sepolia.public.blastapi.io  --broadcast --chain sepolia
+// forge script scripts/foundry_scripts/L2L1/SetChainInfoL1.sol:SetChainInfoL1 --rpc-url https://eth-sepolia.public.blastapi.io  --broadcast --chain sepolia

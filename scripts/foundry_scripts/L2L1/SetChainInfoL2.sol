@@ -35,4 +35,4 @@ contract SetChainInfoL2 is Script {
     }
 }
 
-// forge script scripts/foundry_scripts/L2L1/setChainInfoL2.sol:SetChainInfoL2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia 
+// forge script scripts/foundry_scripts/L2L1/SetChainInfoL2.sol:SetChainInfoL2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia 

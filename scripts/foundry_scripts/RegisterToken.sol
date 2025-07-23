@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
 import "../../contracts/L2/L2toL2CrossTradeProxy.sol";
+import "../../contracts/L2/L2toL2CrossTradeL2.sol";
 
 contract RegisterToken is Script {
     function run() external {
@@ -12,9 +13,9 @@ contract RegisterToken is Script {
         console.log("Registering token on L2...");
         
         // L2 Proxy address (replace with actual deployed address)
-        address proxyAddress = vm.envAddress("L2_PROXY_ADDRESS");
+        address payable proxyAddress = payable(vm.envAddress("L2_PROXY_ADDRESS"));
         
-        L2toL2CrossTradeProxy proxy = L2toL2CrossTradeProxy(proxyAddress);
+        L2toL2CrossTradeL2 proxy = L2toL2CrossTradeL2(proxyAddress);
         
         // Token registration parameters
         address l1token = vm.envAddress("L1_TOKEN");
@@ -46,3 +47,5 @@ contract RegisterToken is Script {
         vm.stopBroadcast();
     }
 }
+
+//  forge script scripts/foundry_scripts/RegisterToken.sol:RegisterToken --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

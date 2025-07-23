@@ -29,4 +29,4 @@ contract DeployL2CrossTrade is Script {
         vm.stopBroadcast();
     }
 } 
-// PRIVATE_KEY=0x1234567890 forge script scripts/foundry_scripts/L2L1/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --chain thanosSepolia
+// PRIVATE_KEY=0x1234567890 forge script scripts/foundry_scripts/L2L1/DeployL2CrossTrade.s.sol:DeployL2CrossTrade --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

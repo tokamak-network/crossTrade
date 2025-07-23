@@ -38,4 +38,4 @@ contract RegisterToken is Script {
     }
 }
 
-// forge script scripts/foundry_scripts/L2L1/RegisterToken.sol:RegisterToken --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --chain thanosSepolia
+// forge script scripts/foundry_scripts/L2L1/RegisterToken.sol:RegisterToken --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia

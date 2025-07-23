@@ -26,4 +26,4 @@ contract DeployL1CrossTrade is Script {
     }
 }
 
-// forge script scripts/foundry_scripts/L2L1/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://sepolia.infura.io/v3/1234567890 --broadcast --chain sepolia 
+// forge script scripts/foundry_scripts/L2L1/DeployL1CrossTrade.s.sol:DeployL1CrossTrade --rpc-url https://eth-sepolia.public.blastapi.io --broadcast --chain sepolia 
