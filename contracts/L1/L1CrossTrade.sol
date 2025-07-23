@@ -47,7 +47,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
         _;
     }
 
@@ -94,9 +94,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(completedCT[l2HashValue] == false, "already sold");
-        require(_editedctAmount == editCtAmount[l2HashValue], "editedctAmount not match");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already sold");
+        require(_editedctAmount == editCtAmount[l2HashValue], "CT: EditedctAmount not match");
 
         uint256 ctAmount = _initialctAmount;
 
@@ -136,9 +136,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
 
         if(NATIVE_TOKEN == _l1token){
-            require(msg.value == ctAmount, "CT: ETH need same amount");
+            require(msg.value == ctAmount, "CT: Need to insert the exact amount");
             (bool sent, ) = payable(_requestor).call{value: msg.value}("");
-            require(sent, "claim fail");
+            require(sent, "CT: Claim fail");
         } else {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
             IERC20(_l1token).safeTransfer(_requestor, ctAmount);
@@ -175,8 +175,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
-        require(completedCT[_hash] == true, "not provide");
-        require(provideAccount[_hash] != address(0), "not provide");
+        require(completedCT[_hash] == true, "CT: Is not yet completed");
+        require(provideAccount[_hash] != address(0), "CT: Provider is not found");
         
         uint256 ctAmount;
         if (editCtAmount[_hash] > 0) {
@@ -239,8 +239,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(completedCT[l2HashValue] == false, "already sold");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already completed");
 
         bytes memory message;
 
@@ -289,8 +289,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
-        require(completedCT[_hash] == true, "not cancel");
-        require(cancelL1Address != address(0), "not cancel");
+        require(completedCT[_hash] == true, "CT: Is not yet canceled");
+        require(cancelL1Address != address(0), "CT: CancelL1Address is not found");
         bytes memory message;
 
         message = makeEncodeWithSignature(

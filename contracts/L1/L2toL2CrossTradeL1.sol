@@ -55,7 +55,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
         _;
     }
 
@@ -108,9 +108,9 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceChainId,
             _l2DestinationChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(completedCT[l2HashValue] == false, "already sold");
-        require(_editedctAmount == editCtAmount[l2HashValue], "editedctAmount not match");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already completed");
+        require(_editedctAmount == editCtAmount[l2HashValue], "CT: EditedctAmount not match");
         
         uint256 ctAmount = _initialctAmount;
 
@@ -169,18 +169,30 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     _minGasLimit,
                     "0x"
                 );
-            } else {
-                IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
+            } else  {
 
                 if(chainData[_l2DestinationChainId].l2NativeTokenAddressOnL1 == _l1token){
 
+                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeNativeTokenTo(
                         _requestor,
                         ctAmount,
                         _minGasLimit,
                         "0x"
                     );
-                }else{
+                } else if (usdtAddress == _l1token) {
+                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,0);
+                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
+                    IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
+                        _l1token,
+                        _l2DestinationToken,
+                        _requestor,
+                        ctAmount,
+                        _minGasLimit,
+                        "0x"
+                    );
+                } else{
+                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
                         _l1token,
                         _l2DestinationToken,
@@ -228,8 +240,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         onlyEOA
         nonReentrant
     {
-        require(completedCT[_hash] == true, "not provide");
-        require(provideAccount[_hash] != address(0), "not provide");
+        require(completedCT[_hash] == true, "CT: Is not yet completed");
+        require(provideAccount[_hash] != address(0), "CT: Provider is not found");
         
         uint256 ctAmount;
         if (editCtAmount[_hash] > 0) {
@@ -302,8 +314,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationChainId
 
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(completedCT[l2HashValue] == false, "already sold");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already completed");
 
         bytes memory message;
 
@@ -357,8 +369,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
-        require(completedCT[_hash] == true, "not cancel");
-        require(cancelL1Address != address(0), "not cancel");
+        require(completedCT[_hash] == true, "CT: Is not yet canceled");
+        require(cancelL1Address != address(0), "CT: CancelL1Address is not found");
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -420,9 +432,9 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceChainId,
             _l2DestinationChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(completedCT[l2HashValue] == false, "already sold");
-        require(_editedctAmount > 0, "ctAmount need nonZero");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already completed");
+        require(_editedctAmount > 0, "CT: ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;
 

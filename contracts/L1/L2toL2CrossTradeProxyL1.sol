@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
 import { Proxy } from "../proxy/Proxy.sol";
@@ -11,13 +11,15 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
     /// @param _usdcAddress usdc address on L1
     function initialize(
         uint256 _optimismChainId,
-        address _usdcAddress
+        address _usdcAddress,
+        address _usdtAddress
     ) 
         external
         onlyOwner
     {
         optimismChainId = _optimismChainId;
         usdcAddress = _usdcAddress;
+        usdtAddress = _usdtAddress;
     }
 
     /// @notice Store addresses for chainId

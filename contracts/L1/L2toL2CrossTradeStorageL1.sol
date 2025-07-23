@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
 contract L2toL2CrossTradeStorageL1 {
@@ -9,6 +9,8 @@ contract L2toL2CrossTradeStorageL1 {
     uint256 public optimismChainId;
     address constant NATIVE_TOKEN = address(0);
     address public usdcAddress;
+    address public usdtAddress;
+
     struct ChainIdData {
         address crossDomainMessenger;
         address l2CrossTradeContract;

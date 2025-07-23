@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import "../libraries/SafeERC20.sol";
@@ -88,25 +88,25 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        require(msg.sender == tx.origin, "CT: Function can only be called from an EOA");
         _;
     }
 
     modifier checkL1(uint256 _chainId) {
         require(
             msg.sender == address(crossDomainMessenger) && IL2CrossDomainMessenger(crossDomainMessenger).xDomainMessageSender() == l1CrossTradeContract[_chainId], 
-            "only call l1FastWithdraw"
+            "CT: Only call l1CrossTradeContract"
         );
         _;
     }
 
     modifier providerCheck(uint256 _saleCount, uint256 _l2ChainId) {
-        require(dealData[_l2ChainId][_saleCount].provider == address(0), "already sold");
+        require(dealData[_l2ChainId][_saleCount].provider == address(0), "CT: Already sold");
         _;
     }
 
     modifier nonZero(uint256 _amount) {
-        require(_amount > 0 , "input amount need nonZero");
+        require(_amount > 0 , "CT: Input amount need nonZero");
         _;
     }
 
@@ -137,7 +137,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken
         ));
-        require(registerCheck[id] == false, "already registerToken");
+        require(registerCheck[id] == false, "CT: Already registerToken");
         registerCheck[id] = true;
 
         emit RegisterToken(_l1token, _l2SourceToken, _l2DestinationToken, _l1ChainId, _l2SourceChainId, _l2DestinationChainId);
@@ -170,7 +170,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken
         ));
-        require(registerCheck[id] != false, "already deleteToken");
+        require(registerCheck[id] != false, "CT: Already deleteToken");
         registerCheck[id] = false;
         emit DeleteToken(_l1token, _l2SourceToken, _l2DestinationToken, _l1ChainId, _l2SourceChainId, _l2DestinationChainId);
     }
@@ -210,12 +210,10 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken
         ));
 
-        require(registerCheck[id] == true, "not register token");
-        require(_totalAmount >= _ctAmount, "The totalAmount value must be greater than ctAmount");
+        require(registerCheck[id] == true, "CT: The tokens are not registered");
+        require(_totalAmount >= _ctAmount, "CT: TotalAmount must be greater than ctAmount");
         
-        
-        ++saleCountChainId[_l2DestinationChainId];
-        
+        uint256 newSaleCount = ++saleCountChainId[_l2DestinationChainId];
 
         bytes32 hashValue = _request(
             _l1token,
@@ -223,11 +221,10 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken,
             _totalAmount,
             _ctAmount,
-            saleCountChainId[_l2DestinationChainId],
+            newSaleCount,
             _l1ChainId,
             _l2DestinationChainId
         );
-
 
         emit RequestCT(
             _l1token,
@@ -236,7 +233,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _ctAmount,
-            saleCountChainId[_l2DestinationChainId],
+            newSaleCount,
             _l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId,
@@ -270,8 +267,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     {     
 
         uint256 _l2SourceChainId = _getChainID();
-
-        ++saleCountChainId[_l2DestinationChainId];
+        uint256 newSaleCount = ++saleCountChainId[_l2DestinationChainId];
 
         bytes32 hashValue = _request(
             _l1token,
@@ -279,7 +275,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationToken,
             _totalAmount,
             _ctAmount,
-            saleCountChainId[_l2DestinationChainId],
+            newSaleCount,
             _l1ChainId,
             _l2DestinationChainId
         );
@@ -291,7 +287,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             msg.sender,
             _totalAmount,
             _ctAmount,
-            saleCountChainId[_l2DestinationChainId],
+            newSaleCount,
             _l1ChainId,
             _l2SourceChainId,
             _l2DestinationChainId,
@@ -320,7 +316,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         checkL1(_l1ChainId)
         providerCheck(_saleCount, _l2DestinationChainId)
     {
-        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "Hash values do not match");
+        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "CT: Hash values do not match");
 
         uint256 ctAmount = _ctAmount;
         if(_ctAmount == 0) {
@@ -333,7 +329,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
         if(l2SourceToken == nativeToken) {
             (bool sent, ) = payable(_from).call{value: totalAmount, gas: 51000}("");
-            require(sent, "claim fail");
+            require(sent, "CT: Claim fail");
         } else {
             IERC20(l2SourceToken).safeTransfer(_from,totalAmount);
         }
@@ -374,15 +370,15 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         checkL1(_l1ChainId)
         providerCheck(_saleCount, _l2DestinationChainId)
     {
-        require(dealData[_l2DestinationChainId][_saleCount].requester == _msgSender, "your not seller");
-        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "Hash values do not match");
+        require(dealData[_l2DestinationChainId][_saleCount].requester == _msgSender, "CT: You are not the seller");
+        require(dealData[_l2DestinationChainId][_saleCount].hashValue == _hash, "CT: Hash values do not match");
 
         dealData[_l2DestinationChainId][_saleCount].provider = _msgSender;
         uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
         
         if (dealData[_l2DestinationChainId][_saleCount].l2SourceToken == nativeToken) {
             (bool sent, ) = payable(_msgSender).call{value: totalAmount, gas: 51000}("");
-            require(sent, "cancel refund fail");
+            require(sent, "CT: Cancel refund fail");
         } else {
             IERC20(dealData[_l2DestinationChainId][_saleCount].l2SourceToken).safeTransfer(_msgSender,totalAmount);
         }
@@ -476,7 +472,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         returns (bytes32 hashValue)
     {   
         if (_l2SourceToken == nativeToken) {
-            require(msg.value == _totalAmount, "CT: nativeToken need amount");
+            require(msg.value == _totalAmount, "CT: Need to insert the exact amount");
         } else {
             IERC20(_l2SourceToken).safeTransferFrom(msg.sender,address(this),_totalAmount);
         }
