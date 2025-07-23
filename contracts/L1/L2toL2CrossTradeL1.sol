@@ -70,6 +70,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _requestor requester's address
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
+    /// @param _editedctAmount ctAmount edited by the requester
     /// @param _saleCount Number generated upon request
     /// @param _l2SourceChainId request requested l2SourcechainId
     /// @param _l2DestinationChainId request requested l2DestinationChainId
@@ -82,6 +83,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _requestor,
         uint256 _totalAmount,
         uint256 _initialctAmount,
+        uint256 _editedctAmount,
         uint256 _saleCount,
         uint256 _l2SourceChainId,
         uint256 _l2DestinationChainId,
@@ -107,7 +109,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
+        require(_editedctAmount == editCtAmount[l2HashValue], "editedctAmount not match");
         
         uint256 ctAmount = _initialctAmount;
 
@@ -127,7 +130,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         );
         
         provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
 
         //sendMessage to the sourceChain 
         IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
@@ -178,8 +181,6 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                         "0x"
                     );
                 }else{
-                    IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
-
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
                         _l1token,
                         _l2DestinationToken,
@@ -227,7 +228,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         onlyEOA
         nonReentrant
     {
-        require(successCT[_hash] == true, "not provide");
+        require(completedCT[_hash] == true, "not provide");
         require(provideAccount[_hash] != address(0), "not provide");
         
         uint256 ctAmount;
@@ -302,7 +303,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
 
         bytes memory message;
 
@@ -316,7 +317,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         );
 
         cancelL1[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
 
         IL1CrossDomainMessenger(chainData[_l2SourceChainId].crossDomainMessenger).sendMessage(
             chainData[_l2SourceChainId].l2CrossTradeContract, 
@@ -356,7 +357,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
-        require(successCT[_hash] == true, "not cancel");
+        require(completedCT[_hash] == true, "not cancel");
         require(cancelL1Address != address(0), "not cancel");
         bytes memory message;
 
@@ -420,7 +421,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2DestinationChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
         require(_editedctAmount > 0, "ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;

@@ -148,7 +148,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
         
         uint256 ctAmount = _initialctAmount;
 
@@ -168,7 +168,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
         );
         
         provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
         
         uint256 minRequired = calculateSubmissionCost(message);
         require(_maxSubmissionCost >= minRequired, "Submission cost too low");
@@ -230,7 +230,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
         payable
         onlyEOA
     {
-        require(successCT[_hash] == true, "not provide");
+        require(completedCT[_hash] == true, "not provide");
         require(provideAccount[_hash] != address(0), "not provide");
         
         uint256 ctAmount;
@@ -308,7 +308,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
 
         bytes memory message = makeEncodeWithSignature(
             CANCEL_CT,
@@ -325,7 +325,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
         require(msg.value == totalGasCost, "CT: Exact ETH required");
 
         cancelL1[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
 
         IInbox(chainData[_l2chainId].crossDomainMessenger).createRetryableTicket{value: msg.value}(
             chainData[_l2chainId].l2CrossTradeContract,
@@ -370,7 +370,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
         onlyEOA
     {
         address cancelL1Address = cancelL1[_hash];
-        require(successCT[_hash] == true, "not cancel");
+        require(completedCT[_hash] == true, "not cancel");
         require(cancelL1Address != address(0), "not cancel");
         
         bytes memory message = makeEncodeWithSignature(
@@ -439,7 +439,7 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
         require(_editedctAmount > 0, "ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;

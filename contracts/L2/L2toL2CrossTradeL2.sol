@@ -213,9 +213,9 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         require(registerCheck[id] == true, "not register token");
         require(_totalAmount >= _ctAmount, "The totalAmount value must be greater than ctAmount");
         
-        unchecked {
-            ++saleCountChainId[_l2DestinationChainId];
-        }
+        
+        ++saleCountChainId[_l2DestinationChainId];
+        
 
         bytes32 hashValue = _request(
             _l1token,
@@ -270,9 +270,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     {     
 
         uint256 _l2SourceChainId = _getChainID();
-        unchecked {
-            ++saleCountChainId[_l2DestinationChainId];
-        }
+
+        ++saleCountChainId[_l2DestinationChainId];
 
         bytes32 hashValue = _request(
             _l1token,
@@ -333,7 +332,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
 
         if(l2SourceToken == nativeToken) {
-            (bool sent, ) = payable(_from).call{value: totalAmount}("");
+            (bool sent, ) = payable(_from).call{value: totalAmount, gas: 51000}("");
             require(sent, "claim fail");
         } else {
             IERC20(l2SourceToken).safeTransfer(_from,totalAmount);
@@ -382,7 +381,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
         
         if (dealData[_l2DestinationChainId][_saleCount].l2SourceToken == nativeToken) {
-            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount, gas: 51000}("");
             require(sent, "cancel refund fail");
         } else {
             IERC20(dealData[_l2DestinationChainId][_saleCount].l2SourceToken).safeTransfer(_msgSender,totalAmount);

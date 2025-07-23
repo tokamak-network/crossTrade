@@ -61,6 +61,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _requestor requester's address
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
+    /// @param _editedctAmount ctAmount edited by the requester
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -71,6 +72,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _requestor,
         uint256 _totalAmount,
         uint256 _initialctAmount,
+        uint256 _editedctAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -93,8 +95,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
-        
+        require(completedCT[l2HashValue] == false, "already sold");
+        require(_editedctAmount == editCtAmount[l2HashValue], "editedctAmount not match");
+
         uint256 ctAmount = _initialctAmount;
 
         if (editCtAmount[l2HashValue] > 0) {
@@ -112,7 +115,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         
         provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
         
         IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
@@ -172,7 +175,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         onlyEOA
         nonReentrant
     {
-        require(successCT[_hash] == true, "not provide");
+        require(completedCT[_hash] == true, "not provide");
         require(provideAccount[_hash] != address(0), "not provide");
         
         uint256 ctAmount;
@@ -237,7 +240,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
 
         bytes memory message;
 
@@ -250,7 +253,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
         cancelL1[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
 
         IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
@@ -286,7 +289,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
-        require(successCT[_hash] == true, "not cancel");
+        require(completedCT[_hash] == true, "not cancel");
         require(cancelL1Address != address(0), "not cancel");
         bytes memory message;
 
@@ -344,7 +347,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
         require(_editedctAmount > 0, "ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;
