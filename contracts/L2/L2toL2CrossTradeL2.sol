@@ -10,7 +10,6 @@ import { IL2CrossDomainMessenger } from "../interfaces/IL2CrossDomainMessenger.s
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
 import { EOA } from "../libraries/EOA.sol";
 
-// import "hardhat/console.sol";
 
 contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeStorage, ReentrancyGuard {
 
@@ -327,7 +326,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address l2SourceToken = dealData[_l2DestinationChainId][_saleCount].l2SourceToken;
         uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
 
-        if(l2SourceToken == nativeToken) {
+        if(l2SourceToken == NATIVE_TOKEN) {
             (bool sent, ) = payable(_from).call{value: totalAmount, gas: 51000}("");
             require(sent, "CT: Claim fail");
         } else {
@@ -376,7 +375,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         dealData[_l2DestinationChainId][_saleCount].provider = _msgSender;
         uint256 totalAmount = dealData[_l2DestinationChainId][_saleCount].totalAmount;
         
-        if (dealData[_l2DestinationChainId][_saleCount].l2SourceToken == nativeToken) {
+        if (dealData[_l2DestinationChainId][_saleCount].l2SourceToken == NATIVE_TOKEN) {
             (bool sent, ) = payable(_msgSender).call{value: totalAmount, gas: 51000}("");
             require(sent, "CT: Cancel refund fail");
         } else {
@@ -471,7 +470,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         private
         returns (bytes32 hashValue)
     {   
-        if (_l2SourceToken == nativeToken) {
+        if (_l2SourceToken == NATIVE_TOKEN) {
             require(msg.value == _totalAmount, "CT: Need to insert the exact amount");
         } else {
             IERC20(_l2SourceToken).safeTransferFrom(msg.sender,address(this),_totalAmount);

@@ -111,7 +111,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         require(l2HashValue == _hash, "CT: Hash values do not match.");
         require(completedCT[l2HashValue] == false, "CT: Already completed");
         require(_editedctAmount == editCtAmount[l2HashValue], "CT: EditedctAmount not match");
-        
+
         uint256 ctAmount = _initialctAmount;
 
         if (editCtAmount[l2HashValue] > 0) {
