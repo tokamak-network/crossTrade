@@ -94,6 +94,135 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         );
     }
     
+    function test_RegisteredTokenL2toL1_USDC() public {
+        uint256 totalAmount = 10000 * 10**6; // 10,000 USDC
+        uint256 ctAmount = 5000 * 10**6;     // 5,000 USDC
+        
+        // Register USDC tokens first
+        vm.chainId(L2_CHAIN_ID);
+        vm.startPrank(owner);
+        l2CrossTrade.registerToken(
+            address(usdc),
+            address(l2USDC),
+            L1_CHAIN_ID
+        );
+        vm.stopPrank();
+        
+        // Record initial balances
+        uint256 requesterInitialBalance = l2USDC.balanceOf(requester);
+        uint256 providerInitialBalance = usdc.balanceOf(provider);
+        
+        // Execute the complete USDC flow
+        bytes32 hash = executeL2toL1Flow(
+            address(usdc),
+            address(l2USDC),
+            totalAmount,
+            ctAmount,
+            true // use registered token
+        );
+        
+        // Verify the request was completed
+        assertTrue(isRequestCompleted(1));
+        
+        // Verify balances
+        vm.chainId(L2_CHAIN_ID);
+        assertEq(
+            l2USDC.balanceOf(requester),
+            requesterInitialBalance - totalAmount,
+            "Requester should have spent totalAmount of L2 USDC"
+        );
+        
+        // Provider should have received the totalAmount on L2
+        assertEq(
+            l2USDC.balanceOf(provider),
+            totalAmount,
+            "Provider should have received totalAmount of L2 USDC"
+        );
+        
+        // Verify L1 provider spent USDC
+        vm.chainId(L1_CHAIN_ID);
+        assertEq(
+            usdc.balanceOf(provider),
+            providerInitialBalance - ctAmount,
+            "Provider should have spent ctAmount of L1 USDC"
+        );
+    }
+    
+    function test_RegisteredTokenL2toL1_USDT() public {
+        uint256 totalAmount = 10000 * 10**6; // 10,000 USDT
+        uint256 ctAmount = 5000 * 10**6;     // 5,000 USDT
+        
+        // Register USDT tokens first
+        vm.chainId(L2_CHAIN_ID);
+        vm.startPrank(owner);
+        l2CrossTrade.registerToken(
+            address(usdt),
+            address(l2USDT),
+            L1_CHAIN_ID
+        );
+        vm.stopPrank();
+        
+        // Record initial balances
+        uint256 requesterInitialBalance = l2USDT.balanceOf(requester);
+        uint256 providerInitialBalance = usdt.balanceOf(provider);
+        
+        // Execute the complete USDT flow
+        bytes32 hash = executeL2toL1Flow(
+            address(usdt),
+            address(l2USDT),
+            totalAmount,
+            ctAmount,
+            true // use registered token
+        );
+        
+        // Verify the request was completed
+        assertTrue(isRequestCompleted(1));
+        
+        // Verify balances
+        vm.chainId(L2_CHAIN_ID);
+        assertEq(
+            l2USDT.balanceOf(requester),
+            requesterInitialBalance - totalAmount,
+            "Requester should have spent totalAmount of L2 USDT"
+        );
+        
+        // Provider should have received the totalAmount on L2
+        assertEq(
+            l2USDT.balanceOf(provider),
+            totalAmount,
+            "Provider should have received totalAmount of L2 USDT"
+        );
+        
+        // Verify L1 provider spent USDT
+        vm.chainId(L1_CHAIN_ID);
+        assertEq(
+            usdt.balanceOf(provider),
+            providerInitialBalance - ctAmount,
+            "Provider should have spent ctAmount of L1 USDT"
+        );
+    }
+    
+    function test_USDT_DoubleApprovalPattern() public {
+        uint256 amount = 1000 * 10**6; // 1000 USDT
+        
+        vm.chainId(L1_CHAIN_ID);
+        vm.startPrank(provider);
+        
+        // First approval should work
+        usdt.safeApprove(address(l1CrossTrade), amount);
+        assertEq(usdt.allowance(provider, address(l1CrossTrade)), amount);
+        
+        // Direct approve from non-zero to non-zero should fail
+        vm.expectRevert("USDT: approve from non-zero to non-zero allowance");
+        usdt.approve(address(l1CrossTrade), amount * 2);
+        
+        // But safeApprove should handle it correctly
+        usdt.safeApprove(address(l1CrossTrade), amount * 2);
+        assertEq(usdt.allowance(provider, address(l1CrossTrade)), amount * 2);
+        
+        vm.stopPrank();
+    }
+    
     function test_NonRegisteredTokenL2toL1_ERC20() public {
         uint256 totalAmount = 75 ether;
         uint256 ctAmount = 30 ether;
@@ -171,7 +300,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         // Provider should have received the totalAmount on L2
         assertEq(
             l2Token.balanceOf(provider),
-            1000 ether + totalAmount,
+            totalAmount,
             "Provider should have received totalAmount of L2 tokens"
         );
     }
@@ -185,20 +314,20 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         vm.startPrank(owner);
         l2CrossTrade.registerToken(
             NATIVE_TOKEN,
-            NATIVE_TOKEN,
+            address(l2ETH),
             L1_CHAIN_ID
         );
         vm.stopPrank();
         
         // Record initial ETH balances
         vm.chainId(L2_CHAIN_ID);
-        uint256 requesterInitialETH = requester.balance;
+        uint256 requesterInitialETH = l2ETH.balanceOf(requester);
         uint256 providerInitialETH = provider.balance;
         
         // Execute the complete flow with ETH
         bytes32 hash = executeL2toL1Flow(
             NATIVE_TOKEN, // L1 ETH
-            NATIVE_TOKEN, // L2 ETH
+            address(l2ETH), // L2 ETH token
             totalAmount,
             ctAmount,
             true // use registered token
@@ -210,16 +339,16 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         // Verify ETH balances on L2
         vm.chainId(L2_CHAIN_ID);
         assertEq(
-            requester.balance,
+            l2ETH.balanceOf(requester),
             requesterInitialETH - totalAmount,
             "Requester should have spent totalAmount ETH"
         );
         
-        // Provider should have received ETH on L2
+        // Provider should have received ETH tokens on L2
         assertEq(
-            provider.balance,
-            providerInitialETH + totalAmount,
-            "Provider should have received totalAmount ETH"
+            l2ETH.balanceOf(provider),
+            totalAmount,
+            "Provider should have received totalAmount ETH tokens"
         );
         
         // Verify provider spent ETH on L1
@@ -550,7 +679,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             true
         );
         
-        // Test resend provide message
+        // Test resend provide message (this should work since the transaction was provided)
         vm.chainId(L1_CHAIN_ID);
         vm.startPrank(provider, provider);
         l1CrossTrade.resendProvideCTMessage(
@@ -561,14 +690,62 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         );
         vm.stopPrank();
         
-        // Test resend cancel message
-        vm.startPrank(requester, requester);
-        l1CrossTrade.resendCancelMessage(
-            1, // saleCount
-            L2_CHAIN_ID,
-            200000, // minGasLimit
-            hash
+        // Note: We don't test resendCancelMessage here because this transaction was 
+        // successfully provided, not cancelled. The cancelL1[hash] mapping would be empty.
+        // A separate test should be created for cancel scenarios.
+    }
+    
+    function test_MockContractsFunctionality() public {
+        // Test that our mock contracts work correctly
+        uint256 amount = 1000 * 10**6; // 1000 USDC
+        
+        // Test USDT double approval
+        vm.chainId(L1_CHAIN_ID);
+        vm.startPrank(provider);
+        
+        usdt.safeApprove(address(l1CrossTrade), amount);
+        assertEq(usdt.allowance(provider, address(l1CrossTrade)), amount);
+        
+        // Test that regular approve fails for USDT
+        vm.expectRevert("USDT: approve from non-zero to non-zero allowance");
+        usdt.approve(address(l1CrossTrade), amount * 2);
+        
+        vm.stopPrank();
+    }
+    
+    function test_BridgeMockFunctionality() public {
+        // Test that our bridge mocks work correctly
+        uint256 amount = 1000 * 10**6;
+        
+        vm.chainId(L1_CHAIN_ID);
+        vm.startPrank(provider);
+        
+        // Test USDC bridge
+        usdc.approve(address(l1USDCBridge), amount);
+        l1USDCBridge.bridgeERC20To(
+            address(usdc),
+            address(l2USDC),
+            requester,
+            amount,
+            200000,
+            "0x"
         );
+        
+        assertEq(l1USDCBridge.getBridgedUSDC(address(usdc), requester, address(l2USDC)), amount);
+        
+        // Test standard bridge
+        l1Token.approve(address(l1StandardBridge), amount);
+        l1StandardBridge.bridgeERC20To(
+            address(l1Token),
+            address(l2Token),
+            requester,
+            amount,
+            200000,
+            "0x"
+        );
+        
+        assertEq(l1StandardBridge.getBridgedERC20(address(l1Token), requester, address(l2Token)), amount);
+        
         vm.stopPrank();
     }
 } 

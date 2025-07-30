@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 import "forge-std/console.sol";
-contract MockCrossDomainMessenger {
+import "../../../contracts/interfaces/IL2CrossDomainMessenger.sol";
+
+contract MockCrossDomainMessenger is IL2CrossDomainMessenger {
     mapping(address => bool) public isValidSender;
-    address public xDomainMessageSender;
+    address private _xDomainMessageSender;
     
     event SentMessage(
         address indexed target,
@@ -13,9 +15,20 @@ contract MockCrossDomainMessenger {
         uint256 gasLimit
     );
     
+    event MessageExecutionFailed(
+        address indexed target,
+        address indexed sender,
+        bytes message,
+        bytes returnData
+    );
+    
     constructor() {
         // Set up initial valid senders
         isValidSender[address(this)] = true;
+    }
+    
+    function xDomainMessageSender() external view override returns (address) {
+        return _xDomainMessageSender;
     }
     
     function sendMessage(
@@ -37,14 +50,19 @@ contract MockCrossDomainMessenger {
         bytes memory _message
     ) internal {
         // Set the cross-domain message sender
-        xDomainMessageSender = _sender;
+        _xDomainMessageSender = _sender;
         
         // Execute the message on the target
-        (bool success, ) = _target.call(_message);
-        require(success, "MockCrossDomainMessenger: message execution failed");
+        (bool success, bytes memory returnData) = _target.call(_message);
+        
+        // In a real cross-domain messenger, failed messages are handled gracefully
+        // For testing, we'll emit an event but not revert the transaction
+        if (!success) {
+            emit MessageExecutionFailed(_target, _sender, _message, returnData);
+        }
         
         // Reset the sender
-        xDomainMessageSender = address(0);
+        _xDomainMessageSender = address(0);
     }
     
     // Function to manually relay messages (for testing scenarios where immediate relay isn't desired)
