@@ -171,8 +171,8 @@ contract L2CrossTradeARB is  L2CrossTradeStorageARB {
         uint256 totalAmount = dealData[_saleCount].totalAmount;
 
         if(l2token == nativeTokenL2) {
-            (bool sent, ) = payable(_from).call{value: totalAmount}("");
-            require(sent, "claim fail");
+            (bool sent, ) = payable(_from).call{value: totalAmount, gas: 51000}("");
+            require(sent, "CT: Claim fail");
         } else {
             IERC20(l2token).safeTransfer(_from,totalAmount);
         }
@@ -212,8 +212,8 @@ contract L2CrossTradeARB is  L2CrossTradeStorageARB {
         uint256 totalAmount = dealData[_salecount].totalAmount;
         
         if (dealData[_salecount].l2token == nativeTokenL2) {
-            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
-            require(sent, "cancel refund fail");
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount, gas: 51000}("");
+            require(sent, "CT: Cancel refund fail");
         } else {
             IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
         }

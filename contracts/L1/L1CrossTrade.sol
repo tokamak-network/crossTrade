@@ -137,7 +137,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
         if(NATIVE_TOKEN == _l1token){
             require(msg.value == ctAmount, "CT: Need to insert the exact amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
+            (bool sent, ) = payable(_requestor).call{value: msg.value, gas: 51000}("");
             require(sent, "CT: Claim fail");
         } else {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);

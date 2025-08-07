@@ -178,8 +178,8 @@ contract L1CrossTradeARB is L1CrossTradeStorageARB {
         if (_l1token == address(0)) {
             require(msg.value == totalGasCost + ctAmount, "CT: Exact ETH required");
             
-            (bool sent, ) = payable(_requestor).call{value: ctAmount}("");
-            require(sent, "claim fail");
+            (bool sent, ) = payable(_requestor).call{value: ctAmount, gas: 51000}("");
+            require(sent, "CT: Claim fail");
         } else {
             require(msg.value == totalGasCost, "CT: Exact ETH required");
 

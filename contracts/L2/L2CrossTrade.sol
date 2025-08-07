@@ -144,9 +144,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         require(registerCheck[_l1chainId][_l1token][_l2token] == true, "CT: The tokens are not registered");
         require(_totalAmount >= _ctAmount, "CT: TotalAmount must be greater than ctAmount");
         
-        unchecked {
-            ++saleCount;
-        }
+        ++saleCount;
 
         bytes32 hashValue = _request(
             _l1token,
@@ -195,9 +193,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     {
         require(chainData[_l1chainId] != address(0), "CT: This chain is not supported.");
 
-        unchecked {
-            ++saleCount;
-        }
+        ++saleCount;
 
         bytes32 hashValue = _request(
             _l1token,
@@ -252,8 +248,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 totalAmount = dealData[_saleCount].totalAmount;
 
         if(l2token == NATIVE_TOKEN) {
-            (bool sent, ) = payable(_from).call{value: totalAmount}("");
-            require(sent, "claim fail");
+            (bool sent, ) = payable(_from).call{value: totalAmount, gas: 51000}("");
+            require(sent, "CT: Claim fail");
         } else {
             IERC20(l2token).safeTransfer(_from,totalAmount);
         }
@@ -296,7 +292,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         uint256 totalAmount = dealData[_salecount].totalAmount;
         
         if (dealData[_salecount].l2token == NATIVE_TOKEN) {
-            (bool sent, ) = payable(_msgSender).call{value: totalAmount}("");
+            (bool sent, ) = payable(_msgSender).call{value: totalAmount, gas: 51000}("");
             require(sent, "CT: Cancel failed");
         } else {
             IERC20(dealData[_salecount].l2token).safeTransfer(_msgSender,totalAmount);
