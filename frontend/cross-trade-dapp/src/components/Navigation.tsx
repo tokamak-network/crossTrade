@@ -14,7 +14,7 @@ export const Navigation = () => {
         </div>
         
         <div className="nav-center">
-          <Link href="/create-request" className="nav-link active">
+          <Link href="/" className="nav-link active">
             Create Request
           </Link>
           <Link href="/request-pool" className="nav-link">
@@ -92,7 +92,7 @@ export const Navigation = () => {
         }
 
         .nav-link {
-          color: #9ca3af;
+          color: #ffffff !important;
           text-decoration: none;
           font-size: 16px;
           font-weight: 500;
@@ -101,11 +101,11 @@ export const Navigation = () => {
         }
 
         .nav-link:hover {
-          color: #ffffff;
+          color: #ffffff !important;
         }
 
         .nav-link.active {
-          color: #ffffff;
+          color: #ffffff !important;
         }
 
         .nav-link.active::after {
