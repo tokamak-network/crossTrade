@@ -15,13 +15,19 @@ export const Navigation = () => {
         
         <div className="nav-center">
           <Link href="/" className="nav-link active">
+           <span className='text-navbar'>
             Create Request
+           </span>
           </Link>
           <Link href="/request-pool" className="nav-link">
-            Request Pool
+            <span className='text-navbar'>
+              Request Pool
+            </span>
           </Link>
           <Link href="/history" className="nav-link">
-            History
+            <span className='text-navbar'>
+              History
+            </span>
           </Link>
         </div>
         
@@ -39,7 +45,11 @@ export const Navigation = () => {
           top: 0;
           z-index: 100;
         }
-
+        .text-navbar {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 500;
+        }
         .nav-container {
           max-width: 1200px;
           margin: 0 auto;
