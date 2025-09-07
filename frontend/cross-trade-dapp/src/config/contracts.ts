@@ -19,7 +19,7 @@ export const CHAIN_CONFIG = {
     name: 'Ethereum Sepolia',
     displayName: 'Ethereum',
     contracts: {
-      L1_CROSS_TRADE: '', // Add L1 contract address
+      L1_CROSS_TRADE: '0x0000000000000000000000000000000000000000', // TODO: Add actual L1 contract address
     },
     tokens: {
       ETH: '0x0000000000000000000000000000000000000000',
@@ -202,6 +202,26 @@ export const PROVIDE_CT_ABI = [
     "name": "provideCT",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  }
+] as const;
+
+// ABI for the editFee function on the L1 contract
+export const EDIT_FEE_ABI = [
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_l1token", "type": "address" },
+      { "internalType": "address", "name": "_l2token", "type": "address" },
+      { "internalType": "uint256", "name": "_totalAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_initialctAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_editedctAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_salecount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_l2chainId", "type": "uint256" },
+      { "internalType": "bytes32", "name": "_hash", "type": "bytes32" }
+    ],
+    "name": "editFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ] as const; 

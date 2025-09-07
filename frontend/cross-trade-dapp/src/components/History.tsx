@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient, useContractRead } from 'wagmi'
 import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals } from '@/config/contracts'
 import { Navigation } from './Navigation'
+import { EditFeeModal } from './EditFeeModal'
 
 interface RequestData {
   l1token: string
@@ -33,6 +34,8 @@ export const History = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<'All' | 'Provide' | 'Request'>('All')
+  const [selectedRequest, setSelectedRequest] = useState<HistoryRequest | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   // Thanos Sepolia chain ID (where the requests are)
   const CHAIN_ID = 111551119090
@@ -249,10 +252,17 @@ export const History = () => {
   })
 
   const handleEdit = (request: HistoryRequest) => {
-    // TODO: Implement edit functionality
-    console.log('Edit request:', request)
-    // You can redirect to edit page or open a modal here
-    // For example: router.push(`/edit-request/${request.saleCount}`)
+    if (request.type !== 'Request') {
+      alert('You can only edit your own requests')
+      return
+    }
+    setSelectedRequest(request)
+    setIsEditModalOpen(true)
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setSelectedRequest(null)
   }
 
   return (
@@ -420,6 +430,25 @@ export const History = () => {
       <footer className="footer">
         Copyright © 2025. All rights reserved.
       </footer>
+
+      {/* Edit Fee Modal */}
+      {selectedRequest && selectedRequest.data && (
+        <EditFeeModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          requestData={{
+            saleCount: selectedRequest.saleCount,
+            l1token: selectedRequest.data.l1token,
+            l2SourceToken: selectedRequest.data.l2SourceToken,
+            l2DestinationToken: selectedRequest.data.l2DestinationToken,
+            totalAmount: selectedRequest.data.totalAmount,
+            ctAmount: selectedRequest.data.ctAmount,
+            l1ChainId: selectedRequest.data.l1ChainId,
+            l2DestinationChainId: selectedRequest.data.l2DestinationChainId,
+            hashValue: selectedRequest.data.hashValue,
+          }}
+        />
+      )}
 
       <style jsx>{`
         .history-container {
