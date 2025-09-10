@@ -402,7 +402,7 @@ export const CreateRequest = () => {
                     value={currentReceiveAmount}
                     readOnly
                     placeholder="9.5"
-                    className="amount-input readonly"
+                    className="amount-input readonly you-receive"
                   />
                   <div className="token-selector">
                     <div className="token-icon">🔵</div>
@@ -688,6 +688,9 @@ export const CreateRequest = () => {
         .request-pool-button:hover {
           border-color: #6366f1;
           background: rgba(99, 102, 241, 0.1);
+        }
+        .you-receive {
+          width: 120px;
         }
 
         .form-container {
