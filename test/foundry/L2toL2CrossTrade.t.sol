@@ -11,6 +11,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -25,6 +26,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -39,6 +41,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -327,6 +330,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -338,6 +342,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l2aSourceToken),
             address(l2bDestinationToken),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -359,6 +364,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -393,6 +399,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             initialCtAmount,
             L1_CHAIN_ID,
@@ -405,6 +412,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l2aSourceToken),
             address(l2bDestinationToken),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             initialCtAmount,
             1, // saleCount
@@ -420,6 +428,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             initialCtAmount,
             editedCtAmount,
@@ -439,6 +448,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l2aSourceToken),
             address(l2bDestinationToken),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             initialCtAmount, // original amount
             editedCtAmount,  // edited amount
@@ -474,6 +484,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -495,6 +506,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l2aSourceToken),
             address(l2bDestinationToken),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             ctAmount,
@@ -525,6 +537,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(unregisteredToken),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -548,6 +561,7 @@ contract L2toL2CrossTradeTest is TestHelperL2 {
             address(l1Token),
             address(l2aSourceToken),
             address(l2bDestinationToken),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,

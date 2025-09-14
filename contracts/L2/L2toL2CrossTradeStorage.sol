@@ -7,6 +7,7 @@ contract L2toL2CrossTradeStorage {
         address l2SourceToken;
         address l2DestinationToken;
         address requester;
+        address receiver;
         address provider;
         uint256 totalAmount;
         uint256 ctAmount;

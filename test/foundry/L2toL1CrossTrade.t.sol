@@ -9,6 +9,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -20,6 +21,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -32,6 +34,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -235,6 +238,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestNonRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             L1_CHAIN_ID
@@ -246,6 +250,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -261,6 +266,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             ctAmount,
             0, // editedctAmount (0 means no edit)
@@ -381,6 +387,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             L1_CHAIN_ID
@@ -391,6 +398,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -403,6 +411,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l1CrossTrade.cancel(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -460,6 +469,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             initialCtAmount,
             L1_CHAIN_ID
@@ -470,6 +480,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             initialCtAmount,
             1, // saleCount
@@ -482,6 +493,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l1CrossTrade.editFee(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             initialCtAmount,
             editedCtAmount,
@@ -499,6 +511,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             initialCtAmount, // original amount
             editedCtAmount,  // edited amount
@@ -557,6 +570,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             L1_CHAIN_ID
@@ -575,6 +589,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
             address(l1Token),
             address(l2Token),
             requester,
+            requester, // receiver
             totalAmount,
             ctAmount,
             ctAmount, // editedctAmount
@@ -599,6 +614,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             L1_CHAIN_ID
@@ -629,6 +645,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             L1_CHAIN_ID
@@ -649,6 +666,7 @@ contract L2toL1CrossTradeTest is TestHelperL2L1 {
         l2CrossTrade.requestNonRegisteredToken(
             address(l1Token),
             address(l2Token),
+            requester, // receiver
             totalAmount,
             ctAmount,
             999999 // Non-existent chain ID

@@ -296,6 +296,7 @@ contract TestHelperL2 is Test {
                     _l1token,
                     _l2SourceToken,
                     _l2DestinationToken,
+                    requester, // receiver same as requester
                     _totalAmount,
                     _ctAmount,
                     L1_CHAIN_ID,
@@ -306,6 +307,7 @@ contract TestHelperL2 is Test {
                     _l1token,
                     _l2SourceToken,
                     _l2DestinationToken,
+                    requester, // receiver same as requester
                     _totalAmount,
                     _ctAmount,
                     L1_CHAIN_ID,
@@ -318,6 +320,7 @@ contract TestHelperL2 is Test {
                     _l1token,
                     _l2SourceToken,
                     _l2DestinationToken,
+                    requester, // receiver same as requester
                     _totalAmount,
                     _ctAmount,
                     L1_CHAIN_ID,
@@ -328,6 +331,7 @@ contract TestHelperL2 is Test {
                     _l1token,
                     _l2SourceToken,
                     _l2DestinationToken,
+                    requester, // receiver same as requester
                     _totalAmount,
                     _ctAmount,
                     L1_CHAIN_ID,
@@ -342,6 +346,7 @@ contract TestHelperL2 is Test {
             _l2SourceToken,
             _l2DestinationToken,
             requester,
+            requester, // receiver same as requester
             _totalAmount,
             _ctAmount,
             1, // saleCount
@@ -360,6 +365,7 @@ contract TestHelperL2 is Test {
                 _l2SourceToken,
                 _l2DestinationToken,
                 requester,
+                requester, // receiver same as requester
                 _totalAmount,
                 _ctAmount, // initialctAmount
                 _editedctAmount, // editedctAmount (same as initial for now)
@@ -377,6 +383,7 @@ contract TestHelperL2 is Test {
                 _l2SourceToken,
                 _l2DestinationToken,
                 requester,
+                requester, // receiver same as requester
                 _totalAmount,
                 _ctAmount, // initialctAmount
                 _editedctAmount, // editedctAmount (same as initial for now)
@@ -396,6 +403,7 @@ contract TestHelperL2 is Test {
                 _l2SourceToken,
                 _l2DestinationToken,
                 requester,
+                requester, // receiver same as requester
                 _totalAmount,
                 _ctAmount, // initialctAmount
                 _editedctAmount, // editedctAmount (same as initial for now)
@@ -428,7 +436,7 @@ contract TestHelperL2 is Test {
     // Helper to check if a request was completed
     function isRequestCompleted(uint256 _saleCount, uint256 _l2DestinationChainId) public returns (bool) {
         vm.chainId(L2A_CHAIN_ID);
-        (, , , , address providerAddress, , , , , ) = l2aCrossTrade.dealData(_l2DestinationChainId, _saleCount);
+        (, , , , , address providerAddress, , , , , ) = l2aCrossTrade.dealData(_l2DestinationChainId, _saleCount);
         return providerAddress != address(0);
     }
 

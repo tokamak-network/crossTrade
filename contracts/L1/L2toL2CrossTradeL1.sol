@@ -20,6 +20,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -33,6 +34,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -47,6 +49,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 indexed _saleCount,
         uint256 indexed _l2SourceChainId,
@@ -68,6 +71,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l2SourceToken Address of requested l2Source
     /// @param _l2DestinationToken Address of requested l2Destination
     /// @param _requestor requester's address
+    /// @param _receiver receiver's address (who will receive the tokens on destination L2)
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount ctAmount edited by the requester
@@ -81,6 +85,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -101,6 +106,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             _requestor,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _saleCount,
@@ -144,13 +150,13 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             require(msg.value == ctAmount, "CT: ETH need same amount");
             if (_l2DestinationChainId == optimismChainId ){
                   IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
-                _requestor,
+                _receiver,
                 _minGasLimit,
                 "0x"
                 );
             } else {
                 IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
-                    _requestor,
+                    _receiver,
                     ctAmount,
                     _minGasLimit,
                     "0x"
@@ -164,7 +170,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                 IL1StandardBridge(chainData[_l2DestinationChainId].l1USDCBridge).bridgeERC20To(
                     _l1token,
                     _l2DestinationToken,
-                    _requestor,
+                    _receiver,
                     ctAmount,
                     _minGasLimit,
                     "0x"
@@ -174,7 +180,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
                     IERC20(_l1token).approve(chainData[_l2DestinationChainId].l1StandardBridge,ctAmount);
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeNativeTokenTo(
-                        _requestor,
+                        _receiver,
                         ctAmount,
                         _minGasLimit,
                         "0x"
@@ -185,7 +191,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
                         _l1token,
                         _l2DestinationToken,
-                        _requestor,
+                        _receiver,
                         ctAmount,
                         _minGasLimit,
                         "0x"
@@ -195,7 +201,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                     IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeERC20To(
                         _l1token,
                         _l2DestinationToken,
-                        _requestor,
+                        _receiver,
                         ctAmount,
                         _minGasLimit,
                         "0x"
@@ -211,6 +217,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             _requestor,
+            _receiver,
             msg.sender,
             _totalAmount,
             ctAmount,
@@ -275,6 +282,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l1token Address of requested l1token
     /// @param _l2SourceToken Address of requested l2SourceToken
     /// @param _l2DestinationToken Address of requested l2DestinationToken
+    /// @param _receiver Address that would receive the tokens on destination L2
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _saleCount Number generated upon request
@@ -286,6 +294,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _saleCount,
@@ -305,6 +314,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _saleCount,
@@ -340,7 +350,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount, 
             _saleCount,
             _l2SourceChainId,
@@ -396,6 +407,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l1token Address of requested l1token
     /// @param _l2SourceToken Address of requested l2SourceToken
     /// @param _l2DestinationToken Address of requested l2DestinationToken
+    /// @param _receiver Address that would receive the tokens on destination L2
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount The amount that the requester requested to edit
@@ -406,6 +418,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -424,6 +437,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _saleCount,
@@ -441,7 +455,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount,
             _editedctAmount, 
             _saleCount,
@@ -456,6 +471,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l2SourceToken Address of requested l2SourceToken
     /// @param _l2DestinationToken Address of requested l2DestinationToken
     /// @param _requestor This is the address of the request.
+    /// @param _receiver Address that will receive the tokens on destination L2
     /// @param _totalAmount Total amount requested by l2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
@@ -467,6 +483,7 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -483,7 +500,8 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                 _l1token, 
                 _l2SourceToken,
                 _l2DestinationToken, 
-                _requestor, 
+                _requestor,
+                _receiver,
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 

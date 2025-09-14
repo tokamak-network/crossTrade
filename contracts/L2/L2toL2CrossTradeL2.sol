@@ -20,6 +20,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -34,6 +35,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -48,6 +50,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -178,6 +181,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
     /// @param _l2DestinationToken _l2DestinationToken Address
+    /// @param _receiver Address that will receive the tokens on destination L2
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1ChainId chainId of l1token
@@ -186,6 +190,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
@@ -218,6 +223,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _ctAmount,
             newSaleCount,
@@ -230,6 +236,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             newSaleCount,
@@ -244,6 +251,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l1token l1token Address
     /// @param _l2SourceToken _l2SourceToken Address
     /// @param _l2DestinationToken _l2DestinationToken Address
+    /// @param _receiver Address that will receive the tokens on destination L2
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1ChainId chainId of l1token
@@ -252,6 +260,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
@@ -272,6 +281,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _ctAmount,
             newSaleCount,
@@ -284,6 +294,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             newSaleCount,
@@ -340,6 +351,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             l2SourceToken,
             dealData[_l2DestinationChainId][_saleCount].l2DestinationToken,
             dealData[_l2DestinationChainId][_saleCount].requester,
+            dealData[_l2DestinationChainId][_saleCount].receiver,
             _from,
             totalAmount,
             ctAmount,
@@ -402,6 +414,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l2SourceToken l2SourceToken Address
     /// @param _l2DestinationToken l2DestinationToken Address
     /// @param _requestor requester's address
+    /// @param _receiver receiver's address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount provided to L2
     /// @param _saleCount Number generated upon request
@@ -413,6 +426,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -429,7 +443,8 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
                 _l1token, 
                 _l2SourceToken,
                 _l2DestinationToken,
-                _requestor, 
+                _requestor,
+                _receiver,
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
@@ -451,6 +466,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
     /// @param _l1token l1token Address
     /// @param _l2SourceToken l2SourceToken Address
     /// @param _l2DestinationToken l2DestinationToken Address
+    /// @param _receiver Address that will receive the tokens on destination L2
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
@@ -461,6 +477,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -483,6 +500,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             _l2SourceToken,
             _l2DestinationToken,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             _saleCount,
@@ -496,6 +514,7 @@ contract L2toL2CrossTradeL2 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
             l2SourceToken: _l2SourceToken,
             l2DestinationToken: _l2DestinationToken,
             requester: msg.sender,
+            receiver: _receiver,
             provider: address(0),
             totalAmount: _totalAmount,
             ctAmount: _ctAmount,

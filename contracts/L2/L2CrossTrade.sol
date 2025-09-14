@@ -20,6 +20,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -31,6 +32,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -42,6 +44,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -124,12 +127,14 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     ///         so it is logical that totalAmount >= ctAmount is greater.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
+    /// @param _receiver Address that will receive the tokens on L1
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1chainId chainId of l1token
     function requestRegisteredToken(
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1chainId
@@ -149,6 +154,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         bytes32 hashValue = _request(
             _l1token,
             _l2token,
+            _receiver,
             _totalAmount,
             _ctAmount,
             saleCount,
@@ -161,6 +167,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             saleCount,
@@ -174,12 +181,14 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     ///         We do not support ERC20, which is specially created and incurs a fee when transferring.
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
+    /// @param _receiver Address that will receive the tokens on L1
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _l1chainId chainId of l1token
     function requestNonRegisteredToken(
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1chainId
@@ -198,6 +207,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         bytes32 hashValue = _request(
             _l1token,
             _l2token,
+            _receiver,
             _totalAmount,
             _ctAmount,
             saleCount,
@@ -210,6 +220,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             saleCount,
@@ -260,6 +271,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             dealData[_saleCount].l1token,
             l2token,
             dealData[_saleCount].requester,
+            dealData[_saleCount].receiver,
             _from,
             totalAmount,
             ctAmount,
@@ -314,6 +326,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
     /// @param _requestor requester's address
+    /// @param _receiver receiver's address
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount provided to L2
     /// @param _saleCount Number generated upon request
@@ -323,6 +336,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -337,7 +351,8 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             abi.encode(
                 _l1token, 
                 _l2token, 
-                _requestor, 
+                _requestor,
+                _receiver,
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
@@ -359,6 +374,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     /// @notice Token transaction request
     /// @param _l1token l1token Address
     /// @param _l2token l2token Address
+    /// @param _receiver Address that will receive the tokens on L1
     /// @param _totalAmount Amount provided to L2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
@@ -366,6 +382,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
     function _request(
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -386,6 +403,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _ctAmount,
             _saleCount,
@@ -397,6 +415,7 @@ contract L2CrossTrade is ProxyStorage, AccessibleCommon, L2CrossTradeStorage, Re
             l1token: _l1token,
             l2token: _l2token,
             requester: msg.sender,
+            receiver: _receiver,
             provider: address(0),
             totalAmount: _totalAmount,
             ctAmount: _ctAmount,

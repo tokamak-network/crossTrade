@@ -184,6 +184,7 @@ contract TestHelperL2L1 is Test {
             l2CrossTrade.requestRegisteredToken(
                 _l1token,
                 address(l2ETH),
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 L1_CHAIN_ID
@@ -193,6 +194,7 @@ contract TestHelperL2L1 is Test {
             l2CrossTrade.requestRegisteredToken(
                 _l1token,
                 _l2token,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 L1_CHAIN_ID
@@ -202,6 +204,7 @@ contract TestHelperL2L1 is Test {
             l2CrossTrade.requestRegisteredToken(
                 _l1token,
                 _l2token,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 L1_CHAIN_ID
@@ -211,6 +214,7 @@ contract TestHelperL2L1 is Test {
             l2CrossTrade.requestNonRegisteredToken(
                 _l1token,
                 _l2token,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 L1_CHAIN_ID
@@ -223,6 +227,7 @@ contract TestHelperL2L1 is Test {
             _l1token,
             _l2token == NATIVE_TOKEN ? address(l2ETH) : _l2token,
             requester,
+            requester, // receiver
             _totalAmount,
             _ctAmount,
             1, // saleCount
@@ -239,6 +244,7 @@ contract TestHelperL2L1 is Test {
                 _l1token,
                 _l2token == NATIVE_TOKEN ? address(l2ETH) : _l2token,
                 requester,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 0, // editedctAmount (0 means no edit)
@@ -254,6 +260,7 @@ contract TestHelperL2L1 is Test {
                 _l1token,
                 _l2token == NATIVE_TOKEN ? address(l2ETH) : _l2token,
                 requester,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 0, // editedctAmount (0 means no edit)
@@ -268,6 +275,7 @@ contract TestHelperL2L1 is Test {
                 _l1token,
                 _l2token == NATIVE_TOKEN ? address(l2ETH) : _l2token,
                 requester,
+                requester, // receiver
                 _totalAmount,
                 _ctAmount,
                 0, // editedctAmount (0 means no edit)
@@ -290,7 +298,7 @@ contract TestHelperL2L1 is Test {
     }
     
     function isRequestCompleted(uint256 _saleCount) internal view returns (bool) {
-        (address l1token, address l2token, address requester, address provider, uint256 totalAmount, uint256 ctAmount, uint256 chainId, bytes32 hashValue) = l2CrossTrade.dealData(_saleCount);
+        (address l1token, address l2token, address requester, address receiver, address provider, uint256 totalAmount, uint256 ctAmount, uint256 chainId, bytes32 hashValue) = l2CrossTrade.dealData(_saleCount);
         return provider != address(0);
     }
     

@@ -17,6 +17,7 @@ contract MockContractCaller {
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
@@ -26,6 +27,7 @@ contract MockContractCaller {
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _ctAmount,
             _l1ChainId,
@@ -37,6 +39,7 @@ contract MockContractCaller {
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _l1ChainId,
@@ -46,6 +49,7 @@ contract MockContractCaller {
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _ctAmount,
             _l1ChainId,
@@ -58,6 +62,7 @@ contract MockContractCaller {
         address _l2SourceToken,
         address _l2DestinationToken,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -72,6 +77,7 @@ contract MockContractCaller {
             _l2SourceToken,
             _l2DestinationToken,
             _requestor,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _editedctAmount,
@@ -87,6 +93,7 @@ contract MockContractCaller {
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _saleCount,
@@ -99,6 +106,7 @@ contract MockContractCaller {
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _saleCount,
@@ -113,6 +121,7 @@ contract MockContractCaller {
         address _l1token,
         address _l2SourceToken,
         address _l2DestinationToken,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -125,6 +134,7 @@ contract MockContractCaller {
             _l1token,
             _l2SourceToken,
             _l2DestinationToken,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _editedctAmount,
@@ -163,6 +173,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -185,6 +196,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -204,6 +216,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -217,6 +230,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -235,6 +249,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             ctAmount,
@@ -258,6 +273,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -271,6 +287,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -287,6 +304,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -310,6 +328,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -323,6 +342,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -339,6 +359,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             editedCtAmount,
@@ -362,6 +383,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             L1_CHAIN_ID,
@@ -375,6 +397,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2bDestinationToken),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             1, // saleCount
@@ -392,6 +415,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             totalAmount,
             ctAmount,
             ctAmount,
@@ -417,6 +441,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester,
             1 ether,
             0.5 ether,
             L1_CHAIN_ID,
@@ -432,6 +457,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester,
             1 ether,
             0.5 ether,
             L1_CHAIN_ID,
@@ -448,6 +474,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester,
             1 ether,
             0.5 ether,
             L1_CHAIN_ID,
@@ -459,6 +486,7 @@ contract EOARestrictionTest is TestHelperL2 {
             NATIVE_TOKEN,
             address(l2aETH),
             address(l2bETH),
+            requester,
             requester,
             1 ether,
             0.5 ether,
@@ -477,6 +505,7 @@ contract EOARestrictionTest is TestHelperL2 {
             address(l2aETH),
             address(l2bETH),
             requester,
+            requester, // receiver same as requester
             1 ether,
             0.5 ether,
             0.5 ether,

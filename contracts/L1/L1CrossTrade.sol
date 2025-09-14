@@ -17,6 +17,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -28,6 +29,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -40,6 +42,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 indexed _saleCount,
         uint256 _l2chainId,
@@ -59,6 +62,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor requester's address
+    /// @param _receiver receiver's address (who will receive the tokens on L1)
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount ctAmount edited by the requester
@@ -70,6 +74,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -88,6 +93,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             _requestor,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
@@ -137,17 +143,18 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
 
         if(NATIVE_TOKEN == _l1token){
             require(msg.value == ctAmount, "CT: Need to insert the exact amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value, gas: 51000}("");
+            (bool sent, ) = payable(_receiver).call{value: msg.value, gas: 51000}("");
             require(sent, "CT: Claim fail");
         } else {
             IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor, ctAmount);
+            IERC20(_l1token).safeTransfer(_receiver, ctAmount);
         }
 
         emit ProvideCT(
             _l1token,
             _l2token,
             _requestor,
+            _receiver,
             msg.sender,
             _totalAmount,
             ctAmount,
@@ -207,6 +214,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
+    /// @param _receiver Address that would receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _salecount Number generated upon request
@@ -216,6 +224,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     function cancel( 
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _salecount,
@@ -233,6 +242,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
@@ -264,7 +274,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         emit L1CancelCT(
             _l1token,
             _l2token,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount, 
             _salecount,
             _l2chainId,
@@ -315,6 +326,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
+    /// @param _receiver Address that would receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount The amount that the requester requested to edit
@@ -324,6 +336,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     function editFee(
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -340,6 +353,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
@@ -355,7 +369,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         emit EditCT(
             _l1token,
             _l2token,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount,
             _editedctAmount, 
             _salecount,
@@ -368,6 +383,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor This is the address of the request.
+    /// @param _receiver Address that will receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
@@ -377,6 +393,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -391,7 +408,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             abi.encode(
                 _l1token, 
                 _l2token, 
-                _requestor, 
+                _requestor,
+                _receiver,
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 
