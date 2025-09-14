@@ -51,4 +51,8 @@ contract DeployL2CrossTrade_L2L2 is Script {
 
 // forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --etherscan-api-key APYKEY --chain thanosSepolia
 // forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --etherscan-api-key APYKEY --chain thanosSepolia
+
+// forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x9C7AECe87D15209C805FC9BEea260fc20918669C contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
+// forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x2d59F484c8bb2d972D66b687D9fd62E1e2f8720B contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
+
 // ?? how do you verify the contract on a L2 SDK network? 
