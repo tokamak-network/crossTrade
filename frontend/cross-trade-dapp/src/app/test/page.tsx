@@ -4,13 +4,10 @@ import { useState } from 'react'
 import { ConnectButton } from "@/components/ConnectButton";
 import { RequestModal } from "@/components/RequestModal";
 import { useAccount } from 'wagmi'
-import { RequestsList } from "@/components/RequestsList";
-import { RequestDetailsModal } from "@/components/RequestDetailsModal";
 import { AllRequestsList } from "@/components/AllRequestsList";
 
 export default function TestPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const { isConnected } = useAccount()
 
   return (

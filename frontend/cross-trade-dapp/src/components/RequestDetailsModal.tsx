@@ -9,12 +9,29 @@ interface RequestDetailsModalProps {
   onClose: () => void
 }
 
+interface Event {
+  _l1token: string
+  _l2SourceToken: string
+  _l2DestinationToken: string
+  _requester: string
+  _totalAmount: bigint
+  _ctAmount: bigint
+  _saleCount: bigint
+  _l1ChainId: bigint
+  _l2SourceChainId: bigint
+  _l2DestinationChainId: bigint
+  _hashValue: string 
+}
+
 export const RequestDetailsModal = ({ isOpen, onClose }: RequestDetailsModalProps) => {
   const publicClient = usePublicClient()
   const [saleCount, setSaleCount] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [event, setEvent] = useState<any | null>(null)
+  const [event, setEvent] = useState<{
+    transactionHash: string
+    args: Event
+  } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,10 +56,29 @@ export const RequestDetailsModal = ({ isOpen, onClose }: RequestDetailsModalProp
       if (logs.length === 0) {
         setError('No request found for this SaleCount in the last 50,000 blocks.')
       } else {
-        setEvent(logs[0])
+        const log = logs[0] as unknown as {
+          transactionHash: string
+          args: Event
+        }
+        setEvent({
+          transactionHash: log.transactionHash,
+          args: Event = {
+            _l1token: log.args._l1token,
+            _l2SourceToken: log.args._l2SourceToken,
+            _l2DestinationToken: log.args._l2DestinationToken,
+            _requester: log.args._requester,
+            _totalAmount: log.args._totalAmount,
+            _ctAmount: log.args._ctAmount,
+            _saleCount: log.args._saleCount,
+            _l1ChainId: log.args._l1ChainId,
+            _l2SourceChainId: log.args._l2SourceChainId,
+            _l2DestinationChainId: log.args._l2DestinationChainId,
+            _hashValue: log.args._hashValue,
+          }
+        })
       }
-    } catch (e: any) {
-      setError(e.message || 'Failed to fetch event')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch event')
     }
     setLoading(false)
   }

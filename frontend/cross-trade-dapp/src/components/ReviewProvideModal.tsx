@@ -21,7 +21,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   if (!isOpen) return null
 
   // Helper function to format token amounts with proper decimals
-  const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
+  const formatTokenAmount = (amount: bigint) => {
     // For demo purposes, using USDC (6 decimals)
     const decimals = 6
     const divisor = BigInt(10 ** decimals)
@@ -62,8 +62,8 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     }
   }
 
-  const provideAmount = formatTokenAmount(requestData.totalAmount, requestData.l2SourceToken)
-  const rewardAmount = formatTokenAmount(requestData.ctAmount, requestData.l2DestinationToken)
+  const provideAmount = formatTokenAmount(requestData.totalAmount)
+  const rewardAmount = formatTokenAmount(requestData.ctAmount)
   const provideChain = getChainName(BigInt(11155111)) // Always Ethereum for L1
   const rewardChain = getChainName(requestData.l2DestinationChainId)
   const requestChain = getChainName(requestData.l2DestinationChainId)

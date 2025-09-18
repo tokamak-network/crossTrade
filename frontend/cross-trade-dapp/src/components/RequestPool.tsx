@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { usePublicClient, useContractRead } from 'wagmi'
 import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals } from '@/config/contracts'
 import { Navigation } from './Navigation'
@@ -68,7 +68,7 @@ export const RequestPool = () => {
     let decimals = 18
 
     // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -112,7 +112,7 @@ export const RequestPool = () => {
   // Helper function to get token emoji
   const getTokenEmoji = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -129,7 +129,7 @@ export const RequestPool = () => {
     }
   }
 
-  const fetchAllRequests = async (fullRefresh = false) => {
+  const fetchAllRequests = useCallback(async (fullRefresh = false) => {
     if (!publicClient || !currentSaleCount) return
 
     setLoading(true)
@@ -138,7 +138,7 @@ export const RequestPool = () => {
     try {
       const totalRequests = Number(currentSaleCount)
       const requestsArray: Request[] = []
-      let newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
+      const newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
       console.log(`Fetching ${totalRequests} requests (fullRefresh: ${fullRefresh})`)
 
@@ -196,8 +196,7 @@ export const RequestPool = () => {
           }
 
           requestsArray.push({ saleCount, data: requestData })
-        } catch (err) {
-          console.error(`Error fetching request ${saleCount}:`, err)
+        } catch {
           requestsArray.push({ saleCount, data: null })
         }
       }
@@ -213,20 +212,20 @@ export const RequestPool = () => {
       }
 
       console.log(`Found ${sortedRequests.length} pending requests`)
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch requests')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch requests')
       console.error('Error fetching all requests:', err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [publicClient, currentSaleCount, fulfilledSaleCounts])
 
   useEffect(() => {
     if (currentSaleCount && Number(currentSaleCount) > 0) {
       fetchAllRequests(forceRefresh)
       if (forceRefresh) setForceRefresh(false)
     }
-  }, [currentSaleCount, forceRefresh])
+  }, [currentSaleCount, forceRefresh, fetchAllRequests])
 
   const handleProvide = (request: Request) => {
     setSelectedRequest(request)
@@ -324,13 +323,12 @@ export const RequestPool = () => {
 
             {/* Table Rows */}
             <div className="table-body">
-              {requests.filter(req => req.data !== null).map((request, index) => {
+              {requests.filter(req => req.data !== null).map((request) => {
                 const data = request.data!
                 const destinationChain = getChainName(data.l2DestinationChainId)
                 const totalAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
                 const rewardAmount = formatTokenAmount(data.ctAmount, data.l2DestinationToken)
                 const serviceFeeBigInt = data.totalAmount - data.ctAmount
-                const serviceFeeAmount = formatTokenAmount(serviceFeeBigInt, data.l2SourceToken)
                 const profitPercentage = ((Number(serviceFeeBigInt) / Number(data.totalAmount)) * 100).toFixed(2)
 
                 return (

@@ -38,8 +38,8 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
     return new Set()
   })
   const [forceRefresh, setForceRefresh] = useState(false)
-  const { address: connectedWallet, chainId } = useAccount()
-  const { writeContract, isPending, data: txHash } = useWriteContract()
+  const { address: connectedWallet } = useAccount()
+  const { writeContract, isPending } = useWriteContract()
   const publicClient = usePublicClient()
 
   // Optimism Sepolia chain ID
@@ -70,7 +70,7 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
     try {
       const totalRequests = Number(currentSaleCount)
       const requestsArray: Array<{ saleCount: number; data: RequestData | null }> = []
-      let newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
+      const newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
       for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
         if (!fullRefresh && fulfilledSaleCounts.has(saleCount)) continue // skip known fulfilled
@@ -124,7 +124,7 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
           }
 
           requestsArray.push({ saleCount, data: requestData })
-        } catch (err) {
+        } catch {
           requestsArray.push({ saleCount, data: null })
         }
       }
@@ -134,8 +134,8 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem(FULFILLED_KEY, JSON.stringify(Array.from(newFulfilled)))
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch requests')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch requests')
     } finally {
       setLoading(false)
     }

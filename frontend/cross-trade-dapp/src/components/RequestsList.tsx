@@ -4,17 +4,25 @@ import { useEffect, useState } from 'react'
 import { usePublicClient } from 'wagmi'
 import { CONTRACTS, REQUEST_CT_EVENT_ABI } from '@/config/contracts'
 
-// Helper: get block number for N days ago (approximate)
-async function getBlockNumberNDaysAgo(client: any, days: number) {
-  const latestBlock = await client.getBlock()
-  // Ethereum average block time: ~12s, L2s may be faster
-  const blocksAgo = Math.floor((days * 24 * 60 * 60) / 12)
-  return latestBlock.number - BigInt(blocksAgo)
-}
 
 export const RequestsList = () => {
   const publicClient = usePublicClient()
-  const [events, setEvents] = useState<any[]>([])
+  const [events, setEvents] = useState<{
+    transactionHash: string
+    args: {
+      _l1token: string
+      _l2SourceToken: string
+      _l2DestinationToken: string
+      _requester: string
+      _totalAmount: bigint
+      _ctAmount: bigint
+      _saleCount: bigint
+      _l1ChainId: bigint
+      _l2SourceChainId: bigint
+      _l2DestinationChainId: bigint
+      _hashValue: string
+    }
+  }[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,9 +40,24 @@ export const RequestsList = () => {
           fromBlock,
           toBlock: 'latest',
         })
-        setEvents(logs)
-      } catch (e: any) {
-        setError(e.message || 'Failed to fetch events')
+        setEvents(logs as unknown as {
+          transactionHash: string
+          args: {
+            _l1token: string
+            _l2SourceToken: string
+            _l2DestinationToken: string
+            _requester: string
+            _totalAmount: bigint
+            _ctAmount: bigint
+            _saleCount: bigint
+            _l1ChainId: bigint
+            _l2SourceChainId: bigint
+            _l2DestinationChainId: bigint
+            _hashValue: string
+          }
+        }[])
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'Failed to fetch events')
       }
       setLoading(false)
     }

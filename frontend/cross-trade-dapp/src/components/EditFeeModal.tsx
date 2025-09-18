@@ -31,14 +31,12 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
-    let symbol = 'UNKNOWN'
     let decimals = 18
 
     // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
           decimals = getTokenDecimals(tokenSymbol)
         }
       })
@@ -60,7 +58,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   // Helper function to get token symbol from address
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol

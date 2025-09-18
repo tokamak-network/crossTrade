@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAccount, usePublicClient, useContractRead } from 'wagmi'
 import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals } from '@/config/contracts'
 import { Navigation } from './Navigation'
@@ -58,14 +58,12 @@ export const History = () => {
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
-    let symbol = 'UNKNOWN'
     let decimals = 18
 
     // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
           decimals = getTokenDecimals(tokenSymbol)
         }
       })
@@ -106,7 +104,7 @@ export const History = () => {
   // Helper function to get token symbol from address
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    Object.entries(CHAIN_CONFIG).forEach(([, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -145,7 +143,7 @@ export const History = () => {
     }
   }
 
-  const fetchUserHistory = async () => {
+  const fetchUserHistory = useCallback(async () => {
     if (!publicClient || !currentSaleCount || !userAddress) return
 
     setLoading(true)
@@ -232,19 +230,19 @@ export const History = () => {
       setHistoryRequests(userHistory)
 
       console.log(`Found ${userHistory.length} history items for user`)
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch history')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch history')
       console.error('Error fetching history:', err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [publicClient, currentSaleCount, userAddress])
 
   useEffect(() => {
     if (userAddress && currentSaleCount && Number(currentSaleCount) > 0) {
       fetchUserHistory()
     }
-  }, [userAddress, currentSaleCount])
+  }, [userAddress, currentSaleCount, fetchUserHistory])
 
   const filteredRequests = historyRequests.filter(req => {
     if (activeFilter === 'All') return true

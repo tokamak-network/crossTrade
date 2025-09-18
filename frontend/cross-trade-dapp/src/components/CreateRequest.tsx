@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
-import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress } from '@/config/contracts'
+import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_IDS, getTokenAddress, getContractAddress } from '@/config/contracts'
 
 // ERC20 ABI for approve function
 const ERC20_ABI = [
@@ -23,7 +23,6 @@ export const CreateRequest = () => {
   const [requestTo, setRequestTo] = useState('MonicaChain')
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('USDC') // Default to USDC
-  const [receiveAmount, setReceiveAmount] = useState('')
   const [receiveToken, setReceiveToken] = useState('USDC') // Default to USDC
   const [toAddress, setToAddress] = useState('')
   const [serviceFeeMode, setServiceFeeMode] = useState('recommended') // 'recommended' or 'advanced'
@@ -32,22 +31,18 @@ export const CreateRequest = () => {
   const [showConfirmingModal, setShowConfirmingModal] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [isApproving, setIsApproving] = useState(false)
-  const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>()
   const [isTokenApproved, setIsTokenApproved] = useState(false) // Track if token is approved
 
-  const { writeContract, data: hash, isPending, error: writeError } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
+  const { writeContract, data: hash, error: writeError } = useWriteContract()
+  const { isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
   const { address: connectedAddress } = useAccount()
   
   // Separate hook for approval transactions
   const { 
     writeContract: writeApproval, 
-    data: approvalHash, 
-    isPending: isApprovalPending,
-    error: approvalError 
+    data: approvalHash
   } = useWriteContract()
   const { 
-    isLoading: isApprovalConfirming, 
     isSuccess: isApprovalSuccess,
     isError: isApprovalTxError 
   } = useWaitForTransactionReceipt({ hash: approvalHash })
@@ -175,7 +170,7 @@ export const CreateRequest = () => {
       })
 
       // Validate that we have the required addresses
-      if (!l2SourceTokenAddress || l2SourceTokenAddress === '') {
+      if (!l2SourceTokenAddress) {
         throw new Error(`No token address found for ${sendToken} on ${requestFrom} (Chain ID: ${fromChainId})`)
       }
       
@@ -485,7 +480,7 @@ export const CreateRequest = () => {
               className="request-button"
               onClick={connectedAddress ? undefined : () => {
                 // Trigger AppKit modal programmatically
-                const appkitButton = document.querySelector('appkit-button') as any;
+                const appkitButton = document.querySelector('appkit-button') as HTMLElement;
                 if (appkitButton) appkitButton.click();
               }}
             >
