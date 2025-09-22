@@ -1,83 +1,107 @@
-// Chain configurations
-export const CHAIN_CONFIG = {
-  // Optimism Sepolia
-  11155420: {
-    name: 'Optimism Sepolia',
-    displayName: 'Optimism',
-    contracts: {
-      L2_CROSS_TRADE: "0xc0c33138355e061511f8954c114edc7c9e7bfac4",
-    },
-    tokens: {
-      ETH: '0x0000000000000000000000000000000000000000',
-      USDC: '0x5fd84259d66cd46123540766be93dfe6d43130d7',
-      USDT: '0xebca682b6c15d539284432edc5b960771f0009e8',
-      TON: '', // Add address when available
-    }
-  },
-  // Ethereum Sepolia
-  11155111: {
-    name: 'Ethereum Sepolia',
-    displayName: 'Ethereum',
-    contracts: {
-      L1_CROSS_TRADE: '0x0000000000000000000000000000000000000000', // TODO: Add actual L1 contract address
-    },
-    tokens: {
-      ETH: '0x0000000000000000000000000000000000000000',
-      USDC: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // Add Ethereum Sepolia USDC address
-      USDT: '', // Add Ethereum Sepolia USDT address
-      TON: '', // Add address when available
-    }
-  },
-  // Thanos Sepolia
-  111551119090: {
-    name: 'Thanos Sepolia',
-    displayName: 'Thanos',
-    contracts: {
-      L2_CROSS_TRADE: '', // Add Thanos Sepolia contract address
-    },
-    tokens: {
-      ETH: '0x0000000000000000000000000000000000000000',
-      USDC: '0x4200000000000000000000000000000000000778', // Add Thanos Sepolia USDC address
-      USDT: '', // Add Thanos Sepolia USDT address
-      TON: '', // Add TON address when available
-    }
-  },
-  // GeorgeChain (Custom)
-  123444: {
-    name: 'GeorgeChain',
-    displayName: 'GeorgeChain',
-    contracts: {
-      L2_CROSS_TRADE: '', // Add GeorgeChain contract address
-    },
-    tokens: {
-      ETH: '0x0000000000000000000000000000000000000000',
-      USDC: '', // Add GeorgeChain USDC address
-      USDT: '', // Add GeorgeChain USDT address
-      TON: '', // Add TON address when available
-    }
-  },
-  // MonicaChain (Custom)
-  1235555: {
-    name: 'MonicaChain',
-    displayName: 'MonicaChain',
-    contracts: {
-      L2_CROSS_TRADE: '', // Add MonicaChain contract address
-    },
-    tokens: {
-      ETH: '0x0000000000000000000000000000000000000000',
-      USDC: '', // Add MonicaChain USDC address
-      USDT: '', // Add MonicaChain USDT address
-      TON: '', // Add TON address when available
-    }
+// Chain configurations loaded from environment variables
+
+// Type definitions for chain configuration
+export interface ChainConfig {
+  name: string;
+  displayName: string;
+  contracts: {
+    L2_CROSS_TRADE?: string;
+    L1_CROSS_TRADE?: string;
+  };
+  tokens: {
+    ETH: string;
+    USDC: string;
+    USDT: string;
+    TON: string;
+  };
+}
+
+export interface ChainConfigs {
+  [chainId: string]: ChainConfig;
+}
+
+// Function to load and parse chain configuration from environment variables
+const loadChainConfig = (): ChainConfigs => {
+  const chainConfigEnv = process.env.NEXT_PUBLIC_CHAIN_CONFIG;
+  
+  if (!chainConfigEnv) {
+    console.warn('NEXT_PUBLIC_CHAIN_CONFIG not found in environment variables, using fallback configuration');
+    // Fallback configuration
+    return {
+      "11155420": {
+        name: 'Optimism Sepolia',
+        displayName: 'Optimism',
+        contracts: {
+          L2_CROSS_TRADE: "0x68664Cf56aD3B2c651953c392642fcf8DeF3b346",
+        },
+        tokens: {
+          ETH: '0x0000000000000000000000000000000000000000',
+          USDC: '0x5fd84259d66cd46123540766be93dfe6d43130d7',
+          USDT: '0xebca682b6c15d539284432edc5b960771f0009e8',
+          TON: '',
+        }
+      },
+      "11155111": {
+        name: 'Ethereum Sepolia',
+        displayName: 'Ethereum',
+        contracts: {
+          L1_CROSS_TRADE: '0x0000000000000000000000000000000000000000',
+        },
+        tokens: {
+          ETH: '0x0000000000000000000000000000000000000000',
+          USDC: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+          USDT: '',
+          TON: '',
+        }
+      }
+    };
   }
-} as const;
+
+  try {
+    return JSON.parse(chainConfigEnv) as ChainConfigs;
+  } catch (error) {
+    console.error('Error parsing NEXT_PUBLIC_CHAIN_CONFIG:', error);
+    console.warn('Using fallback configuration');
+    // Return fallback configuration in case of parsing error
+    return {
+      "11155420": {
+        name: 'Optimism Sepolia',
+        displayName: 'Optimism',
+        contracts: {
+          L2_CROSS_TRADE: "0x68664Cf56aD3B2c651953c392642fcf8DeF3b346",
+        },
+        tokens: {
+          ETH: '0x0000000000000000000000000000000000000000',
+          USDC: '0x5fd84259d66cd46123540766be93dfe6d43130d7',
+          USDT: '0xebca682b6c15d539284432edc5b960771f0009e8',
+          TON: '',
+        }
+      }
+    };
+  }
+};
+
+// Load chain configuration from environment variables
+const chainConfigs = loadChainConfig();
+
+// Export the chain configuration with proper typing
+export const CHAIN_CONFIG = chainConfigs;
 
 // Legacy contract addresses (for backward compatibility)
 export const CONTRACTS = {
   L2_CROSS_TRADE: "0xc0c33138355e061511f8954c114edc7c9e7bfac4", 
 } as const;
 
-// Chain name to ID mapping
+// Dynamic chain name to ID mapping based on loaded configuration
+export const getChainIds = (): Record<string, number> => {
+  const chainIds: Record<string, number> = {};
+  Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    chainIds[config.displayName] = parseInt(chainId);
+  });
+  return chainIds;
+};
+
+// Legacy static chain IDs (for backward compatibility)
 export const CHAIN_IDS = {
   'Optimism': 11155420,
   'Ethereum': 11155111,
@@ -87,18 +111,36 @@ export const CHAIN_IDS = {
 } as const;
 
 // Helper functions
-export const getChainConfig = (chainId: number) => {
-  return CHAIN_CONFIG[chainId as keyof typeof CHAIN_CONFIG];
+export const getChainConfig = (chainId: number): ChainConfig | undefined => {
+  return CHAIN_CONFIG[chainId.toString()];
 };
 
-export const getTokenAddress = (chainId: number, tokenSymbol: string) => {
+export const getTokenAddress = (chainId: number, tokenSymbol: string): string => {
   const config = getChainConfig(chainId);
   return config?.tokens[tokenSymbol as keyof typeof config.tokens] || '';
 };
 
-export const getContractAddress = (chainId: number, contractName: string) => {
+export const getContractAddress = (chainId: number, contractName: string): string => {
   const config = getChainConfig(chainId);
   return config?.contracts[contractName as keyof typeof config.contracts] || '';
+};
+
+// Get all available chain IDs
+export const getAllChainIds = (): number[] => {
+  return Object.keys(CHAIN_CONFIG).map(chainId => parseInt(chainId));
+};
+
+// Get all chains with their configurations
+export const getAllChains = (): Array<{ chainId: number; config: ChainConfig }> => {
+  return Object.entries(CHAIN_CONFIG).map(([chainId, config]) => ({
+    chainId: parseInt(chainId),
+    config
+  }));
+};
+
+// Check if a chain is supported
+export const isChainSupported = (chainId: number): boolean => {
+  return chainId.toString() in CHAIN_CONFIG;
 };
 
 // Helper function to get token decimals
@@ -224,4 +266,5 @@ export const EDIT_FEE_ABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-] as const; 
+] as const;  
+
