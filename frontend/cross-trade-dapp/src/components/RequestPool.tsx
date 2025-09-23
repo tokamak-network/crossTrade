@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePublicClient, useContractRead } from 'wagmi'
-import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals } from '@/config/contracts'
+import { usePublicClient, useContractRead, useAccount } from 'wagmi'
+import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress, getTokenDecimals, getAllChains } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { ReviewProvideModal } from './ReviewProvideModal'
 
@@ -11,6 +11,7 @@ interface RequestData {
   l2SourceToken: string
   l2DestinationToken: string
   requester: string
+  receiver: string
   provider: string
   totalAmount: bigint
   ctAmount: bigint
@@ -21,6 +22,8 @@ interface RequestData {
 
 interface Request {
   saleCount: number
+  chainId: number
+  chainName: string
   data: RequestData | null
 }
 
@@ -28,6 +31,7 @@ const FULFILLED_KEY = 'fulfilledSaleCounts_v1'
 
 export const RequestPool = () => {
   const publicClient = usePublicClient()
+  const { address: connectedAddress } = useAccount()
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,24 +46,17 @@ export const RequestPool = () => {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null)
   const [isProvideModalOpen, setIsProvideModalOpen] = useState(false)
 
-  // Thanos Sepolia chain ID (where the requests are)
-  const CHAIN_ID = 111551119090
+  // Get all L2 chains that have L2_CROSS_TRADE contracts
+  const getL2Chains = () => {
+    const allChains = getAllChains()
+    return allChains.filter(({ chainId, config }) => 
+      config.contracts.L2_CROSS_TRADE && 
+      config.contracts.L2_CROSS_TRADE !== '' &&
+      chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
+    )
+  }
 
-  // Get the current saleCount for this chain
-  const { data: currentSaleCount } = useContractRead({
-    address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
-    abi: [
-      {
-        inputs: [{ type: 'uint256', name: 'chainId' }],
-        name: 'saleCountChainId',
-        outputs: [{ type: 'uint256', name: '' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-    ],
-    functionName: 'saleCountChainId',
-    args: [BigInt(CHAIN_ID)],
-  })
+  const l2Chains = getL2Chains()
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
@@ -100,11 +97,11 @@ export const RequestPool = () => {
   // Helper function to get chain emoji
   const getChainEmoji = (chainName: string) => {
     switch (chainName) {
+      case 'Optimism': return '🔴'
       case 'GeorgeChain': return '🟣'
       case 'MonicaChain': return '🟢'
       case 'Thanos': return '🔵'
       case 'Ethereum': return '⚪'
-      case 'Optimism': return '🔴'
       default: return '⚫'
     }
   }
@@ -130,80 +127,136 @@ export const RequestPool = () => {
   }
 
   const fetchAllRequests = async (fullRefresh = false) => {
-    if (!publicClient || !currentSaleCount) return
+    if (!publicClient) return
 
     setLoading(true)
     setError(null)
 
     try {
-      const totalRequests = Number(currentSaleCount)
-      const requestsArray: Request[] = []
+      const allRequestsArray: Request[] = []
       let newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
-      console.log(`Fetching ${totalRequests} requests (fullRefresh: ${fullRefresh})`)
+        console.log(`Fetching requests from ${l2Chains.length} L2 chains (fullRefresh: ${fullRefresh})`)
 
-      for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
-        if (!fullRefresh && fulfilledSaleCounts.has(saleCount)) continue // skip known fulfilled
-        
-        try {
-          const data = await publicClient.readContract({
-            address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
-            abi: [
-              {
-                inputs: [
-                  { type: 'uint256', name: 'chainId' },
-                  { type: 'uint256', name: 'saleCount' }
-                ],
-                name: 'dealData',
-                outputs: [
-                  { type: 'address', name: 'l1token' },
-                  { type: 'address', name: 'l2SourceToken' },
-                  { type: 'address', name: 'l2DestinationToken' },
-                  { type: 'address', name: 'requester' },
-                  { type: 'address', name: 'provider' },
-                  { type: 'uint256', name: 'totalAmount' },
-                  { type: 'uint256', name: 'ctAmount' },
-                  { type: 'uint256', name: 'l1ChainId' },
-                  { type: 'uint256', name: 'l2DestinationChainId' },
-                  { type: 'bytes32', name: 'hashValue' },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ],
-            functionName: 'dealData',
-            args: [BigInt(CHAIN_ID), BigInt(saleCount)],
-          }) as readonly [string, string, string, string, string, bigint, bigint, bigint, bigint, string]
+        // Get all possible destination chain IDs (all L2 chains + L1)
+        const allDestinationChainIds = [
+          ...l2Chains.map(chain => chain.chainId),
+          11155111 // Ethereum Sepolia (L1)
+        ]
 
-          // Convert the tuple to RequestData object
-          const requestData: RequestData = {
-            l1token: data[0],
-            l2SourceToken: data[1],
-            l2DestinationToken: data[2],
-            requester: data[3],
-            provider: data[4],
-            totalAmount: data[5],
-            ctAmount: data[6],
-            l1ChainId: data[7],
-            l2DestinationChainId: data[8],
-            hashValue: data[9],
-          }
+        // Fetch requests from all L2 chains
+        for (const { chainId: sourceChainId, config } of l2Chains) {
+          const contractAddress = config.contracts.L2_CROSS_TRADE
+          if (!contractAddress || contractAddress === '') continue
 
-          // If provider is not zero address, it's fulfilled
-          if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
-            newFulfilled.add(saleCount)
-            continue // skip fulfilled
-          }
+          console.log(`Fetching from ${config.displayName} (${sourceChainId}): ${contractAddress}`)
 
-          requestsArray.push({ saleCount, data: requestData })
+          try {
+            // For each source chain, check requests going to all possible destinations
+            for (const destinationChainId of allDestinationChainIds) {
+              try {
+                // Get the current saleCount for requests going to this destination
+                const currentSaleCount = await publicClient.readContract({
+                  address: contractAddress as `0x${string}`,
+                  abi: [
+                    {
+                      inputs: [{ type: 'uint256', name: 'chainId' }],
+                      name: 'saleCountChainId',
+                      outputs: [{ type: 'uint256', name: '' }],
+                      stateMutability: 'view',
+                      type: 'function',
+                    },
+                  ],
+                  functionName: 'saleCountChainId',
+                  args: [BigInt(destinationChainId)],
+                }) as bigint
+
+                const totalRequests = Number(currentSaleCount)
+                if (totalRequests > 0) {
+                  console.log(`${config.displayName} → Destination ${destinationChainId}: Found ${totalRequests} total requests`)
+                }
+
+                // Fetch individual requests for this source->destination pair
+                for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
+                  const requestKey = `${sourceChainId}_${destinationChainId}_${saleCount}`
+                  if (!fullRefresh && fulfilledSaleCounts.has(Number(requestKey))) continue // skip known fulfilled
+                  
+                  try {
+                    const data = await publicClient.readContract({
+                      address: contractAddress as `0x${string}`,
+                      abi: [
+                        {
+                          inputs: [
+                            { type: 'uint256', name: 'chainId' },
+                            { type: 'uint256', name: 'saleCount' }
+                          ],
+                          name: 'dealData',
+                          outputs: [
+                            { type: 'address', name: 'l1token' },
+                            { type: 'address', name: 'l2SourceToken' },
+                            { type: 'address', name: 'l2DestinationToken' },
+                            { type: 'address', name: 'requester' },
+                            { type: 'address', name: 'receiver' },
+                            { type: 'address', name: 'provider' },
+                            { type: 'uint256', name: 'totalAmount' },
+                            { type: 'uint256', name: 'ctAmount' },
+                            { type: 'uint256', name: 'l1ChainId' },
+                            { type: 'uint256', name: 'l2DestinationChainId' },
+                            { type: 'bytes32', name: 'hashValue' },
+                          ],
+                          stateMutability: 'view',
+                          type: 'function',
+                        },
+                      ],
+                      functionName: 'dealData',
+                      args: [BigInt(destinationChainId), BigInt(saleCount)],
+                    }) as readonly [string, string, string, string, string, string, bigint, bigint, bigint, bigint, string]
+
+                    // Convert the tuple to RequestData object
+                    const requestData: RequestData = {
+                      l1token: data[0],
+                      l2SourceToken: data[1],
+                      l2DestinationToken: data[2],
+                      requester: data[3],
+                      receiver: data[4],
+                      provider: data[5],
+                      totalAmount: data[6],
+                      ctAmount: data[7],
+                      l1ChainId: data[8],
+                      l2DestinationChainId: data[9],
+                      hashValue: data[10],
+                    }
+
+                    // If provider is not zero address, it's fulfilled
+                    if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
+                      newFulfilled.add(Number(requestKey))
+                      continue // skip fulfilled
+                    }
+
+                    // Only add if there's actual data (not empty request)
+                    if (requestData.l1token !== '0x0000000000000000000000000000000000000000') {
+                      allRequestsArray.push({ 
+                        saleCount, 
+                        chainId: sourceChainId, 
+                        chainName: config.displayName,
+                        data: requestData 
+                      })
+                    }
+                  } catch (err) {
+                    console.error(`Error fetching request ${saleCount} from ${config.displayName} to ${destinationChainId}:`, err)
+                  }
+                }
+              } catch (err) {
+                console.error(`Error fetching saleCount from ${config.displayName} to ${destinationChainId}:`, err)
+              }
+            }
         } catch (err) {
-          console.error(`Error fetching request ${saleCount}:`, err)
-          requestsArray.push({ saleCount, data: null })
+          console.error(`Error fetching from ${config.displayName}:`, err)
         }
       }
 
       // Sort by sale count descending (newest first)
-      const sortedRequests = requestsArray.sort((a, b) => b.saleCount - a.saleCount)
+      const sortedRequests = allRequestsArray.sort((a, b) => b.saleCount - a.saleCount)
       setRequests(sortedRequests)
       
       // Update fulfilled cache
@@ -212,7 +265,7 @@ export const RequestPool = () => {
         localStorage.setItem(FULFILLED_KEY, JSON.stringify(Array.from(newFulfilled)))
       }
 
-      console.log(`Found ${sortedRequests.length} pending requests`)
+      console.log(`Found ${sortedRequests.length} pending requests across all chains`)
     } catch (err: any) {
       setError(err.message || 'Failed to fetch requests')
       console.error('Error fetching all requests:', err)
@@ -222,11 +275,11 @@ export const RequestPool = () => {
   }
 
   useEffect(() => {
-    if (currentSaleCount && Number(currentSaleCount) > 0) {
+    if (l2Chains.length > 0) {
       fetchAllRequests(forceRefresh)
       if (forceRefresh) setForceRefresh(false)
     }
-  }, [currentSaleCount, forceRefresh])
+  }, [forceRefresh]) // Only depend on forceRefresh, fetch on component mount
 
   const handleProvide = (request: Request) => {
     setSelectedRequest(request)
@@ -267,6 +320,11 @@ export const RequestPool = () => {
       <div className="content">
         <h1 className="page-title">Cross Trade Requests</h1>
         <p className="page-subtitle">Provide liquidity for a cross trade request and receive it back on L2 with a service fee.</p>
+        
+        {/* Debug info - show which chains are being queried */}
+        <div className="debug-info">
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => chain.config.displayName).join(', ')}</p>
+        </div>
         
         <div className="pool-container">
           {loading && (
@@ -318,7 +376,7 @@ export const RequestPool = () => {
               <div className="header-cell token-col">Token</div>
               <div className="header-cell provide-col">Provide On</div>
               <div className="header-cell reward-col">Reward On</div>
-              <div className="header-cell request-col">Request on</div>
+              <div className="header-cell request-col">Request From</div>
               <div className="header-cell action-col"></div>
             </div>
 
@@ -334,7 +392,7 @@ export const RequestPool = () => {
                 const profitPercentage = ((Number(serviceFeeBigInt) / Number(data.totalAmount)) * 100).toFixed(2)
 
                 return (
-                  <div key={`request-${request.saleCount}`} className="table-row">
+                  <div key={`request-${request.chainId}-${request.saleCount}`} className="table-row">
                     {/* Token Column */}
                     <div className="table-cell token-col">
                       <div className="token-info">
@@ -366,19 +424,33 @@ export const RequestPool = () => {
                       </div>
                     </div>
 
-                    {/* Request On Column */}
+                    {/* Request From Column */}
                     <div className="table-cell request-col">
-                      <span className="amount-value">{totalAmount}</span>
+                      <div className="chain-info">
+                        <span className="chain-icon">{getChainEmoji(request.chainName)}</span>
+                        <span className="chain-name">{request.chainName}</span>
+                      </div>
                     </div>
 
                     {/* Action Column */}
                     <div className="table-cell action-col">
-                      <button 
-                        onClick={() => handleProvide(request)}
-                        className="provide-btn"
-                      >
-                        Provide
-                      </button>
+                      {request.data && connectedAddress && 
+                       request.data.requester.toLowerCase() === connectedAddress.toLowerCase() ? (
+                        <button 
+                          className="pending-btn"
+                          disabled
+                          title="You cannot provide liquidity for your own request"
+                        >
+                          Pending
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => handleProvide(request)}
+                          className="provide-btn"
+                        >
+                          Provide
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
@@ -409,10 +481,13 @@ export const RequestPool = () => {
           onClose={handleCloseProvideModal}
           requestData={{
             saleCount: selectedRequest.saleCount,
+            chainId: selectedRequest.chainId,
+            chainName: selectedRequest.chainName,
             l1token: selectedRequest.data.l1token,
             l2SourceToken: selectedRequest.data.l2SourceToken,
             l2DestinationToken: selectedRequest.data.l2DestinationToken,
             requester: selectedRequest.data.requester,
+            receiver: selectedRequest.data.receiver,
             totalAmount: selectedRequest.data.totalAmount,
             ctAmount: selectedRequest.data.ctAmount,
             l1ChainId: selectedRequest.data.l1ChainId,
@@ -470,9 +545,24 @@ export const RequestPool = () => {
         .page-subtitle {
           color: #9ca3af;
           font-size: 16px;
-          margin-bottom: 40px;
+          margin-bottom: 20px;
           text-align: center;
           max-width: 600px;
+        }
+
+        .debug-info {
+          color: #6b7280;
+          font-size: 14px;
+          margin-bottom: 40px;
+          text-align: center;
+          padding: 8px 16px;
+          background: rgba(20, 20, 20, 0.6);
+          border-radius: 8px;
+          border: 1px solid #333333;
+        }
+
+        .debug-info p {
+          margin: 0;
         }
 
         .pool-container {
@@ -667,6 +757,22 @@ export const RequestPool = () => {
           background: #1d4ed8;
         }
 
+        .pending-btn {
+          background: #6b7280;
+          color: #d1d5db;
+          border: none;
+          border-radius: 6px;
+          padding: 8px 16px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: not-allowed;
+          transition: all 0.2s ease;
+        }
+
+        .pending-btn:hover {
+          background: #6b7280;
+        }
+
         .refresh-buttons {
           display: flex;
           justify-content: center;
@@ -744,7 +850,8 @@ export const RequestPool = () => {
             display: none;
           }
           
-          .provide-btn {
+          .provide-btn,
+          .pending-btn {
             padding: 6px 12px;
             font-size: 12px;
           }

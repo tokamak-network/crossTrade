@@ -96,6 +96,8 @@ export const RequestDetailsModal = ({ isOpen, onClose }: RequestDetailsModalProp
               <div>{event.args._l2DestinationToken}</div>
               <div className="font-semibold">Requester:</div>
               <div>{event.args._requester}</div>
+              <div className="font-semibold">Receiver:</div>
+              <div>{event.args._receiver}</div>
               <div className="font-semibold">Total Amount:</div>
               <div>{event.args._totalAmount.toString()}</div>
               <div className="font-semibold">CT Amount:</div>

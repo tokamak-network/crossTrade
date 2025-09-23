@@ -14,6 +14,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     l1token: '',
     l2SourceToken: '',
     l2DestinationToken: '',
+    receiver: '',
     totalAmount: '',
     ctAmount: '',
     l1ChainId: '',
@@ -27,7 +28,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     e.preventDefault()
     
     if (!formData.l1token || !formData.l2SourceToken || !formData.l2DestinationToken || 
-        !formData.totalAmount || !formData.ctAmount || !formData.l1ChainId || !formData.l2DestinationChainId) {
+        !formData.receiver || !formData.totalAmount || !formData.ctAmount || !formData.l1ChainId || !formData.l2DestinationChainId) {
       alert('Please fill in all fields')
       return
     }
@@ -40,6 +41,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
         formData.l1token as `0x${string}`,
         formData.l2SourceToken as `0x${string}`,
         formData.l2DestinationToken as `0x${string}`,
+        formData.receiver as `0x${string}`,
         BigInt(formData.totalAmount),
         BigInt(formData.ctAmount),
         BigInt(formData.l1ChainId),
@@ -104,6 +106,19 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
               type="text"
               value={formData.l2DestinationToken}
               onChange={(e) => handleInputChange('l2DestinationToken', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base bg-gray-50"
+              placeholder="0x..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-base font-semibold text-gray-800">
+              Receiver Address
+            </label>
+            <input
+              type="text"
+              value={formData.receiver}
+              onChange={(e) => handleInputChange('receiver', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base bg-gray-50"
               placeholder="0x..."
             />

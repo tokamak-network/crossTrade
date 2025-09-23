@@ -1,14 +1,45 @@
 'use client'
 
+import { useState } from 'react'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { PROVIDE_CT_ABI, getContractAddress, getAllChains } from '@/config/contracts'
+
+// ERC20 ABI for approve and allowance functions
+const ERC20_ABI = [
+  {
+    inputs: [
+      { internalType: 'address', name: 'spender', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' }
+    ],
+    name: 'approve',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'spender', type: 'address' }
+    ],
+    name: 'allowance',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+] as const
+
 interface ReviewProvideModalProps {
   isOpen: boolean
   onClose: () => void
   requestData: {
     saleCount: number
+    chainId: number
+    chainName: string
     l1token: string
     l2SourceToken: string
     l2DestinationToken: string
     requester: string
+    receiver: string
     totalAmount: bigint
     ctAmount: bigint
     l1ChainId: bigint
@@ -18,7 +49,80 @@ interface ReviewProvideModalProps {
 }
 
 export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvideModalProps) => {
+  const [riskUnderstood, setRiskUnderstood] = useState(false)
+  const [approvalStep, setApprovalStep] = useState<'checking' | 'needed' | 'approving' | 'approved'>('checking')
+  
+  // Wagmi hooks for contract interaction
+  const { writeContract, isPending, data: hash, error: writeError } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess, error: receiptError } = useWaitForTransactionReceipt({
+    hash,
+  })
+  
+  // Wallet connection hooks
+  const { address, isConnected, chain } = useAccount()
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
+
+  // Get L1 contract address using the L1 chain ID from request data
+  const l1ChainId = Number(requestData.l1ChainId)
+  const L1_CONTRACT_ADDRESS = getContractAddress(l1ChainId, 'L1_CROSS_TRADE')
+  
+  // Check if it's an ETH transaction
+  const isETH = requestData.l1token === '0x0000000000000000000000000000000000000000'
+  
+  // Check current allowance for ERC20 tokens
+  const { data: currentAllowance, refetch: refetchAllowance } = useReadContract({
+    address: isETH ? undefined : requestData.l1token as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: 'allowance',
+    args: isETH || !address || !L1_CONTRACT_ADDRESS ? undefined : [address, L1_CONTRACT_ADDRESS as `0x${string}`],
+    chainId: l1ChainId,
+    query: {
+      enabled: !isETH && !!address && !!L1_CONTRACT_ADDRESS
+    }
+  })
+
+  // Get the edited CT amount from L1 contract
+  const { data: editedCtAmount, refetch: refetchEditedAmount } = useReadContract({
+    address: L1_CONTRACT_ADDRESS as `0x${string}`,
+    abi: [
+      {
+        inputs: [{ type: 'bytes32', name: '' }],
+        name: 'editCtAmount',
+        outputs: [{ type: 'uint256', name: '' }],
+        stateMutability: 'view',
+        type: 'function'
+      }
+    ] as const,
+    functionName: 'editCtAmount',
+    args: [requestData.hashValue as `0x${string}`],
+    chainId: l1ChainId,
+    query: {
+      enabled: !!L1_CONTRACT_ADDRESS && !!requestData.hashValue
+    }
+  })
+
   if (!isOpen) return null
+  
+  console.log('🔍 ReviewProvideModal render state:')
+  console.log('  - isOpen:', isOpen)
+  console.log('  - riskUnderstood:', riskUnderstood)
+  console.log('  - isPending:', isPending)
+  console.log('  - isConfirming:', isConfirming)
+  console.log('  - isSuccess:', isSuccess)
+  console.log('  - L1_CONTRACT_ADDRESS:', L1_CONTRACT_ADDRESS)
+  console.log('  - Wallet connected:', isConnected)
+  console.log('  - Wallet address:', address)
+  console.log('  - Current chain:', chain)
+  console.log('  - Chain ID:', chainId)
+  console.log('  - Write error:', writeError)
+  console.log('  - Receipt error:', receiptError)
+  console.log('  - Transaction hash:', hash)
+  console.log('  - Is ETH transaction:', isETH)
+  console.log('  - Current allowance:', currentAllowance?.toString())
+  console.log('  - Approval step:', approvalStep)
+  console.log('  - Edited CT Amount from L1:', editedCtAmount?.toString())
+  console.log('  - requestData:', requestData)
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
@@ -40,14 +144,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   // Helper function to get chain name from chain ID
   const getChainName = (chainId: bigint) => {
     const chainIdNum = Number(chainId)
-    switch (chainIdNum) {
-      case 11155111: return 'Ethereum Sepolia'
-      case 11155420: return 'Optimism Sepolia'
-      case 111551119090: return 'Thanos Sepolia'
-      case 123444: return 'GeorgeChain'
-      case 1235555: return 'MonicaChain'
-      default: return `Chain ${chainId}`
-    }
+    const allChains = getAllChains()
+    const chain = allChains.find(c => c.chainId === chainIdNum)
+    return chain ? chain.name : `Chain ${chainId}`
   }
 
   // Helper function to get chain icon
@@ -66,11 +165,188 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const rewardAmount = formatTokenAmount(requestData.ctAmount, requestData.l2DestinationToken)
   const provideChain = getChainName(BigInt(11155111)) // Always Ethereum for L1
   const rewardChain = getChainName(requestData.l2DestinationChainId)
-  const requestChain = getChainName(requestData.l2DestinationChainId)
+  const sourceChain = requestData.chainName // Source chain from request data
 
-  // Calculate cross chain path
-  const crossChainPath = `${getChainName(BigInt(123444))} → ${rewardChain}` // GeorgeChain to destination
-  const sendToAddress = requestData.requester.slice(0, 6) + '...' + requestData.requester.slice(-4)
+  // Calculate cross chain path - source chain to destination chain
+  const crossChainPath = `${sourceChain} → ${getChainName(requestData.l2DestinationChainId)}`
+  const sendToAddress = requestData.receiver.slice(0, 6) + '...' + requestData.receiver.slice(-4)
+  
+  // Check approval status
+  const needsApproval = !isETH && currentAllowance !== undefined && currentAllowance < requestData.ctAmount
+  
+  // Handle approval function
+  const handleApproval = async () => {
+    if (isETH) return // No approval needed for ETH
+    
+    console.log('🔐 Starting approval process...')
+    setApprovalStep('approving')
+    
+    try {
+      await writeContract({
+        address: requestData.l1token as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        chainId: l1ChainId,
+        args: [L1_CONTRACT_ADDRESS as `0x${string}`, requestData.ctAmount]
+      })
+      
+      console.log('✅ Approval transaction submitted')
+      setApprovalStep('approved')
+      
+      // Wait for approval to be mined and refetch allowance
+      setTimeout(() => {
+        refetchAllowance()
+      }, 3000)
+      
+    } catch (error) {
+      console.error('❌ Approval failed:', error)
+      setApprovalStep('needed')
+      alert(`Approval failed: ${error?.message || 'Unknown error'}`)
+    }
+  }
+  
+  // Handle provide CT function
+  const handleProvideCT = async () => {
+    console.log('🔥 handleProvideCT called')
+    console.log('riskUnderstood:', riskUnderstood)
+    console.log('L1_CONTRACT_ADDRESS:', L1_CONTRACT_ADDRESS)
+    console.log('Wallet connected:', isConnected)
+    console.log('Current chain ID:', chainId)
+    console.log('Target L1 chain ID:', l1ChainId)
+    
+    if (!riskUnderstood) {
+      console.log('❌ Risk not understood, returning')
+      return
+    }
+    
+    if (!L1_CONTRACT_ADDRESS) {
+      console.log('❌ No L1 contract address, returning')
+      return
+    }
+    
+    if (!isConnected) {
+      console.log('❌ Wallet not connected, returning')
+      alert('Please connect your wallet first!')
+      return
+    }
+    
+    if (chainId !== l1ChainId) {
+      console.log(`❌ Wrong network. Current: ${chainId}, Required: ${l1ChainId} (L1 Chain)`)
+      console.log('🔄 Attempting to switch network automatically...')
+      
+      try {
+        await switchChain({ chainId: l1ChainId })
+        console.log('✅ Network switched successfully')
+        // Wait a moment for the network switch to complete
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      } catch (error) {
+        console.error('❌ Failed to switch network:', error)
+        alert(`Please manually switch to L1 network (Chain ID: ${l1ChainId}) in your wallet`)
+        return
+      }
+    }
+    
+    // Check if approval is needed for ERC20 tokens
+    if (!isETH && needsApproval) {
+      console.log('❌ Approval needed first')
+      alert('Please approve the token spending first!')
+      return
+    }
+    
+    console.log('✅ All checks passed, proceeding with contract call')
+    
+    // Use the editedCtAmount directly from L1 contract (0 means not edited, >0 means edited)
+    const finalEditedCtAmount = editedCtAmount !== undefined ? editedCtAmount : BigInt(0)
+    
+    // Log all individual contract arguments with labels
+    console.log('📋 Contract Arguments Breakdown:')
+    console.log('  [0] _l1token:', requestData.l1token)
+    console.log('  [1] _l2SourceToken:', requestData.l2SourceToken)
+    console.log('  [2] _l2DestinationToken:', requestData.l2DestinationToken)
+    console.log('  [3] _requestor:', requestData.requester)
+    console.log('  [4] _receiver:', requestData.receiver)
+    console.log('  [5] _totalAmount:', requestData.totalAmount.toString())
+    console.log('  [6] _initialctAmount:', requestData.ctAmount.toString())
+    console.log('  [7] _editedctAmount:', finalEditedCtAmount.toString(), editedCtAmount && editedCtAmount > 0n ? '(edited fee)' : '(not edited - 0)')
+    console.log('  [8] _saleCount:', requestData.saleCount.toString())
+    console.log('  [9] _l2SourceChainId:', requestData.chainId.toString())
+    console.log('  [10] _l2DestinationChainId:', requestData.l2DestinationChainId.toString())
+    console.log('  [11] _minGasLimit:', '200000')
+    console.log('  [12] _hash:', requestData.hashValue)
+    
+    console.log('🔍 EditedCtAmount Details:')
+    console.log('  - Raw editedCtAmount from L1:', editedCtAmount?.toString())
+    console.log('  - Initial ctAmount:', requestData.ctAmount.toString())
+    console.log('  - Final editedCtAmount used:', finalEditedCtAmount.toString())
+    console.log('  - Logic: 0 = not edited, >0 = edited fee')
+    
+    const contractArgs = [
+      requestData.l1token as `0x${string}`,
+      requestData.l2SourceToken as `0x${string}`,
+      requestData.l2DestinationToken as `0x${string}`,
+      requestData.requester as `0x${string}`,
+      requestData.receiver as `0x${string}`,
+      requestData.totalAmount,
+      requestData.ctAmount,
+      finalEditedCtAmount, // _editedctAmount - from L1 contract or fallback to initial
+      BigInt(requestData.saleCount),
+      BigInt(requestData.chainId), // l2SourceChainId
+      requestData.l2DestinationChainId,
+      200000, // minGasLimit
+      requestData.hashValue as `0x${string}`
+    ]
+    
+    console.log('📦 Final contractArgs array:', contractArgs)
+    
+    const txValue = isETH ? requestData.ctAmount : BigInt(0)
+    
+    console.log('📋 Contract call details:')
+    console.log('  - Contract Address:', L1_CONTRACT_ADDRESS)
+    console.log('  - Chain ID: 11155111 (Ethereum Sepolia)')
+    console.log('  - Is ETH transaction:', isETH)
+    console.log('  - Transaction value:', txValue.toString())
+    console.log('  - Request data:', requestData)
+    console.log('  - Contract args:', contractArgs)
+    
+    try {
+      console.log('🚀 Calling writeContract...')
+      console.log('🔧 writeContract parameters:', {
+        address: L1_CONTRACT_ADDRESS,
+        functionName: 'provideCT',
+        chainId: l1ChainId,
+        value: txValue.toString(),
+        args: contractArgs
+      })
+      
+      const result = await writeContract({
+        address: L1_CONTRACT_ADDRESS as `0x${string}`,
+        abi: PROVIDE_CT_ABI,
+        functionName: 'provideCT',
+        chainId: l1ChainId, // Use L1 chain ID from request data
+        value: txValue,
+        args: contractArgs
+      })
+      console.log('✅ writeContract successful, result:', result)
+      console.log('📝 Transaction should appear in wallet for confirmation')
+    } catch (error) {
+      console.error('❌ Error providing CT:', error)
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        cause: error?.cause,
+        stack: error?.stack
+      })
+      
+      // Show user-friendly error message
+      if (error?.message?.includes('User rejected')) {
+        alert('Transaction was rejected by user')
+      } else if (error?.message?.includes('insufficient funds')) {
+        alert('Insufficient funds for transaction')
+      } else {
+        alert(`Transaction failed: ${error?.message || 'Unknown error'}`)
+      }
+    }
+  }
   
   // Network fee calculation (example)
   const networkFee = '0.0012 ETH'
@@ -127,12 +403,12 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               <span className="help-icon">ⓘ</span>
             </div>
             <div className="amount-display">
-              <span className="amount-value">{rewardAmount} USDC</span>
+              <span className="amount-value">{provideAmount} USDC</span>
               <div className="chain-badge">
-                <span className="chain-icon">{getChainIcon(requestChain)}</span>
+                <span className="chain-icon">{getChainIcon(sourceChain)}</span>
               </div>
             </div>
-            <div className="chain-name-display">{requestChain}</div>
+            <div className="chain-name-display">{sourceChain}</div>
             <div className="amount-usd">($99.00)</div>
           </div>
 
@@ -166,8 +442,53 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
           {/* Action Buttons */}
           <div className="action-buttons">
-            <button className="understand-btn">I understand the risk</button>
-            <button className="provide-btn">Provide</button>
+            <label className="understand-checkbox">
+              <input 
+                type="checkbox" 
+                checked={riskUnderstood} 
+                onChange={(e) => setRiskUnderstood(e.target.checked)}
+              />
+              <span className="checkmark"></span>
+              I understand the risk
+            </label>
+            
+            {/* Approval Button (for ERC20 tokens only) */}
+            {!isETH && needsApproval && (
+              <button 
+                type="button"
+                className="approve-btn"
+                disabled={!riskUnderstood || approvalStep === 'approving'}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('🔐 Approve button clicked!')
+                  handleApproval()
+                }}
+              >
+                {approvalStep === 'approving' ? 'Approving...' : 'Approve Token Spending'}
+              </button>
+            )}
+            
+            {/* Provide Button */}
+            <button 
+              type="button"
+              className={`provide-btn ${riskUnderstood && (!needsApproval || isETH) ? 'active' : ''}`}
+              disabled={!riskUnderstood || isPending || isConfirming || (!isETH && needsApproval)}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('🖱️ Provide button clicked!')
+                console.log('  - Button disabled?', !riskUnderstood || isPending || isConfirming || (!isETH && needsApproval))
+                console.log('  - riskUnderstood:', riskUnderstood)
+                console.log('  - isPending:', isPending)
+                console.log('  - isConfirming:', isConfirming)
+                console.log('  - needsApproval:', needsApproval)
+                console.log('  - isETH:', isETH)
+                handleProvideCT()
+              }}
+            >
+              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : isSuccess ? 'Success!' : 'Provide'}
+            </button>
           </div>
         </div>
       </div>
@@ -406,25 +727,57 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         .action-buttons {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
           margin-top: 6px;
         }
 
-        .understand-btn {
-          background: #1a1a1a;
+        .understand-checkbox {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
           color: #ffffff;
-          border: 1px solid #333333;
-          border-radius: 8px;
-          padding: 10px 20px;
           font-size: 14px;
           font-weight: 600;
+          user-select: none;
+        }
+
+        .understand-checkbox input[type="checkbox"] {
+          position: absolute;
+          opacity: 0;
           cursor: pointer;
+        }
+
+        .checkmark {
+          position: relative;
+          height: 20px;
+          width: 20px;
+          background-color: #1a1a1a;
+          border: 2px solid #333333;
+          border-radius: 4px;
           transition: all 0.2s ease;
         }
 
-        .understand-btn:hover {
-          background: #262626;
+        .understand-checkbox:hover .checkmark {
           border-color: #6366f1;
+        }
+
+        .understand-checkbox input:checked ~ .checkmark {
+          background-color: #6366f1;
+          border-color: #6366f1;
+        }
+
+        .understand-checkbox input:checked ~ .checkmark:after {
+          content: "";
+          position: absolute;
+          display: block;
+          left: 6px;
+          top: 2px;
+          width: 6px;
+          height: 10px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
         }
 
         .provide-btn {
@@ -439,17 +792,46 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
           transition: all 0.2s ease;
         }
 
-        .provide-btn:hover {
+        .provide-btn:disabled {
+          background: #374151;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+
+        .provide-btn:hover:not(:disabled) {
           background: #4b5563;
         }
 
         /* Active state for provide button after understanding risk */
-        .provide-btn.active {
+        .provide-btn.active:not(:disabled) {
           background: #6366f1;
+          cursor: pointer;
         }
 
-        .provide-btn.active:hover {
+        .provide-btn.active:hover:not(:disabled) {
           background: #5855eb;
+        }
+
+        .approve-btn {
+          background: #f59e0b;
+          color: #ffffff;
+          border: none;
+          border-radius: 8px;
+          padding: 12px 20px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .approve-btn:disabled {
+          background: #fbbf24;
+          color: #92400e;
+          cursor: not-allowed;
+        }
+
+        .approve-btn:hover:not(:disabled) {
+          background: #d97706;
         }
       `}</style>
     </div>

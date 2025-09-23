@@ -23,7 +23,7 @@ export interface ChainConfigs {
 // Function to load and parse chain configuration from environment variables
 const loadChainConfig = (): ChainConfigs => {
   const chainConfigEnv = process.env.NEXT_PUBLIC_CHAIN_CONFIG;
-  
+  console.log("in contracts.ts config:", chainConfigEnv);
   if (!chainConfigEnv) {
     console.warn('NEXT_PUBLIC_CHAIN_CONFIG not found in environment variables, using fallback configuration');
     // Fallback configuration
@@ -32,7 +32,7 @@ const loadChainConfig = (): ChainConfigs => {
         name: 'Optimism Sepolia',
         displayName: 'Optimism',
         contracts: {
-          L2_CROSS_TRADE: "0x68664Cf56aD3B2c651953c392642fcf8DeF3b346",
+          L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB",
         },
         tokens: {
           ETH: '0x0000000000000000000000000000000000000000',
@@ -45,7 +45,7 @@ const loadChainConfig = (): ChainConfigs => {
         name: 'Ethereum Sepolia',
         displayName: 'Ethereum',
         contracts: {
-          L1_CROSS_TRADE: '0x0000000000000000000000000000000000000000',
+          L1_CROSS_TRADE: '0xDa2CbF69352cB46d9816dF934402b421d93b6BC2',
         },
         tokens: {
           ETH: '0x0000000000000000000000000000000000000000',
@@ -68,7 +68,7 @@ const loadChainConfig = (): ChainConfigs => {
         name: 'Optimism Sepolia',
         displayName: 'Optimism',
         contracts: {
-          L2_CROSS_TRADE: "0x68664Cf56aD3B2c651953c392642fcf8DeF3b346",
+          L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB",
         },
         tokens: {
           ETH: '0x0000000000000000000000000000000000000000',
@@ -89,7 +89,7 @@ export const CHAIN_CONFIG = chainConfigs;
 
 // Legacy contract addresses (for backward compatibility)
 export const CONTRACTS = {
-  L2_CROSS_TRADE: "0xc0c33138355e061511f8954c114edc7c9e7bfac4", 
+  L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB", 
 } as const;
 
 // Dynamic chain name to ID mapping based on loaded configuration
@@ -176,6 +176,11 @@ export const L2_CROSS_TRADE_ABI = [
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_totalAmount",
         "type": "uint256"
@@ -203,6 +208,58 @@ export const L2_CROSS_TRADE_ABI = [
   }
 ] as const; 
 
+// ABI for the requestNonRegisteredToken function (same signature as requestRegisteredToken)
+export const L2_CROSS_TRADE_NON_REGISTERED_ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_l1token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2SourceToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2DestinationToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_ctAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_l1ChainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_l2DestinationChainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestNonRegisteredToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+] as const;
+
 // ABI for the RequestCT event only (as array)
 export const REQUEST_CT_EVENT_ABI = [
   {
@@ -212,6 +269,7 @@ export const REQUEST_CT_EVENT_ABI = [
       { indexed: false, internalType: "address", name: "_l2SourceToken", type: "address" },
       { indexed: false, internalType: "address", name: "_l2DestinationToken", type: "address" },
       { indexed: false, internalType: "address", name: "_requester", type: "address" },
+      { indexed: false, internalType: "address", name: "_receiver", type: "address" },
       { indexed: false, internalType: "uint256", name: "_totalAmount", type: "uint256" },
       { indexed: false, internalType: "uint256", name: "_ctAmount", type: "uint256" },
       { indexed: true, internalType: "uint256", name: "_saleCount", type: "uint256" },
@@ -233,8 +291,10 @@ export const PROVIDE_CT_ABI = [
       { "internalType": "address", "name": "_l2SourceToken", "type": "address" },
       { "internalType": "address", "name": "_l2DestinationToken", "type": "address" },
       { "internalType": "address", "name": "_requestor", "type": "address" },
+      { "internalType": "address", "name": "_receiver", "type": "address" },
       { "internalType": "uint256", "name": "_totalAmount", "type": "uint256" },
       { "internalType": "uint256", "name": "_initialctAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_editedctAmount", "type": "uint256" },
       { "internalType": "uint256", "name": "_saleCount", "type": "uint256" },
       { "internalType": "uint256", "name": "_l2SourceChainId", "type": "uint256" },
       { "internalType": "uint256", "name": "_l2DestinationChainId", "type": "uint256" },
@@ -253,12 +313,15 @@ export const EDIT_FEE_ABI = [
   {
     "inputs": [
       { "internalType": "address", "name": "_l1token", "type": "address" },
-      { "internalType": "address", "name": "_l2token", "type": "address" },
+      { "internalType": "address", "name": "_l2SourceToken", "type": "address" },
+      { "internalType": "address", "name": "_l2DestinationToken", "type": "address" },
+      { "internalType": "address", "name": "_receiver", "type": "address" },
       { "internalType": "uint256", "name": "_totalAmount", "type": "uint256" },
       { "internalType": "uint256", "name": "_initialctAmount", "type": "uint256" },
       { "internalType": "uint256", "name": "_editedctAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "_salecount", "type": "uint256" },
-      { "internalType": "uint256", "name": "_l2chainId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_saleCount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_l2SourceChainId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_l2DestinationChainId", "type": "uint256" },
       { "internalType": "bytes32", "name": "_hash", "type": "bytes32" }
     ],
     "name": "editFee",
