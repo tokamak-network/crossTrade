@@ -104,25 +104,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
   if (!isOpen) return null
   
-  console.log('🔍 ReviewProvideModal render state:')
-  console.log('  - isOpen:', isOpen)
-  console.log('  - riskUnderstood:', riskUnderstood)
-  console.log('  - isPending:', isPending)
-  console.log('  - isConfirming:', isConfirming)
-  console.log('  - isSuccess:', isSuccess)
-  console.log('  - L1_CONTRACT_ADDRESS:', L1_CONTRACT_ADDRESS)
-  console.log('  - Wallet connected:', isConnected)
-  console.log('  - Wallet address:', address)
-  console.log('  - Current chain:', chain)
-  console.log('  - Chain ID:', chainId)
-  console.log('  - Write error:', writeError)
-  console.log('  - Receipt error:', receiptError)
-  console.log('  - Transaction hash:', hash)
-  console.log('  - Is ETH transaction:', isETH)
-  console.log('  - Current allowance:', currentAllowance?.toString())
-  console.log('  - Approval step:', approvalStep)
-  console.log('  - Edited CT Amount from L1:', editedCtAmount?.toString())
-  console.log('  - requestData:', requestData)
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
@@ -178,7 +159,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const handleApproval = async () => {
     if (isETH) return // No approval needed for ETH
     
-    console.log('🔐 Starting approval process...')
     setApprovalStep('approving')
     
     try {
@@ -190,7 +170,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         args: [L1_CONTRACT_ADDRESS as `0x${string}`, requestData.ctAmount]
       })
       
-      console.log('✅ Approval transaction submitted')
       setApprovalStep('approved')
       
       // Wait for approval to be mined and refetch allowance
@@ -207,36 +186,24 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   
   // Handle provide CT function
   const handleProvideCT = async () => {
-    console.log('🔥 handleProvideCT called')
-    console.log('riskUnderstood:', riskUnderstood)
-    console.log('L1_CONTRACT_ADDRESS:', L1_CONTRACT_ADDRESS)
-    console.log('Wallet connected:', isConnected)
-    console.log('Current chain ID:', chainId)
-    console.log('Target L1 chain ID:', l1ChainId)
     
     if (!riskUnderstood) {
-      console.log('❌ Risk not understood, returning')
       return
     }
     
     if (!L1_CONTRACT_ADDRESS) {
-      console.log('❌ No L1 contract address, returning')
       return
     }
     
     if (!isConnected) {
-      console.log('❌ Wallet not connected, returning')
       alert('Please connect your wallet first!')
       return
     }
     
     if (chainId !== l1ChainId) {
-      console.log(`❌ Wrong network. Current: ${chainId}, Required: ${l1ChainId} (L1 Chain)`)
-      console.log('🔄 Attempting to switch network automatically...')
       
       try {
         await switchChain({ chainId: l1ChainId })
-        console.log('✅ Network switched successfully')
         // Wait a moment for the network switch to complete
         await new Promise(resolve => setTimeout(resolve, 1000))
       } catch (error) {
@@ -248,37 +215,15 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     
     // Check if approval is needed for ERC20 tokens
     if (!isETH && needsApproval) {
-      console.log('❌ Approval needed first')
       alert('Please approve the token spending first!')
       return
     }
     
-    console.log('✅ All checks passed, proceeding with contract call')
     
     // Use the editedCtAmount directly from L1 contract (0 means not edited, >0 means edited)
     const finalEditedCtAmount = editedCtAmount !== undefined ? editedCtAmount : BigInt(0)
     
-    // Log all individual contract arguments with labels
-    console.log('📋 Contract Arguments Breakdown:')
-    console.log('  [0] _l1token:', requestData.l1token)
-    console.log('  [1] _l2SourceToken:', requestData.l2SourceToken)
-    console.log('  [2] _l2DestinationToken:', requestData.l2DestinationToken)
-    console.log('  [3] _requestor:', requestData.requester)
-    console.log('  [4] _receiver:', requestData.receiver)
-    console.log('  [5] _totalAmount:', requestData.totalAmount.toString())
-    console.log('  [6] _initialctAmount:', requestData.ctAmount.toString())
-    console.log('  [7] _editedctAmount:', finalEditedCtAmount.toString(), editedCtAmount && editedCtAmount > BigInt(0) ? '(edited fee)' : '(not edited - 0)')
-    console.log('  [8] _saleCount:', requestData.saleCount.toString())
-    console.log('  [9] _l2SourceChainId:', requestData.chainId.toString())
-    console.log('  [10] _l2DestinationChainId:', requestData.l2DestinationChainId.toString())
-    console.log('  [11] _minGasLimit:', '200000')
-    console.log('  [12] _hash:', requestData.hashValue)
-    
-    console.log('🔍 EditedCtAmount Details:')
-    console.log('  - Raw editedCtAmount from L1:', editedCtAmount?.toString())
-    console.log('  - Initial ctAmount:', requestData.ctAmount.toString())
-    console.log('  - Final editedCtAmount used:', finalEditedCtAmount.toString())
-    console.log('  - Logic: 0 = not edited, >0 = edited fee')
+    // Contract arguments setup
     
     const contractArgs = [
       requestData.l1token as `0x${string}`,
@@ -296,27 +241,11 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
       requestData.hashValue as `0x${string}`
     ] as const
     
-    console.log('📦 Final contractArgs array:', contractArgs)
     
     const txValue = isETH ? requestData.ctAmount : BigInt(0)
     
-    console.log('📋 Contract call details:')
-    console.log('  - Contract Address:', L1_CONTRACT_ADDRESS)
-    console.log('  - Chain ID: 11155111 (Ethereum Sepolia)')
-    console.log('  - Is ETH transaction:', isETH)
-    console.log('  - Transaction value:', txValue.toString())
-    console.log('  - Request data:', requestData)
-    console.log('  - Contract args:', contractArgs)
     
     try {
-      console.log('🚀 Calling writeContract...')
-      console.log('🔧 writeContract parameters:', {
-        address: L1_CONTRACT_ADDRESS,
-        functionName: 'provideCT',
-        chainId: l1ChainId,
-        value: txValue.toString(),
-        args: contractArgs
-      })
       
       const result = await writeContract({
         address: L1_CONTRACT_ADDRESS as `0x${string}`,
@@ -326,16 +255,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         value: txValue,
         args: contractArgs
       })
-      console.log('✅ writeContract successful, result:', result)
-      console.log('📝 Transaction should appear in wallet for confirmation')
     } catch (error) {
-      console.error('❌ Error providing CT:', error)
-      console.error('Error details:', {
-        name: (error as any)?.name,
-        message: (error as any)?.message,
-        cause: (error as any)?.cause,
-        stack: (error as any)?.stack
-      })
       
       // Show user-friendly error message
       if ((error as any)?.message?.includes('User rejected')) {
@@ -461,7 +381,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  console.log('🔐 Approve button clicked!')
                   handleApproval()
                 }}
               >
@@ -477,13 +396,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                console.log('🖱️ Provide button clicked!')
-                console.log('  - Button disabled?', !riskUnderstood || isPending || isConfirming || (!isETH && needsApproval))
-                console.log('  - riskUnderstood:', riskUnderstood)
-                console.log('  - isPending:', isPending)
-                console.log('  - isConfirming:', isConfirming)
-                console.log('  - needsApproval:', needsApproval)
-                console.log('  - isETH:', isETH)
                 handleProvideCT()
               }}
             >

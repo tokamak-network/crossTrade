@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { EDIT_FEE_ABI, getTokenDecimals, CHAIN_CONFIG } from '@/config/contracts'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
+import { EDIT_FEE_ABI, getTokenDecimals, CHAIN_CONFIG, getContractAddress, getAllChains } from '@/config/contracts'
 
 interface EditFeeModalProps {
   isOpen: boolean
@@ -12,9 +12,12 @@ interface EditFeeModalProps {
     l1token: string
     l2SourceToken: string
     l2DestinationToken: string
+    requester: string
+    receiver: string
     totalAmount: bigint
     ctAmount: bigint
     l1ChainId: bigint
+    l2SourceChainId: number  // Added: The actual source chain where request was created
     l2DestinationChainId: bigint
     hashValue: string
   }
@@ -23,19 +26,24 @@ interface EditFeeModalProps {
 export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps) => {
   const [newFeeAmount, setNewFeeAmount] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [networkSwitching, setNetworkSwitching] = useState(false)
   
-  const { writeContract: writeEditFee, data: editFeeHash } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const { address: userAddress } = useAccount()
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
+  const { writeContract: writeEditFee, data: editFeeHash, error: writeError } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess, error: receiptError } = useWaitForTransactionReceipt({
     hash: editFeeHash,
   })
 
-  // Helper function to format token amounts with proper decimals
+  // Helper function to format token amounts with proper decimals using dynamic config
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
     let symbol = 'UNKNOWN'
     let decimals = 18
+    const allChains = getAllChains()
 
-    // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    // Check against known token addresses using dynamic config
+    allChains.forEach(({ chainId, config }) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -57,16 +65,19 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
     }
   }
 
-  // Helper function to get token symbol from address
+  // Helper function to get token symbol from address using dynamic config
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    const allChains = getAllChains()
+    
+    allChains.forEach(({ chainId, config }) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
     })
+    
     return symbol
   }
 
@@ -82,6 +93,17 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
       return
     }
 
+    if (!userAddress) {
+      alert('Please connect your wallet first')
+      return
+    }
+
+    // Verify that the connected user is the requester
+    if (userAddress.toLowerCase() !== requestData.requester.toLowerCase()) {
+      alert('You can only edit fees for your own requests')
+      return
+    }
+
     const tokenSymbol = getTokenSymbol(requestData.l2SourceToken)
     const newCtAmountWei = toTokenWei(newFeeAmount, tokenSymbol)
     
@@ -93,13 +115,40 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
     setIsSubmitting(true)
 
     try {
-      // Get L1 contract address
-      const l1ContractAddress = CHAIN_CONFIG[11155111].contracts.L1_CROSS_TRADE
+      // Get L1 contract address using dynamic configuration
+      const requiredChainId = 11155111 // Ethereum Sepolia
+      const l1ContractAddress = getContractAddress(requiredChainId, 'L1_CROSS_TRADE')
 
-      if (!l1ContractAddress || l1ContractAddress === '0x0000000000000000000000000000000000000000') {
+if (!l1ContractAddress || l1ContractAddress === '0x0000000000000000000000000000000000000000') {
         alert('L1 contract address not configured. Please contact support.')
         setIsSubmitting(false)
         return
+      }
+
+      // Check if we need to switch to L1 (Ethereum Sepolia)
+      // requiredChainId already defined above
+      if (chainId !== requiredChainId) {
+        setNetworkSwitching(true)
+        try {
+          await switchChain({ chainId: requiredChainId })
+          // Wait a bit for the network switch to fully complete
+          await new Promise(resolve => setTimeout(resolve, 1500))
+        } catch (switchError) {
+          alert('Please switch to Ethereum Sepolia network to edit fees')
+          setIsSubmitting(false)
+          setNetworkSwitching(false)
+          return
+        }
+        setNetworkSwitching(false)
+      }
+
+      // Final verification before contract call
+            if (chainId !== requiredChainId) {
+        throw new Error(`Chain mismatch: current ${chainId}, required ${requiredChainId}. Please ensure you're on Ethereum Sepolia.`)
+      }
+
+      if (userAddress.toLowerCase() !== requestData.requester.toLowerCase()) {
+        throw new Error(`Permission denied: Only the requester can edit fees. Requester: ${requestData.requester}, Connected: ${userAddress}`)
       }
 
       await writeEditFee({
@@ -109,16 +158,20 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
         args: [
           requestData.l1token as `0x${string}`,
           requestData.l2SourceToken as `0x${string}`,
+          requestData.l2DestinationToken as `0x${string}`,
+          requestData.receiver as `0x${string}`,
           requestData.totalAmount,
           requestData.ctAmount,
           newCtAmountWei,
           BigInt(requestData.saleCount),
+          BigInt(requestData.l2SourceChainId), // Source chain where request was created (e.g., 11155420 for Optimism Sepolia)
           requestData.l2DestinationChainId,
           requestData.hashValue as `0x${string}`
-        ]
+        ],
+        chainId: requiredChainId
       })
     } catch (error) {
-      console.error('❌ Edit fee failed:', error)
+      alert(`Edit fee failed: ${(error as any)?.message || 'Unknown error'}`)
       setIsSubmitting(false)
     }
   }
@@ -188,6 +241,13 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
             )}
           </div>
 
+          {networkSwitching && (
+            <div className="status-message switching">
+              <div className="spinner"></div>
+              <span>Switching to Ethereum Sepolia...</span>
+            </div>
+          )}
+
           {isConfirming && (
             <div className="status-message confirming">
               <div className="spinner"></div>
@@ -198,6 +258,12 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           {isSuccess && (
             <div className="status-message success">
               ✅ Fee updated successfully!
+            </div>
+          )}
+
+          {(writeError || receiptError) && (
+            <div className="status-message error">
+              ❌ Error: {(writeError as any)?.message || (receiptError as any)?.message || 'Transaction failed'}
             </div>
           )}
         </div>
@@ -213,9 +279,9 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           <button 
             className="confirm-btn"
             onClick={handleEditFee}
-            disabled={!newFeeAmount || isSubmitting || isConfirming || isSuccess}
+            disabled={!newFeeAmount || isSubmitting || isConfirming || isSuccess || networkSwitching}
           >
-            {isSubmitting || isConfirming ? 'Processing...' : 'Update Fee'}
+            {networkSwitching ? 'Switching Network...' : isSubmitting || isConfirming ? 'Processing...' : 'Update Fee'}
           </button>
         </div>
       </div>
@@ -385,10 +451,22 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           color: #6366f1;
         }
 
+        .status-message.switching {
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid #f59e0b;
+          color: #f59e0b;
+        }
+
         .status-message.success {
           background: rgba(16, 185, 129, 0.1);
           border: 1px solid #10b981;
           color: #10b981;
+        }
+
+        .status-message.error {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid #ef4444;
+          color: #ef4444;
         }
 
         .spinner {

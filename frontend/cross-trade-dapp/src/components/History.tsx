@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient, useContractRead } from 'wagmi'
-import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals } from '@/config/contracts'
+import { createPublicClient, http, defineChain } from 'viem'
+import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals, getAllChains, getContractAddress } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { EditFeeModal } from './EditFeeModal'
 
@@ -11,6 +12,7 @@ interface RequestData {
   l2SourceToken: string
   l2DestinationToken: string
   requester: string
+  receiver: string
   provider: string
   totalAmount: bigint
   ctAmount: bigint
@@ -21,10 +23,11 @@ interface RequestData {
 
 interface HistoryRequest {
   saleCount: number
+  chainId: number
+  chainName: string
   data: RequestData | null
   status: 'Completed' | 'Waiting' | 'Cancelled'
   type: 'Provide' | 'Request'
-  date: string
 }
 
 export const History = () => {
@@ -37,24 +40,49 @@ export const History = () => {
   const [selectedRequest, setSelectedRequest] = useState<HistoryRequest | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-  // Thanos Sepolia chain ID (where the requests are)
-  const CHAIN_ID = 111551119090
+  // Get all L2 chains that have L2_CROSS_TRADE contracts
+  const getL2Chains = () => {
+    const allChains = getAllChains()
+    return allChains.filter(({ chainId, config }) => 
+      config.contracts.L2_CROSS_TRADE && 
+      config.contracts.L2_CROSS_TRADE !== '' &&
+      chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
+    )
+  }
 
-  // Get the current saleCount for this chain
-  const { data: currentSaleCount } = useContractRead({
-    address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
-    abi: [
-      {
-        inputs: [{ type: 'uint256', name: 'chainId' }],
-        name: 'saleCountChainId',
-        outputs: [{ type: 'uint256', name: '' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-    ],
-    functionName: 'saleCountChainId',
-    args: [BigInt(CHAIN_ID)],
-  })
+  const l2Chains = getL2Chains()
+
+  // Helper function to create chain-specific publicClient
+  const getPublicClientForChain = (chainId: number) => {
+    // Define chain configurations with RPC endpoints
+    const getRpcUrl = (chainId: number) => {
+      switch (chainId) {
+        case 11155420: // Optimism Sepolia
+          return 'https://sepolia.optimism.io'
+        case 111551119090: // Thanos Sepolia  
+          return 'https://rpc.thanos-sepolia.tokamak.network'
+        case 11155111: // Ethereum Sepolia
+          return 'https://ethereum-sepolia-rpc.publicnode.com'
+        default:
+          return 'https://ethereum-sepolia-rpc.publicnode.com'
+      }
+    }
+
+    // Create a dedicated publicClient for this specific chain
+    const chainConfig = defineChain({
+      id: chainId,
+      name: `Chain ${chainId}`,
+      nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+      rpcUrls: {
+        default: { http: [getRpcUrl(chainId)] }
+      }
+    })
+
+    return createPublicClient({
+      chain: chainConfig,
+      transport: http(getRpcUrl(chainId))
+    })
+  }
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
@@ -146,84 +174,145 @@ export const History = () => {
   }
 
   const fetchUserHistory = async () => {
-    if (!publicClient || !currentSaleCount || !userAddress) return
+    if (!publicClient || !userAddress) return
+
+// Add a small delay to ensure wallet is fully ready
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     setLoading(true)
     setError(null)
 
     try {
-      const totalRequests = Number(currentSaleCount)
       const userHistory: HistoryRequest[] = []
 
-      console.log(`Fetching history for user ${userAddress}`)
+// Get all possible destination chain IDs (all L2 chains + L1)
+      const allDestinationChainIds = [
+        ...l2Chains.map(chain => chain.chainId),
+        11155111 // Ethereum Sepolia (L1)
+      ]
 
-      for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
-        try {
-          const data = await publicClient.readContract({
-            address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
-            abi: [
-              {
-                inputs: [
-                  { type: 'uint256', name: 'chainId' },
-                  { type: 'uint256', name: 'saleCount' }
+      // Fetch history from all L2 chains - COPY EXACT LOGIC FROM REQUESTPOOL
+      for (const { chainId: sourceChainId, config } of l2Chains) {
+        const contractAddress = config.contracts.L2_CROSS_TRADE
+        if (!contractAddress || contractAddress === '') continue
+
+try {
+          // For each source chain, check requests going to all possible destinations
+          for (const destinationChainId of allDestinationChainIds) {
+            try {
+              // Create chain-specific publicClient for this contract call
+              const chainSpecificClient = getPublicClientForChain(sourceChainId)
+              
+              const currentSaleCount = await chainSpecificClient.readContract({
+                address: contractAddress as `0x${string}`,
+                abi: [
+                  {
+                    inputs: [{ type: 'uint256', name: 'chainId' }],
+                    name: 'saleCountChainId',
+                    outputs: [{ type: 'uint256', name: '' }],
+                    stateMutability: 'view',
+                    type: 'function',
+                  },
                 ],
-                name: 'dealData',
-                outputs: [
-                  { type: 'address', name: 'l1token' },
-                  { type: 'address', name: 'l2SourceToken' },
-                  { type: 'address', name: 'l2DestinationToken' },
-                  { type: 'address', name: 'requester' },
-                  { type: 'address', name: 'provider' },
-                  { type: 'uint256', name: 'totalAmount' },
-                  { type: 'uint256', name: 'ctAmount' },
-                  { type: 'uint256', name: 'l1ChainId' },
-                  { type: 'uint256', name: 'l2DestinationChainId' },
-                  { type: 'bytes32', name: 'hashValue' },
-                ],
-                stateMutability: 'view',
-                type: 'function',
-              },
-            ],
-            functionName: 'dealData',
-            args: [BigInt(CHAIN_ID), BigInt(saleCount)],
-          }) as readonly [string, string, string, string, string, bigint, bigint, bigint, bigint, string]
+                functionName: 'saleCountChainId',
+                args: [BigInt(destinationChainId)],
+              }) as bigint
 
-          // Convert the tuple to RequestData object
-          const requestData: RequestData = {
-            l1token: data[0],
-            l2SourceToken: data[1],
-            l2DestinationToken: data[2],
-            requester: data[3],
-            provider: data[4],
-            totalAmount: data[5],
-            ctAmount: data[6],
-            l1ChainId: data[7],
-            l2DestinationChainId: data[8],
-            hashValue: data[9],
-          }
 
-          // Check if user is involved (as requester or provider)
-          const isRequester = requestData.requester.toLowerCase() === userAddress.toLowerCase()
-          const isProvider = requestData.provider.toLowerCase() === userAddress.toLowerCase() && 
-                            requestData.provider !== '0x0000000000000000000000000000000000000000'
+              const totalRequests = Number(currentSaleCount)
 
-          if (isRequester || isProvider) {
-            // Generate a date (for demo, using current date minus some days)
-            const daysAgo = Math.floor(Math.random() * 30)
-            const date = new Date()
-            date.setDate(date.getDate() - daysAgo)
-            const dateStr = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+              // Fetch individual requests for this source->destination pair
+              for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
+                try {
+                  console.log(`🔍 HISTORY DEBUG: Calling dealData(${destinationChainId}, ${saleCount}) on ${config.displayName} contract ${contractAddress}`)
+                  
+                  // Use the same chain-specific client for consistency
+                  const chainSpecificClient = getPublicClientForChain(sourceChainId)
+                  
+                  const data = await chainSpecificClient.readContract({
+                    address: contractAddress as `0x${string}`,
+                    abi: [
+                      {
+                        inputs: [
+                          { type: 'uint256', name: 'chainId' },
+                          { type: 'uint256', name: 'saleCount' }
+                        ],
+                        name: 'dealData',
+                        outputs: [
+                          { type: 'address', name: 'l1token' },
+                          { type: 'address', name: 'l2SourceToken' },
+                          { type: 'address', name: 'l2DestinationToken' },
+                          { type: 'address', name: 'requester' },
+                          { type: 'address', name: 'receiver' },
+                          { type: 'address', name: 'provider' },
+                          { type: 'uint256', name: 'totalAmount' },
+                          { type: 'uint256', name: 'ctAmount' },
+                          { type: 'uint256', name: 'l1ChainId' },
+                          { type: 'uint256', name: 'l2DestinationChainId' },
+                          { type: 'bytes32', name: 'hashValue' },
+                        ],
+                        stateMutability: 'view',
+                        type: 'function',
+                      },
+                    ],
+                    functionName: 'dealData',
+                    args: [BigInt(destinationChainId), BigInt(saleCount)],
+                  }) as readonly [string, string, string, string, string, string, bigint, bigint, bigint, bigint, string]
 
-            userHistory.push({
-              saleCount,
-              data: requestData,
-              status: getRandomStatus(),
-              type: isProvider ? 'Provide' : 'Request',
-              date: dateStr,
-            })
+// Convert the tuple to RequestData object
+                  const requestData: RequestData = {
+                    l1token: data[0],
+                    l2SourceToken: data[1],
+                    l2DestinationToken: data[2],
+                    requester: data[3],
+                    receiver: data[4],
+                    provider: data[5],
+                    totalAmount: data[6],
+                    ctAmount: data[7],
+                    l1ChainId: data[8],
+                    l2DestinationChainId: data[9],
+                    hashValue: data[10],
+                  }
+
+                  // Check if user is involved (as requester or provider)
+                  const isRequester = requestData.requester.toLowerCase() === userAddress.toLowerCase()
+                  const isProvider = requestData.provider.toLowerCase() === userAddress.toLowerCase() && 
+                                    requestData.provider !== '0x0000000000000000000000000000000000000000'
+
+if (isRequester || isProvider) {
+// Determine status based on provider
+                    let status: 'Completed' | 'Waiting' | 'Cancelled'
+                    if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
+                      status = 'Completed'
+                    } else {
+                      status = 'Waiting' // Real status: waiting for provider
+                    }
+
+                    userHistory.push({
+                      saleCount,
+                      chainId: sourceChainId,
+                      chainName: config.displayName,
+                      data: requestData,
+                      status,
+                      type: isProvider ? 'Provide' : 'Request',
+                    })
+                  }
+                } catch (err) {
+                  // Silently skip if dealData function doesn't exist or returns no data
+                  if ((err as any)?.message?.includes('returned no data')) {
+                    continue
+                  }
+                }
+              }
+            } catch (err) {
+              // Silently skip if saleCountChainId function doesn't exist or returns no data
+              // This is expected for contracts that don't have requests for this destination chain
+              if ((err as any)?.message?.includes('returned no data')) {
+                continue
+              }
+            }
           }
         } catch (err) {
-          console.error(`Error fetching request ${saleCount}:`, err)
         }
       }
 
@@ -231,20 +320,18 @@ export const History = () => {
       userHistory.sort((a, b) => b.saleCount - a.saleCount)
       setHistoryRequests(userHistory)
 
-      console.log(`Found ${userHistory.length} history items for user`)
     } catch (err: any) {
       setError(err.message || 'Failed to fetch history')
-      console.error('Error fetching history:', err)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    if (userAddress && currentSaleCount && Number(currentSaleCount) > 0) {
+    if (userAddress && l2Chains.length > 0) {
       fetchUserHistory()
     }
-  }, [userAddress, currentSaleCount])
+  }, [userAddress, l2Chains.length])
 
   const filteredRequests = historyRequests.filter(req => {
     if (activeFilter === 'All') return true
@@ -284,6 +371,11 @@ export const History = () => {
       <div className="content">
         <h1 className="page-title">Transaction History</h1>
         <p className="page-subtitle">View your past cross-trade requests and provides</p>
+        
+        {/* Debug info - show which chains are being queried */}
+        <div className="debug-info">
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => chain.config.displayName).join(', ')}</p>
+        </div>
         
         <div className="history-wrapper">
           {!userAddress ? (
@@ -340,7 +432,6 @@ export const History = () => {
                   <div className="header-cell from-col">Network From</div>
                   <div className="header-cell to-col">Network To</div>
                   <div className="header-cell status-col">Status</div>
-                  <div className="header-cell date-col">Date</div>
                   <div className="header-cell action-col">Action</div>
                 </div>
 
@@ -352,11 +443,11 @@ export const History = () => {
                     const amount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
                     const fromChain = request.type === 'Provide' 
                       ? getChainName(BigInt(11155111)) // Ethereum for provides
-                      : getChainName(BigInt(11155420)) // Source chain for requests
+                      : request.chainName // Source chain from request data
                     const toChain = getChainName(data.l2DestinationChainId)
 
                     return (
-                      <div key={`history-${request.saleCount}-${index}`} className="table-row">
+                      <div key={`history-${request.chainId}-${request.saleCount}-${index}`} className="table-row">
                         {/* Type Column */}
                         <div className="table-cell type-col">
                           <span className={`type-badge ${request.type.toLowerCase()}`}>
@@ -401,11 +492,6 @@ export const History = () => {
                           </span>
                         </div>
 
-                        {/* Date Column */}
-                        <div className="table-cell date-col">
-                          <span className="date-text">{request.date}</span>
-                        </div>
-
                         {/* Action Column - Only for Waiting status */}
                         <div className="table-cell action-col">
                           {request.status === 'Waiting' && (
@@ -441,9 +527,12 @@ export const History = () => {
             l1token: selectedRequest.data.l1token,
             l2SourceToken: selectedRequest.data.l2SourceToken,
             l2DestinationToken: selectedRequest.data.l2DestinationToken,
+            requester: selectedRequest.data.requester,
+            receiver: selectedRequest.data.receiver,
             totalAmount: selectedRequest.data.totalAmount,
             ctAmount: selectedRequest.data.ctAmount,
             l1ChainId: selectedRequest.data.l1ChainId,
+            l2SourceChainId: selectedRequest.chainId, // The actual source chain where request was created
             l2DestinationChainId: selectedRequest.data.l2DestinationChainId,
             hashValue: selectedRequest.data.hashValue,
           }}
@@ -498,9 +587,24 @@ export const History = () => {
         .page-subtitle {
           color: #9ca3af;
           font-size: 16px;
-          margin-bottom: 40px;
+          margin-bottom: 20px;
           text-align: center;
           max-width: 600px;
+        }
+
+        .debug-info {
+          color: #6b7280;
+          font-size: 14px;
+          margin-bottom: 40px;
+          text-align: center;
+          padding: 8px 16px;
+          background: rgba(20, 20, 20, 0.6);
+          border-radius: 8px;
+          border: 1px solid #333333;
+        }
+
+        .debug-info p {
+          margin: 0;
         }
 
         .history-wrapper {
@@ -590,7 +694,7 @@ export const History = () => {
 
         .table-header {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 150px 80px;
+          grid-template-columns: 100px 200px 180px 180px 120px 80px;
           gap: 16px;
           padding: 16px 20px;
           background: rgba(26, 26, 26, 0.5);
@@ -611,7 +715,7 @@ export const History = () => {
 
         .table-row {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 150px 80px;
+          grid-template-columns: 100px 200px 180px 180px 120px 80px;
           gap: 16px;
           padding: 20px;
           border-bottom: 1px solid rgba(51, 51, 51, 0.3);
@@ -699,10 +803,6 @@ export const History = () => {
           font-weight: 600;
         }
 
-        .date-text {
-          color: #9ca3af;
-          font-size: 14px;
-        }
 
         .action-col {
           display: flex;
@@ -745,7 +845,7 @@ export const History = () => {
         @media (max-width: 1024px) {
           .table-header,
           .table-row {
-            grid-template-columns: 80px 150px 140px 140px 100px 120px 70px;
+            grid-template-columns: 80px 150px 140px 140px 100px 70px;
             gap: 12px;
           }
         }

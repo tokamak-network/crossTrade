@@ -136,8 +136,6 @@ export const RequestPool = () => {
       const allRequestsArray: Request[] = []
       let newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
-        console.log(`Fetching requests from ${l2Chains.length} L2 chains (fullRefresh: ${fullRefresh})`)
-
         // Get all possible destination chain IDs (all L2 chains + L1)
         const allDestinationChainIds = [
           ...l2Chains.map(chain => chain.chainId),
@@ -149,7 +147,6 @@ export const RequestPool = () => {
           const contractAddress = config.contracts.L2_CROSS_TRADE
           if (!contractAddress || contractAddress === '') continue
 
-          console.log(`Fetching from ${config.displayName} (${sourceChainId}): ${contractAddress}`)
 
           try {
             // For each source chain, check requests going to all possible destinations
@@ -172,9 +169,6 @@ export const RequestPool = () => {
                 }) as bigint
 
                 const totalRequests = Number(currentSaleCount)
-                if (totalRequests > 0) {
-                  console.log(`${config.displayName} → Destination ${destinationChainId}: Found ${totalRequests} total requests`)
-                }
 
                 // Fetch individual requests for this source->destination pair
                 for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
@@ -265,7 +259,6 @@ export const RequestPool = () => {
         localStorage.setItem(FULFILLED_KEY, JSON.stringify(Array.from(newFulfilled)))
       }
 
-      console.log(`Found ${sortedRequests.length} pending requests across all chains`)
     } catch (err: any) {
       setError(err.message || 'Failed to fetch requests')
       console.error('Error fetching all requests:', err)
