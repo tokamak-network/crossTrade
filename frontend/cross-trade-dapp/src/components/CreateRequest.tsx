@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
 import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress } from '@/config/contracts'
 
 // ERC20 ABI for approve function
@@ -19,8 +19,8 @@ const ERC20_ABI = [
 ] as const
 
 export const CreateRequest = () => {
-  const [requestFrom, setRequestFrom] = useState('GeorgeChain')
-  const [requestTo, setRequestTo] = useState('MonicaChain')
+  const [requestFrom, setRequestFrom] = useState('Optimism')
+  const [requestTo, setRequestTo] = useState('Thanos Sepolia')
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('USDC') // Default to USDC
   const [receiveAmount, setReceiveAmount] = useState('')
@@ -38,6 +38,8 @@ export const CreateRequest = () => {
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
   const { address: connectedAddress } = useAccount()
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
   
   // Separate hook for approval transactions
   const { 
@@ -190,18 +192,57 @@ export const CreateRequest = () => {
         amount: totalAmountWei.toString()
       })
 
+      // Check if user is on the correct network
+      console.log('🌐 Network Check:', {
+        currentChainId: chainId,
+        requiredChainId: fromChainId,
+        needsSwitch: chainId !== fromChainId
+      })
+      
+      if (chainId !== fromChainId) {
+        console.log('🔄 Switching to required network...')
+        try {
+          await switchChain({ chainId: fromChainId })
+          console.log('✅ Network switched successfully')
+          // Wait a moment for the network switch to complete
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        } catch (switchError) {
+          console.error('❌ Failed to switch network:', switchError)
+          alert(`Please manually switch to ${requestFrom} network in your wallet`)
+          setIsApproving(false)
+          setShowConfirmingModal(false)
+          return
+        }
+      }
+
       // Call approve on the L2 source token contract
-      await writeApproval({
+      console.log('🚀 About to call writeApproval with:', {
+        address: l2SourceTokenAddress,
+        chainId: fromChainId,
+        spender: crossTradeContractAddress,
+        amount: totalAmountWei.toString()
+      })
+      
+      const result = await writeApproval({
         address: l2SourceTokenAddress as `0x${string}`, // ERC20 token contract to call approve() on
         abi: ERC20_ABI,
         functionName: 'approve',
+        chainId: fromChainId, // Execute on the source chain (e.g., Optimism Sepolia)
         args: [
           crossTradeContractAddress as `0x${string}`, // spender = CrossTrade contract
           totalAmountWei // amount to approve (total send amount)
         ]
       })
+      
+      console.log('✅ writeApproval result:', result)
     } catch (error) {
       console.error('❌ Approval failed:', error)
+      console.error('Error details:', {
+        name: (error as any)?.name,
+        message: (error as any)?.message,
+        cause: (error as any)?.cause,
+        code: (error as any)?.code
+      })
       setIsApproving(false)
       setShowConfirmingModal(false)
     }
@@ -236,10 +277,34 @@ export const CreateRequest = () => {
         l2DestinationChainId: BigInt(toChainId)
       })
 
+      // Check if user is on the correct network for main transaction
+      console.log('🌐 Main Transaction Network Check:', {
+        currentChainId: chainId,
+        requiredChainId: fromChainId,
+        needsSwitch: chainId !== fromChainId
+      })
+      
+      if (chainId !== fromChainId) {
+        console.log('🔄 Switching to required network for main transaction...')
+        try {
+          await switchChain({ chainId: fromChainId })
+          console.log('✅ Network switched successfully')
+          // Wait a moment for the network switch to complete
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        } catch (switchError) {
+          console.error('❌ Failed to switch network:', switchError)
+          alert(`Please manually switch to ${requestFrom} network in your wallet`)
+          setIsApproving(false)
+          setShowConfirmingModal(false)
+          return
+        }
+      }
+
       await writeContract({
         address: contractAddress as `0x${string}`,
         abi: L2_CROSS_TRADE_ABI,
         functionName: 'requestRegisteredToken',
+        chainId: fromChainId, // Execute on the source chain (e.g., Optimism Sepolia)
         args: [
           l1TokenAddress as `0x${string}`, // l1token
           l2SourceTokenAddress as `0x${string}`, // l2SourceToken
@@ -333,8 +398,6 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestFrom(e.target.value)}
                     className="chain-select"
                   >
-                    <option value="GeorgeChain">🟣 GeorgeChain</option>
-                    <option value="MonicaChain">🟢 MonicaChain</option>
                     <option value="Thanos Sepolia">🔵 Thanos Sepolia</option>
                     <option value="Ethereum">⚪ Ethereum</option>
                     <option value="Optimism">🔴 Optimism</option>
@@ -354,11 +417,9 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestTo(e.target.value)}
                     className="chain-select"
                   >
-                    <option value="MonicaChain">🟢 MonicaChain</option>
-                    <option value="GeorgeChain">🟣 GeorgeChain</option>
+                    <option value="Optimism">🔴 Optimism</option>
                     <option value="Thanos Sepolia">🔵 Thanos Sepolia</option>
                     <option value="Ethereum">⚪ Ethereum</option>
-                    <option value="Optimism">🔴 Optimism</option>
                   </select>
                 </div>
               </div>

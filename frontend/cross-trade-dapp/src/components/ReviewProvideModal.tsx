@@ -146,7 +146,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     const chainIdNum = Number(chainId)
     const allChains = getAllChains()
     const chain = allChains.find(c => c.chainId === chainIdNum)
-    return chain ? chain.name : `Chain ${chainId}`
+    return chain ? chain.config.name : `Chain ${chainId}`
   }
 
   // Helper function to get chain icon
@@ -201,7 +201,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     } catch (error) {
       console.error('❌ Approval failed:', error)
       setApprovalStep('needed')
-      alert(`Approval failed: ${error?.message || 'Unknown error'}`)
+      alert(`Approval failed: ${(error as any)?.message || 'Unknown error'}`)
     }
   }
   
@@ -267,7 +267,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     console.log('  [4] _receiver:', requestData.receiver)
     console.log('  [5] _totalAmount:', requestData.totalAmount.toString())
     console.log('  [6] _initialctAmount:', requestData.ctAmount.toString())
-    console.log('  [7] _editedctAmount:', finalEditedCtAmount.toString(), editedCtAmount && editedCtAmount > 0n ? '(edited fee)' : '(not edited - 0)')
+    console.log('  [7] _editedctAmount:', finalEditedCtAmount.toString(), editedCtAmount && editedCtAmount > BigInt(0) ? '(edited fee)' : '(not edited - 0)')
     console.log('  [8] _saleCount:', requestData.saleCount.toString())
     console.log('  [9] _l2SourceChainId:', requestData.chainId.toString())
     console.log('  [10] _l2DestinationChainId:', requestData.l2DestinationChainId.toString())
@@ -294,7 +294,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
       requestData.l2DestinationChainId,
       200000, // minGasLimit
       requestData.hashValue as `0x${string}`
-    ]
+    ] as const
     
     console.log('📦 Final contractArgs array:', contractArgs)
     
@@ -331,19 +331,19 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     } catch (error) {
       console.error('❌ Error providing CT:', error)
       console.error('Error details:', {
-        name: error?.name,
-        message: error?.message,
-        cause: error?.cause,
-        stack: error?.stack
+        name: (error as any)?.name,
+        message: (error as any)?.message,
+        cause: (error as any)?.cause,
+        stack: (error as any)?.stack
       })
       
       // Show user-friendly error message
-      if (error?.message?.includes('User rejected')) {
+      if ((error as any)?.message?.includes('User rejected')) {
         alert('Transaction was rejected by user')
-      } else if (error?.message?.includes('insufficient funds')) {
+      } else if ((error as any)?.message?.includes('insufficient funds')) {
         alert('Insufficient funds for transaction')
       } else {
-        alert(`Transaction failed: ${error?.message || 'Unknown error'}`)
+        alert(`Transaction failed: ${(error as any)?.message || 'Unknown error'}`)
       }
     }
   }
