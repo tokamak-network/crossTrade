@@ -329,5 +329,28 @@ export const EDIT_FEE_ABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
+] as const;
+
+// ABI for the cancel function on the L1 contract
+export const CANCEL_CT_ABI = [
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_l1token", "type": "address" },
+      { "internalType": "address", "name": "_l2SourceToken", "type": "address" },
+      { "internalType": "address", "name": "_l2DestinationToken", "type": "address" },
+      { "internalType": "address", "name": "_receiver", "type": "address" },
+      { "internalType": "uint256", "name": "_totalAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_initialctAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_saleCount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_l2SourceChainId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_l2DestinationChainId", "type": "uint256" },
+      { "internalType": "uint32", "name": "_minGasLimit", "type": "uint32" },
+      { "internalType": "bytes32", "name": "_hash", "type": "bytes32" }
+    ],
+    "name": "cancel",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ] as const;  
 

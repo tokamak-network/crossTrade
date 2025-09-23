@@ -6,6 +6,7 @@ import { createPublicClient, http, defineChain } from 'viem'
 import { CONTRACTS, CHAIN_CONFIG, getTokenDecimals, getAllChains, getContractAddress } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { EditFeeModal } from './EditFeeModal'
+import { CancelCTModal } from './CancelCTModal'
 
 interface RequestData {
   l1token: string
@@ -39,6 +40,7 @@ export const History = () => {
   const [activeFilter, setActiveFilter] = useState<'All' | 'Provide' | 'Request'>('All')
   const [selectedRequest, setSelectedRequest] = useState<HistoryRequest | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
 
   // Get all L2 chains that have L2_CROSS_TRADE contracts
   const getL2Chains = () => {
@@ -155,7 +157,7 @@ export const History = () => {
     }
   }
 
-  // Helper function to generate random status (for demo purposes)
+  // Helper function to generate random status (unused - kept for backward compatibility)
   const getRandomStatus = (): 'Completed' | 'Waiting' | 'Cancelled' => {
     const rand = Math.random()
     if (rand < 0.6) return 'Completed'
@@ -280,10 +282,15 @@ try {
                                     requestData.provider !== '0x0000000000000000000000000000000000000000'
 
 if (isRequester || isProvider) {
-// Determine status based on provider
+                    // Determine status based on provider
                     let status: 'Completed' | 'Waiting' | 'Cancelled'
                     if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
-                      status = 'Completed'
+                      // Check if provider equals receiver - this indicates cancellation
+                      if (requestData.provider.toLowerCase() === requestData.receiver.toLowerCase()) {
+                        status = 'Cancelled'
+                      } else {
+                        status = 'Completed'
+                      }
                     } else {
                       status = 'Waiting' // Real status: waiting for provider
                     }
@@ -347,8 +354,22 @@ if (isRequester || isProvider) {
     setIsEditModalOpen(true)
   }
 
+  const handleCancel = (request: HistoryRequest) => {
+    if (request.type !== 'Request') {
+      alert('You can only cancel your own requests')
+      return
+    }
+    setSelectedRequest(request)
+    setIsCancelModalOpen(true)
+  }
+
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false)
+    setSelectedRequest(null)
+  }
+
+  const handleCloseCancelModal = () => {
+    setIsCancelModalOpen(false)
     setSelectedRequest(null)
   }
 
@@ -494,13 +515,21 @@ if (isRequester || isProvider) {
 
                         {/* Action Column - Only for Waiting status */}
                         <div className="table-cell action-col">
-                          {request.status === 'Waiting' && (
-                            <button 
-                              className="edit-btn"
-                              onClick={() => handleEdit(request)}
-                            >
-                              Edit
-                            </button>
+                          {request.status === 'Waiting' && request.type === 'Request' && (
+                            <div className="action-buttons">
+                              <button 
+                                className="edit-btn"
+                                onClick={() => handleEdit(request)}
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                className="cancel-btn"
+                                onClick={() => handleCancel(request)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -522,6 +551,28 @@ if (isRequester || isProvider) {
         <EditFeeModal
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
+          requestData={{
+            saleCount: selectedRequest.saleCount,
+            l1token: selectedRequest.data.l1token,
+            l2SourceToken: selectedRequest.data.l2SourceToken,
+            l2DestinationToken: selectedRequest.data.l2DestinationToken,
+            requester: selectedRequest.data.requester,
+            receiver: selectedRequest.data.receiver,
+            totalAmount: selectedRequest.data.totalAmount,
+            ctAmount: selectedRequest.data.ctAmount,
+            l1ChainId: selectedRequest.data.l1ChainId,
+            l2SourceChainId: selectedRequest.chainId, // The actual source chain where request was created
+            l2DestinationChainId: selectedRequest.data.l2DestinationChainId,
+            hashValue: selectedRequest.data.hashValue,
+          }}
+        />
+      )}
+
+      {/* Cancel CT Modal */}
+      {selectedRequest && selectedRequest.data && (
+        <CancelCTModal
+          isOpen={isCancelModalOpen}
+          onClose={handleCloseCancelModal}
           requestData={{
             saleCount: selectedRequest.saleCount,
             l1token: selectedRequest.data.l1token,
@@ -694,7 +745,7 @@ if (isRequester || isProvider) {
 
         .table-header {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 80px;
+          grid-template-columns: 100px 200px 180px 180px 120px 140px;
           gap: 16px;
           padding: 16px 20px;
           background: rgba(26, 26, 26, 0.5);
@@ -715,7 +766,7 @@ if (isRequester || isProvider) {
 
         .table-row {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 80px;
+          grid-template-columns: 100px 200px 180px 180px 120px 140px;
           gap: 16px;
           padding: 20px;
           border-bottom: 1px solid rgba(51, 51, 51, 0.3);
@@ -809,20 +860,40 @@ if (isRequester || isProvider) {
           justify-content: center;
         }
 
-        .edit-btn {
-          background: #6366f1;
-          color: #ffffff;
+        .action-buttons {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .edit-btn,
+        .cancel-btn {
           border: none;
           border-radius: 6px;
-          padding: 6px 14px;
+          padding: 6px 12px;
           font-size: 12px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
         }
 
+        .edit-btn {
+          background: #6366f1;
+          color: #ffffff;
+        }
+
         .edit-btn:hover {
           background: #5855eb;
+          transform: translateY(-1px);
+        }
+
+        .cancel-btn {
+          background: #ef4444;
+          color: #ffffff;
+        }
+
+        .cancel-btn:hover {
+          background: #dc2626;
           transform: translateY(-1px);
         }
 
@@ -845,7 +916,7 @@ if (isRequester || isProvider) {
         @media (max-width: 1024px) {
           .table-header,
           .table-row {
-            grid-template-columns: 80px 150px 140px 140px 100px 70px;
+            grid-template-columns: 80px 150px 140px 140px 100px 120px;
             gap: 12px;
           }
         }
