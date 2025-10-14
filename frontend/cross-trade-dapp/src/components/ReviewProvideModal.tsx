@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { PROVIDE_CT_ABI, getContractAddress, getAllChains } from '@/config/contracts'
 
@@ -51,11 +51,18 @@ interface ReviewProvideModalProps {
 export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvideModalProps) => {
   const [riskUnderstood, setRiskUnderstood] = useState(false)
   const [approvalStep, setApprovalStep] = useState<'checking' | 'needed' | 'approving' | 'approved'>('checking')
+  const [isApprovalSuccess, setIsApprovalSuccess] = useState(false)
   
   // Wagmi hooks for contract interaction
   const { writeContract, isPending, data: hash, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess, error: receiptError } = useWaitForTransactionReceipt({
     hash,
+  })
+  
+  // Separate hooks for approval transaction
+  const { writeContract: writeApprovalContract, isPending: isApprovalPending, data: approvalHash, error: approvalWriteError } = useWriteContract()
+  const { isLoading: isApprovalConfirming, isSuccess: isApprovalTxSuccess, error: approvalReceiptError } = useWaitForTransactionReceipt({
+    hash: approvalHash,
   })
   
   // Wallet connection hooks
@@ -153,29 +160,52 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const sendToAddress = requestData.receiver.slice(0, 6) + '...' + requestData.receiver.slice(-4)
   
   // Check approval status
-  const needsApproval = !isETH && currentAllowance !== undefined && currentAllowance < requestData.ctAmount
+  const needsApproval = !isETH && currentAllowance !== undefined && currentAllowance < requestData.ctAmount && !isApprovalSuccess
+  
+  // Auto-transition to approved state when approval transaction succeeds
+  React.useEffect(() => {
+    if (isApprovalTxSuccess && approvalStep === 'approving') {
+      setApprovalStep('approved')
+      setIsApprovalSuccess(true)
+      // Refetch allowance after successful approval
+      setTimeout(() => {
+        refetchAllowance()
+      }, 1000)
+    }
+  }, [isApprovalTxSuccess, approvalStep, refetchAllowance])
   
   // Handle approval function
   const handleApproval = async () => {
     if (isETH) return // No approval needed for ETH
     
+    if (!isConnected) {
+      alert('Please connect your wallet first!')
+      return
+    }
+    
+    // Force switch to L1 chain (Ethereum Sepolia) before approval
+    if (chainId !== l1ChainId) {
+      try {
+        await switchChain({ chainId: l1ChainId })
+        // Wait a moment for the network switch to complete
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      } catch (error) {
+        console.error('❌ Failed to switch network:', error)
+        alert(`Please manually switch to Ethereum Sepolia (Chain ID: ${l1ChainId}) in your wallet`)
+        return
+      }
+    }
+    
     setApprovalStep('approving')
     
     try {
-      await writeContract({
+      await writeApprovalContract({
         address: requestData.l1token as `0x${string}`,
         abi: ERC20_ABI,
         functionName: 'approve',
         chainId: l1ChainId,
         args: [L1_CONTRACT_ADDRESS as `0x${string}`, requestData.ctAmount]
       })
-      
-      setApprovalStep('approved')
-      
-      // Wait for approval to be mined and refetch allowance
-      setTimeout(() => {
-        refetchAllowance()
-      }, 3000)
       
     } catch (error) {
       console.error('❌ Approval failed:', error)
@@ -201,14 +231,13 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     }
     
     if (chainId !== l1ChainId) {
-      
       try {
         await switchChain({ chainId: l1ChainId })
         // Wait a moment for the network switch to complete
         await new Promise(resolve => setTimeout(resolve, 1000))
       } catch (error) {
         console.error('❌ Failed to switch network:', error)
-        alert(`Please manually switch to L1 network (Chain ID: ${l1ChainId}) in your wallet`)
+        alert(`Please manually switch to Ethereum Sepolia (Chain ID: ${l1ChainId}) in your wallet`)
         return
       }
     }
@@ -377,14 +406,14 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               <button 
                 type="button"
                 className="approve-btn"
-                disabled={!riskUnderstood || approvalStep === 'approving'}
+                disabled={!riskUnderstood || isApprovalPending || isApprovalConfirming}
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
                   handleApproval()
                 }}
               >
-                {approvalStep === 'approving' ? 'Approving...' : 'Approve Token Spending'}
+                {isApprovalPending ? 'Confirming...' : isApprovalConfirming ? 'Processing...' : 'Approve Token Spending'}
               </button>
             )}
             
@@ -399,7 +428,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
                 handleProvideCT()
               }}
             >
-              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : isSuccess ? 'Success!' : 'Provide'}
+              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : 'Provide'}
             </button>
           </div>
         </div>

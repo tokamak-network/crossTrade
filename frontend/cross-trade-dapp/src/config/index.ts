@@ -32,7 +32,7 @@ export const thanosSepolia = defineChain({
   testnet: true,
 })
 
-export const networks = [optimismSepolia, sepolia, thanosSepolia] as const
+export const networks = [optimismSepolia, sepolia, thanosSepolia]
 
 //Set up the Wagmi Adapter (Config)
 export const wagmiAdapter = new WagmiAdapter({
