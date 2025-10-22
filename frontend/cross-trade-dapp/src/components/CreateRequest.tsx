@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
-import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress } from '@/config/contracts'
+import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress, getAllChains, getChainConfig, getAvailableTokens } from '@/config/contracts'
 
 // ERC20 ABI for approve function
 const ERC20_ABI = [
@@ -66,6 +66,23 @@ export const CreateRequest = () => {
         return 18 // ETH and most tokens use 18 decimals
     }
   }
+
+
+  // Reset token selection when chain changes
+  useEffect(() => {
+    const availableSendTokens = getAvailableTokens(requestFrom)
+    const availableReceiveTokens = getAvailableTokens(requestTo)
+    
+    // Reset send token if current selection is not available
+    if (!availableSendTokens.includes(sendToken) && availableSendTokens.length > 0) {
+      setSendToken(availableSendTokens[0])
+    }
+    
+    // Reset receive token if current selection is not available
+    if (!availableReceiveTokens.includes(receiveToken) && availableReceiveTokens.length > 0) {
+      setReceiveToken(availableReceiveTokens[0])
+    }
+  }, [requestFrom, requestTo, sendToken, receiveToken])
 
   // Helper function to convert amount to wei based on token decimals
   const toTokenWei = (amount: string, tokenSymbol: string) => {
@@ -134,7 +151,7 @@ export const CreateRequest = () => {
       const l2DestinationTokenAddress = getTokenAddress(toChainId, receiveToken) // Token on destination chain
       
       // Get the CrossTrade contract address (this is the spender)
-      const crossTradeContractAddress = getContractAddress(11155420, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
+      const crossTradeContractAddress = getContractAddress(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
       
       // Amount calculations with correct decimals
       const totalAmountWei = toTokenWei(sendAmount, sendToken)
@@ -398,9 +415,11 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestFrom(e.target.value)}
                     className="chain-select"
                   >
-                    <option value="Thanos Sepolia">🔵 Thanos Sepolia</option>
-                    <option value="Ethereum">⚪ Ethereum</option>
-                    <option value="Optimism">🔴 Optimism</option>
+                    {getAllChains().map(({ chainId, config }) => (
+                      <option key={chainId} value={config.displayName}>
+                        {config.displayName}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -417,9 +436,11 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestTo(e.target.value)}
                     className="chain-select"
                   >
-                    <option value="Optimism">🔴 Optimism</option>
-                    <option value="Thanos Sepolia">🔵 Thanos Sepolia</option>
-                    <option value="Ethereum">⚪ Ethereum</option>
+                    {getAllChains().map(({ chainId, config }) => (
+                      <option key={chainId} value={config.displayName}>
+                        {config.displayName}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -443,10 +464,11 @@ export const CreateRequest = () => {
                     onChange={(e) => setSendToken(e.target.value)}
                     className="token-select"
                   >
-                    <option value="USDC">USDC</option>
-                    <option value="USDT">USDT</option>
-                    <option value="ETH">ETH</option>
-                    <option value="TON">TON</option>
+                    {getAvailableTokens(requestFrom).map((token) => (
+                      <option key={token} value={token}>
+                        {token}
+                      </option>
+                    ))}
                   </select>
                   <div className="dropdown-arrow">▼</div>
                 </div>
@@ -473,10 +495,11 @@ export const CreateRequest = () => {
                       onChange={(e) => setReceiveToken(e.target.value)}
                       className="token-select"
                     >
-                      <option value="USDC">USDC</option>
-                      <option value="USDT">USDT</option>
-                      <option value="ETH">ETH</option>
-                      <option value="TON">TON</option>
+                      {getAvailableTokens(requestTo).map((token) => (
+                        <option key={token} value={token}>
+                          {token}
+                        </option>
+                      ))}
                     </select>
                     <div className="dropdown-arrow">▼</div>
                   </div>

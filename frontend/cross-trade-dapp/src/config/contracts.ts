@@ -58,6 +58,7 @@ const loadChainConfig = (): ChainConfigs => {
   }
 
   try {
+    console.log("in try")
     return JSON.parse(chainConfigEnv) as ChainConfigs;
   } catch (error) {
     console.error('Error parsing NEXT_PUBLIC_CHAIN_CONFIG:', error);
@@ -101,14 +102,14 @@ export const getChainIds = (): Record<string, number> => {
   return chainIds;
 };
 
-// Legacy static chain IDs (for backward compatibility)
-export const CHAIN_IDS = {
-  'Optimism': 11155420,
-  'Ethereum': 11155111,
-  'GeorgeChain': 123444,
-  'MonicaChain': 1235555,
-  'Thanos Sepolia': 111551119090,
-} as const;
+// Dynamic chain IDs based on environment configuration
+export const CHAIN_IDS = (() => {
+  const chainIds: Record<string, number> = {};
+  Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    chainIds[config.displayName] = parseInt(chainId);
+  });
+  return chainIds;
+})();
 
 // Helper functions
 export const getChainConfig = (chainId: number): ChainConfig | undefined => {
@@ -154,6 +155,19 @@ export const getTokenDecimals = (tokenSymbol: string) => {
     default:
       return 18 // ETH and most tokens use 18 decimals
   }
+};
+
+// Get available tokens for a chain (only tokens with non-empty addresses)
+export const getAvailableTokens = (chainName: string) => {
+  const chainId = CHAIN_IDS[chainName as keyof typeof CHAIN_IDS]
+  if (!chainId) return []
+  
+  const config = getChainConfig(chainId)
+  if (!config) return []
+  
+  return Object.entries(config.tokens)
+    .filter(([symbol, address]) => address && address !== '')
+    .map(([symbol]) => symbol)
 };
 
 // ABI for the requestRegisteredToken function
