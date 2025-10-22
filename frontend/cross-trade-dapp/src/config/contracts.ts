@@ -58,7 +58,6 @@ const loadChainConfig = (): ChainConfigs => {
   }
 
   try {
-    console.log("in try")
     return JSON.parse(chainConfigEnv) as ChainConfigs;
   } catch (error) {
     console.error('Error parsing NEXT_PUBLIC_CHAIN_CONFIG:', error);
