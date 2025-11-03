@@ -2,7 +2,32 @@
 
 import { useState, useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
-import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress, getAllChains, getChainConfig, getAvailableTokens } from '@/config/contracts'
+import { 
+  CONTRACTS, 
+  L2_CROSS_TRADE_ABI, 
+  CHAIN_CONFIG, 
+  CHAIN_IDS, 
+  getTokenAddress, 
+  getContractAddress, 
+  getAllChains, 
+  getChainConfig, 
+  getAvailableTokens,
+  // L2_L2 specific imports
+  getChainsFor_L2_L2,
+  getTokenAddressFor_L2_L2,
+  getContractAddressFor_L2_L2,
+  getAvailableTokensFor_L2_L2,
+  // L2_L1 specific imports
+  getChainsFor_L2_L1,
+  getTokenAddressFor_L2_L1,
+  getContractAddressFor_L2_L1,
+  getAvailableTokensFor_L2_L1,
+  // L2_L1 ABIs
+  L2_L1_REQUEST_ABI,
+  L2_L1_PROVIDE_CT_ABI,
+  L2_L1_CANCEL_CT_ABI,
+  L2_L1_EDIT_FEE_ABI
+} from '@/config/contracts'
 
 // ERC20 ABI for approve function
 const ERC20_ABI = [
@@ -20,7 +45,7 @@ const ERC20_ABI = [
 
 export const CreateRequest = () => {
   const [requestFrom, setRequestFrom] = useState('Optimism')
-  const [requestTo, setRequestTo] = useState('Thanos Sepolia')
+  const [requestTo, setRequestTo] = useState('Thanos')
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('USDC') // Default to USDC
   const [receiveAmount, setReceiveAmount] = useState('')
@@ -67,11 +92,83 @@ export const CreateRequest = () => {
     }
   }
 
+  // Automatically detect communication mode based on destination chain
+  // If destination is Ethereum (L1) → L2_L1, otherwise → L2_L2
+  const getCommunicationMode = (): 'L2_L2' | 'L2_L1' => {
+    // Check if requestTo is Ethereum (L1)
+    const isDestinationL1 = requestTo === 'Ethereum' || requestTo.includes('Ethereum')
+    return isDestinationL1 ? 'L2_L1' : 'L2_L2'
+  }
+
+  const communicationMode = getCommunicationMode()
+
+  // Mode-aware helper functions
+  const getAvailableChains = () => {
+    // Always return all chains from both configs
+    const l2l2Chains = getChainsFor_L2_L2()
+    const l2l1Chains = getChainsFor_L2_L1()
+    
+    // Merge and remove duplicates by chain ID
+    const allChains = [...l2l2Chains, ...l2l1Chains]
+    const uniqueChains = allChains.filter((chain, index, self) => 
+      index === self.findIndex(c => c.chainId === chain.chainId)
+    )
+    
+    return uniqueChains
+  }
+
+  const getTokenAddressForMode = (chainId: number, tokenSymbol: string) => {
+    // Try to get from the appropriate config first, then fallback to the other
+    if (communicationMode === 'L2_L2') {
+      const address = getTokenAddressFor_L2_L2(chainId, tokenSymbol)
+      return address || getTokenAddressFor_L2_L1(chainId, tokenSymbol)
+    } else {
+      const address = getTokenAddressFor_L2_L1(chainId, tokenSymbol)
+      return address || getTokenAddressFor_L2_L2(chainId, tokenSymbol)
+    }
+  }
+
+  const getContractAddressForMode = (chainId: number, contractName: string) => {
+    // Try to get from the appropriate config first, then fallback to the other
+    if (communicationMode === 'L2_L2') {
+      const address = getContractAddressFor_L2_L2(chainId, contractName)
+      return address || getContractAddressFor_L2_L1(chainId, contractName)
+    } else {
+      const address = getContractAddressFor_L2_L1(chainId, contractName)
+      return address || getContractAddressFor_L2_L2(chainId, contractName)
+    }
+  }
+
+  const getAvailableTokensForMode = (chainName: string) => {
+    // Get tokens from both configs and merge them
+    const l2l2Tokens = getAvailableTokensFor_L2_L2(chainName)
+    const l2l1Tokens = getAvailableTokensFor_L2_L1(chainName)
+    
+    // Merge and remove duplicates
+    const allTokens = [...l2l2Tokens, ...l2l1Tokens]
+    const uniqueTokens = [...new Set(allTokens)]
+    
+    return uniqueTokens.length > 0 ? uniqueTokens : l2l2Tokens.length > 0 ? l2l2Tokens : l2l1Tokens
+  }
+
+  // Get chain ID by display name (checks both L2_L2 and L2_L1 configs)
+  const getChainIdByName = (chainName: string): number => {
+    // Try L2_L2 first
+    let chains = getChainsFor_L2_L2()
+    let chain = chains.find(c => c.config.displayName === chainName)
+    if (chain) return chain.chainId
+    
+    // Try L2_L1 if not found
+    chains = getChainsFor_L2_L1()
+    chain = chains.find(c => c.config.displayName === chainName)
+    return chain?.chainId || 0
+  }
+
 
   // Reset token selection when chain changes
   useEffect(() => {
-    const availableSendTokens = getAvailableTokens(requestFrom)
-    const availableReceiveTokens = getAvailableTokens(requestTo)
+    const availableSendTokens = getAvailableTokensForMode(requestFrom)
+    const availableReceiveTokens = getAvailableTokensForMode(requestTo)
     
     // Reset send token if current selection is not available
     if (!availableSendTokens.includes(sendToken) && availableSendTokens.length > 0) {
@@ -143,15 +240,16 @@ export const CreateRequest = () => {
 
     try {
       // Get all the dynamic parameters from the form state
-      const fromChainId = CHAIN_IDS[requestFrom as keyof typeof CHAIN_IDS]
-      const toChainId = CHAIN_IDS[requestTo as keyof typeof CHAIN_IDS]
+      // Get chain IDs from our configuration (mode-aware)
+      const fromChainId = getChainIdByName(requestFrom)
+      const toChainId = getChainIdByName(requestTo)
       
-      // Get token addresses for all chains
-      const l2SourceTokenAddress = getTokenAddress(fromChainId, sendToken) // Token on source chain
-      const l2DestinationTokenAddress = getTokenAddress(toChainId, receiveToken) // Token on destination chain
+      // Get token addresses for the respective chains (mode-aware)
+      const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken) // Token on source chain
+      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // Token on destination chain
       
-      // Get the CrossTrade contract address (this is the spender)
-      const crossTradeContractAddress = getContractAddress(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
+      // Get the CrossTrade contract address (this is the spender) (mode-aware)
+      const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
       
       // Amount calculations with correct decimals
       const totalAmountWei = toTokenWei(sendAmount, sendToken)
@@ -271,34 +369,23 @@ export const CreateRequest = () => {
     }
 
     try {
-      // Get chain IDs from our configuration
-      const fromChainId = CHAIN_IDS[requestFrom as keyof typeof CHAIN_IDS]
-      const toChainId = CHAIN_IDS[requestTo as keyof typeof CHAIN_IDS]
+      // Get chain IDs from our configuration (mode-aware)
+      const fromChainId = getChainIdByName(requestFrom)
+      const toChainId = getChainIdByName(requestTo)
 
-      // Get token addresses for the respective chains
-      const l1TokenAddress = getTokenAddress(11155111, sendToken) // L1 token (always Ethereum Sepolia equivalent)
-      const l2SourceTokenAddress = getTokenAddress(fromChainId, sendToken) // L2 source token (from chain)
-      const l2DestinationTokenAddress = getTokenAddress(toChainId, receiveToken) // L2 destination token (to chain)
+      // Get token addresses for the respective chains (mode-aware)
+      const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken) // L2 source token (from chain)
+      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // L2 destination token (to chain)
 
-      // Get contract address for the current chain (assuming we're on Optimism Sepolia for now)
-      const contractAddress = getContractAddress(11155420, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
-
-      console.log('Contract call parameters:', {
-        contractAddress,
-        l1TokenAddress,
-        l2SourceTokenAddress,
-        l2DestinationTokenAddress,
-        totalAmount: BigInt(Math.floor(parseFloat(sendAmount || '0') * 1e18)),
-        ctAmount: BigInt(Math.floor(parseFloat(currentReceiveAmount) * 1e18)),
-        l1ChainId: BigInt(11155111),
-        l2DestinationChainId: BigInt(toChainId)
-      })
+      // Get contract address for the current chain (mode-aware)
+      const contractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
 
       // Check if user is on the correct network for main transaction
       console.log('🌐 Main Transaction Network Check:', {
         currentChainId: chainId,
         requiredChainId: fromChainId,
-        needsSwitch: chainId !== fromChainId
+        needsSwitch: chainId !== fromChainId,
+        communicationMode: communicationMode
       })
       
       if (chainId !== fromChainId) {
@@ -317,23 +404,91 @@ export const CreateRequest = () => {
         }
       }
 
-      await writeContract({
-        address: contractAddress as `0x${string}`,
-        abi: L2_CROSS_TRADE_ABI,
-        functionName: 'requestRegisteredToken',
-        chainId: fromChainId, // Execute on the source chain (e.g., Optimism Sepolia)
-        args: [
-          l1TokenAddress as `0x${string}`, // l1token
-          l2SourceTokenAddress as `0x${string}`, // l2SourceToken
-          l2DestinationTokenAddress as `0x${string}`, // l2DestinationToken
-          toAddress as `0x${string}`, // _receiver (to address)
-          toTokenWei(sendAmount, sendToken), // totalAmount with correct decimals
-          toTokenWei(currentReceiveAmount, receiveToken), // ctAmount with correct decimals
-          BigInt(11155111), // l1ChainId (always Ethereum Sepolia)
-          BigInt(toChainId) // l2DestinationChainId
-        ],
-        value: sendToken === 'ETH' ? toTokenWei(sendAmount, sendToken) : BigInt(0)
-      })
+      // CRITICAL: L2_L2 and L2_L1 use DIFFERENT contracts with DIFFERENT ABIs!
+      // 
+      // L2_L2 Mode (NEW Implementation):
+      // - L2 Contract: L2toL2CrossTradeL2.sol with requestRegisteredToken(8 params)
+      // - L1 Contract: L2toL2CrossTradeL1.sol
+      // - Parameters: _l1token, _l2SourceToken, _l2DestinationToken, _receiver, _totalAmount, _ctAmount, _l1ChainId, _l2DestinationChainId
+      //
+      // L2_L1 Mode (OLD Implementation):
+      // - L2 Contract: L2CrossTrade.sol with requestRegisteredToken(6 params)
+      // - L1 Contract: L1CrossTrade.sol
+      // - Parameters: _l1token, _l2token, _receiver, _totalAmount, _ctAmount, _l1chainId
+      
+      if (communicationMode === 'L2_L2') {
+        // L2 to L2 communication: Get L1 token address from Ethereum Sepolia
+        const l1ChainId = 11155111 // Ethereum Sepolia
+        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken) // L1 token
+
+        console.log('📝 L2_L2 Contract call parameters:', {
+          mode: 'L2_L2',
+          contractAddress,
+          l1TokenAddress,
+          l2SourceTokenAddress,
+          l2DestinationTokenAddress,
+          fromChainId,
+          toChainId,
+          totalAmount: toTokenWei(sendAmount, sendToken).toString(),
+          ctAmount: toTokenWei(currentReceiveAmount, receiveToken).toString(),
+          l1ChainId,
+          abi: 'L2_CROSS_TRADE_ABI',
+          config: 'CHAIN_CONFIG_L2_L2'
+        })
+
+        await writeContract({
+          address: contractAddress as `0x${string}`,
+          abi: L2_CROSS_TRADE_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
+          functionName: 'requestRegisteredToken',
+          chainId: fromChainId, // Execute on the source L2 chain
+          args: [
+            l1TokenAddress as `0x${string}`, // l1token
+            l2SourceTokenAddress as `0x${string}`, // l2SourceToken
+            l2DestinationTokenAddress as `0x${string}`, // l2DestinationToken
+            toAddress as `0x${string}`, // _receiver (to address)
+            toTokenWei(sendAmount, sendToken), // totalAmount with correct decimals
+            toTokenWei(currentReceiveAmount, receiveToken), // ctAmount with correct decimals
+            BigInt(l1ChainId), // l1ChainId (Ethereum Sepolia for L2_L2)
+            BigInt(toChainId) // l2DestinationChainId
+          ],
+          value: sendToken === 'ETH' ? toTokenWei(sendAmount, sendToken) : BigInt(0)
+        })
+      } else {
+        // L2 to L1 communication: Uses OLD L2CrossTrade.sol contract (6 params)
+        const l1ChainId = 11155111 // Ethereum Sepolia
+        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken) // L1 token from L2_L1 config
+
+        console.log('📝 L2_L1 Contract call parameters:', {
+          mode: 'L2_L1',
+          contractAddress, // From L2_L1 config (OLD contract)
+          l1TokenAddress, // From L2_L1 config
+          l2SourceTokenAddress, // From L2_L1 config (used as _l2token in OLD contract)
+          fromChainId,
+          totalAmount: toTokenWei(sendAmount, sendToken).toString(),
+          ctAmount: toTokenWei(currentReceiveAmount, receiveToken).toString(),
+          l1ChainId,
+          abi: 'L2_L1_REQUEST_ABI (OLD contract - 6 params)',
+          config: 'CHAIN_CONFIG_L2_L1',
+          note: 'OLD contract: requestRegisteredToken(_l1token, _l2token, _receiver, _totalAmount, _ctAmount, _l1chainId)'
+        })
+
+        // L2_L1 uses OLD L2CrossTrade.sol contract with 6 parameters
+        await writeContract({
+          address: contractAddress as `0x${string}`,
+          abi: L2_L1_REQUEST_ABI, // OLD contract ABI (6 params)
+          functionName: 'requestRegisteredToken',
+          chainId: fromChainId, // Execute on the source L2 chain
+          args: [
+            l1TokenAddress as `0x${string}`, // _l1token
+            l2SourceTokenAddress as `0x${string}`, // _l2token (only source token in OLD contract)
+            toAddress as `0x${string}`, // _receiver (to address)
+            toTokenWei(sendAmount, sendToken), // _totalAmount with correct decimals
+            toTokenWei(currentReceiveAmount, receiveToken), // _ctAmount with correct decimals
+            BigInt(l1ChainId) // _l1chainId
+          ],
+          value: sendToken === 'ETH' ? toTokenWei(sendAmount, sendToken) : BigInt(0)
+        })
+      }
     } catch (error) {
       console.error('Transaction failed:', error)
       setIsApproving(false)
@@ -405,6 +560,27 @@ export const CreateRequest = () => {
         
         <div className="form-container">
           <form onSubmit={handleSubmit} className="request-form">
+            {/* Mode Indicator */}
+            <div style={{ 
+              padding: '12px', 
+              marginBottom: '16px', 
+              borderRadius: '8px', 
+              backgroundColor: communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+              border: `1px solid ${communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>
+                {communicationMode === 'L2_L2' ? '🔄 L2 ↔ L2 Mode' : '🌉 L2 ↔ L1 Mode'}
+              </span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)' }}>
+                {communicationMode === 'L2_L2' 
+                  ? 'Cross-chain transfer between Layer 2 networks' 
+                  : 'Bridge transfer between Layer 2 and Layer 1'}
+              </span>
+            </div>
+
             {/* Request From/To Section */}
             <div className="chain-selector-row">
               <div className="chain-selector">
@@ -415,11 +591,17 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestFrom(e.target.value)}
                     className="chain-select"
                   >
-                    {getAllChains().map(({ chainId, config }) => (
-                      <option key={chainId} value={config.displayName}>
-                        {config.displayName}
-                      </option>
-                    ))}
+                    {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                      // Remove duplicates by chain ID
+                      .filter((chain, index, self) => 
+                        index === self.findIndex(c => c.chainId === chain.chainId)
+                      )
+                      .map(({ chainId, config }) => (
+                        <option key={chainId} value={config.displayName}>
+                          {config.displayName}
+                        </option>
+                      ))
+                    }
                   </select>
                 </div>
               </div>
@@ -436,11 +618,17 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestTo(e.target.value)}
                     className="chain-select"
                   >
-                    {getAllChains().map(({ chainId, config }) => (
-                      <option key={chainId} value={config.displayName}>
-                        {config.displayName}
-                      </option>
-                    ))}
+                    {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                      // Remove duplicates by chain ID
+                      .filter((chain, index, self) => 
+                        index === self.findIndex(c => c.chainId === chain.chainId)
+                      )
+                      .map(({ chainId, config }) => (
+                        <option key={chainId} value={config.displayName}>
+                          {config.displayName}
+                        </option>
+                      ))
+                    }
                   </select>
                 </div>
               </div>

@@ -1,8 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { CONTRACTS, L2_CROSS_TRADE_ABI } from '@/config/contracts'
+import { 
+  CONTRACTS, 
+  L2_CROSS_TRADE_ABI,
+  // L2_L2 specific imports
+  getChainsFor_L2_L2,
+  getTokenAddressFor_L2_L2,
+  getContractAddressFor_L2_L2,
+  // L2_L1 specific imports
+  getChainsFor_L2_L1,
+  getTokenAddressFor_L2_L1,
+  getContractAddressFor_L2_L1,
+  // L2_L1 ABIs (if needed in future)
+  L2_L1_PROVIDE_CT_ABI,
+} from '@/config/contracts'
 
 interface RequestModalProps {
   isOpen: boolean
@@ -17,9 +30,20 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     receiver: '',
     totalAmount: '',
     ctAmount: '',
-    l1ChainId: '',
+    l1ChainId: '11155111', // Default to Ethereum Sepolia
     l2DestinationChainId: ''
   })
+
+  // Automatically detect communication mode based on destination chain
+  const communicationMode = useMemo((): 'L2_L2' | 'L2_L1' => {
+    if (!formData.l2DestinationChainId) return 'L2_L2'
+    
+    const destinationChainId = parseInt(formData.l2DestinationChainId)
+    const l1ChainId = 11155111 // Ethereum Sepolia
+    
+    // If destination is Ethereum (L1) → L2_L1, otherwise → L2_L2
+    return destinationChainId === l1ChainId ? 'L2_L1' : 'L2_L2'
+  }, [formData.l2DestinationChainId])
 
   const { writeContract, data: hash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
@@ -33,9 +57,27 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
       return
     }
 
+    console.log('📝 RequestModal - Creating request:', {
+      mode: communicationMode,
+      l1token: formData.l1token,
+      l2SourceToken: formData.l2SourceToken,
+      l2DestinationToken: formData.l2DestinationToken,
+      receiver: formData.receiver,
+      totalAmount: formData.totalAmount,
+      ctAmount: formData.ctAmount,
+      l1ChainId: formData.l1ChainId,
+      l2DestinationChainId: formData.l2DestinationChainId,
+      abi: 'L2_CROSS_TRADE_ABI',
+      note: communicationMode === 'L2_L1' 
+        ? 'L2→L1 mode: Uses L2_L1 config addresses' 
+        : 'L2→L2 mode: Uses L2_L2 config addresses'
+    })
+
+    // Both L2_L2 and L2_L1 modes use the same L2 contract and ABI for creating requests
+    // The difference is in the addresses used (from different configs)
     writeContract({
       address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
-      abi: L2_CROSS_TRADE_ABI,
+      abi: L2_CROSS_TRADE_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
       functionName: 'requestRegisteredToken',
       args: [
         formData.l1token as `0x${string}`,
@@ -60,7 +102,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Request Cross-Trade</h2>
           <button
             onClick={onClose}
@@ -69,6 +111,27 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
           >
             ✕
           </button>
+        </div>
+
+        {/* Mode Indicator */}
+        <div style={{ 
+          padding: '10px 12px', 
+          marginBottom: '16px', 
+          borderRadius: '8px', 
+          backgroundColor: communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+          border: `1px solid ${communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{ fontSize: '13px', fontWeight: '600', color: '#1f2937' }}>
+            {communicationMode === 'L2_L2' ? '🔄 L2 ↔ L2 Mode' : '🌉 L2 ↔ L1 Mode'}
+          </span>
+          <span style={{ fontSize: '11px', color: '#6b7280' }}>
+            {communicationMode === 'L2_L2' 
+              ? 'Cross-chain between L2s' 
+              : 'Bridge to L1 Ethereum'}
+          </span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

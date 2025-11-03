@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { usePublicClient, useContractRead, useAccount } from 'wagmi'
-import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_IDS, getTokenAddress, getContractAddress, getTokenDecimals, getAllChains } from '@/config/contracts'
+import { createPublicClient, http, defineChain } from 'viem'
+import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_CONFIG_L2_L2, CHAIN_CONFIG_L2_L1, CHAIN_IDS, getTokenAddress, getContractAddress, getTokenDecimals, getAllChains, getChainsFor_L2_L2, getChainsFor_L2_L1 } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { ReviewProvideModal } from './ReviewProvideModal'
 
@@ -15,6 +16,7 @@ interface RequestData {
   provider: string
   totalAmount: bigint
   ctAmount: bigint
+  editedCtAmount?: bigint // Edited amount from L1 (if edited)
   l1ChainId: bigint
   l2DestinationChainId: bigint
   hashValue: string
@@ -24,10 +26,11 @@ interface Request {
   saleCount: number
   chainId: number
   chainName: string
+  contractAddress: string
   data: RequestData | null
 }
 
-const FULFILLED_KEY = 'fulfilledSaleCounts_v1'
+const FULFILLED_KEY = 'fulfilledSaleCounts_v2'
 
 export const RequestPool = () => {
   const publicClient = usePublicClient()
@@ -35,7 +38,7 @@ export const RequestPool = () => {
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [fulfilledSaleCounts, setFulfilledSaleCounts] = useState<Set<number>>(() => {
+  const [fulfilledSaleCounts, setFulfilledSaleCounts] = useState<Set<string>>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(FULFILLED_KEY)
       if (saved) return new Set(JSON.parse(saved))
@@ -46,14 +49,21 @@ export const RequestPool = () => {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null)
   const [isProvideModalOpen, setIsProvideModalOpen] = useState(false)
 
-  // Get all L2 chains that have L2_CROSS_TRADE contracts
+  // Get all L2 chains that have L2_CROSS_TRADE contracts (both L2_L2 and L2_L1)
   const getL2Chains = () => {
-    const allChains = getAllChains()
-    return allChains.filter(({ chainId, config }) => 
+    const l2l2Chains = getChainsFor_L2_L2().filter(({ chainId, config }) => 
       config.contracts.L2_CROSS_TRADE && 
       config.contracts.L2_CROSS_TRADE !== '' &&
       chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
-    )
+    ).map(chain => ({ ...chain, type: 'L2_L2' as const }))
+    
+    const l2l1Chains = getChainsFor_L2_L1().filter(({ chainId, config }) => 
+      config.contracts.L2_CROSS_TRADE && 
+      config.contracts.L2_CROSS_TRADE !== '' &&
+      chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
+    ).map(chain => ({ ...chain, type: 'L2_L1' as const }))
+    
+    return [...l2l2Chains, ...l2l1Chains]
   }
 
   const l2Chains = getL2Chains()
@@ -126,6 +136,87 @@ export const RequestPool = () => {
     }
   }
 
+  // Helper function to create chain-specific publicClient
+  const getPublicClientForChain = (chainId: number) => {
+    const getRpcUrl = (chainId: number) => {
+      switch (chainId) {
+        case 11155420: // Optimism Sepolia
+          return 'https://sepolia.optimism.io'
+        case 111551119090: // Thanos Sepolia  
+          return 'https://rpc.thanos-sepolia.tokamak.network'
+        case 11155111: // Ethereum Sepolia
+          return 'https://ethereum-sepolia-rpc.publicnode.com'
+        default:
+          return 'https://ethereum-sepolia-rpc.publicnode.com'
+      }
+    }
+
+    const chainConfig = defineChain({
+      id: chainId,
+      name: `Chain ${chainId}`,
+      nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+      rpcUrls: {
+        default: { http: [getRpcUrl(chainId)] }
+      }
+    })
+
+    return createPublicClient({
+      chain: chainConfig,
+      transport: http(getRpcUrl(chainId))
+    })
+  }
+
+  // Helper function to get edited ctAmount from L1 contract
+  const getEditedCtAmount = async (hashValue: string, contractType: 'L2_L2' | 'L2_L1'): Promise<bigint | null> => {
+    try {
+      // L1 is always Ethereum Sepolia (chainId 11155111)
+      const l1ChainId = 11155111
+      
+      // Get L1 contract address based on contract type
+      let l1ContractAddress: string | undefined
+      
+      if (contractType === 'L2_L2') {
+        // For L2_L2, use CHAIN_CONFIG_L2_L2 to get L1_CROSS_TRADE address
+        const l1Config = CHAIN_CONFIG_L2_L2[l1ChainId]
+        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+      } else {
+        // For L2_L1, use CHAIN_CONFIG_L2_L1 to get L1_CROSS_TRADE address
+        const l1Config = CHAIN_CONFIG_L2_L1[l1ChainId]
+        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+      }
+      
+      if (!l1ContractAddress) {
+        console.warn(`L1 contract address not found for ${contractType}`)
+        return null
+      }
+
+      // Create L1-specific client
+      const l1Client = getPublicClientForChain(l1ChainId)
+      
+      // Query editCtAmount mapping
+      const editedAmount = await l1Client.readContract({
+        address: l1ContractAddress as `0x${string}`,
+        abi: [
+          {
+            inputs: [{ type: 'bytes32', name: '' }],
+            name: 'editCtAmount',
+            outputs: [{ type: 'uint256', name: '' }],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ],
+        functionName: 'editCtAmount',
+        args: [hashValue as `0x${string}`],
+      }) as bigint
+
+      // Return edited amount if it's non-zero, otherwise null
+      return editedAmount > BigInt(0) ? editedAmount : null
+    } catch (err) {
+      console.error('Error fetching edited ctAmount from L1:', err)
+      return null
+    }
+  }
+
   const fetchAllRequests = async (fullRefresh = false) => {
     if (!publicClient) return
 
@@ -134,7 +225,7 @@ export const RequestPool = () => {
 
     try {
       const allRequestsArray: Request[] = []
-      let newFulfilled = new Set<number>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
+      let newFulfilled = new Set<string>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
         // Get all possible destination chain IDs (all L2 chains + L1)
         const allDestinationChainIds = [
@@ -143,59 +234,160 @@ export const RequestPool = () => {
         ]
 
         // Fetch requests from all L2 chains
-        for (const { chainId: sourceChainId, config } of l2Chains) {
+        for (const { chainId: sourceChainId, config, type: contractType } of l2Chains) {
           const contractAddress = config.contracts.L2_CROSS_TRADE
           if (!contractAddress || contractAddress === '') continue
 
-
           try {
-            // For each source chain, check requests going to all possible destinations
-            for (const destinationChainId of allDestinationChainIds) {
+            if (contractType === 'L2_L2') {
+              // L2_L2 contract: has separate saleCountChainId per destination
+              for (const destinationChainId of allDestinationChainIds) {
+                try {
+                  // Get the current saleCount for requests going to this destination
+                  const currentSaleCount = await publicClient.readContract({
+                    address: contractAddress as `0x${string}`,
+                    abi: [
+                      {
+                        inputs: [{ type: 'uint256', name: 'chainId' }],
+                        name: 'saleCountChainId',
+                        outputs: [{ type: 'uint256', name: '' }],
+                        stateMutability: 'view',
+                        type: 'function',
+                      },
+                    ],
+                    functionName: 'saleCountChainId',
+                    args: [BigInt(destinationChainId)],
+                  }) as bigint
+
+                  const totalRequests = Number(currentSaleCount)
+
+                  // Fetch individual requests for this source->destination pair
+                  for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
+                    const requestKey = `${contractAddress}_${destinationChainId}_${saleCount}`
+                    if (!fullRefresh && fulfilledSaleCounts.has(requestKey)) continue // skip known fulfilled
+                    
+                    try {
+                      const data = await publicClient.readContract({
+                        address: contractAddress as `0x${string}`,
+                        abi: [
+                          {
+                            inputs: [
+                              { type: 'uint256', name: 'chainId' },
+                              { type: 'uint256', name: 'saleCount' }
+                            ],
+                            name: 'dealData',
+                            outputs: [
+                              { type: 'address', name: 'l1token' },
+                              { type: 'address', name: 'l2SourceToken' },
+                              { type: 'address', name: 'l2DestinationToken' },
+                              { type: 'address', name: 'requester' },
+                              { type: 'address', name: 'receiver' },
+                              { type: 'address', name: 'provider' },
+                              { type: 'uint256', name: 'totalAmount' },
+                              { type: 'uint256', name: 'ctAmount' },
+                              { type: 'uint256', name: 'l1ChainId' },
+                              { type: 'uint256', name: 'l2DestinationChainId' },
+                              { type: 'bytes32', name: 'hashValue' },
+                            ],
+                            stateMutability: 'view',
+                            type: 'function',
+                          },
+                        ],
+                        functionName: 'dealData',
+                        args: [BigInt(destinationChainId), BigInt(saleCount)],
+                      }) as readonly [string, string, string, string, string, string, bigint, bigint, bigint, bigint, string]
+
+                      // Convert the tuple to RequestData object
+                      const requestData: RequestData = {
+                        l1token: data[0],
+                        l2SourceToken: data[1],
+                        l2DestinationToken: data[2],
+                        requester: data[3],
+                        receiver: data[4],
+                        provider: data[5],
+                        totalAmount: data[6],
+                        ctAmount: data[7],
+                        l1ChainId: data[8],
+                        l2DestinationChainId: data[9],
+                        hashValue: data[10],
+                      }
+
+                      // If provider is not zero address, it's fulfilled
+                      if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
+                        newFulfilled.add(requestKey)
+                        continue // skip fulfilled
+                      }
+
+                      // Check for edited ctAmount on L1
+                      const editedCtAmount = await getEditedCtAmount(requestData.hashValue, 'L2_L2')
+                      if (editedCtAmount) {
+                        console.log(`📝 Found edited ctAmount for hash ${requestData.hashValue}: ${editedCtAmount.toString()}`)
+                        requestData.editedCtAmount = editedCtAmount
+                      }
+
+                      // Only add if there's actual data (not empty request)
+                      if (requestData.l1token !== '0x0000000000000000000000000000000000000000') {
+                        allRequestsArray.push({ 
+                          saleCount, 
+                          chainId: sourceChainId, 
+                          chainName: config.displayName,
+                          contractAddress: contractAddress,
+                          data: requestData 
+                        })
+                      }
+                    } catch (err) {
+                      console.error(`Error fetching L2_L2 request ${saleCount} from ${config.displayName} to ${destinationChainId}:`, err)
+                    }
+                  }
+                } catch (err: any) {
+                  // Silently skip if the contract doesn't have this destination chain configured
+                  // This is expected for contracts that don't support all destination chains
+                  if (!err?.message?.includes('saleCountChainId')) {
+                    console.error(`Error fetching saleCount from ${config.displayName} to ${destinationChainId}:`, err)
+                  }
+                }
+              }
+            } else if (contractType === 'L2_L1') {
+              // L2_L1 contract: has single saleCount for all requests
               try {
-                // Get the current saleCount for requests going to this destination
+                // Get the total saleCount (not per destination)
                 const currentSaleCount = await publicClient.readContract({
                   address: contractAddress as `0x${string}`,
                   abi: [
                     {
-                      inputs: [{ type: 'uint256', name: 'chainId' }],
-                      name: 'saleCountChainId',
+                      inputs: [],
+                      name: 'saleCount',
                       outputs: [{ type: 'uint256', name: '' }],
                       stateMutability: 'view',
                       type: 'function',
                     },
                   ],
-                  functionName: 'saleCountChainId',
-                  args: [BigInt(destinationChainId)],
+                  functionName: 'saleCount',
                 }) as bigint
 
                 const totalRequests = Number(currentSaleCount)
 
-                // Fetch individual requests for this source->destination pair
+                // Fetch all requests and filter by destination
                 for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
-                  const requestKey = `${sourceChainId}_${destinationChainId}_${saleCount}`
-                  if (!fullRefresh && fulfilledSaleCounts.has(Number(requestKey))) continue // skip known fulfilled
+                  const requestKey = `${contractAddress}_all_${saleCount}`
+                  if (!fullRefresh && fulfilledSaleCounts.has(requestKey)) continue // skip known fulfilled
                   
                   try {
                     const data = await publicClient.readContract({
                       address: contractAddress as `0x${string}`,
                       abi: [
                         {
-                          inputs: [
-                            { type: 'uint256', name: 'chainId' },
-                            { type: 'uint256', name: 'saleCount' }
-                          ],
+                          inputs: [{ type: 'uint256', name: 'saleCount' }],
                           name: 'dealData',
                           outputs: [
                             { type: 'address', name: 'l1token' },
-                            { type: 'address', name: 'l2SourceToken' },
-                            { type: 'address', name: 'l2DestinationToken' },
+                            { type: 'address', name: 'l2token' },
                             { type: 'address', name: 'requester' },
                             { type: 'address', name: 'receiver' },
                             { type: 'address', name: 'provider' },
                             { type: 'uint256', name: 'totalAmount' },
                             { type: 'uint256', name: 'ctAmount' },
-                            { type: 'uint256', name: 'l1ChainId' },
-                            { type: 'uint256', name: 'l2DestinationChainId' },
+                            { type: 'uint256', name: 'chainId' },
                             { type: 'bytes32', name: 'hashValue' },
                           ],
                           stateMutability: 'view',
@@ -203,28 +395,36 @@ export const RequestPool = () => {
                         },
                       ],
                       functionName: 'dealData',
-                      args: [BigInt(destinationChainId), BigInt(saleCount)],
-                    }) as readonly [string, string, string, string, string, string, bigint, bigint, bigint, bigint, string]
+                      args: [BigInt(saleCount)],
+                    }) as readonly [string, string, string, string, string, bigint, bigint, bigint, string]
 
                     // Convert the tuple to RequestData object
+                    // For L2_L1: l2token is both source and destination, chainId is L1 destination
                     const requestData: RequestData = {
                       l1token: data[0],
                       l2SourceToken: data[1],
-                      l2DestinationToken: data[2],
-                      requester: data[3],
-                      receiver: data[4],
-                      provider: data[5],
-                      totalAmount: data[6],
-                      ctAmount: data[7],
-                      l1ChainId: data[8],
-                      l2DestinationChainId: data[9],
-                      hashValue: data[10],
+                      l2DestinationToken: data[1], // Same as source for L2_L1
+                      requester: data[2],
+                      receiver: data[3],
+                      provider: data[4],
+                      totalAmount: data[5],
+                      ctAmount: data[6],
+                      l1ChainId: data[7], // This is the destination L1 chain
+                      l2DestinationChainId: data[7], // Store as destination for consistency
+                      hashValue: data[8],
                     }
 
                     // If provider is not zero address, it's fulfilled
                     if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
-                      newFulfilled.add(Number(requestKey))
+                      newFulfilled.add(requestKey)
                       continue // skip fulfilled
+                    }
+
+                    // Check for edited ctAmount on L1
+                    const editedCtAmount = await getEditedCtAmount(requestData.hashValue, 'L2_L1')
+                    if (editedCtAmount) {
+                      console.log(`📝 Found edited ctAmount for hash ${requestData.hashValue}: ${editedCtAmount.toString()}`)
+                      requestData.editedCtAmount = editedCtAmount
                     }
 
                     // Only add if there's actual data (not empty request)
@@ -233,15 +433,16 @@ export const RequestPool = () => {
                         saleCount, 
                         chainId: sourceChainId, 
                         chainName: config.displayName,
+                        contractAddress: contractAddress,
                         data: requestData 
                       })
                     }
                   } catch (err) {
-                    console.error(`Error fetching request ${saleCount} from ${config.displayName} to ${destinationChainId}:`, err)
+                    console.error(`Error fetching L2_L1 request ${saleCount} from ${config.displayName}:`, err)
                   }
                 }
               } catch (err) {
-                console.error(`Error fetching saleCount from ${config.displayName} to ${destinationChainId}:`, err)
+                console.error(`Error fetching L2_L1 saleCount from ${config.displayName}:`, err)
               }
             }
         } catch (err) {
@@ -316,7 +517,7 @@ export const RequestPool = () => {
         
         {/* Debug info - show which chains are being queried */}
         <div className="debug-info">
-          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => chain.config.displayName).join(', ')}</p>
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.displayName} (${chain.type})`).join(', ')}</p>
         </div>
         
         <div className="pool-container">
@@ -378,14 +579,18 @@ export const RequestPool = () => {
               {requests.filter(req => req.data !== null).map((request, index) => {
                 const data = request.data!
                 const destinationChain = getChainName(data.l2DestinationChainId)
-                const totalAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
-                const rewardAmount = formatTokenAmount(data.ctAmount, data.l2DestinationToken)
-                const serviceFeeBigInt = data.totalAmount - data.ctAmount
+                // Use edited amount if available, otherwise use original ctAmount
+                const actualCtAmount = data.editedCtAmount || data.ctAmount
+                // Provider PROVIDES actualCtAmount on L1 (Ethereum)
+                const provideAmount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
+                // Provider GETS REWARDED totalAmount on L2 source chain (where request came from)
+                const rewardAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
+                const serviceFeeBigInt = data.totalAmount - actualCtAmount
                 const serviceFeeAmount = formatTokenAmount(serviceFeeBigInt, data.l2SourceToken)
                 const profitPercentage = ((Number(serviceFeeBigInt) / Number(data.totalAmount)) * 100).toFixed(2)
 
                 return (
-                  <div key={`request-${request.chainId}-${request.saleCount}`} className="table-row">
+                  <div key={`request-${request.contractAddress}-${request.saleCount}`} className="table-row">
                     {/* Token Column */}
                     <div className="table-cell token-col">
                       <div className="token-info">
@@ -394,10 +599,10 @@ export const RequestPool = () => {
                       </div>
                     </div>
 
-                    {/* Provide On Column */}
+                    {/* Provide On Column - Provider sends ctAmount on Ethereum (L1) */}
                     <div className="table-cell provide-col">
                       <div className="amount-info">
-                        <span className="amount-value">{totalAmount}</span>
+                        <span className="amount-value">{provideAmount}</span>
                         <div className="chain-info">
                           <span className="chain-icon">⚪</span>
                           <span className="chain-name">Ethereum</span>
@@ -405,14 +610,14 @@ export const RequestPool = () => {
                       </div>
                     </div>
 
-                    {/* Reward On Column */}
+                    {/* Reward On Column - Provider gets totalAmount on source L2 chain */}
                     <div className="table-cell reward-col">
                       <div className="amount-info">
                         <span className="amount-value">{rewardAmount}</span>
                         <span className="profit-badge">+{profitPercentage}%</span>
                         <div className="chain-info">
-                          <span className="chain-icon">{getChainEmoji(destinationChain)}</span>
-                          <span className="chain-name">{destinationChain}</span>
+                          <span className="chain-icon">{getChainEmoji(request.chainName)}</span>
+                          <span className="chain-name">{request.chainName}</span>
                         </div>
                       </div>
                     </div>
@@ -483,6 +688,7 @@ export const RequestPool = () => {
             receiver: selectedRequest.data.receiver,
             totalAmount: selectedRequest.data.totalAmount,
             ctAmount: selectedRequest.data.ctAmount,
+            editedCtAmount: selectedRequest.data.editedCtAmount,
             l1ChainId: selectedRequest.data.l1ChainId,
             l2DestinationChainId: selectedRequest.data.l2DestinationChainId,
             hashValue: selectedRequest.data.hashValue,
