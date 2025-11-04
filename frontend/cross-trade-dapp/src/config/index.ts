@@ -2,9 +2,10 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { optimismSepolia, sepolia } from '@reown/appkit/networks'
 import type { AppKitNetwork } from '@reown/appkit/networks'
 import { defineChain } from 'viem'
+import {env} from 'next-runtime-env'
 
 // Get projectId from https://cloud.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
+export const projectId = env('NEXT_PUBLIC_PROJECT_ID') || "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
 
 if (!projectId) {
   throw new Error('Project ID is not defined')
@@ -12,7 +13,7 @@ if (!projectId) {
 
 // Parse chain configuration from environment
 // You can choose between L2_L2 or L2_L1 configuration
-const chainConfigString = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2 || process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1 || process.env.NEXT_PUBLIC_CHAIN_CONFIG
+const chainConfigString = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2') || env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1') || env('NEXT_PUBLIC_CHAIN_CONFIG')
 if (!chainConfigString) {
   throw new Error('No chain configuration found. Please set NEXT_PUBLIC_CHAIN_CONFIG_L2_L2, NEXT_PUBLIC_CHAIN_CONFIG_L2_L1, or NEXT_PUBLIC_CHAIN_CONFIG')
 }
@@ -61,13 +62,13 @@ export const networks = [optimismSepolia, sepolia, ...dynamicChains]
 
 // Helper functions to get specific configurations
 export function getL2L2Config() {
-  const configString = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2
+  const configString = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2')
   if (!configString) throw new Error('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2 is not defined')
   return JSON.parse(configString)
 }
 
 export function getL2L1Config() {
-  const configString = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1
+  const configString = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1')
   if (!configString) throw new Error('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1 is not defined')
   return JSON.parse(configString)
 }

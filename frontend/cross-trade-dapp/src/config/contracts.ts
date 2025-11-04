@@ -1,6 +1,7 @@
 // Chain configurations loaded from environment variables
 
 // Type definitions for chain configuration
+import {env} from 'next-runtime-env'
 export interface ChainConfig {
   name: string;
   displayName: string;
@@ -25,16 +26,16 @@ const loadChainConfig = (configType: 'L2_L2' | 'L2_L1' | 'FALLBACK' = 'FALLBACK'
   let chainConfigEnv: string | undefined;
   
   if (configType === 'L2_L2') {
-    chainConfigEnv = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2;
+    chainConfigEnv = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2');
     console.log("in contracts.ts L2_L2 config:", chainConfigEnv);
   } else if (configType === 'L2_L1') {
-    chainConfigEnv = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1;
+    chainConfigEnv = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1');
     console.log("in contracts.ts L2_L1 config:", chainConfigEnv);
   } else {
     // Fallback: try L2_L2 first, then L2_L1, then legacy NEXT_PUBLIC_CHAIN_CONFIG
-    chainConfigEnv = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2 || 
-                     process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1 || 
-                     process.env.NEXT_PUBLIC_CHAIN_CONFIG;
+    chainConfigEnv = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2') || 
+                     env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1') || 
+                     env('NEXT_PUBLIC_CHAIN_CONFIG');
     console.log("in contracts.ts config:", chainConfigEnv);
   }
   
