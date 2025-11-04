@@ -4,8 +4,9 @@ import React, { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { 
   PROVIDE_CT_ABI, 
-  getContractAddress, 
-  getAllChains,
+  CHAIN_CONFIG_L2_L2,
+  CHAIN_CONFIG_L2_L1,
+  getTokenDecimals,
   // L2_L2 specific imports
   getContractAddressFor_L2_L2,
   // L2_L1 specific imports
@@ -98,11 +99,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const l1ChainId = Number(requestData.l1ChainId)
   const getL1ContractAddress = () => {
     if (communicationMode === 'L2_L1') {
-      const address = getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
-      return address || getContractAddress(l1ChainId, 'L1_CROSS_TRADE') // Fallback
+      return getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
     } else {
-      const address = getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
-      return address || getContractAddress(l1ChainId, 'L1_CROSS_TRADE') // Fallback
+      return getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
     }
   }
   const L1_CONTRACT_ADDRESS = getL1ContractAddress()
@@ -137,8 +136,31 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
-    // For demo purposes, using USDC (6 decimals)
-    const decimals = 6
+    let symbol = 'UNKNOWN'
+    let decimals = 18
+
+    // Check against known token addresses from both L2_L2 and L2_L1 configs
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
+      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          symbol = tokenSymbol
+          decimals = getTokenDecimals(tokenSymbol)
+        }
+      })
+    })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+            decimals = getTokenDecimals(tokenSymbol)
+          }
+        })
+      })
+    }
+
     const divisor = BigInt(10 ** decimals)
     const integerPart = amount / divisor
     const fractionalPart = amount % divisor
@@ -155,9 +177,10 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   // Helper function to get chain name from chain ID
   const getChainName = (chainId: bigint) => {
     const chainIdNum = Number(chainId)
-    const allChains = getAllChains()
-    const chain = allChains.find(c => c.chainId === chainIdNum)
-    return chain ? chain.config.name : `Chain ${chainId}`
+    const chainIdStr = chainIdNum.toString()
+    // Try L2_L2 config first, then L2_L1
+    const config = CHAIN_CONFIG_L2_L2[chainIdStr] || CHAIN_CONFIG_L2_L1[chainIdStr]
+    return config?.name || `Chain ${chainId}`
   }
 
   // Helper function to get chain icon

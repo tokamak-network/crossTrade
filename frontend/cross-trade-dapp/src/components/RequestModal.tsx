@@ -1,20 +1,13 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { 
-  CONTRACTS, 
   L2_CROSS_TRADE_ABI,
   // L2_L2 specific imports
-  getChainsFor_L2_L2,
-  getTokenAddressFor_L2_L2,
   getContractAddressFor_L2_L2,
   // L2_L1 specific imports
-  getChainsFor_L2_L1,
-  getTokenAddressFor_L2_L1,
   getContractAddressFor_L2_L1,
-  // L2_L1 ABIs (if needed in future)
-  L2_L1_PROVIDE_CT_ABI,
 } from '@/config/contracts'
 
 interface RequestModalProps {
@@ -23,6 +16,8 @@ interface RequestModalProps {
 }
 
 export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
+  const chainId = useChainId() // Get current chain ID from wallet
+  
   const [formData, setFormData] = useState({
     l1token: '',
     l2SourceToken: '',
@@ -45,6 +40,15 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     return destinationChainId === l1ChainId ? 'L2_L1' : 'L2_L2'
   }, [formData.l2DestinationChainId])
 
+  // Get contract address based on mode
+  const contractAddress = useMemo(() => {
+    if (communicationMode === 'L2_L1') {
+      return getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+    } else {
+      return getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE')
+    }
+  }, [chainId, communicationMode])
+
   const { writeContract, data: hash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
 
@@ -57,8 +61,15 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
       return
     }
 
+    if (!contractAddress) {
+      alert(`L2_CROSS_TRADE contract not found for chain ${chainId}. Please ensure you're connected to a supported network.`)
+      return
+    }
+
     console.log('📝 RequestModal - Creating request:', {
       mode: communicationMode,
+      chainId,
+      contractAddress,
       l1token: formData.l1token,
       l2SourceToken: formData.l2SourceToken,
       l2DestinationToken: formData.l2DestinationToken,
@@ -76,7 +87,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     // Both L2_L2 and L2_L1 modes use the same L2 contract and ABI for creating requests
     // The difference is in the addresses used (from different configs)
     writeContract({
-      address: CONTRACTS.L2_CROSS_TRADE as `0x${string}`,
+      address: contractAddress as `0x${string}`,
       abi: L2_CROSS_TRADE_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
       functionName: 'requestRegisteredToken',
       args: [

@@ -1,8 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePublicClient } from 'wagmi'
-import { CONTRACTS, REQUEST_CT_EVENT_ABI } from '@/config/contracts'
+import { usePublicClient, useChainId } from 'wagmi'
+import { 
+  REQUEST_CT_EVENT_ABI,
+  getContractAddressFor_L2_L2,
+  getContractAddressFor_L2_L1
+} from '@/config/contracts'
 
 // Helper: get block number for N days ago (approximate)
 async function getBlockNumberNDaysAgo(client: any, days: number) {
@@ -14,6 +18,7 @@ async function getBlockNumberNDaysAgo(client: any, days: number) {
 
 export const RequestsList = () => {
   const publicClient = usePublicClient()
+  const chainId = useChainId()
   const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -21,13 +26,23 @@ export const RequestsList = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       if (!publicClient) return
+
+      // Get contract address from config
+      const contractAddress = getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE') || 
+                             getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+
+      if (!contractAddress) {
+        setError(`L2_CROSS_TRADE contract not found for chain ${chainId}`)
+        return
+      }
+
       setLoading(true)
       setError(null)
       try {
         const latestBlock = await publicClient.getBlock()
         const fromBlock = latestBlock.number > BigInt(50000) ? latestBlock.number - BigInt(50000) : BigInt(0)
         const logs = await publicClient.getLogs({
-          address: CONTRACTS.L2_CROSS_TRADE,
+          address: contractAddress as `0x${string}`,
           event: REQUEST_CT_EVENT_ABI[0],
           fromBlock,
           toBlock: 'latest',
@@ -40,7 +55,7 @@ export const RequestsList = () => {
     }
     fetchEvents()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicClient])
+  }, [publicClient, chainId])
 
   return (
     <div className="max-w-2xl mx-auto mt-10">
