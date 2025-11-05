@@ -3,15 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
 import { 
-  CONTRACTS, 
   L2_CROSS_TRADE_ABI, 
-  CHAIN_CONFIG, 
-  CHAIN_IDS, 
-  getTokenAddress, 
-  getContractAddress, 
-  getAllChains, 
-  getChainConfig, 
-  getAvailableTokens,
   // L2_L2 specific imports
   getChainsFor_L2_L2,
   getTokenAddressFor_L2_L2,
@@ -24,9 +16,6 @@ import {
   getAvailableTokensFor_L2_L1,
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
-  L2_L1_PROVIDE_CT_ABI,
-  L2_L1_CANCEL_CT_ABI,
-  L2_L1_EDIT_FEE_ABI
 } from '@/config/contracts'
 
 // ERC20 ABI for approve function
@@ -249,7 +238,11 @@ export const CreateRequest = () => {
       const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // Token on destination chain
       
       // Get the CrossTrade contract address (this is the spender) (mode-aware)
-      const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
+      const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE')
+      
+      if (!crossTradeContractAddress) {
+        throw new Error(`L2_CROSS_TRADE contract address not found for chain ${fromChainId}`)
+      }
       
       // Amount calculations with correct decimals
       const totalAmountWei = toTokenWei(sendAmount, sendToken)
@@ -378,7 +371,11 @@ export const CreateRequest = () => {
       const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // L2 destination token (to chain)
 
       // Get contract address for the current chain (mode-aware)
-      const contractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE') || CONTRACTS.L2_CROSS_TRADE
+      const contractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE')
+      
+      if (!contractAddress) {
+        throw new Error(`L2_CROSS_TRADE contract address not found for chain ${fromChainId}`)
+      }
 
       // Check if user is on the correct network for main transaction
       console.log('🌐 Main Transaction Network Check:', {
@@ -652,7 +649,7 @@ export const CreateRequest = () => {
                     onChange={(e) => setSendToken(e.target.value)}
                     className="token-select"
                   >
-                    {getAvailableTokens(requestFrom).map((token) => (
+                    {getAvailableTokensForMode(requestFrom).map((token) => (
                       <option key={token} value={token}>
                         {token}
                       </option>
@@ -683,7 +680,7 @@ export const CreateRequest = () => {
                       onChange={(e) => setReceiveToken(e.target.value)}
                       className="token-select"
                     >
-                      {getAvailableTokens(requestTo).map((token) => (
+                      {getAvailableTokensForMode(requestTo).map((token) => (
                         <option key={token} value={token}>
                           {token}
                         </option>

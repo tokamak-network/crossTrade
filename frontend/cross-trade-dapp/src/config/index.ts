@@ -1,6 +1,5 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { optimismSepolia, sepolia } from '@reown/appkit/networks'
-import type { AppKitNetwork } from '@reown/appkit/networks'
 import { defineChain } from 'viem'
 import {env} from 'next-runtime-env'
 
@@ -11,18 +10,35 @@ if (!projectId) {
   throw new Error('Project ID is not defined')
 }
 
-// Parse chain configuration from environment
-// You can choose between L2_L2 or L2_L1 configuration
-const chainConfigString = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2') || env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1') || env('NEXT_PUBLIC_CHAIN_CONFIG')
-if (!chainConfigString) {
-  throw new Error('No chain configuration found. Please set NEXT_PUBLIC_CHAIN_CONFIG_L2_L2, NEXT_PUBLIC_CHAIN_CONFIG_L2_L1, or NEXT_PUBLIC_CHAIN_CONFIG')
+// Parse chain configurations from environment - support both L2_L2 and L2_L1
+const chainConfigL2L2String = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2
+const chainConfigL2L1String = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1
+
+// Check if at least one config is provided
+if (!chainConfigL2L2String && !chainConfigL2L1String) {
+  throw new Error('No chain configuration found. Please set NEXT_PUBLIC_CHAIN_CONFIG_L2_L2 or NEXT_PUBLIC_CHAIN_CONFIG_L2_L1')
 }
 
-let chainConfig: Record<string, any>
-try {
-  chainConfig = JSON.parse(chainConfigString)
-} catch (error) {
-  throw new Error('Invalid JSON in chain configuration')
+// Parse both configs (if available)
+let chainConfigL2L2: Record<string, any> = {}
+let chainConfigL2L1: Record<string, any> = {}
+
+if (chainConfigL2L2String) {
+  try {
+    chainConfigL2L2 = JSON.parse(chainConfigL2L2String)
+    console.log('✅ Loaded L2_L2 chain configuration')
+  } catch (error) {
+    console.error('❌ Invalid JSON in NEXT_PUBLIC_CHAIN_CONFIG_L2_L2:', error)
+  }
+}
+
+if (chainConfigL2L1String) {
+  try {
+    chainConfigL2L1 = JSON.parse(chainConfigL2L1String)
+    console.log('✅ Loaded L2_L1 chain configuration')
+  } catch (error) {
+    console.error('❌ Invalid JSON in NEXT_PUBLIC_CHAIN_CONFIG_L2_L1:', error)
+  }
 }
 
 // Function to create chain definition from config
@@ -52,9 +68,16 @@ function createChainFromConfig(chainId: string, config: any) {
   })
 }
 
-// Create dynamic chain definitions
-const dynamicChains = Object.entries(chainConfig).map(([chainId, config]) => 
+// Merge both configs (L2_L2 takes priority if same chainId exists in both)
+const mergedChainConfig = { ...chainConfigL2L1, ...chainConfigL2L2 }
+
+// Create dynamic chain definitions from merged config
+const dynamicChains = Object.entries(mergedChainConfig).map(([chainId, config]) => 
   createChainFromConfig(chainId, config)
+)
+
+console.log(`🔗 Loaded ${dynamicChains.length} dynamic chains for Wagmi`, 
+  dynamicChains.map(c => ({ id: c.id, name: c.name }))
 )
 
 // Combine with predefined chains and dynamic chains

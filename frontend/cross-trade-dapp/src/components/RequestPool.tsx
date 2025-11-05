@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePublicClient, useContractRead, useAccount } from 'wagmi'
+import { usePublicClient, useAccount } from 'wagmi'
 import { createPublicClient, http, defineChain } from 'viem'
-import { CONTRACTS, L2_CROSS_TRADE_ABI, CHAIN_CONFIG, CHAIN_CONFIG_L2_L2, CHAIN_CONFIG_L2_L1, CHAIN_IDS, getTokenAddress, getContractAddress, getTokenDecimals, getAllChains, getChainsFor_L2_L2, getChainsFor_L2_L1 } from '@/config/contracts'
+import { CHAIN_CONFIG_L2_L2, CHAIN_CONFIG_L2_L1, getTokenDecimals, getChainsFor_L2_L2, getChainsFor_L2_L1 } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { ReviewProvideModal } from './ReviewProvideModal'
 
@@ -74,8 +74,8 @@ export const RequestPool = () => {
     let symbol = 'UNKNOWN'
     let decimals = 18
 
-    // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    // Check against known token addresses from both L2_L2 and L2_L1 configs
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -83,6 +83,18 @@ export const RequestPool = () => {
         }
       })
     })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+            decimals = getTokenDecimals(tokenSymbol)
+          }
+        })
+      })
+    }
 
     const divisor = BigInt(10 ** decimals)
     const integerPart = amount / divisor
@@ -100,7 +112,9 @@ export const RequestPool = () => {
   // Helper function to get chain name from chain ID
   const getChainName = (chainId: bigint) => {
     const chainIdNum = Number(chainId)
-    const config = CHAIN_CONFIG[chainIdNum as keyof typeof CHAIN_CONFIG]
+    const chainIdStr = chainIdNum.toString()
+    // Try L2_L2 config first, then L2_L1
+    const config = CHAIN_CONFIG_L2_L2[chainIdStr] || CHAIN_CONFIG_L2_L1[chainIdStr]
     return config?.displayName || `Chain ${chainId}`
   }
 
@@ -119,13 +133,24 @@ export const RequestPool = () => {
   // Helper function to get token emoji
   const getTokenEmoji = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    // Check L2_L2 config
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
     })
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+          }
+        })
+      })
+    }
 
     switch (symbol) {
       case 'USDC': return '🔵'

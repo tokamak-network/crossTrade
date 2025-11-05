@@ -22,7 +22,7 @@ export interface ChainConfigs {
 }
 
 // Function to load and parse chain configuration from environment variables
-const loadChainConfig = (configType: 'L2_L2' | 'L2_L1' | 'FALLBACK' = 'FALLBACK'): ChainConfigs => {
+const loadChainConfig = (configType: 'L2_L2' | 'L2_L1'): ChainConfigs => {
   let chainConfigEnv: string | undefined;
   
   if (configType === 'L2_L2') {
@@ -31,136 +31,31 @@ const loadChainConfig = (configType: 'L2_L2' | 'L2_L1' | 'FALLBACK' = 'FALLBACK'
   } else if (configType === 'L2_L1') {
     chainConfigEnv = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1');
     console.log("in contracts.ts L2_L1 config:", chainConfigEnv);
-  } else {
-    // Fallback: try L2_L2 first, then L2_L1, then legacy NEXT_PUBLIC_CHAIN_CONFIG
-    chainConfigEnv = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2') || 
-                     env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1') || 
-                     env('NEXT_PUBLIC_CHAIN_CONFIG');
-    console.log("in contracts.ts config:", chainConfigEnv);
   }
   
   if (!chainConfigEnv) {
-    console.warn(`Chain configuration not found for ${configType}, using fallback configuration`);
-    // Fallback configuration
-    return {
-      "11155420": {
-        name: 'Optimism Sepolia',
-        displayName: 'Optimism',
-        contracts: {
-          L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB",
-        },
-        tokens: {
-          ETH: '0x0000000000000000000000000000000000000000',
-          USDC: '0x5fd84259d66cd46123540766be93dfe6d43130d7',
-          USDT: '0xebca682b6c15d539284432edc5b960771f0009e8',
-          TON: '',
-        }
-      },
-      "11155111": {
-        name: 'Ethereum Sepolia',
-        displayName: 'Ethereum',
-        contracts: {
-          L1_CROSS_TRADE: '0xDa2CbF69352cB46d9816dF934402b421d93b6BC2',
-        },
-        tokens: {
-          ETH: '0x0000000000000000000000000000000000000000',
-          USDC: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
-          USDT: '',
-          TON: '',
-        }
-      }
-    };
+    console.warn(`Chain configuration not found for ${configType}, returning empty configuration`);
+    return {} as ChainConfigs;
   }
 
   try {
     return JSON.parse(chainConfigEnv) as ChainConfigs;
   } catch (error) {
     console.error(`Error parsing chain configuration for ${configType}:`, error);
-    console.warn('Using fallback configuration');
-    // Return fallback configuration in case of parsing error
-    return {
-      "11155420": {
-        name: 'Optimism Sepolia',
-        displayName: 'Optimism',
-        contracts: {
-          L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB",
-        },
-        tokens: {
-          ETH: '0x0000000000000000000000000000000000000000',
-          USDC: '0x5fd84259d66cd46123540766be93dfe6d43130d7',
-          USDT: '0xebca682b6c15d539284432edc5b960771f0009e8',
-          TON: '',
-        }
-      }
-    };
+    console.warn('Returning empty configuration');
+    return {} as ChainConfigs;
   }
 };
 
 // Load chain configurations for both L2_L2 and L2_L1
 const chainConfigsL2L2 = loadChainConfig('L2_L2');
 const chainConfigsL2L1 = loadChainConfig('L2_L1');
-const chainConfigs = loadChainConfig('FALLBACK');
 
 // Export the chain configurations with proper typing
-export const CHAIN_CONFIG = chainConfigs;
 export const CHAIN_CONFIG_L2_L2 = chainConfigsL2L2;
 export const CHAIN_CONFIG_L2_L1 = chainConfigsL2L1;
 
-// Legacy contract addresses (for backward compatibility)
-export const CONTRACTS = {
-  L2_CROSS_TRADE: "0xCc316D79B3310c31C5112BbACd737dB254b007aB", 
-} as const;
-
-// Dynamic chain name to ID mapping based on loaded configuration
-export const getChainIds = (): Record<string, number> => {
-  const chainIds: Record<string, number> = {};
-  Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
-    chainIds[config.displayName] = parseInt(chainId);
-  });
-  return chainIds;
-};
-
-// Dynamic chain IDs based on environment configuration
-export const CHAIN_IDS = (() => {
-  const chainIds: Record<string, number> = {};
-  Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
-    chainIds[config.displayName] = parseInt(chainId);
-  });
-  return chainIds;
-})();
-
-// Helper functions
-export const getChainConfig = (chainId: number): ChainConfig | undefined => {
-  return CHAIN_CONFIG[chainId.toString()];
-};
-
-export const getTokenAddress = (chainId: number, tokenSymbol: string): string => {
-  const config = getChainConfig(chainId);
-  return config?.tokens[tokenSymbol as keyof typeof config.tokens] || '';
-};
-
-export const getContractAddress = (chainId: number, contractName: string): string => {
-  const config = getChainConfig(chainId);
-  return config?.contracts[contractName as keyof typeof config.contracts] || '';
-};
-
-// Get all available chain IDs
-export const getAllChainIds = (): number[] => {
-  return Object.keys(CHAIN_CONFIG).map(chainId => parseInt(chainId));
-};
-
-// Get all chains with their configurations
-export const getAllChains = (): Array<{ chainId: number; config: ChainConfig }> => {
-  return Object.entries(CHAIN_CONFIG).map(([chainId, config]) => ({
-    chainId: parseInt(chainId),
-    config
-  }));
-};
-
-// Check if a chain is supported
-export const isChainSupported = (chainId: number): boolean => {
-  return chainId.toString() in CHAIN_CONFIG;
-};
+// CONTRACTS constant removed - use getContractAddressFor_L2_L2 or getContractAddressFor_L2_L1 instead
 
 // ========== L2_L2 Specific Functions ==========
 
@@ -275,19 +170,6 @@ export const getTokenDecimals = (tokenSymbol: string) => {
     default:
       return 18 // ETH and most tokens use 18 decimals
   }
-};
-
-// Get available tokens for a chain (only tokens with non-empty addresses)
-export const getAvailableTokens = (chainName: string) => {
-  const chainId = CHAIN_IDS[chainName as keyof typeof CHAIN_IDS]
-  if (!chainId) return []
-  
-  const config = getChainConfig(chainId)
-  if (!config) return []
-  
-  return Object.entries(config.tokens)
-    .filter(([symbol, address]) => address && address !== '')
-    .map(([symbol]) => symbol)
 };
 
 // ========== L2_L2 ABIs (L2toL2CrossTradeL2.sol) ==========

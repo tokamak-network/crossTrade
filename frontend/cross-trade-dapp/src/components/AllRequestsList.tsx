@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePublicClient, useContractRead, useAccount, useWriteContract } from 'wagmi'
-import { CONTRACTS } from '@/config/contracts'
-import { PROVIDE_CT_ABI } from '@/config/contracts'
+import { usePublicClient, useContractRead, useAccount, useWriteContract, useChainId } from 'wagmi'
+import { 
+  PROVIDE_CT_ABI,
+  getContractAddressFor_L2_L2,
+  getContractAddressFor_L2_L1
+} from '@/config/contracts'
 
 interface RequestData {
   l1token: string
@@ -38,16 +41,18 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
     return new Set()
   })
   const [forceRefresh, setForceRefresh] = useState(false)
-  const { address: connectedWallet, chainId } = useAccount()
+  const { address: connectedWallet } = useAccount()
+  const chainId = useChainId()
   const { writeContract, isPending, data: txHash } = useWriteContract()
   const publicClient = usePublicClient()
 
-  // Optimism Sepolia chain ID
-  const CHAIN_ID = 111551119090
+  // Get contract address from config
+  const contractAddress = getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE') || 
+                         getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
 
   // Get the current saleCount for this chain
   const { data: currentSaleCount } = useContractRead({
-    address: CONTRACTS.L2_CROSS_TRADE,
+    address: contractAddress as `0x${string}` | undefined,
     abi: [
       {
         inputs: [{ type: 'uint256', name: 'chainId' }],
@@ -58,11 +63,11 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
       },
     ],
     functionName: 'saleCountChainId',
-    args: [BigInt(CHAIN_ID)],
+    args: [BigInt(chainId)],
   })
 
   const fetchAllRequests = async (fullRefresh = false) => {
-    if (!publicClient || !currentSaleCount) return
+    if (!publicClient || !currentSaleCount || !contractAddress) return
 
     setLoading(true)
     setError(null)
@@ -76,7 +81,7 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
         if (!fullRefresh && fulfilledSaleCounts.has(saleCount)) continue // skip known fulfilled
         try {
           const data = await publicClient.readContract({
-            address: CONTRACTS.L2_CROSS_TRADE,
+            address: contractAddress as `0x${string}`,
             abi: [
               {
                 inputs: [

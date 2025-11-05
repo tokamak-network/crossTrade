@@ -4,13 +4,9 @@ import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient, useContractRead } from 'wagmi'
 import { createPublicClient, http, defineChain } from 'viem'
 import { 
-  CONTRACTS, 
-  CHAIN_CONFIG,
   CHAIN_CONFIG_L2_L2,
   CHAIN_CONFIG_L2_L1, 
   getTokenDecimals, 
-  getAllChains, 
-  getContractAddress,
   // L2_L2 specific imports
   getChainsFor_L2_L2,
   getContractAddressFor_L2_L2,
@@ -147,8 +143,8 @@ export const History = () => {
     let symbol = 'UNKNOWN'
     let decimals = 18
 
-    // Check against known token addresses
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    // Check against known token addresses from both L2_L2 and L2_L1 configs
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -156,6 +152,18 @@ export const History = () => {
         }
       })
     })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+            decimals = getTokenDecimals(tokenSymbol)
+          }
+        })
+      })
+    }
 
     const divisor = BigInt(10 ** decimals)
     const integerPart = amount / divisor
@@ -173,7 +181,9 @@ export const History = () => {
   // Helper function to get chain name from chain ID
   const getChainName = (chainId: bigint) => {
     const chainIdNum = Number(chainId)
-    const config = CHAIN_CONFIG[chainIdNum as keyof typeof CHAIN_CONFIG]
+    const chainIdStr = chainIdNum.toString()
+    // Try L2_L2 config first, then L2_L1
+    const config = CHAIN_CONFIG_L2_L2[chainIdStr] || CHAIN_CONFIG_L2_L1[chainIdStr]
     return config?.displayName || `Chain ${chainId}`
   }
 
@@ -192,13 +202,24 @@ export const History = () => {
   // Helper function to get token symbol from address
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    Object.entries(CHAIN_CONFIG).forEach(([chainId, config]) => {
+    // Check L2_L2 config
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
     })
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+          }
+        })
+      })
+    }
     return symbol
   }
 

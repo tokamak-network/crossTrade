@@ -5,8 +5,8 @@ import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId,
 import { 
   CANCEL_CT_ABI, 
   getTokenDecimals, 
-  getContractAddress, 
-  getAllChains,
+  CHAIN_CONFIG_L2_L2,
+  CHAIN_CONFIG_L2_L1,
   // L2_L2 specific imports
   getContractAddressFor_L2_L2,
   // L2_L1 specific imports
@@ -66,11 +66,9 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
     const l1ChainId = 11155111 // Ethereum Sepolia
     
     if (communicationMode === 'L2_L1') {
-      const address = getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
-      return address || getContractAddress(l1ChainId, 'L1_CROSS_TRADE') // Fallback
+      return getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
     } else {
-      const address = getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
-      return address || getContractAddress(l1ChainId, 'L1_CROSS_TRADE') // Fallback
+      return getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
     }
   }
 
@@ -78,10 +76,9 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
     let symbol = 'UNKNOWN'
     let decimals = 18
-    const allChains = getAllChains()
 
-    // Check against known token addresses using dynamic config
-    allChains.forEach(({ chainId, config }) => {
+    // Check against known token addresses from both L2_L2 and L2_L1 configs
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
@@ -89,6 +86,18 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
         }
       })
     })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+            decimals = getTokenDecimals(tokenSymbol)
+          }
+        })
+      })
+    }
 
     const divisor = BigInt(10 ** decimals)
     const integerPart = amount / divisor
@@ -106,15 +115,26 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
   // Helper function to get token symbol from address using dynamic config
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    const allChains = getAllChains()
     
-    allChains.forEach(({ chainId, config }) => {
+    // Check L2_L2 config
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
     })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+          }
+        })
+      })
+    }
     
     return symbol
   }

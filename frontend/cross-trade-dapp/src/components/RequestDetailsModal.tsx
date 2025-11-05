@@ -1,8 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { usePublicClient } from 'wagmi'
-import { CONTRACTS, REQUEST_CT_EVENT_ABI } from '@/config/contracts'
+import { usePublicClient, useChainId } from 'wagmi'
+import { 
+  REQUEST_CT_EVENT_ABI,
+  getContractAddressFor_L2_L2,
+  getContractAddressFor_L2_L1
+} from '@/config/contracts'
 
 interface RequestDetailsModalProps {
   isOpen: boolean
@@ -11,6 +15,7 @@ interface RequestDetailsModalProps {
 
 export const RequestDetailsModal = ({ isOpen, onClose }: RequestDetailsModalProps) => {
   const publicClient = usePublicClient()
+  const chainId = useChainId()
   const [saleCount, setSaleCount] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -25,12 +30,22 @@ export const RequestDetailsModal = ({ isOpen, onClose }: RequestDetailsModalProp
       setError('Please enter a valid SaleCount number.')
       return
     }
+
+    // Try to get contract address from either config
+    const contractAddress = getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE') || 
+                           getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+
+    if (!contractAddress) {
+      setError(`L2_CROSS_TRADE contract not found for chain ${chainId}. Please ensure you're connected to a supported network.`)
+      return
+    }
+
     setLoading(true)
     try {
       const latestBlock = await publicClient.getBlock()
       const fromBlock = latestBlock.number > BigInt(50000) ? latestBlock.number - BigInt(50000) : BigInt(0)
       const logs = await publicClient.getLogs({
-        address: CONTRACTS.L2_CROSS_TRADE,
+        address: contractAddress as `0x${string}`,
         event: REQUEST_CT_EVENT_ABI[0],
         fromBlock,
         toBlock: 'latest',
