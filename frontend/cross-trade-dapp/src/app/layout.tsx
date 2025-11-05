@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PublicEnvScript } from "next-runtime-env";
 
 
 import { headers } from 'next/headers' // added
@@ -20,6 +21,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body>
         <ContextProvider cookies={cookies}>{children}</ContextProvider>
       </body>
