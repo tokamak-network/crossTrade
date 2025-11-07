@@ -12,14 +12,14 @@ contract SetChainInfoL1_L2L1 is Script {
         console.log("Setting chain info on L1CrossTradeProxy...");
         
         // L1 Proxy address
-        address payable proxyAddress = payable(vm.envAddress("L1_PROXY_ADDRESS_L2_L1"));
+        address payable proxyAddress = payable(vm.envAddress("L1_CROSS_TRADE_PROXY"));
         
         L1CrossTradeProxy proxy = L1CrossTradeProxy(proxyAddress);
         
         // Chain info parameters
-        address crossDomainMessenger = vm.envAddress("CROSS_DOMAIN_MESSENGER_L2_L1");
-        address l2CrossTrade = vm.envAddress("L2_CROSS_TRADE_L2_L1");
-        uint256 l2chainId = vm.envUint("L2_CHAIN_ID_L2_L1");
+        address crossDomainMessenger = vm.envAddress("L1_CROSS_DOMAIN_MESSENGER");
+        address l2CrossTrade = vm.envAddress("L2_CROSS_TRADE_PROXY");
+        uint256 l2chainId = vm.envUint("L2_CHAIN_ID");
         
         console.log("Setting chain info with parameters:");
         console.log("Cross Domain Messenger:", crossDomainMessenger);

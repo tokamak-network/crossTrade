@@ -11,19 +11,19 @@ contract SetChainInfoL1_L2L2 is Script {
 
         console.log("Setting chain info for L1...");
         
-        address proxyAddress = vm.envAddress("L1_PROXY_ADDRESS");
+        address proxyAddress = vm.envAddress("L1_CROSS_TRADE_PROXY");
         
-        L2toL2CrossTradeProxyL1 proxy = L2toL2CrossTradeProxyL1(proxyAddress);
+        L2toL2CrossTradeProxyL1 proxy = L2toL2CrossTradeProxyL1(payable(proxyAddress));
         
         // this has to be executed for every L2 you want to support
 
         // Chain info parameters
-        address crossDomainMessenger = vm.envAddress("CROSS_DOMAIN_MESSENGER_L1");
-        address l2CrossTrade = vm.envAddress("L2_CROSS_TRADE_ADDRESS");
+        address crossDomainMessenger = vm.envAddress("L1_CROSS_DOMAIN_MESSENGER");
+        address l2CrossTrade = vm.envAddress("L2_CROSS_TRADE_PROXY");
         address l2NativeTokenAddressOnL1 = vm.envAddress("L2_NATIVE_TOKEN_ADDRESS_ON_L1");
         address l1StandardBridge = vm.envAddress("L1_STANDARD_BRIDGE");
         address l1USDCBridge = vm.envAddress("L1_USDC_BRIDGE");
-        uint256 l2ChainId = vm.envUint("L2_CHAIN_ID_FOR_L1");
+        uint256 l2ChainId = vm.envUint("L2_CHAIN_ID");
         
         console.log("Setting chain info with parameters:");
         console.log("CrossDomainMessenger:", crossDomainMessenger);

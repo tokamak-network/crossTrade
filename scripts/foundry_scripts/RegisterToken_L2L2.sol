@@ -13,7 +13,7 @@ contract RegisterToken_L2L2 is Script {
         console.log("Registering token on L2...");
         
         // L2 Proxy address (replace with actual deployed address)
-        address payable proxyAddress = payable(vm.envAddress("L2_PROXY_ADDRESS"));
+        address payable proxyAddress = payable(vm.envAddress("L2_CROSS_TRADE_PROXY"));
         
         L2toL2CrossTradeL2 proxy = L2toL2CrossTradeL2(proxyAddress);
         

@@ -30,16 +30,9 @@ contract DeployL2CrossTrade_L2L2 is Script {
   
         // Initialize the proxy
         console.log("Initializing proxy...");
-        address crossDomainMessanger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
+        address crossDomainMessanger = vm.envAddress("L2_CROSS_DOMAIN_MESSENGER");
         proxy.initialize(crossDomainMessanger);
         console.log("Proxy initialized with crossDomainMessanger:", crossDomainMessanger);
-
-        // Set chain info for L2
-        console.log("Setting chain info...");
-        address l1CrossTrade = vm.envAddress("L1_CROSS_TRADE");
-        uint256 chainId = vm.envUint("CHAIN_ID");
-        proxy.setChainInfo(l1CrossTrade, chainId); 
-        console.log("Chain info set - L1CrossTrade:", l1CrossTrade, "ChainId:", chainId);
 
 
         vm.stopBroadcast();
@@ -54,5 +47,8 @@ contract DeployL2CrossTrade_L2L2 is Script {
 
 // forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x9C7AECe87D15209C805FC9BEea260fc20918669C contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
 // forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x2d59F484c8bb2d972D66b687D9fd62E1e2f8720B contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
+
+// forge verify-contract --etherscan-api-key apiKey --chain optimism-sepolia --compiler-version 0.8.24 --optimizer-runs 200 --via-ir 0x68664Cf56aD3B2c651953c392642fcf8DeF3b346 contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2
+// forge verify-contract --etherscan-api-key apiKey --chain optimism-sepolia --compiler-version 0.8.24 --optimizer-runs 200 --via-ir 0x68664Cf56aD3B2c651953c392642fcf8DeF3b346 contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy
 
 // ?? how do you verify the contract on a L2 SDK network? 

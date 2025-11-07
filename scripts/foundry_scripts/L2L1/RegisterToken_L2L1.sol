@@ -12,14 +12,14 @@ contract RegisterToken_L2L1 is Script {
         console.log("Registering token for L2 to L1 CrossTrade...");
         
         // L2 Proxy address (replace with actual deployed address)
-        address payable proxyAddress = payable(vm.envAddress("L2_PROXY_ADDRESS_L2_L1"));
+        address payable proxyAddress = payable(vm.envAddress("L2_CROSS_TRADE_PROXY"));
         
         L2CrossTrade proxy = L2CrossTrade(proxyAddress);
         
         // Token registration parameters for L2 to L1
-        address l1token = vm.envAddress("L1_TOKEN_L2_L1");
-        address l2token = vm.envAddress("L2_TOKEN_L2_L1");
-        uint256 l1ChainId = vm.envUint("L1_CHAIN_ID_L2_L1");
+        address l1token = vm.envAddress("L1_TOKEN");
+        address l2token = vm.envAddress("L2_TOKEN");
+        uint256 l1ChainId = vm.envUint("L1_CHAIN_ID");
         
         console.log("Registering token with parameters:");
         console.log("L1Token:", l1token);

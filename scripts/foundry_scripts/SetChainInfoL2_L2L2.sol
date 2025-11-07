@@ -13,13 +13,13 @@ contract SetChainInfoL2_L2L2 is Script {
         
         // L2 Proxy address (replace with actual deployed address)
         // ask if I need to get the params from the user as a forge command ?
-        address payable proxyAddress = payable(vm.envAddress("L2_PROXY_ADDRESS_SET_CHAIN"));
+        address payable proxyAddress = payable(vm.envAddress("L2_CROSS_TRADE_PROXY"));
         
         L2toL2CrossTradeProxy proxy = L2toL2CrossTradeProxy(proxyAddress);
         
         // Chain info parameters
-        address l1CrossTrade = vm.envAddress("L1_CROSS_TRADE_FOR_L2");
-        uint256 chainId = vm.envUint("L1_CHAIN_ID_FOR_L2");
+        address l1CrossTrade = vm.envAddress("L1_CROSS_TRADE_PROXY");
+        uint256 chainId = vm.envUint("L1_CHAIN_ID");
         
         console.log("Setting chain info with parameters:");
         console.log("L1CrossTrade:", l1CrossTrade);

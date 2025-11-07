@@ -8,7 +8,7 @@ import "../../../contracts/L2/L2CrossTrade.sol";
 contract DeployL2CrossTrade_L2L1 is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address crossDomainMessenger = vm.envAddress("CROSS_DOMAIN_MESSENGER");
+        address crossDomainMessenger = vm.envAddress("L2_CROSS_DOMAIN_MESSENGER");
         vm.startBroadcast(deployerPrivateKey);
 
         console.log("Deploying L2CrossTradeProxy...");
