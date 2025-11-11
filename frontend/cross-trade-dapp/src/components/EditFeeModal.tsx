@@ -66,9 +66,9 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
     const l1ChainId = 11155111 // Ethereum Sepolia
     
     if (communicationMode === 'L2_L1') {
-      return getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
+      return getContractAddressFor_L2_L1(l1ChainId, 'l1_cross_trade')
     } else {
-      return getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
+      return getContractAddressFor_L2_L2(l1ChainId, 'l1_cross_trade')
     }
   }
 

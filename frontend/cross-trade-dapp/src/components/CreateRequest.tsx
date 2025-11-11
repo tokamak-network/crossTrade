@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
 import { 
-  L2_CROSS_TRADE_ABI, 
+  l2_cross_trade_ABI, 
   // L2_L2 specific imports
   getChainsFor_L2_L2,
   getTokenAddressFor_L2_L2,
@@ -144,12 +144,12 @@ export const CreateRequest = () => {
   const getChainIdByName = (chainName: string): number => {
     // Try L2_L2 first
     let chains = getChainsFor_L2_L2()
-    let chain = chains.find(c => c.config.displayName === chainName)
+    let chain = chains.find(c => c.config.display_name === chainName)
     if (chain) return chain.chainId
     
     // Try L2_L1 if not found
     chains = getChainsFor_L2_L1()
-    chain = chains.find(c => c.config.displayName === chainName)
+    chain = chains.find(c => c.config.display_name === chainName)
     return chain?.chainId || 0
   }
 
@@ -238,10 +238,10 @@ export const CreateRequest = () => {
       const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // Token on destination chain
       
       // Get the CrossTrade contract address (this is the spender) (mode-aware)
-      const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE')
+      const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'l2_cross_trade')
       
       if (!crossTradeContractAddress) {
-        throw new Error(`L2_CROSS_TRADE contract address not found for chain ${fromChainId}`)
+        throw new Error(`l2_cross_trade contract address not found for chain ${fromChainId}`)
       }
       
       // Amount calculations with correct decimals
@@ -371,10 +371,10 @@ export const CreateRequest = () => {
       const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // L2 destination token (to chain)
 
       // Get contract address for the current chain (mode-aware)
-      const contractAddress = getContractAddressForMode(fromChainId, 'L2_CROSS_TRADE')
+      const contractAddress = getContractAddressForMode(fromChainId, 'l2_cross_trade')
       
       if (!contractAddress) {
-        throw new Error(`L2_CROSS_TRADE contract address not found for chain ${fromChainId}`)
+        throw new Error(`l2_cross_trade contract address not found for chain ${fromChainId}`)
       }
 
       // Check if user is on the correct network for main transaction
@@ -429,13 +429,13 @@ export const CreateRequest = () => {
           totalAmount: toTokenWei(sendAmount, sendToken).toString(),
           ctAmount: toTokenWei(currentReceiveAmount, receiveToken).toString(),
           l1ChainId,
-          abi: 'L2_CROSS_TRADE_ABI',
+          abi: 'l2_cross_trade_ABI',
           config: 'CHAIN_CONFIG_L2_L2'
         })
 
         await writeContract({
           address: contractAddress as `0x${string}`,
-          abi: L2_CROSS_TRADE_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
+          abi: l2_cross_trade_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
           functionName: 'requestRegisteredToken',
           chainId: fromChainId, // Execute on the source L2 chain
           args: [
@@ -594,8 +594,8 @@ export const CreateRequest = () => {
                         index === self.findIndex(c => c.chainId === chain.chainId)
                       )
                       .map(({ chainId, config }) => (
-                        <option key={chainId} value={config.displayName}>
-                          {config.displayName}
+                        <option key={chainId} value={config.display_name}>
+                          {config.display_name}
                         </option>
                       ))
                     }
@@ -621,8 +621,8 @@ export const CreateRequest = () => {
                         index === self.findIndex(c => c.chainId === chain.chainId)
                       )
                       .map(({ chainId, config }) => (
-                        <option key={chainId} value={config.displayName}>
-                          {config.displayName}
+                        <option key={chainId} value={config.display_name}>
+                          {config.display_name}
                         </option>
                       ))
                     }

@@ -28,11 +28,11 @@ export const RequestsList = () => {
       if (!publicClient) return
 
       // Get contract address from config
-      const contractAddress = getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE') || 
-                             getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+      const contractAddress = getContractAddressFor_L2_L2(chainId, 'l2_cross_trade') || 
+                             getContractAddressFor_L2_L1(chainId, 'l2_cross_trade')
 
       if (!contractAddress) {
-        setError(`L2_CROSS_TRADE contract not found for chain ${chainId}`)
+        setError(`l2_cross_trade contract not found for chain ${chainId}`)
         return
       }
 

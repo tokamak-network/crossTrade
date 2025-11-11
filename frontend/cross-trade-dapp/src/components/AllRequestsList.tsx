@@ -47,8 +47,8 @@ export const AllRequestsList = ({ className = '' }: AllRequestsListProps) => {
   const publicClient = usePublicClient()
 
   // Get contract address from config
-  const contractAddress = getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE') || 
-                         getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+  const contractAddress = getContractAddressFor_L2_L2(chainId, 'l2_cross_trade') || 
+                         getContractAddressFor_L2_L1(chainId, 'l2_cross_trade')
 
   // Get the current saleCount for this chain
   const { data: currentSaleCount } = useContractRead({

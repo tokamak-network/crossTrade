@@ -57,18 +57,18 @@ export const History = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
 
-  // Get all L2 chains that have L2_CROSS_TRADE contracts from both L2_L2 and L2_L1 configs
+  // Get all L2 chains that have l2_cross_trade contracts from both L2_L2 and L2_L1 configs
   const getL2Chains = () => {
     // Get chains from both configs
     const l2l2Chains = getChainsFor_L2_L2().filter(({ chainId, config }) => 
-      config.contracts.L2_CROSS_TRADE && 
-      config.contracts.L2_CROSS_TRADE !== '' &&
+      config.contracts.l2_cross_trade && 
+      config.contracts.l2_cross_trade !== '' &&
       chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
     ).map(chain => ({ ...chain, type: 'L2_L2' as const }))
     
     const l2l1Chains = getChainsFor_L2_L1().filter(({ chainId, config }) => 
-      config.contracts.L2_CROSS_TRADE && 
-      config.contracts.L2_CROSS_TRADE !== '' &&
+      config.contracts.l2_cross_trade && 
+      config.contracts.l2_cross_trade !== '' &&
       chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
     ).map(chain => ({ ...chain, type: 'L2_L1' as const }))
     
@@ -79,7 +79,7 @@ export const History = () => {
       l2l2Count: l2l2Chains.length,
       l2l1Count: l2l1Chains.length,
       totalCount: allChains.length,
-      chains: allChains.map(c => ({ chainId: c.chainId, name: c.config.displayName, type: c.type }))
+      chains: allChains.map(c => ({ chainId: c.chainId, name: c.config.display_name, type: c.type }))
     })
     
     return allChains
@@ -184,7 +184,7 @@ export const History = () => {
     const chainIdStr = chainIdNum.toString()
     // Try L2_L2 config first, then L2_L1
     const config = CHAIN_CONFIG_L2_L2[chainIdStr] || CHAIN_CONFIG_L2_L1[chainIdStr]
-    return config?.displayName || `Chain ${chainId}`
+    return config?.display_name || `Chain ${chainId}`
   }
 
   // Helper function to get chain emoji
@@ -244,13 +244,13 @@ export const History = () => {
       let l1ContractAddress: string | undefined
       
       if (contractType === 'L2_L2') {
-        // For L2_L2, use CHAIN_CONFIG_L2_L2 to get L1_CROSS_TRADE address
+        // For L2_L2, use CHAIN_CONFIG_L2_L2 to get l1_cross_trade address
         const l1Config = CHAIN_CONFIG_L2_L2[l1ChainId]
-        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+        l1ContractAddress = l1Config?.contracts.l1_cross_trade
       } else {
-        // For L2_L1, use CHAIN_CONFIG_L2_L1 to get L1_CROSS_TRADE address
+        // For L2_L1, use CHAIN_CONFIG_L2_L1 to get l1_cross_trade address
         const l1Config = CHAIN_CONFIG_L2_L1[l1ChainId]
-        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+        l1ContractAddress = l1Config?.contracts.l1_cross_trade
       }
       
       if (!l1ContractAddress) {
@@ -323,7 +323,7 @@ export const History = () => {
 
       // Fetch history from all L2 chains - Handle both L2_L2 and L2_L1
       for (const { chainId: sourceChainId, config, type: contractType } of l2Chains) {
-        const contractAddress = config.contracts.L2_CROSS_TRADE
+        const contractAddress = config.contracts.l2_cross_trade
         if (!contractAddress || contractAddress === '') continue
 
         try {
@@ -431,7 +431,7 @@ export const History = () => {
                       userHistory.push({
                         saleCount,
                         chainId: sourceChainId,
-                        chainName: config.displayName,
+                        chainName: config.display_name,
                         data: requestData,
                         status,
                         type: isProvider ? 'Provide' : 'Request',
@@ -548,7 +548,7 @@ export const History = () => {
                     userHistory.push({
                       saleCount,
                       chainId: sourceChainId,
-                      chainName: config.displayName,
+                      chainName: config.display_name,
                       data: requestData,
                       status,
                       type: isProvider ? 'Provide' : 'Request',
@@ -570,7 +570,7 @@ export const History = () => {
           }
         } catch (err) {
           // Outer catch for any unexpected errors
-          console.error(`Error fetching from ${config.displayName}:`, err)
+          console.error(`Error fetching from ${config.display_name}:`, err)
         }
       }
 
@@ -646,7 +646,7 @@ export const History = () => {
         
         {/* Debug info - show which chains are being queried */}
         <div className="debug-info">
-          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.displayName} (${chain.type})`).join(', ')}</p>
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
         </div>
         
         <div className="history-wrapper">

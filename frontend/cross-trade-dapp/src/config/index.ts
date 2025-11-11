@@ -50,18 +50,18 @@ function createChainFromConfig(chainId: string, config: any) {
     name: config.name,
     network: config.name.toLowerCase().replace(/\s+/g, '-'),
     nativeCurrency: {
-      name: config.native_token_name || config.displayName || config.name,
+      name: config.native_token_name || config.display_name || config.name,
       symbol: config.native_token_symbol || 'ETH', // Use native_token_symbol from config or default to ETH
       decimals: 18,
     },
     rpcUrls: {
-      default: { http: [config.rpcUrl] },
-      public: { http: [config.rpcUrl] },
+      default: { http: [config.rpc_url] },
+      public: { http: [config.rpc_url] },
     },
-    blockExplorers: config.blockExplorerUrl ? {
+    blockExplorers: config.block_explorer_url ? {
       default: {
-        name: `${config.displayName || config.name} Explorer`,
-        url: config.blockExplorerUrl,
+        name: `${config.display_name || config.name} Explorer`,
+        url: config.block_explorer_url,
       },
     } : undefined,
     testnet: true, // All chains in your config appear to be testnets

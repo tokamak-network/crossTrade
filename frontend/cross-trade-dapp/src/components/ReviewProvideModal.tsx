@@ -99,9 +99,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const l1ChainId = Number(requestData.l1ChainId)
   const getL1ContractAddress = () => {
     if (communicationMode === 'L2_L1') {
-      return getContractAddressFor_L2_L1(l1ChainId, 'L1_CROSS_TRADE')
+      return getContractAddressFor_L2_L1(l1ChainId, 'l1_cross_trade')
     } else {
-      return getContractAddressFor_L2_L2(l1ChainId, 'L1_CROSS_TRADE')
+      return getContractAddressFor_L2_L2(l1ChainId, 'l1_cross_trade')
     }
   }
   const L1_CONTRACT_ADDRESS = getL1ContractAddress()

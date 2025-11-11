@@ -49,17 +49,17 @@ export const RequestPool = () => {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null)
   const [isProvideModalOpen, setIsProvideModalOpen] = useState(false)
 
-  // Get all L2 chains that have L2_CROSS_TRADE contracts (both L2_L2 and L2_L1)
+  // Get all L2 chains that have l2_cross_trade contracts (both L2_L2 and L2_L1)
   const getL2Chains = () => {
     const l2l2Chains = getChainsFor_L2_L2().filter(({ chainId, config }) => 
-      config.contracts.L2_CROSS_TRADE && 
-      config.contracts.L2_CROSS_TRADE !== '' &&
+      config.contracts.l2_cross_trade && 
+      config.contracts.l2_cross_trade !== '' &&
       chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
     ).map(chain => ({ ...chain, type: 'L2_L2' as const }))
     
     const l2l1Chains = getChainsFor_L2_L1().filter(({ chainId, config }) => 
-      config.contracts.L2_CROSS_TRADE && 
-      config.contracts.L2_CROSS_TRADE !== '' &&
+      config.contracts.l2_cross_trade && 
+      config.contracts.l2_cross_trade !== '' &&
       chainId !== 11155111 // Exclude Ethereum Sepolia (L1)
     ).map(chain => ({ ...chain, type: 'L2_L1' as const }))
     
@@ -115,7 +115,7 @@ export const RequestPool = () => {
     const chainIdStr = chainIdNum.toString()
     // Try L2_L2 config first, then L2_L1
     const config = CHAIN_CONFIG_L2_L2[chainIdStr] || CHAIN_CONFIG_L2_L1[chainIdStr]
-    return config?.displayName || `Chain ${chainId}`
+    return config?.display_name || `Chain ${chainId}`
   }
 
   // Helper function to get chain emoji
@@ -201,13 +201,13 @@ export const RequestPool = () => {
       let l1ContractAddress: string | undefined
       
       if (contractType === 'L2_L2') {
-        // For L2_L2, use CHAIN_CONFIG_L2_L2 to get L1_CROSS_TRADE address
+        // For L2_L2, use CHAIN_CONFIG_L2_L2 to get l1_cross_trade address
         const l1Config = CHAIN_CONFIG_L2_L2[l1ChainId]
-        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+        l1ContractAddress = l1Config?.contracts.l1_cross_trade
       } else {
-        // For L2_L1, use CHAIN_CONFIG_L2_L1 to get L1_CROSS_TRADE address
+        // For L2_L1, use CHAIN_CONFIG_L2_L1 to get l1_cross_trade address
         const l1Config = CHAIN_CONFIG_L2_L1[l1ChainId]
-        l1ContractAddress = l1Config?.contracts.L1_CROSS_TRADE
+        l1ContractAddress = l1Config?.contracts.l1_cross_trade
       }
       
       if (!l1ContractAddress) {
@@ -260,7 +260,7 @@ export const RequestPool = () => {
 
         // Fetch requests from all L2 chains
         for (const { chainId: sourceChainId, config, type: contractType } of l2Chains) {
-          const contractAddress = config.contracts.L2_CROSS_TRADE
+          const contractAddress = config.contracts.l2_cross_trade
           if (!contractAddress || contractAddress === '') continue
 
           try {
@@ -355,20 +355,20 @@ export const RequestPool = () => {
                         allRequestsArray.push({ 
                           saleCount, 
                           chainId: sourceChainId, 
-                          chainName: config.displayName,
+                          chainName: config.display_name,
                           contractAddress: contractAddress,
                           data: requestData 
                         })
                       }
                     } catch (err) {
-                      console.error(`Error fetching L2_L2 request ${saleCount} from ${config.displayName} to ${destinationChainId}:`, err)
+                      console.error(`Error fetching L2_L2 request ${saleCount} from ${config.display_name} to ${destinationChainId}:`, err)
                     }
                   }
                 } catch (err: any) {
                   // Silently skip if the contract doesn't have this destination chain configured
                   // This is expected for contracts that don't support all destination chains
                   if (!err?.message?.includes('saleCountChainId')) {
-                    console.error(`Error fetching saleCount from ${config.displayName} to ${destinationChainId}:`, err)
+                    console.error(`Error fetching saleCount from ${config.display_name} to ${destinationChainId}:`, err)
                   }
                 }
               }
@@ -457,21 +457,21 @@ export const RequestPool = () => {
                       allRequestsArray.push({ 
                         saleCount, 
                         chainId: sourceChainId, 
-                        chainName: config.displayName,
+                        chainName: config.display_name,
                         contractAddress: contractAddress,
                         data: requestData 
                       })
                     }
                   } catch (err) {
-                    console.error(`Error fetching L2_L1 request ${saleCount} from ${config.displayName}:`, err)
+                    console.error(`Error fetching L2_L1 request ${saleCount} from ${config.display_name}:`, err)
                   }
                 }
               } catch (err) {
-                console.error(`Error fetching L2_L1 saleCount from ${config.displayName}:`, err)
+                console.error(`Error fetching L2_L1 saleCount from ${config.display_name}:`, err)
               }
             }
         } catch (err) {
-          console.error(`Error fetching from ${config.displayName}:`, err)
+          console.error(`Error fetching from ${config.display_name}:`, err)
         }
       }
 
@@ -542,7 +542,7 @@ export const RequestPool = () => {
         
         {/* Debug info - show which chains are being queried */}
         <div className="debug-info">
-          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.displayName} (${chain.type})`).join(', ')}</p>
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
         </div>
         
         <div className="pool-container">

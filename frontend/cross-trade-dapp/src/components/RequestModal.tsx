@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { 
-  L2_CROSS_TRADE_ABI,
+  l2_cross_trade_ABI,
   // L2_L2 specific imports
   getContractAddressFor_L2_L2,
   // L2_L1 specific imports
@@ -43,9 +43,9 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
   // Get contract address based on mode
   const contractAddress = useMemo(() => {
     if (communicationMode === 'L2_L1') {
-      return getContractAddressFor_L2_L1(chainId, 'L2_CROSS_TRADE')
+      return getContractAddressFor_L2_L1(chainId, 'l2_cross_trade')
     } else {
-      return getContractAddressFor_L2_L2(chainId, 'L2_CROSS_TRADE')
+      return getContractAddressFor_L2_L2(chainId, 'l2_cross_trade')
     }
   }, [chainId, communicationMode])
 
@@ -62,7 +62,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     }
 
     if (!contractAddress) {
-      alert(`L2_CROSS_TRADE contract not found for chain ${chainId}. Please ensure you're connected to a supported network.`)
+      alert(`l2_cross_trade contract not found for chain ${chainId}. Please ensure you're connected to a supported network.`)
       return
     }
 
@@ -78,7 +78,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
       ctAmount: formData.ctAmount,
       l1ChainId: formData.l1ChainId,
       l2DestinationChainId: formData.l2DestinationChainId,
-      abi: 'L2_CROSS_TRADE_ABI',
+      abi: 'l2_cross_trade_ABI',
       note: communicationMode === 'L2_L1' 
         ? 'L2→L1 mode: Uses L2_L1 config addresses' 
         : 'L2→L2 mode: Uses L2_L2 config addresses'
@@ -88,7 +88,7 @@ export const RequestModal = ({ isOpen, onClose }: RequestModalProps) => {
     // The difference is in the addresses used (from different configs)
     writeContract({
       address: contractAddress as `0x${string}`,
-      abi: L2_CROSS_TRADE_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
+      abi: l2_cross_trade_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
       functionName: 'requestRegisteredToken',
       args: [
         formData.l1token as `0x${string}`,

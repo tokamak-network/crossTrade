@@ -4,10 +4,10 @@
 import {env} from 'next-runtime-env'
 export interface ChainConfig {
   name: string;
-  displayName: string;
+  display_name: string;
   contracts: {
-    L2_CROSS_TRADE?: string;
-    L1_CROSS_TRADE?: string;
+    l2_cross_trade?: string;
+    l1_cross_trade?: string;
   };
   tokens: {
     ETH: string;
@@ -92,7 +92,7 @@ export const getAvailableTokensFor_L2_L2 = (chainName: string) => {
   const chainIds = (() => {
     const ids: Record<string, number> = {};
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      ids[config.displayName] = parseInt(chainId);
+      ids[config.display_name] = parseInt(chainId);
     });
     return ids;
   })();
@@ -143,7 +143,7 @@ export const getAvailableTokensFor_L2_L1 = (chainName: string) => {
   const chainIds = (() => {
     const ids: Record<string, number> = {};
     Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
-      ids[config.displayName] = parseInt(chainId);
+      ids[config.display_name] = parseInt(chainId);
     });
     return ids;
   })();
@@ -175,7 +175,7 @@ export const getTokenDecimals = (tokenSymbol: string) => {
 // ========== L2_L2 ABIs (L2toL2CrossTradeL2.sol) ==========
 
 // ABI for the requestRegisteredToken function on L2
-export const L2_CROSS_TRADE_ABI = [
+export const l2_cross_trade_ABI = [
   {
     "inputs": [
       {
@@ -227,7 +227,7 @@ export const L2_CROSS_TRADE_ABI = [
 ] as const; 
 
 // ABI for the requestNonRegisteredToken function (same signature as requestRegisteredToken)
-export const L2_CROSS_TRADE_NON_REGISTERED_ABI = [
+export const l2_cross_trade_NON_REGISTERED_ABI = [
   {
     "inputs": [
       {
