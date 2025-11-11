@@ -11,8 +11,8 @@ if (!projectId) {
 }
 
 // Parse chain configurations from environment - support both L2_L2 and L2_L1
-const chainConfigL2L2String = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L2
-const chainConfigL2L1String = process.env.NEXT_PUBLIC_CHAIN_CONFIG_L2_L1
+const chainConfigL2L2String = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L2')
+const chainConfigL2L1String = env('NEXT_PUBLIC_CHAIN_CONFIG_L2_L1')
 
 // Check if at least one config is provided
 if (!chainConfigL2L2String && !chainConfigL2L1String) {
