@@ -10,11 +10,11 @@ export interface ChainConfig {
     l1_cross_trade?: string;
   };
   tokens: {
-    ETH: string;
-    USDC: string;
-    USDT: string;
-    TON: string;
+    [key: string]: string | undefined;  // Allows any token key (eth, usdc, ETH, USDC, etc.)
   };
+  rpc_url?: string;
+  native_token_name?: string;
+  native_token_symbol?: string;
 }
 
 export interface ChainConfigs {

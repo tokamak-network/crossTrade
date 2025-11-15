@@ -77,7 +77,7 @@ export const RequestPool = () => {
     // Check against known token addresses from both L2_L2 and L2_L1 configs
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
           decimals = getTokenDecimals(tokenSymbol)
         }
@@ -88,7 +88,7 @@ export const RequestPool = () => {
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
             decimals = getTokenDecimals(tokenSymbol)
           }
@@ -136,7 +136,7 @@ export const RequestPool = () => {
     // Check L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
@@ -145,7 +145,7 @@ export const RequestPool = () => {
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
           }
         })
@@ -163,17 +163,15 @@ export const RequestPool = () => {
 
   // Helper function to create chain-specific publicClient
   const getPublicClientForChain = (chainId: number) => {
-    const getRpcUrl = (chainId: number) => {
-      switch (chainId) {
-        case 11155420: // Optimism Sepolia
-          return 'https://sepolia.optimism.io'
-        case 111551119090: // Thanos Sepolia  
-          return 'https://rpc.thanos-sepolia.tokamak.network'
-        case 11155111: // Ethereum Sepolia
-          return 'https://ethereum-sepolia-rpc.publicnode.com'
-        default:
-          return 'https://ethereum-sepolia-rpc.publicnode.com'
-      }
+    // Get RPC URL from config
+    const chainIdStr = chainId.toString()
+    const configL2L2 = CHAIN_CONFIG_L2_L2[chainIdStr]
+    const configL2L1 = CHAIN_CONFIG_L2_L1[chainIdStr]
+    
+    const rpcUrl = configL2L2?.rpc_url || configL2L1?.rpc_url
+    
+    if (!rpcUrl) {
+      throw new Error(`No RPC URL configured for chain ${chainId}`)
     }
 
     const chainConfig = defineChain({
@@ -181,13 +179,13 @@ export const RequestPool = () => {
       name: `Chain ${chainId}`,
       nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
       rpcUrls: {
-        default: { http: [getRpcUrl(chainId)] }
+        default: { http: [rpcUrl] }
       }
     })
 
     return createPublicClient({
       chain: chainConfig,
-      transport: http(getRpcUrl(chainId))
+      transport: http(rpcUrl)
     })
   }
 
@@ -252,6 +250,8 @@ export const RequestPool = () => {
       const allRequestsArray: Request[] = []
       let newFulfilled = new Set<string>(fullRefresh ? [] : Array.from(fulfilledSaleCounts))
 
+        console.log('🚀 [RequestPool] Starting fetch, l2Chains:', l2Chains)
+
         // Get all possible destination chain IDs (all L2 chains + L1)
         const allDestinationChainIds = [
           ...l2Chains.map(chain => chain.chainId),
@@ -260,8 +260,12 @@ export const RequestPool = () => {
 
         // Fetch requests from all L2 chains
         for (const { chainId: sourceChainId, config, type: contractType } of l2Chains) {
+          console.log(`🔄 [RequestPool] Processing chain ${sourceChainId} (${config.display_name}) - Type: ${contractType}`)
           const contractAddress = config.contracts.l2_cross_trade
-          if (!contractAddress || contractAddress === '') continue
+          if (!contractAddress || contractAddress === '') {
+            console.log(`⚠️ [RequestPool] No contract address for chain ${sourceChainId}, skipping`)
+            continue
+          }
 
           try {
             if (contractType === 'L2_L2') {
@@ -375,8 +379,11 @@ export const RequestPool = () => {
             } else if (contractType === 'L2_L1') {
               // L2_L1 contract: has single saleCount for all requests
               try {
+                // Create a chain-specific client for this L2 chain
+                const l2Client = getPublicClientForChain(sourceChainId)
+                
                 // Get the total saleCount (not per destination)
-                const currentSaleCount = await publicClient.readContract({
+                const currentSaleCount = await l2Client.readContract({
                   address: contractAddress as `0x${string}`,
                   abi: [
                     {
@@ -391,14 +398,18 @@ export const RequestPool = () => {
                 }) as bigint
 
                 const totalRequests = Number(currentSaleCount)
+                console.log(`📍 [L2_L1] Total requests: ${totalRequests}`)
 
                 // Fetch all requests and filter by destination
                 for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
                   const requestKey = `${contractAddress}_all_${saleCount}`
-                  if (!fullRefresh && fulfilledSaleCounts.has(requestKey)) continue // skip known fulfilled
+                  if (!fullRefresh && fulfilledSaleCounts.has(requestKey)) {
+                    continue // skip known fulfilled
+                  }
                   
                   try {
-                    const data = await publicClient.readContract({
+                    console.log(`📦 [L2_L1] Fetching dealData for request ${saleCount}`)
+                    const data = await l2Client.readContract({
                       address: contractAddress as `0x${string}`,
                       abi: [
                         {
@@ -439,6 +450,8 @@ export const RequestPool = () => {
                       hashValue: data[8],
                     }
 
+                    console.log(`📋 [L2_L1] Parsed request ${saleCount}:`, requestData)
+
                     // If provider is not zero address, it's fulfilled
                     if (requestData.provider !== '0x0000000000000000000000000000000000000000') {
                       newFulfilled.add(requestKey)
@@ -453,7 +466,9 @@ export const RequestPool = () => {
                     }
 
                     // Only add if there's actual data (not empty request)
-                    if (requestData.l1token !== '0x0000000000000000000000000000000000000000') {
+                    // For L2_L1: check l2SourceToken instead of l1token (l1token is zero for L2->L1 transfers)
+                    if (requestData.l2SourceToken !== '0x0000000000000000000000000000000000000000') {
+                      console.log(`✨ [L2_L1] Adding request ${saleCount} to pool`)
                       allRequestsArray.push({ 
                         saleCount, 
                         chainId: sourceChainId, 
@@ -461,9 +476,11 @@ export const RequestPool = () => {
                         contractAddress: contractAddress,
                         data: requestData 
                       })
+                    } else {
+                      console.log(`⚠️ [L2_L1] Request ${saleCount} has zero l2SourceToken, skipping`)
                     }
                   } catch (err) {
-                    console.error(`Error fetching L2_L1 request ${saleCount} from ${config.display_name}:`, err)
+                    console.error(`❌ [L2_L1] Error fetching request ${saleCount} from ${config.display_name}:`, err)
                   }
                 }
               } catch (err) {
@@ -477,6 +494,7 @@ export const RequestPool = () => {
 
       // Sort by sale count descending (newest first)
       const sortedRequests = allRequestsArray.sort((a, b) => b.saleCount - a.saleCount)
+      console.log(`🎯 [RequestPool] Total requests found: ${sortedRequests.length}`, sortedRequests)
       setRequests(sortedRequests)
       
       // Update fulfilled cache

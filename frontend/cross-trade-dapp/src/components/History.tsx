@@ -97,29 +97,25 @@ export const History = () => {
   const getContractAddressForMode = (chainId: number, contractName: string, destinationChainId: number) => {
     const mode = getCommunicationMode(destinationChainId)
     
+    // Each mode strictly uses its own config - no fallbacks
     if (mode === 'L2_L2') {
-      const address = getContractAddressFor_L2_L2(chainId, contractName)
-      return address || getContractAddressFor_L2_L1(chainId, contractName) // Fallback
+      return getContractAddressFor_L2_L2(chainId, contractName)
     } else {
-      const address = getContractAddressFor_L2_L1(chainId, contractName)
-      return address || getContractAddressFor_L2_L2(chainId, contractName) // Fallback
+      return getContractAddressFor_L2_L1(chainId, contractName)
     }
   }
 
   // Helper function to create chain-specific publicClient
   const getPublicClientForChain = (chainId: number) => {
-    // Define chain configurations with RPC endpoints
-    const getRpcUrl = (chainId: number) => {
-      switch (chainId) {
-        case 11155420: // Optimism Sepolia
-          return 'https://sepolia.optimism.io'
-        case 111551119090: // Thanos Sepolia  
-          return 'https://rpc.thanos-sepolia.tokamak.network'
-        case 11155111: // Ethereum Sepolia
-          return 'https://ethereum-sepolia-rpc.publicnode.com'
-        default:
-          return 'https://ethereum-sepolia-rpc.publicnode.com'
-      }
+    // Get RPC URL from config
+    const chainIdStr = chainId.toString()
+    const configL2L2 = CHAIN_CONFIG_L2_L2[chainIdStr]
+    const configL2L1 = CHAIN_CONFIG_L2_L1[chainIdStr]
+    
+    const rpcUrl = configL2L2?.rpc_url || configL2L1?.rpc_url
+    
+    if (!rpcUrl) {
+      throw new Error(`No RPC URL configured for chain ${chainId}`)
     }
 
     // Create a dedicated publicClient for this specific chain
@@ -128,13 +124,13 @@ export const History = () => {
       name: `Chain ${chainId}`,
       nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
       rpcUrls: {
-        default: { http: [getRpcUrl(chainId)] }
+        default: { http: [rpcUrl] }
       }
     })
 
     return createPublicClient({
       chain: chainConfig,
-      transport: http(getRpcUrl(chainId))
+      transport: http(rpcUrl)
     })
   }
 
@@ -146,7 +142,7 @@ export const History = () => {
     // Check against known token addresses from both L2_L2 and L2_L1 configs
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
           decimals = getTokenDecimals(tokenSymbol)
         }
@@ -157,7 +153,7 @@ export const History = () => {
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
             decimals = getTokenDecimals(tokenSymbol)
           }
@@ -205,7 +201,7 @@ export const History = () => {
     // Check L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
         }
       })
@@ -214,7 +210,7 @@ export const History = () => {
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
           }
         })

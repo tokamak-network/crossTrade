@@ -107,24 +107,20 @@ export const CreateRequest = () => {
   }
 
   const getTokenAddressForMode = (chainId: number, tokenSymbol: string) => {
-    // Try to get from the appropriate config first, then fallback to the other
+    // Each mode strictly uses its own config - no fallbacks
     if (communicationMode === 'L2_L2') {
-      const address = getTokenAddressFor_L2_L2(chainId, tokenSymbol)
-      return address || getTokenAddressFor_L2_L1(chainId, tokenSymbol)
+      return getTokenAddressFor_L2_L2(chainId, tokenSymbol)
     } else {
-      const address = getTokenAddressFor_L2_L1(chainId, tokenSymbol)
-      return address || getTokenAddressFor_L2_L2(chainId, tokenSymbol)
+      return getTokenAddressFor_L2_L1(chainId, tokenSymbol)
     }
   }
 
   const getContractAddressForMode = (chainId: number, contractName: string) => {
-    // Try to get from the appropriate config first, then fallback to the other
+    // Each mode strictly uses its own config - no fallbacks
     if (communicationMode === 'L2_L2') {
-      const address = getContractAddressFor_L2_L2(chainId, contractName)
-      return address || getContractAddressFor_L2_L1(chainId, contractName)
+      return getContractAddressFor_L2_L2(chainId, contractName)
     } else {
-      const address = getContractAddressFor_L2_L1(chainId, contractName)
-      return address || getContractAddressFor_L2_L2(chainId, contractName)
+      return getContractAddressFor_L2_L1(chainId, contractName)
     }
   }
 
