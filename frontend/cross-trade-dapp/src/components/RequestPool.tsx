@@ -49,6 +49,8 @@ export const RequestPool = () => {
   const [forceRefresh, setForceRefresh] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null)
   const [isProvideModalOpen, setIsProvideModalOpen] = useState(false)
+  const [selectedToken, setSelectedToken] = useState<string>('ALL')
+  const [selectedChain, setSelectedChain] = useState<string>('ALL')
 
   // Get all L2 chains that have l2_cross_trade contracts (both L2_L2 and L2_L1)
   const getL2Chains = () => {
@@ -68,6 +70,95 @@ export const RequestPool = () => {
   }
 
   const l2Chains = getL2Chains()
+
+  // Generate random color for icons
+  const generateRandomColor = (seed: string) => {
+    const colors = ['🔵', '🟢', '🟡', '🟠', '🔴', '🟣', '🟤', '⚫', '⚪', '🔘']
+    let hash = 0
+    for (let i = 0; i < seed.length; i++) {
+      hash = seed.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return colors[Math.abs(hash) % colors.length]
+  }
+
+  // Get all unique tokens from all chain configs
+  const getAllUniqueTokens = () => {
+    const tokenSet = new Set<string>()
+    const tokenMap: { [key: string]: { symbol: string; emoji: string; addresses: string[] } } = {}
+    
+    // Collect from L2_L2 config
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
+      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+        if (address && address !== '') {
+          const upperSymbol = tokenSymbol.toUpperCase()
+          if (!tokenMap[upperSymbol]) {
+            tokenMap[upperSymbol] = {
+              symbol: upperSymbol,
+              emoji: generateRandomColor(upperSymbol),
+              addresses: []
+            }
+          }
+          if (!tokenMap[upperSymbol].addresses.includes(address.toLowerCase())) {
+            tokenMap[upperSymbol].addresses.push(address.toLowerCase())
+          }
+        }
+      })
+    })
+    
+    // Collect from L2_L1 config
+    Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+        if (address && address !== '') {
+          const upperSymbol = tokenSymbol.toUpperCase()
+          if (!tokenMap[upperSymbol]) {
+            tokenMap[upperSymbol] = {
+              symbol: upperSymbol,
+              emoji: generateRandomColor(upperSymbol),
+              addresses: []
+            }
+          }
+          if (!tokenMap[upperSymbol].addresses.includes(address.toLowerCase())) {
+            tokenMap[upperSymbol].addresses.push(address.toLowerCase())
+          }
+        }
+      })
+    })
+    
+    return Object.values(tokenMap)
+  }
+
+  // Get all unique chains with emojis (includes L1 for L2_L1 rewards)
+  const getAllUniqueChains = () => {
+    const chainMap: { [key: string]: { id: number; name: string; emoji: string } } = {}
+    
+    // Add all L2 chains
+    l2Chains.forEach(({ chainId, config }) => {
+      if (!chainMap[chainId.toString()]) {
+        chainMap[chainId.toString()] = {
+          id: chainId,
+          name: config.display_name,
+          emoji: generateRandomColor(config.display_name)
+        }
+      }
+    })
+    
+    // Add L1 (Ethereum) for L2_L1 rewards
+    // Check both L2_L2 and L2_L1 configs for Ethereum Sepolia (11155111)
+    const l1ChainId = 11155111
+    const l1Config = CHAIN_CONFIG_L2_L2[l1ChainId.toString()] || CHAIN_CONFIG_L2_L1[l1ChainId.toString()]
+    if (l1Config) {
+      chainMap[l1ChainId.toString()] = {
+        id: l1ChainId,
+        name: l1Config.display_name,
+        emoji: generateRandomColor(l1Config.display_name)
+      }
+    }
+    
+    return Object.values(chainMap)
+  }
+
+  const allTokens = getAllUniqueTokens()
+  const allChains = getAllUniqueChains()
 
   // Helper function to format token amounts with proper decimals
   const formatTokenAmount = (amount: bigint, tokenAddress: string) => {
@@ -119,47 +210,17 @@ export const RequestPool = () => {
     return config?.display_name || `Chain ${chainId}`
   }
 
-  // Helper function to get chain emoji
+  // Helper function to get chain emoji (uses dynamic mapping)
   const getChainEmoji = (chainName: string) => {
-    switch (chainName) {
-      case 'Optimism': return '🔴'
-      case 'GeorgeChain': return '🟣'
-      case 'MonicaChain': return '🟢'
-      case 'Thanos': return '🔵'
-      case 'Ethereum': return '⚪'
-      default: return '⚫'
-    }
+    const chain = allChains.find(c => c.name === chainName)
+    return chain?.emoji || '⚫'
   }
 
-  // Helper function to get token emoji
+  // Helper function to get token emoji (uses dynamic mapping)
   const getTokenEmoji = (tokenAddress: string) => {
-    let symbol = 'UNKNOWN'
-    // Check L2_L2 config
-    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
-        }
-      })
-    })
-    // Also check L2_L1 config if not found
-    if (symbol === 'UNKNOWN') {
-      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
-        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-            symbol = tokenSymbol
-          }
-        })
-      })
-    }
-
-    switch (symbol) {
-      case 'USDC': return '🔵'
-      case 'USDT': return '🟢'
-      case 'ETH': return '⚪'
-      case 'TON': return '💎'
-      default: return '🔘'
-    }
+    const normalizedAddress = tokenAddress.toLowerCase()
+    const token = allTokens.find(t => t.addresses.includes(normalizedAddress))
+    return token?.emoji || '🔘'
   }
 
   // Helper function to create chain-specific publicClient
@@ -595,21 +656,72 @@ export const RequestPool = () => {
             <div className="filter-section">
               <span className="filter-label">Token</span>
               <div className="filter-buttons">
-                <button className="filter-btn active">ALL</button>
-                <button className="filter-btn">🔵 USDC</button>
-                <button className="filter-btn">🟢 USDT</button>
-                <button className="filter-btn">⚪ ETH</button>
-                <button className="filter-btn">💎 TON</button>
+                <button 
+                  className={`filter-btn ${selectedToken === 'ALL' ? 'active' : ''}`}
+                  onClick={() => setSelectedToken('ALL')}
+                >
+                  ALL
+                </button>
+                {allTokens.slice(0, 3).map((token) => (
+                  <button 
+                    key={token.symbol}
+                    className={`filter-btn ${selectedToken === token.symbol ? 'active' : ''}`}
+                    onClick={() => setSelectedToken(token.symbol)}
+                  >
+                    {token.emoji} {token.symbol}
+                  </button>
+                ))}
+                {allTokens.length > 3 && (
+                  <div className="dropdown-wrapper">
+                    <select 
+                      className={`filter-dropdown ${selectedToken !== 'ALL' && !allTokens.slice(0, 3).find(t => t.symbol === selectedToken) ? 'active' : ''}`}
+                      value={selectedToken !== 'ALL' && !allTokens.slice(0, 3).find(t => t.symbol === selectedToken) ? selectedToken : ''}
+                      onChange={(e) => e.target.value && setSelectedToken(e.target.value)}
+                    >
+                      <option value="">More...</option>
+                      {allTokens.map((token) => (
+                        <option key={token.symbol} value={token.symbol}>
+                          {token.emoji} {token.symbol}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
             
             <div className="filter-section">
               <span className="filter-label">Reward On</span>
               <div className="filter-buttons">
-                <button className="filter-btn active">All</button>
-                <button className="filter-btn">🔵 Thanos</button>
-                <button className="filter-btn">🔴 Optimism</button>
-                <button className="filter-btn">🟢 Monica</button>
+                <button 
+                  className={`filter-btn ${selectedChain === 'ALL' ? 'active' : ''}`}
+                  onClick={() => setSelectedChain('ALL')}
+                >
+                  ALL
+                </button>
+                {allChains.slice(0, 2).map((chain) => (
+                  <button 
+                    key={chain.id}
+                    className={`filter-btn ${selectedChain === chain.name ? 'active' : ''}`}
+                    onClick={() => setSelectedChain(chain.name)}
+                  >
+                    {chain.emoji} {chain.name}
+                  </button>
+                ))}
+                <div className="dropdown-wrapper">
+                  <select 
+                    className={`filter-dropdown ${selectedChain !== 'ALL' && !allChains.slice(0, 2).find(c => c.name === selectedChain) ? 'active' : ''}`}
+                    value={selectedChain !== 'ALL' && !allChains.slice(0, 2).find(c => c.name === selectedChain) ? selectedChain : ''}
+                    onChange={(e) => e.target.value && setSelectedChain(e.target.value)}
+                  >
+                    <option value="">More...</option>
+                    {allChains.map((chain) => (
+                      <option key={chain.id} value={chain.name}>
+                        {chain.emoji} {chain.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -626,7 +738,32 @@ export const RequestPool = () => {
 
             {/* Table Rows */}
             <div className="table-body">
-              {requests.filter(req => req.data !== null).map((request, index) => {
+              {requests
+                .filter(req => req.data !== null)
+                .filter(req => {
+                  if (!req.data) return false
+                  
+                  // Filter by token
+                  if (selectedToken !== 'ALL') {
+                    const tokenData = allTokens.find(t => t.symbol === selectedToken)
+                    if (tokenData) {
+                      const requestTokenAddress = req.data.l2SourceToken.toLowerCase()
+                      if (!tokenData.addresses.includes(requestTokenAddress)) {
+                        return false
+                      }
+                    }
+                  }
+                  
+                  // Filter by chain (reward on = source chain where request originated)
+                  if (selectedChain !== 'ALL') {
+                    if (req.chainName !== selectedChain) {
+                      return false
+                    }
+                  }
+                  
+                  return true
+                })
+                .map((request, index) => {
                 const data = request.data!
                 const destinationChain = getChainName(data.l2DestinationChainId)
                 // Use edited amount if available, otherwise use original ctAmount
@@ -645,7 +782,9 @@ export const RequestPool = () => {
                     <div className="table-cell token-col">
                       <div className="token-info">
                         <span className="token-icon">{getTokenEmoji(data.l2SourceToken)}</span>
-                        <span className="token-symbol">USDC</span>
+                        <span className="token-symbol">
+                          {allTokens.find(t => t.addresses.includes(data.l2SourceToken.toLowerCase()))?.symbol || 'UNKNOWN'}
+                        </span>
                       </div>
                     </div>
 
@@ -861,6 +1000,7 @@ export const RequestPool = () => {
           display: flex;
           gap: 8px;
           flex-wrap: wrap;
+          align-items: center;
         }
 
         .filter-btn {
@@ -873,6 +1013,9 @@ export const RequestPool = () => {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
+          height: 28px;
+          display: inline-flex;
+          align-items: center;
         }
 
         .filter-btn:hover {
@@ -884,6 +1027,68 @@ export const RequestPool = () => {
           background: #6366f1;
           border-color: #6366f1;
           color: #ffffff;
+        }
+
+        .dropdown-wrapper {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .filter-dropdown {
+          background: rgba(26, 26, 26, 0.8);
+          border: 1px solid #333333;
+          border-radius: 20px;
+          padding: 6px 28px 6px 12px;
+          color: #9ca3af;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 8px center;
+          height: 28px;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .filter-dropdown:hover {
+          border-color: #6366f1;
+          color: #ffffff;
+        }
+
+        .filter-dropdown:focus {
+          outline: none;
+          border-color: #6366f1;
+          color: #ffffff;
+        }
+
+        .filter-dropdown.active {
+          background: #6366f1;
+          border-color: #6366f1;
+          color: #ffffff;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 8px center;
+        }
+
+        .filter-dropdown.active:hover {
+          background: #5855eb;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 8px center;
+        }
+
+        .filter-dropdown option {
+          background: #1a1a1a;
+          color: #ffffff;
+          padding: 10px 14px;
+        }
+
+        .filter-dropdown option:hover {
+          background: #262626;
         }
 
         .table-container {
