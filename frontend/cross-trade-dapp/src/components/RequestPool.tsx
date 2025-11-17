@@ -27,6 +27,7 @@ interface Request {
   chainId: number
   chainName: string
   contractAddress: string
+  contractType: 'L2_L2' | 'L2_L1' // Track the type of cross-trade
   data: RequestData | null
 }
 
@@ -270,10 +271,17 @@ export const RequestPool = () => {
           try {
             if (contractType === 'L2_L2') {
               // L2_L2 contract: has separate saleCountChainId per destination
+              console.log(`📍 [${config.display_name}] Checking destinations:`, allDestinationChainIds)
+              
+              // Create a chain-specific client for this L2 source chain
+              const l2Client = getPublicClientForChain(sourceChainId)
+              
               for (const destinationChainId of allDestinationChainIds) {
                 try {
                   // Get the current saleCount for requests going to this destination
-                  const currentSaleCount = await publicClient.readContract({
+                  console.log(`🔍 [${config.display_name} -> ${destinationChainId}] Calling saleCountChainId...`)
+                  
+                  const currentSaleCount = await l2Client.readContract({
                     address: contractAddress as `0x${string}`,
                     abi: [
                       {
@@ -289,6 +297,7 @@ export const RequestPool = () => {
                   }) as bigint
 
                   const totalRequests = Number(currentSaleCount)
+                  console.log(`📊 [${config.display_name} -> ${destinationChainId}] Found ${totalRequests} requests`)
 
                   // Fetch individual requests for this source->destination pair
                   for (let saleCount = 1; saleCount <= totalRequests; saleCount++) {
@@ -296,7 +305,7 @@ export const RequestPool = () => {
                     if (!fullRefresh && fulfilledSaleCounts.has(requestKey)) continue // skip known fulfilled
                     
                     try {
-                      const data = await publicClient.readContract({
+                      const data = await l2Client.readContract({
                         address: contractAddress as `0x${string}`,
                         abi: [
                           {
@@ -354,13 +363,14 @@ export const RequestPool = () => {
                         requestData.editedCtAmount = editedCtAmount
                       }
 
-                      // Only add if there's actual data (not empty request)
-                      if (requestData.l1token !== '0x0000000000000000000000000000000000000000') {
+                      // Add request if it has a valid totalAmount (includes native token transfers where l1token is 0x0000...)
+                      if (requestData.totalAmount > BigInt(0)) {
                         allRequestsArray.push({ 
                           saleCount, 
                           chainId: sourceChainId, 
                           chainName: config.display_name,
                           contractAddress: contractAddress,
+                          contractType: 'L2_L2',
                           data: requestData 
                         })
                       }
@@ -369,11 +379,8 @@ export const RequestPool = () => {
                     }
                   }
                 } catch (err: any) {
-                  // Silently skip if the contract doesn't have this destination chain configured
-                  // This is expected for contracts that don't support all destination chains
-                  if (!err?.message?.includes('saleCountChainId')) {
-                    console.error(`Error fetching saleCount from ${config.display_name} to ${destinationChainId}:`, err)
-                  }
+                  // Log all errors to help debug
+                  console.error(`❌ [${config.display_name} -> ${destinationChainId}] Error:`, err?.message || err)
                 }
               }
             } else if (contractType === 'L2_L1') {
@@ -465,19 +472,19 @@ export const RequestPool = () => {
                       requestData.editedCtAmount = editedCtAmount
                     }
 
-                    // Only add if there's actual data (not empty request)
-                    // For L2_L1: check l2SourceToken instead of l1token (l1token is zero for L2->L1 transfers)
-                    if (requestData.l2SourceToken !== '0x0000000000000000000000000000000000000000') {
+                    // Add request if it has a valid totalAmount (includes native token transfers where l2SourceToken is 0x0000...)
+                    if (requestData.totalAmount > BigInt(0)) {
                       console.log(`✨ [L2_L1] Adding request ${saleCount} to pool`)
                       allRequestsArray.push({ 
                         saleCount, 
                         chainId: sourceChainId, 
                         chainName: config.display_name,
                         contractAddress: contractAddress,
+                        contractType: 'L2_L1',
                         data: requestData 
                       })
                     } else {
-                      console.log(`⚠️ [L2_L1] Request ${saleCount} has zero l2SourceToken, skipping`)
+                      console.log(`⚠️ [L2_L1] Request ${saleCount} has zero totalAmount, skipping`)
                     }
                   } catch (err) {
                     console.error(`❌ [L2_L1] Error fetching request ${saleCount} from ${config.display_name}:`, err)

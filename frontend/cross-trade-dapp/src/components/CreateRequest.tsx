@@ -49,6 +49,9 @@ export const CreateRequest = () => {
   const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>()
   const [isTokenApproved, setIsTokenApproved] = useState(false) // Track if token is approved
 
+  // Native token address constant (0x0000... means native token - ETH, TON, etc.)
+  const NATIVE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000'
+
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
   const { address: connectedAddress } = useAccount()
@@ -209,11 +212,16 @@ export const CreateRequest = () => {
   }
 
   const handleConfirmRequest = async () => {
-    // If token is not ETH and not yet approved, do approval first
-    if (sendToken !== 'ETH' && !isTokenApproved) {
+    // Get the source token address to check if it's native token
+    const fromChainId = getChainIdByName(requestFrom)
+    const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken)
+    const isNativeToken = l2SourceTokenAddress?.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
+    
+    // If token is not native (0x0000...) and not yet approved, do approval first
+    if (!isNativeToken && !isTokenApproved) {
       await handleApproval()
     } else {
-      // For ETH or if already approved, go to main transaction
+      // For native tokens or if already approved, go to main transaction
       setShowConfirmModal(false)
       await handleMainTransaction()
     }
@@ -429,6 +437,9 @@ export const CreateRequest = () => {
           config: 'CHAIN_CONFIG_L2_L2'
         })
 
+        // Check if source token is native (0x0000...)
+        const isNativeToken = l2SourceTokenAddress.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
+        
         await writeContract({
           address: contractAddress as `0x${string}`,
           abi: l2_cross_trade_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
@@ -444,7 +455,7 @@ export const CreateRequest = () => {
             BigInt(l1ChainId), // l1ChainId (Ethereum Sepolia for L2_L2)
             BigInt(toChainId) // l2DestinationChainId
           ],
-          value: sendToken === 'ETH' ? toTokenWei(sendAmount, sendToken) : BigInt(0)
+          value: isNativeToken ? toTokenWei(sendAmount, sendToken) : BigInt(0)
         })
       } else {
         // L2 to L1 communication: Uses OLD L2CrossTrade.sol contract (6 params)
@@ -465,6 +476,9 @@ export const CreateRequest = () => {
           note: 'OLD contract: requestRegisteredToken(_l1token, _l2token, _receiver, _totalAmount, _ctAmount, _l1chainId)'
         })
 
+        // Check if source token is native (0x0000...)
+        const isNativeTokenL2L1 = l2SourceTokenAddress.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
+        
         // L2_L1 uses OLD L2CrossTrade.sol contract with 6 parameters
         await writeContract({
           address: contractAddress as `0x${string}`,
@@ -479,7 +493,7 @@ export const CreateRequest = () => {
             toTokenWei(currentReceiveAmount, receiveToken), // _ctAmount with correct decimals
             BigInt(l1ChainId) // _l1chainId
           ],
-          value: sendToken === 'ETH' ? toTokenWei(sendAmount, sendToken) : BigInt(0)
+          value: isNativeTokenL2L1 ? toTokenWei(sendAmount, sendToken) : BigInt(0)
         })
       }
     } catch (error) {
@@ -832,12 +846,17 @@ export const CreateRequest = () => {
             </div>
 
             <button onClick={handleConfirmRequest} className="confirm-btn">
-              {sendToken === 'ETH' 
-                ? 'Request' 
-                : isTokenApproved 
+              {(() => {
+                const fromChainId = getChainIdByName(requestFrom)
+                const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken)
+                const isNativeToken = l2SourceTokenAddress?.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
+                
+                return isNativeToken 
                   ? 'Request' 
-                  : `Approve ${sendToken}`
-              }
+                  : isTokenApproved 
+                    ? 'Request' 
+                    : `Approve ${sendToken}`
+              })()}
             </button>
           </div>
         </div>
