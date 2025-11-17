@@ -42,8 +42,8 @@ const ERC20_ABI = [
 ] as const
 
 export const CreateRequest = () => {
-  const [requestFrom, setRequestFrom] = useState('Optimism')
-  const [requestTo, setRequestTo] = useState('Thanos')
+  const [requestFrom, setRequestFrom] = useState('')
+  const [requestTo, setRequestTo] = useState('')
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('USDC') // Default to USDC
   const [receiveAmount, setReceiveAmount] = useState('')
@@ -93,12 +93,38 @@ export const CreateRequest = () => {
     }
   }
 
+  // Get chain ID by display name (checks both L2_L2 and L2_L1 configs)
+  const getChainIdByName = (chainName: string): number => {
+    // Try L2_L2 first
+    let chains = getChainsFor_L2_L2()
+    let chain = chains.find(c => c.config.display_name === chainName)
+    if (chain) return chain.chainId
+    
+    // Try L2_L1 if not found
+    chains = getChainsFor_L2_L1()
+    chain = chains.find(c => c.config.display_name === chainName)
+    return chain?.chainId || 0
+  }
+
+  // Check if a chain is L1 (Ethereum)
+  // Known L1 chain IDs: Ethereum Sepolia (11155111) and Ethereum Mainnet (1)
+  const isL1Chain = (chainId: number): boolean => {
+    return chainId === 11155111 || chainId === 1
+  }
+
   // Automatically detect communication mode based on destination chain
   // If destination is Ethereum (L1) → L2_L1, otherwise → L2_L2
   const getCommunicationMode = (): 'L2_L2' | 'L2_L1' => {
-    // Check if requestTo is Ethereum (L1)
-    const isDestinationL1 = requestTo === 'Ethereum' || requestTo.includes('Ethereum')
-    return isDestinationL1 ? 'L2_L1' : 'L2_L2'
+    // If no destination selected, default to L2_L2
+    if (!requestTo) return 'L2_L2'
+    
+    // Check if destination is L1 (Ethereum)
+    const toChainId = getChainIdByName(requestTo)
+    if (toChainId && isL1Chain(toChainId)) {
+      return 'L2_L1' // L2 source → L1 destination
+    }
+    
+    return 'L2_L2' // L2 source → L2 destination
   }
 
   const communicationMode = getCommunicationMode()
@@ -148,22 +174,15 @@ export const CreateRequest = () => {
     return uniqueTokens.length > 0 ? uniqueTokens : l2l2Tokens.length > 0 ? l2l2Tokens : l2l1Tokens
   }
 
-  // Get chain ID by display name (checks both L2_L2 and L2_L1 configs)
-  const getChainIdByName = (chainName: string): number => {
-    // Try L2_L2 first
-    let chains = getChainsFor_L2_L2()
-    let chain = chains.find(c => c.config.display_name === chainName)
-    if (chain) return chain.chainId
-    
-    // Try L2_L1 if not found
-    chains = getChainsFor_L2_L1()
-    chain = chains.find(c => c.config.display_name === chainName)
-    return chain?.chainId || 0
-  }
 
+  // Validate that source and destination chains are different
+  const isSameChain = !!(requestFrom && requestTo && requestFrom === requestTo)
 
   // Reset token selection when chain changes
   useEffect(() => {
+    // Only update tokens if chains are selected
+    if (!requestFrom || !requestTo) return
+    
     const availableSendTokens = getAvailableTokensForMode(requestFrom)
     const availableReceiveTokens = getAvailableTokensForMode(requestTo)
     
@@ -213,8 +232,12 @@ export const CreateRequest = () => {
   // We should check BOTH L2_L2 and L2_L1 configs because the source chain
   // might be configured in either one, regardless of the communication mode
   const getSourceTokenAddress = () => {
+    // Don't try to get address if no chain is selected
+    if (!requestFrom) return undefined
+    
     try {
       const fromChainId = getChainIdByName(requestFrom)
+      if (!fromChainId) return undefined
       
       // Try L2_L2 config first
       let tokenAddress = getTokenAddressFor_L2_L2(fromChainId, sendToken)
@@ -233,22 +256,15 @@ export const CreateRequest = () => {
   const sourceTokenAddress = getSourceTokenAddress()
   const isNativeTokenForBalance = sourceTokenAddress?.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
   
-  // Debug log
-  console.log('💰 Balance fetch:', {
-    requestFrom,
-    sendToken,
-    sourceTokenAddress,
-    isNativeToken: isNativeTokenForBalance,
-    connectedAddress,
-    communicationMode
-  })
+  // Get chain ID safely for balance fetching
+  const sourceChainIdForBalance = requestFrom ? getChainIdByName(requestFrom) : undefined
 
   // Fetch native token balance (ETH, TON, etc.)
   const { data: nativeBalance } = useBalance({
     address: connectedAddress,
-    chainId: getChainIdByName(requestFrom),
+    chainId: sourceChainIdForBalance,
     query: {
-      enabled: isNativeTokenForBalance && !!connectedAddress
+      enabled: isNativeTokenForBalance && !!connectedAddress && !!sourceChainIdForBalance
     }
   })
 
@@ -258,9 +274,9 @@ export const CreateRequest = () => {
     abi: ERC20_ABI,
     functionName: 'balanceOf',
     args: connectedAddress ? [connectedAddress] : undefined,
-    chainId: getChainIdByName(requestFrom),
+    chainId: sourceChainIdForBalance,
     query: {
-      enabled: !isNativeTokenForBalance && !!connectedAddress && !!sourceTokenAddress
+      enabled: !isNativeTokenForBalance && !!connectedAddress && !!sourceTokenAddress && !!sourceChainIdForBalance
     }
   })
 
@@ -668,7 +684,7 @@ export const CreateRequest = () => {
               <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)' }}>
                 {communicationMode === 'L2_L2' 
                   ? 'Cross-chain transfer between Layer 2 networks' 
-                  : 'Bridge transfer between Layer 2 and Layer 1'}
+                  : 'Bridge transfer from Layer 2 to Layer 1'}
               </span>
             </div>
 
@@ -682,11 +698,14 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestFrom(e.target.value)}
                     className="chain-select"
                   >
+                    <option value="" disabled>Select source chain...</option>
                     {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
                       // Remove duplicates by chain ID
                       .filter((chain, index, self) => 
                         index === self.findIndex(c => c.chainId === chain.chainId)
                       )
+                      // Filter out L1 chains (Ethereum) - can't initiate requests FROM L1
+                      .filter(({ chainId }) => !isL1Chain(chainId))
                       .map(({ chainId, config }) => (
                         <option key={chainId} value={config.display_name}>
                           {config.display_name}
@@ -709,11 +728,14 @@ export const CreateRequest = () => {
                     onChange={(e) => setRequestTo(e.target.value)}
                     className="chain-select"
                   >
+                    <option value="" disabled>Select destination chain...</option>
                     {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
                       // Remove duplicates by chain ID
                       .filter((chain, index, self) => 
                         index === self.findIndex(c => c.chainId === chain.chainId)
                       )
+                      // Filter out the source chain - can't send to the same chain
+                      .filter(({ config }) => config.display_name !== requestFrom)
                       .map(({ chainId, config }) => (
                         <option key={chainId} value={config.display_name}>
                           {config.display_name}
@@ -860,13 +882,24 @@ export const CreateRequest = () => {
             <button 
               type={connectedAddress ? "submit" : "button"} 
               className="request-button"
+              disabled={connectedAddress && (!requestFrom || !requestTo || isSameChain)}
               onClick={connectedAddress ? undefined : () => {
                 // Trigger AppKit modal programmatically
                 const appkitButton = document.querySelector('appkit-button') as any;
                 if (appkitButton) appkitButton.click();
               }}
+              style={{ 
+                opacity: connectedAddress && (!requestFrom || !requestTo || isSameChain) ? 0.5 : 1,
+                cursor: connectedAddress && (!requestFrom || !requestTo || isSameChain) ? 'not-allowed' : 'pointer'
+              }}
             >
-              {connectedAddress ? "Request" : "Please Connect Wallet"}
+              {!connectedAddress 
+                ? "Please Connect Wallet" 
+                : !requestFrom || !requestTo 
+                  ? "Select chains to continue"
+                  : isSameChain
+                    ? "Cannot transfer to the same chain"
+                    : "Request"}
             </button>
           </form>
         </div>
