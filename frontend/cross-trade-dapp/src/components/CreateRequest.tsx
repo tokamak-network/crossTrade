@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useBalance, useReadContract } from 'wagmi'
 import { 
   l2_cross_trade_ABI, 
   // L2_L2 specific imports
@@ -18,7 +18,7 @@ import {
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
 
-// ERC20 ABI for approve function
+// ERC20 ABI for approve and balanceOf functions
 const ERC20_ABI = [
   {
     "inputs": [
@@ -28,6 +28,15 @@ const ERC20_ABI = [
     "name": "approve",
     "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "account", "type": "address"}
+    ],
+    "name": "balanceOf",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
     "type": "function"
   }
 ] as const
@@ -198,6 +207,81 @@ export const CreateRequest = () => {
 
   // Update receive amount when send amount or fee changes
   const currentReceiveAmount = calculateReceiveAmount()
+
+  // Get token address for balance checking
+  // IMPORTANT: For balance, we need the SOURCE chain's token address
+  // We should check BOTH L2_L2 and L2_L1 configs because the source chain
+  // might be configured in either one, regardless of the communication mode
+  const getSourceTokenAddress = () => {
+    try {
+      const fromChainId = getChainIdByName(requestFrom)
+      
+      // Try L2_L2 config first
+      let tokenAddress = getTokenAddressFor_L2_L2(fromChainId, sendToken)
+      if (tokenAddress) return tokenAddress
+      
+      // If not found, try L2_L1 config
+      tokenAddress = getTokenAddressFor_L2_L1(fromChainId, sendToken)
+      if (tokenAddress) return tokenAddress
+      
+      return undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  const sourceTokenAddress = getSourceTokenAddress()
+  const isNativeTokenForBalance = sourceTokenAddress?.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
+  
+  // Debug log
+  console.log('💰 Balance fetch:', {
+    requestFrom,
+    sendToken,
+    sourceTokenAddress,
+    isNativeToken: isNativeTokenForBalance,
+    connectedAddress,
+    communicationMode
+  })
+
+  // Fetch native token balance (ETH, TON, etc.)
+  const { data: nativeBalance } = useBalance({
+    address: connectedAddress,
+    chainId: getChainIdByName(requestFrom),
+    query: {
+      enabled: isNativeTokenForBalance && !!connectedAddress
+    }
+  })
+
+  // Fetch ERC20 token balance
+  const { data: erc20Balance } = useReadContract({
+    address: sourceTokenAddress as `0x${string}`,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: connectedAddress ? [connectedAddress] : undefined,
+    chainId: getChainIdByName(requestFrom),
+    query: {
+      enabled: !isNativeTokenForBalance && !!connectedAddress && !!sourceTokenAddress
+    }
+  })
+
+  // Format balance for display
+  const formatBalance = () => {
+    if (!connectedAddress) return '0.00'
+    
+    if (isNativeTokenForBalance && nativeBalance) {
+      const decimals = getTokenDecimals(sendToken)
+      const balance = Number(nativeBalance.value) / (10 ** decimals)
+      return balance.toFixed(6)
+    } else if (!isNativeTokenForBalance && erc20Balance) {
+      const decimals = getTokenDecimals(sendToken)
+      const balance = Number(erc20Balance) / (10 ** decimals)
+      return balance.toFixed(6)
+    }
+    
+    return '0.00'
+  }
+
+  const displayBalance = formatBalance()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -668,7 +752,20 @@ export const CreateRequest = () => {
                   <div className="dropdown-arrow">▼</div>
                 </div>
               </div>
-              <div className="balance-info">Balance: 19.21 <span className="max-btn">Max</span></div>
+              <div className="balance-info">
+                Balance: {displayBalance} {sendToken}
+                <span 
+                  className="max-btn"
+                  onClick={() => {
+                    if (displayBalance && displayBalance !== '0.00') {
+                      setSendAmount(displayBalance)
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Max
+                </span>
+              </div>
             </div>
 
             {/* You Receive and To Address Section */}
