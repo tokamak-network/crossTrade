@@ -1177,6 +1177,20 @@ export const CreateRequest = () => {
           border-color: #6366f1;
         }
 
+        .chain-select option {
+          background: #1a1a1a;
+          color: #ffffff;
+          padding: 10px 14px;
+        }
+
+        .chain-select option:hover {
+          background: #262626;
+        }
+
+        .chain-select option:disabled {
+          color: #6b7280;
+        }
+
         .amount-section {
           display: flex;
           flex-direction: column;
@@ -1250,6 +1264,20 @@ export const CreateRequest = () => {
           appearance: none;
           cursor: pointer;
           outline: none;
+        }
+
+        .token-select option {
+          background: #1a1a1a;
+          color: #ffffff;
+          padding: 10px 14px;
+        }
+
+        .token-select option:hover {
+          background: #262626;
+        }
+
+        .token-select option:disabled {
+          color: #6b7280;
         }
 
         .dropdown-arrow {
