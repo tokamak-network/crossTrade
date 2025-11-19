@@ -29,11 +29,10 @@ contract DeployL1CrossTrade_L2L2 is Script {
 
         // Initialize the proxy
         console.log("Initializing proxy...");
-        uint256 optimismChainId = 1155420;
         address usdcAddress = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
         address usdtAddress = 0x7169D38820dfd117C3FA1f22a697dBA58d90BA06;
-        proxy.initialize(optimismChainId, usdcAddress, usdtAddress);
-        console.log("Proxy initialized with optimismChainId:", optimismChainId, "and USDC address:", usdcAddress);
+        proxy.initialize(usdcAddress, usdtAddress);
+        console.log("Proxy initialized with USDC address:", usdcAddress, "and USDT address:", usdtAddress);
 
         vm.stopBroadcast();
     }

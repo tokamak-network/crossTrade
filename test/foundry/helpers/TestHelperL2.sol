@@ -141,7 +141,6 @@ contract TestHelperL2 is Test {
         
         // Initialize the L1 proxy with chain and token addresses
         l1CrossTradeProxy.initialize(
-            10, // optimismChainId (using L2A_CHAIN_ID as optimism)
             address(usdc), // usdcAddress
             address(usdt)  // usdtAddress
         );
@@ -228,7 +227,8 @@ contract TestHelperL2 is Test {
             address(0),                      // l2NativeTokenAddressOnL1 (not used for this test)
             address(l1StandardBridge),       // l1StandardBridge
             address(l1USDCBridge),           // l1USDCBridge
-            L2A_CHAIN_ID                     // l2ChainId
+            L2A_CHAIN_ID,                    // l2ChainId
+            false                            // usesSimplifiedBridge
         );
         
         // Set up L2B chain data
@@ -238,7 +238,8 @@ contract TestHelperL2 is Test {
             address(0),                      // l2NativeTokenAddressOnL1 (not used for this test)
             address(l1StandardBridge),       // l1StandardBridge
             address(l1USDCBridge),           // l1USDCBridge
-            L2B_CHAIN_ID                     // l2ChainId
+            L2B_CHAIN_ID,                    // l2ChainId
+            false                            // usesSimplifiedBridge
         );
         
         vm.stopPrank();

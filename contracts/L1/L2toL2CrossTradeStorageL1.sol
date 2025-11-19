@@ -6,7 +6,6 @@ contract L2toL2CrossTradeStorageL1 {
     uint8 internal constant CLAIM_CT = 1;
     uint8 internal constant CANCEL_CT = 2;
 
-    uint256 public optimismChainId;
     address constant NATIVE_TOKEN = address(0);
     address public usdcAddress;
     address public usdtAddress;
@@ -16,7 +15,8 @@ contract L2toL2CrossTradeStorageL1 {
         address l2CrossTradeContract;
         address l2NativeTokenAddressOnL1;
         address l1StandardBridge;    
-        address l1USDCBridge;        
+        address l1USDCBridge;
+        bool usesSimplifiedBridge;        
     }
     
     //hashValue => bool -> Check whether provision has been made using the hash value.

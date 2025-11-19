@@ -7,17 +7,15 @@ import { L2toL2CrossTradeStorageL1 } from "./L2toL2CrossTradeStorageL1.sol";
 contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
 
     /// @notice Initialize the proxy
-    /// @param _optimismChainId optimism chainId
     /// @param _usdcAddress usdc address on L1
+    /// @param _usdtAddress usdt address on L1
     function initialize(
-        uint256 _optimismChainId,
         address _usdcAddress,
         address _usdtAddress
     ) 
         external
         onlyOwner
     {
-        optimismChainId = _optimismChainId;
         usdcAddress = _usdcAddress;
         usdtAddress = _usdtAddress;
     }
@@ -29,13 +27,16 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
     /// @param _l1StandardBridge standard bridge address for chainId
     /// @param _l1USDCBridge usdc bridge address for chainId
     /// @param _l2ChainId store chainId
+    /// @param _usesSimplifiedBridge uses simplified bridge
+
     function setChainInfo(
         address _crossDomainMessenger,
         address _l2CrossTrade,
         address _l2NativeTokenAddressOnL1,
         address _l1StandardBridge,
         address _l1USDCBridge,
-        uint256 _l2ChainId
+        uint256 _l2ChainId,
+        bool _usesSimplifiedBridge
     )
         external
         onlyOwner
@@ -45,7 +46,8 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
             l2CrossTradeContract: _l2CrossTrade,
             l2NativeTokenAddressOnL1: _l2NativeTokenAddressOnL1,
             l1StandardBridge: _l1StandardBridge,
-            l1USDCBridge: _l1USDCBridge
+            l1USDCBridge: _l1USDCBridge,
+            usesSimplifiedBridge: _usesSimplifiedBridge
         });
     }
 }
