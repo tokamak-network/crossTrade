@@ -16,7 +16,7 @@ contract L2toL2CrossTradeStorageL1 {
         address l2NativeTokenAddressOnL1;
         address l1StandardBridge;    
         address l1USDCBridge;
-        bool usesSimplifiedBridge;        
+        bool useCustomBridge;        
     }
     
     //hashValue => bool -> Check whether provision has been made using the hash value.
