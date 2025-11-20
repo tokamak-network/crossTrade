@@ -148,16 +148,16 @@ contract L2toL2CrossTradeL1 is ProxyStorage, AccessibleCommon, L2toL2CrossTradeS
 
         if (NATIVE_TOKEN == _l1token){
             require(msg.value == ctAmount, "CT: ETH need same amount");
-            if (chainData[_l2DestinationChainId].usesSimplifiedBridge){
-                  IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
-                _receiver,
-                _minGasLimit,
-                "0x"
+            if (chainData[_l2DestinationChainId].useCustomBridge){
+                IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
+                    _receiver,
+                    ctAmount,
+                    _minGasLimit,
+                    "0x"
                 );
             } else {
                 IL1StandardBridge(chainData[_l2DestinationChainId].l1StandardBridge).bridgeETHTo{value: ctAmount}(
                     _receiver,
-                    ctAmount,
                     _minGasLimit,
                     "0x"
                 );

@@ -24,7 +24,7 @@ contract SetChainInfoL1_L2L2 is Script {
         address l1StandardBridge = vm.envAddress("L1_STANDARD_BRIDGE");
         address l1USDCBridge = vm.envAddress("L1_USDC_BRIDGE");
         uint256 l2ChainId = vm.envUint("L2_CHAIN_ID");
-        bool usesSimplifiedBridge = vm.envBool("USES_SIMPLIFIED_BRIDGE");
+        bool useCustomBridge = vm.envBool("USE_CUSTOM_BRIDGE");
         
         console.log("Setting chain info with parameters:");
         console.log("CrossDomainMessenger:", crossDomainMessenger);
@@ -33,7 +33,7 @@ contract SetChainInfoL1_L2L2 is Script {
         console.log("L1StandardBridge:", l1StandardBridge);
         console.log("L1USDCBridge:", l1USDCBridge);
         console.log("L2ChainId:", l2ChainId);
-        console.log("UsesSimplifiedBridge:", usesSimplifiedBridge);
+        console.log("UseCustomBridge:", useCustomBridge);
 
         proxy.setChainInfo(
             crossDomainMessenger,
@@ -42,7 +42,7 @@ contract SetChainInfoL1_L2L2 is Script {
             l1StandardBridge,
             l1USDCBridge,
             l2ChainId,
-            usesSimplifiedBridge
+            useCustomBridge
         );
         
         console.log("Chain info set successfully!");

@@ -27,7 +27,7 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
     /// @param _l1StandardBridge standard bridge address for chainId
     /// @param _l1USDCBridge usdc bridge address for chainId
     /// @param _l2ChainId store chainId
-    /// @param _usesSimplifiedBridge uses simplified bridge
+    /// @param _useCustomBridge uses custom bridge
 
     function setChainInfo(
         address _crossDomainMessenger,
@@ -36,7 +36,7 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
         address _l1StandardBridge,
         address _l1USDCBridge,
         uint256 _l2ChainId,
-        bool _usesSimplifiedBridge
+        bool _useCustomBridge
     )
         external
         onlyOwner
@@ -47,7 +47,7 @@ contract L2toL2CrossTradeProxyL1 is Proxy, L2toL2CrossTradeStorageL1 {
             l2NativeTokenAddressOnL1: _l2NativeTokenAddressOnL1,
             l1StandardBridge: _l1StandardBridge,
             l1USDCBridge: _l1USDCBridge,
-            usesSimplifiedBridge: _usesSimplifiedBridge
+            useCustomBridge: _useCustomBridge
         });
     }
 }

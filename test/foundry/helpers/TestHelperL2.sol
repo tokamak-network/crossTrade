@@ -228,7 +228,7 @@ contract TestHelperL2 is Test {
             address(l1StandardBridge),       // l1StandardBridge
             address(l1USDCBridge),           // l1USDCBridge
             L2A_CHAIN_ID,                    // l2ChainId
-            false                            // usesSimplifiedBridge
+            false                            // useCustomBridge
         );
         
         // Set up L2B chain data
@@ -239,7 +239,7 @@ contract TestHelperL2 is Test {
             address(l1StandardBridge),       // l1StandardBridge
             address(l1USDCBridge),           // l1USDCBridge
             L2B_CHAIN_ID,                    // l2ChainId
-            false                            // usesSimplifiedBridge
+            false                            // useCustomBridge
         );
         
         vm.stopPrank();
