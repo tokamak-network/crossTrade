@@ -83,8 +83,8 @@ export const CreateRequest = () => {
   // Helper function to get token decimals
   const getTokenDecimals = (tokenSymbol: string) => {
     switch (tokenSymbol) {
-      case 'USDC':
-      case 'USDT':
+      case 'usdc':
+      case 'usdt':
         return 6 // USDC and USDT use 6 decimals
       case 'ETH':
       case 'TON':
@@ -848,7 +848,7 @@ export const CreateRequest = () => {
                 <div className="fee-details">
                   <span className="fee-percentage">2.00%</span>
                   <span className="fee-value">{calculateFee().toFixed(2)}</span>
-                  <span className="fee-token">USDC</span>
+                  <span className="fee-token">{sendToken}</span>
                 </div>
               </div>
 
@@ -873,7 +873,7 @@ export const CreateRequest = () => {
                     className="fee-input"
                     onClick={(e) => e.stopPropagation()}
                   />
-                  <span className="fee-token">USDC</span>
+                  <span className="fee-token">{sendToken}</span>
                 </div>
               </div>
             </div>
