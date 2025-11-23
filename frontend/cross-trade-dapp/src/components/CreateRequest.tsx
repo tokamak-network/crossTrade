@@ -47,7 +47,7 @@ export const CreateRequest = () => {
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('eth') // Default to eth (lowercase to match config)
   const [receiveAmount, setReceiveAmount] = useState('')
-  const [receiveToken, setReceiveToken] = useState('eth') // Default to eth (lowercase to match config)
+  // receiveToken is always the same as sendToken - no separate state needed
   const [toAddress, setToAddress] = useState('')
   const [serviceFeeMode, setServiceFeeMode] = useState('recommended') // 'recommended' or 'advanced'
   const [customFee, setCustomFee] = useState('')
@@ -199,18 +199,14 @@ export const CreateRequest = () => {
     if (!requestFrom || !requestTo) return
     
     const availableSendTokens = getAvailableTokensForMode(requestFrom)
-    const availableReceiveTokens = getAvailableTokensForMode(requestTo)
     
     // Reset send token if current selection is not available
     if (!availableSendTokens.includes(sendToken) && availableSendTokens.length > 0) {
       setSendToken(availableSendTokens[0])
     }
     
-    // Reset receive token if current selection is not available
-    if (!availableReceiveTokens.includes(receiveToken) && availableReceiveTokens.length > 0) {
-      setReceiveToken(availableReceiveTokens[0])
-    }
-  }, [requestFrom, requestTo, sendToken, receiveToken])
+    // Note: receiveToken is always the same as sendToken, no need to reset separately
+  }, [requestFrom, requestTo, sendToken])
 
   // Helper function to convert amount to wei based on token decimals
   const toTokenWei = (amount: string, tokenSymbol: string) => {
@@ -354,7 +350,7 @@ export const CreateRequest = () => {
       
       // Get token addresses for the respective chains (mode-aware)
       const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken) // Token on source chain
-      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // Token on destination chain
+      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, sendToken) // Token on destination chain (same as source)
       
       // Get the CrossTrade contract address (this is the spender) (mode-aware)
       const crossTradeContractAddress = getContractAddressForMode(fromChainId, 'l2_cross_trade')
@@ -365,7 +361,7 @@ export const CreateRequest = () => {
       
       // Amount calculations with correct decimals
       const totalAmountWei = toTokenWei(sendAmount, sendToken)
-      const ctAmountWei = toTokenWei(currentReceiveAmount, receiveToken)
+      const ctAmountWei = toTokenWei(currentReceiveAmount, sendToken) // Same token as sendToken
 
       // Connected wallet info
       const connectedWallet = connectedAddress
@@ -380,7 +376,7 @@ export const CreateRequest = () => {
         
         // Token Information
         sendToken: sendToken,
-        receiveToken: receiveToken,
+        receiveToken: sendToken, // Same as sendToken
         l2SourceTokenAddress: l2SourceTokenAddress,
         l2DestinationTokenAddress: l2DestinationTokenAddress,
         
@@ -487,7 +483,7 @@ export const CreateRequest = () => {
 
       // Get token addresses for the respective chains (mode-aware)
       const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken) // L2 source token (from chain)
-      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, receiveToken) // L2 destination token (to chain)
+      const l2DestinationTokenAddress = getTokenAddressForMode(toChainId, sendToken) // L2 destination token (to chain, same as source)
 
       // Get contract address for the current chain (mode-aware)
       const contractAddress = getContractAddressForMode(fromChainId, 'l2_cross_trade')
@@ -546,7 +542,7 @@ export const CreateRequest = () => {
           fromChainId,
           toChainId,
           totalAmount: toTokenWei(sendAmount, sendToken).toString(),
-          ctAmount: toTokenWei(currentReceiveAmount, receiveToken).toString(),
+          ctAmount: toTokenWei(currentReceiveAmount, sendToken).toString(),
           l1ChainId,
           abi: 'l2_cross_trade_ABI',
           config: 'CHAIN_CONFIG_L2_L2'
@@ -566,7 +562,7 @@ export const CreateRequest = () => {
             l2DestinationTokenAddress as `0x${string}`, // l2DestinationToken
             toAddress as `0x${string}`, // _receiver (to address)
             toTokenWei(sendAmount, sendToken), // totalAmount with correct decimals
-            toTokenWei(currentReceiveAmount, receiveToken), // ctAmount with correct decimals
+            toTokenWei(currentReceiveAmount, sendToken), // ctAmount with correct decimals (same token)
             BigInt(l1ChainId), // l1ChainId (Ethereum Sepolia for L2_L2)
             BigInt(toChainId) // l2DestinationChainId
           ],
@@ -584,7 +580,7 @@ export const CreateRequest = () => {
           l2SourceTokenAddress, // From L2_L1 config (used as _l2token in OLD contract)
           fromChainId,
           totalAmount: toTokenWei(sendAmount, sendToken).toString(),
-          ctAmount: toTokenWei(currentReceiveAmount, receiveToken).toString(),
+          ctAmount: toTokenWei(currentReceiveAmount, sendToken).toString(),
           l1ChainId,
           abi: 'L2_L1_REQUEST_ABI (OLD contract - 6 params)',
           config: 'CHAIN_CONFIG_L2_L1',
@@ -605,7 +601,7 @@ export const CreateRequest = () => {
             l2SourceTokenAddress as `0x${string}`, // _l2token (only source token in OLD contract)
             toAddress as `0x${string}`, // _receiver (to address)
             toTokenWei(sendAmount, sendToken), // _totalAmount with correct decimals
-            toTokenWei(currentReceiveAmount, receiveToken), // _ctAmount with correct decimals
+            toTokenWei(currentReceiveAmount, sendToken), // _ctAmount with correct decimals (same token)
             BigInt(l1ChainId) // _l1chainId
           ],
           value: isNativeTokenL2L1 ? toTokenWei(sendAmount, sendToken) : BigInt(0)
@@ -824,20 +820,9 @@ export const CreateRequest = () => {
                     placeholder="9.5"
                     className="amount-input readonly you-receive"
                   />
-                  <div className="token-selector">
+                  <div className="token-display">
                     <div className="token-icon">🔵</div>
-                    <select 
-                      value={receiveToken} 
-                      onChange={(e) => setReceiveToken(e.target.value)}
-                      className="token-select"
-                    >
-                      {getAvailableTokensForMode(requestTo).map((token) => (
-                        <option key={token} value={token}>
-                          {token}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="dropdown-arrow">▼</div>
+                    <span className="token-text">{sendToken.toUpperCase()}</span>
                   </div>
                 </div>
               </div>
@@ -959,7 +944,7 @@ export const CreateRequest = () => {
               </div>
               <div className="detail-row">
                 <span className="detail-label">Receive</span>
-                <span className="detail-value">{currentReceiveAmount} 🔵 {receiveToken}</span>
+                <span className="detail-value">{currentReceiveAmount} 🔵 {sendToken.toUpperCase()}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">From address</span>
@@ -1267,6 +1252,22 @@ export const CreateRequest = () => {
           background: #262626;
           cursor: pointer;
           min-width: 70px;
+        }
+
+        .token-display {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 12px;
+          border-left: 1px solid #333333;
+          background: #262626;
+          min-width: 70px;
+        }
+
+        .token-text {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         .token-icon {
