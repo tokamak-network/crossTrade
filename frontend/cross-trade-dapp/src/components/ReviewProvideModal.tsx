@@ -142,7 +142,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     // Check against known token addresses from both L2_L2 and L2_L1 configs
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
           symbol = tokenSymbol
           decimals = getTokenDecimals(tokenSymbol)
         }
@@ -153,7 +153,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-          if (address.toLowerCase() === tokenAddress.toLowerCase()) {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
             decimals = getTokenDecimals(tokenSymbol)
           }

@@ -39,7 +39,21 @@ const loadChainConfig = (configType: 'L2_L2' | 'L2_L1'): ChainConfigs => {
   }
 
   try {
-    return JSON.parse(chainConfigEnv) as ChainConfigs;
+    const parsedConfig = JSON.parse(chainConfigEnv) as ChainConfigs;
+    
+    // Normalize all token symbols to uppercase
+    Object.keys(parsedConfig).forEach(chainId => {
+      const config = parsedConfig[chainId];
+      if (config.tokens) {
+        const normalizedTokens: { [key: string]: string | undefined } = {};
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          normalizedTokens[tokenSymbol.toUpperCase()] = address;
+        });
+        config.tokens = normalizedTokens;
+      }
+    });
+    
+    return parsedConfig;
   } catch (error) {
     console.error(`Error parsing chain configuration for ${configType}:`, error);
     console.warn('Returning empty configuration');
@@ -161,12 +175,13 @@ export const getAvailableTokensFor_L2_L1 = (chainName: string) => {
 
 // Helper function to get token decimals
 export const getTokenDecimals = (tokenSymbol: string) => {
-  switch (tokenSymbol) {
-    case 'USDC':
-    case 'USDT':
+  const symbol = tokenSymbol.toLowerCase()
+  switch (symbol) {
+    case 'usdc':
+    case 'usdt':
       return 6 // USDC and USDT use 6 decimals
-    case 'ETH':
-    case 'TON':
+    case 'eth':
+    case 'ton':
     default:
       return 18 // ETH and most tokens use 18 decimals
   }

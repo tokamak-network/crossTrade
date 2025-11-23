@@ -90,16 +90,16 @@ export const RequestPool = () => {
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address && address !== '') {
-          const upperSymbol = tokenSymbol.toUpperCase()
-          if (!tokenMap[upperSymbol]) {
-            tokenMap[upperSymbol] = {
-              symbol: upperSymbol,
-              emoji: generateRandomColor(upperSymbol),
+          // tokenSymbol is already normalized to uppercase at load time
+          if (!tokenMap[tokenSymbol]) {
+            tokenMap[tokenSymbol] = {
+              symbol: tokenSymbol,
+              emoji: generateRandomColor(tokenSymbol),
               addresses: []
             }
           }
-          if (!tokenMap[upperSymbol].addresses.includes(address.toLowerCase())) {
-            tokenMap[upperSymbol].addresses.push(address.toLowerCase())
+          if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+            tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
           }
         }
       })
@@ -109,16 +109,16 @@ export const RequestPool = () => {
     Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address && address !== '') {
-          const upperSymbol = tokenSymbol.toUpperCase()
-          if (!tokenMap[upperSymbol]) {
-            tokenMap[upperSymbol] = {
-              symbol: upperSymbol,
-              emoji: generateRandomColor(upperSymbol),
+          // tokenSymbol is already normalized to uppercase at load time
+          if (!tokenMap[tokenSymbol]) {
+            tokenMap[tokenSymbol] = {
+              symbol: tokenSymbol,
+              emoji: generateRandomColor(tokenSymbol),
               addresses: []
             }
           }
-          if (!tokenMap[upperSymbol].addresses.includes(address.toLowerCase())) {
-            tokenMap[upperSymbol].addresses.push(address.toLowerCase())
+          if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+            tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
           }
         }
       })
@@ -170,7 +170,7 @@ export const RequestPool = () => {
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
         if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
+          symbol = tokenSymbol // Already normalized to uppercase at load time
           decimals = getTokenDecimals(tokenSymbol)
         }
       })
@@ -181,7 +181,7 @@ export const RequestPool = () => {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
           if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-            symbol = tokenSymbol
+            symbol = tokenSymbol // Already normalized to uppercase at load time
             decimals = getTokenDecimals(tokenSymbol)
           }
         })
