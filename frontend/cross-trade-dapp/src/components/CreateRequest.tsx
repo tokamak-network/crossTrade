@@ -854,7 +854,7 @@ export const CreateRequest = () => {
                 </div>
                 <div className="fee-details">
                   <span className="fee-percentage">2.00%</span>
-                  <span className="fee-value">{calculateFee().toFixed(2)}</span>
+                  <span className="fee-value">{calculateFee().toFixed(6)}</span>
                   <span className="fee-token">{sendToken}</span>
                 </div>
               </div>
@@ -966,7 +966,7 @@ export const CreateRequest = () => {
                 <span className="detail-label">Service fee</span>
                 <span className="detail-value">
                   <span className="fee-badge">{serviceFeeMode === 'recommended' ? '2.00%' : ((parseFloat(customFee) || 1) / (parseFloat(sendAmount) || 1) * 100).toFixed(2) + '%'}</span>
-                  {calculateFee().toFixed(2)} {sendToken}
+                  {calculateFee().toFixed(6)} {sendToken}
                 </span>
               </div>
             </div>
