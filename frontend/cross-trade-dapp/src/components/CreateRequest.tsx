@@ -45,9 +45,9 @@ export const CreateRequest = () => {
   const [requestFrom, setRequestFrom] = useState('')
   const [requestTo, setRequestTo] = useState('')
   const [sendAmount, setSendAmount] = useState('')
-  const [sendToken, setSendToken] = useState('USDC') // Default to USDC
+  const [sendToken, setSendToken] = useState('eth') // Default to eth (lowercase to match config)
   const [receiveAmount, setReceiveAmount] = useState('')
-  const [receiveToken, setReceiveToken] = useState('USDC') // Default to USDC
+  const [receiveToken, setReceiveToken] = useState('eth') // Default to eth (lowercase to match config)
   const [toAddress, setToAddress] = useState('')
   const [serviceFeeMode, setServiceFeeMode] = useState('recommended') // 'recommended' or 'advanced'
   const [customFee, setCustomFee] = useState('')
@@ -82,12 +82,13 @@ export const CreateRequest = () => {
 
   // Helper function to get token decimals
   const getTokenDecimals = (tokenSymbol: string) => {
-    switch (tokenSymbol) {
+    const symbol = tokenSymbol.toLowerCase()
+    switch (symbol) {
       case 'usdc':
       case 'usdt':
         return 6 // USDC and USDT use 6 decimals
-      case 'ETH':
-      case 'TON':
+      case 'eth':
+      case 'ton':
       default:
         return 18 // ETH and most tokens use 18 decimals
     }
@@ -110,6 +111,12 @@ export const CreateRequest = () => {
   // Known L1 chain IDs: Ethereum Sepolia (11155111) and Ethereum Mainnet (1)
   const isL1Chain = (chainId: number): boolean => {
     return chainId === 11155111 || chainId === 1
+  }
+
+  // Check if L2_L1 config is available (not empty)
+  const isL2L1ConfigAvailable = (): boolean => {
+    const l2l1Chains = getChainsFor_L2_L1()
+    return l2l1Chains && l2l1Chains.length > 0
   }
 
   // Automatically detect communication mode based on destination chain
@@ -176,7 +183,15 @@ export const CreateRequest = () => {
 
 
   // Validate that source and destination chains are different
-  const isSameChain = !!(requestFrom && requestTo && requestFrom === requestTo)
+  // Trim whitespace and compare to handle any edge cases
+  const isSameChain = !!(requestFrom && requestTo && requestFrom.trim() === requestTo.trim())
+
+  // Auto-reset requestTo if it becomes the same as requestFrom
+  useEffect(() => {
+    if (requestFrom && requestTo && requestFrom.trim() === requestTo.trim()) {
+      setRequestTo('') // Reset to empty to force user to select again
+    }
+  }, [requestFrom, requestTo])
 
   // Reset token selection when chain changes
   useEffect(() => {
@@ -736,6 +751,13 @@ export const CreateRequest = () => {
                       )
                       // Filter out the source chain - can't send to the same chain
                       .filter(({ config }) => config.display_name !== requestFrom)
+                      // Filter out L1 chains if L2_L1 config is not available
+                      .filter(({ chainId }) => {
+                        if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
+                          return false; // Hide L1 chains when L2_L1 config is unavailable
+                        }
+                        return true;
+                      })
                       .map(({ chainId, config }) => (
                         <option key={chainId} value={config.display_name}>
                           {config.display_name}
