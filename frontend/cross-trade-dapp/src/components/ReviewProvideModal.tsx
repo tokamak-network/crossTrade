@@ -63,6 +63,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const [riskUnderstood, setRiskUnderstood] = useState(false)
   const [approvalStep, setApprovalStep] = useState<'checking' | 'needed' | 'approving' | 'approved'>('checking')
   const [isApprovalSuccess, setIsApprovalSuccess] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   
   // Wagmi hooks for contract interaction
   const { writeContract, isPending, data: hash, error: writeError } = useWriteContract()
@@ -195,6 +196,30 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     }
   }
 
+  // Helper function to get token symbol from address
+  const getTokenSymbol = (tokenAddress: string) => {
+    let symbol = 'UNKNOWN'
+    // Check L2_L2 config
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
+      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
+          symbol = tokenSymbol
+        }
+      })
+    })
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = tokenSymbol
+          }
+        })
+      })
+    }
+    return symbol
+  }
+
   // Determine the actual ctAmount to use (edited if available, otherwise original)
   const actualCtAmount = useMemo(() => {
     if (editedCtAmount !== undefined && editedCtAmount > BigInt(0)) {
@@ -209,6 +234,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const provideChain = getChainName(BigInt(11155111)) // Always Ethereum for L1
   const rewardChain = getChainName(requestData.l2DestinationChainId)
   const sourceChain = requestData.chainName // Source chain from request data
+  const tokenSymbol = getTokenSymbol(requestData.l2SourceToken) // Get actual token symbol
 
   // Calculate cross chain path - source chain to destination chain
   const crossChainPath = `${sourceChain} → ${getChainName(requestData.l2DestinationChainId)}`
@@ -228,6 +254,13 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
       }, 1000)
     }
   }, [isApprovalTxSuccess, approvalStep, refetchAllowance])
+
+  // Handle main transaction success
+  React.useEffect(() => {
+    if (isSuccess) {
+      setShowSuccessModal(true)
+    }
+  }, [isSuccess])
   
   // Handle approval function
   const handleApproval = async () => {
@@ -392,7 +425,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   
   // Network fee calculation (example)
   const networkFee = '0.0012 ETH'
-  const networkFeeUsd = '($0.67)'
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -443,7 +475,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               <span className="help-icon">ⓘ</span>
             </div>
             <div className="amount-display">
-              <span className="amount-value">{provideAmount} USDC</span>
+              <span className="amount-value">{provideAmount} {tokenSymbol}</span>
               <div className="chain-badge">
                 <span className="chain-icon">{getChainIcon(provideChain)}</span>
               </div>
@@ -451,10 +483,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             <div className="chain-name-display">{provideChain}</div>
             {actualCtAmount !== requestData.ctAmount && (
               <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                Original: {formatTokenAmount(requestData.ctAmount, requestData.l2SourceToken)} USDC
+                Original: {formatTokenAmount(requestData.ctAmount, requestData.l2SourceToken)} {tokenSymbol}
               </div>
             )}
-            <div className="amount-usd">($99.00)</div>
           </div>
 
           {/* Reward Chain Section */}
@@ -464,14 +495,13 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               <span className="help-icon">ⓘ</span>
             </div>
             <div className="amount-display">
-              <span className="amount-value">{rewardAmount} USDC</span>
+              <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
               <div className="chain-badge reward">
                 <span className="chain-icon">{getChainIcon(rewardChain)}</span>
                 <span className="reward-symbol">🔥</span>
               </div>
             </div>
             <div className="chain-name-display">{rewardChain}</div>
-            <div className="amount-usd">($99.00)</div>
           </div>
 
           {/* Request Chain Section */}
@@ -481,22 +511,19 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               <span className="help-icon">ⓘ</span>
             </div>
             <div className="amount-display">
-              <span className="amount-value">{rewardAmount} USDC</span>
+              <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
               <div className="chain-badge">
                 <span className="chain-icon">{getChainIcon(sourceChain)}</span>
               </div>
             </div>
             <div className="chain-name-display">{sourceChain}</div>
-            <div className="amount-usd">($99.00)</div>
           </div>
 
           {/* Cross Chain Path */}
           <div className="cross-chain-section">
             <div className="path-row">
               <span className="path-label">Cross Chain Path</span>
-              <div className="path-indicator">
-                <span className="path-badge">M</span>
-              </div>
+
               <span className="path-value">{crossChainPath}</span>
             </div>
             <div className="detail-row">
@@ -505,7 +532,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             </div>
             <div className="detail-row">
               <span className="detail-label">Network fee</span>
-              <span className="detail-value">{networkFee} <span className="fee-usd">{networkFeeUsd}</span></span>
+              <span className="detail-value">{networkFee}</span>
             </div>
           </div>
 
@@ -562,6 +589,29 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="success-modal-overlay" onClick={() => {
+          setShowSuccessModal(false)
+          onClose()
+        }}>
+          <div className="success-modal" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => {
+              setShowSuccessModal(false)
+              onClose()
+            }} className="close-btn-success">✕</button>
+            <h3>Transaction Confirmed!</h3>
+            <div className="success-checkmark">✓</div>
+            <p>Your provide transaction has been confirmed</p>
+            {hash && (
+              <div className="tx-hash">
+                <small>TX: {hash}</small>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .modal-overlay {
@@ -902,6 +952,88 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
         .approve-btn:hover:not(:disabled) {
           background: #d97706;
+        }
+
+        /* Success Modal Styles */
+        .success-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1001;
+        }
+
+        .success-modal {
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 16px;
+          padding: 32px;
+          text-align: center;
+          width: 90%;
+          max-width: 400px;
+          position: relative;
+        }
+
+        .close-btn-success {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: none;
+          border: none;
+          color: #9ca3af;
+          font-size: 20px;
+          cursor: pointer;
+          padding: 4px;
+          margin: 0;
+        }
+
+        .close-btn-success:hover {
+          color: #ffffff;
+        }
+
+        .success-modal h3 {
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: 600;
+          margin: 0 0 24px 0;
+        }
+
+        .success-checkmark {
+          width: 48px;
+          height: 48px;
+          background: #10b981;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 24px auto;
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: bold;
+        }
+
+        .success-modal p {
+          color: #9ca3af;
+          font-size: 16px;
+          margin: 0 0 16px 0;
+        }
+
+        .tx-hash {
+          margin-top: 16px;
+          padding: 8px;
+          background: #262626;
+          border-radius: 8px;
+          word-break: break-all;
+        }
+
+        .tx-hash small {
+          color: #9ca3af;
+          font-size: 12px;
         }
       `}</style>
     </div>
