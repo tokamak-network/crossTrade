@@ -88,40 +88,86 @@ export const RequestPool = () => {
     
     // Collect from L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address !== '') {
-          // tokenSymbol is already normalized to uppercase at load time
-          if (!tokenMap[tokenSymbol]) {
-            tokenMap[tokenSymbol] = {
-              symbol: tokenSymbol,
-              emoji: generateRandomColor(tokenSymbol),
-              addresses: []
+      // Handle both NEW array format and OLD object format
+      if (Array.isArray(config.tokens)) {
+        // NEW format: array of TokenWithDestinations
+        config.tokens.forEach(token => {
+          const tokenSymbol = token.name.toUpperCase()
+          const address = token.address
+          
+          if (address && address !== '') {
+            if (!tokenMap[tokenSymbol]) {
+              tokenMap[tokenSymbol] = {
+                symbol: tokenSymbol,
+                emoji: generateRandomColor(tokenSymbol),
+                addresses: []
+              }
+            }
+            if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+              tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
             }
           }
-          if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
-            tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
+        })
+      } else {
+        // OLD format: object with key-value pairs
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address && address !== '') {
+            // tokenSymbol is already normalized to uppercase at load time
+            if (!tokenMap[tokenSymbol]) {
+              tokenMap[tokenSymbol] = {
+                symbol: tokenSymbol,
+                emoji: generateRandomColor(tokenSymbol),
+                addresses: []
+              }
+            }
+            if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+              tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
+            }
           }
-        }
-      })
+        })
+      }
     })
     
     // Collect from L2_L1 config
     Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address !== '') {
-          // tokenSymbol is already normalized to uppercase at load time
-          if (!tokenMap[tokenSymbol]) {
-            tokenMap[tokenSymbol] = {
-              symbol: tokenSymbol,
-              emoji: generateRandomColor(tokenSymbol),
-              addresses: []
+      // Handle both NEW array format and OLD object format
+      if (Array.isArray(config.tokens)) {
+        // NEW format: array of TokenWithDestinations
+        config.tokens.forEach(token => {
+          const tokenSymbol = token.name.toUpperCase()
+          const address = token.address
+          
+          if (address && address !== '') {
+            if (!tokenMap[tokenSymbol]) {
+              tokenMap[tokenSymbol] = {
+                symbol: tokenSymbol,
+                emoji: generateRandomColor(tokenSymbol),
+                addresses: []
+              }
+            }
+            if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+              tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
             }
           }
-          if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
-            tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
+        })
+      } else {
+        // OLD format: object with key-value pairs
+        Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+          if (address && address !== '') {
+            // tokenSymbol is already normalized to uppercase at load time
+            if (!tokenMap[tokenSymbol]) {
+              tokenMap[tokenSymbol] = {
+                symbol: tokenSymbol,
+                emoji: generateRandomColor(tokenSymbol),
+                addresses: []
+              }
+            }
+            if (!tokenMap[tokenSymbol].addresses.includes(address.toLowerCase())) {
+              tokenMap[tokenSymbol].addresses.push(address.toLowerCase())
+            }
           }
-        }
-      })
+        })
+      }
     })
     
     return Object.values(tokenMap)
@@ -168,24 +214,53 @@ export const RequestPool = () => {
 
     // Check against known token addresses from both L2_L2 and L2_L1 configs
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol // Already normalized to uppercase at load time
-          decimals = getTokenDecimals(tokenSymbol)
-        }
-      })
-    })
-    
-    // Also check L2_L1 config if not found
-    if (symbol === 'UNKNOWN') {
-      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+      // Handle both NEW array format and OLD object format
+      if (Array.isArray(config.tokens)) {
+        // NEW format: array of TokenWithDestinations
+        config.tokens.forEach(token => {
+          if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = token.name.toUpperCase()
+            decimals = getTokenDecimals(token.name)
+          }
+        })
+      } else {
+        // OLD format: object with key-value pairs
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
           if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol // Already normalized to uppercase at load time
             decimals = getTokenDecimals(tokenSymbol)
           }
         })
+      }
+    })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        // Handle both NEW array format and OLD object format
+        if (Array.isArray(config.tokens)) {
+          // NEW format: array of TokenWithDestinations
+          config.tokens.forEach(token => {
+            if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = token.name.toUpperCase()
+              decimals = getTokenDecimals(token.name)
+            }
+          })
+        } else {
+          // OLD format: object with key-value pairs
+          Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+            if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = tokenSymbol // Already normalized to uppercase at load time
+              decimals = getTokenDecimals(tokenSymbol)
+            }
+          })
+        }
       })
+    }
+    
+    // Debug: Log unknown tokens
+    if (symbol === 'UNKNOWN') {
+      console.warn('⚠️ [formatTokenAmount] Unknown token address:', tokenAddress)
     }
 
     const divisor = BigInt(10 ** decimals)

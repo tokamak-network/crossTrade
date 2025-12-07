@@ -141,23 +141,47 @@ export const History = () => {
 
     // Check against known token addresses from both L2_L2 and L2_L1 configs
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
-          decimals = getTokenDecimals(tokenSymbol)
-        }
-      })
-    })
-    
-    // Also check L2_L1 config if not found
-    if (symbol === 'UNKNOWN') {
-      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+      // Handle both NEW array format and OLD object format
+      if (Array.isArray(config.tokens)) {
+        // NEW format: array of TokenWithDestinations
+        config.tokens.forEach(token => {
+          if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = token.name.toUpperCase()
+            decimals = getTokenDecimals(token.name)
+          }
+        })
+      } else {
+        // OLD format: object with key-value pairs
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
           if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
             decimals = getTokenDecimals(tokenSymbol)
           }
         })
+      }
+    })
+    
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        // Handle both NEW array format and OLD object format
+        if (Array.isArray(config.tokens)) {
+          // NEW format: array of TokenWithDestinations
+          config.tokens.forEach(token => {
+            if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = token.name.toUpperCase()
+              decimals = getTokenDecimals(token.name)
+            }
+          })
+        } else {
+          // OLD format: object with key-value pairs
+          Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+            if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = tokenSymbol
+              decimals = getTokenDecimals(tokenSymbol)
+            }
+          })
+        }
       })
     }
 
@@ -200,20 +224,42 @@ export const History = () => {
     let symbol = 'UNKNOWN'
     // Check L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
-      Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
-        if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
-          symbol = tokenSymbol
-        }
-      })
-    })
-    // Also check L2_L1 config if not found
-    if (symbol === 'UNKNOWN') {
-      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+      // Handle both NEW array format and OLD object format
+      if (Array.isArray(config.tokens)) {
+        // NEW format: array of TokenWithDestinations
+        config.tokens.forEach(token => {
+          if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+            symbol = token.name.toUpperCase()
+          }
+        })
+      } else {
+        // OLD format: object with key-value pairs
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
           if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
             symbol = tokenSymbol
           }
         })
+      }
+    })
+    // Also check L2_L1 config if not found
+    if (symbol === 'UNKNOWN') {
+      Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+        // Handle both NEW array format and OLD object format
+        if (Array.isArray(config.tokens)) {
+          // NEW format: array of TokenWithDestinations
+          config.tokens.forEach(token => {
+            if (token.address && token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = token.name.toUpperCase()
+            }
+          })
+        } else {
+          // OLD format: object with key-value pairs
+          Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
+            if (address && address.toLowerCase() === tokenAddress.toLowerCase()) {
+              symbol = tokenSymbol
+            }
+          })
+        }
       })
     }
     return symbol
