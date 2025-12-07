@@ -2,6 +2,19 @@
 
 // Type definitions for chain configuration
 import {env} from 'next-runtime-env'
+
+// New token format with destination chains (for L2 chains)
+export interface TokenWithDestinations {
+  name: string;
+  address: string;
+  destination_chains: number[];  // Array of chain IDs this token can be sent to
+}
+
+// Old token format (for L1 chains and backward compatibility)
+export interface TokenMap {
+  [key: string]: string | undefined;  // Allows any token key (eth, usdc, ETH, USDC, etc.)
+}
+
 export interface ChainConfig {
   name: string;
   display_name: string;
@@ -9,9 +22,7 @@ export interface ChainConfig {
     l2_cross_trade?: string;
     l1_cross_trade?: string;
   };
-  tokens: {
-    [key: string]: string | undefined;  // Allows any token key (eth, usdc, ETH, USDC, etc.)
-  };
+  tokens: TokenMap | TokenWithDestinations[];  // Support both old and new formats
   rpc_url?: string;
   native_token_name?: string;
   native_token_symbol?: string;
@@ -41,11 +52,22 @@ const loadChainConfig = (configType: 'L2_L2' | 'L2_L1'): ChainConfigs => {
   try {
     const parsedConfig = JSON.parse(chainConfigEnv) as ChainConfigs;
     
-    // Normalize all token symbols to uppercase
+    // Process each chain configuration
     Object.keys(parsedConfig).forEach(chainId => {
       const config = parsedConfig[chainId];
-      if (config.tokens) {
-        const normalizedTokens: { [key: string]: string | undefined } = {};
+      
+      // Check if tokens is in NEW array format (L2 chains)
+      if (Array.isArray(config.tokens)) {
+        // New format: array of TokenWithDestinations
+        // Normalize token names to uppercase
+        config.tokens = config.tokens.map(token => ({
+          ...token,
+          name: token.name.toUpperCase()
+        }));
+      } else {
+        // Old format: object with key-value pairs (L1 chains)
+        // Normalize all token symbols to uppercase
+        const normalizedTokens: TokenMap = {};
         Object.entries(config.tokens).forEach(([tokenSymbol, address]) => {
           normalizedTokens[tokenSymbol.toUpperCase()] = address;
         });
@@ -86,7 +108,16 @@ export const getChainConfigFor_L2_L2 = (chainId: number): ChainConfig | undefine
 
 export const getTokenAddressFor_L2_L2 = (chainId: number, tokenSymbol: string): string => {
   const config = getChainConfigFor_L2_L2(chainId);
-  return config?.tokens[tokenSymbol as keyof typeof config.tokens] || '';
+  if (!config) return '';
+  
+  // Check if tokens is in NEW array format
+  if (Array.isArray(config.tokens)) {
+    const token = config.tokens.find(t => t.name.toUpperCase() === tokenSymbol.toUpperCase());
+    return token?.address || '';
+  }
+  
+  // Old format: object with key-value pairs
+  return config.tokens[tokenSymbol.toUpperCase()] || '';
 };
 
 export const getContractAddressFor_L2_L2 = (chainId: number, contractName: string): string => {
@@ -117,9 +148,32 @@ export const getAvailableTokensFor_L2_L2 = (chainName: string) => {
   const config = getChainConfigFor_L2_L2(chainId);
   if (!config) return [];
   
+  // Check if tokens is in NEW array format
+  if (Array.isArray(config.tokens)) {
+    return config.tokens
+      .filter(token => token.address && token.address !== '')
+      .map(token => token.name);
+  }
+  
+  // Old format: object with key-value pairs
   return Object.entries(config.tokens)
     .filter(([symbol, address]) => address && address !== '')
     .map(([symbol]) => symbol);
+};
+
+// NEW: Get destination chains for a specific token on a source chain
+export const getDestinationChainsFor_L2_L2 = (sourceChainId: number, tokenSymbol: string): number[] => {
+  const config = getChainConfigFor_L2_L2(sourceChainId);
+  if (!config) return [];
+  
+  // Only NEW array format has destination_chains
+  if (Array.isArray(config.tokens)) {
+    const token = config.tokens.find(t => t.name.toUpperCase() === tokenSymbol.toUpperCase());
+    return token?.destination_chains || [];
+  }
+  
+  // Old format doesn't have destination restrictions - return empty array
+  return [];
 };
 
 // ========== L2_L1 Specific Functions ==========
@@ -137,7 +191,16 @@ export const getChainConfigFor_L2_L1 = (chainId: number): ChainConfig | undefine
 
 export const getTokenAddressFor_L2_L1 = (chainId: number, tokenSymbol: string): string => {
   const config = getChainConfigFor_L2_L1(chainId);
-  return config?.tokens[tokenSymbol as keyof typeof config.tokens] || '';
+  if (!config) return '';
+  
+  // Check if tokens is in NEW array format
+  if (Array.isArray(config.tokens)) {
+    const token = config.tokens.find(t => t.name.toUpperCase() === tokenSymbol.toUpperCase());
+    return token?.address || '';
+  }
+  
+  // Old format: object with key-value pairs
+  return config.tokens[tokenSymbol.toUpperCase()] || '';
 };
 
 export const getContractAddressFor_L2_L1 = (chainId: number, contractName: string): string => {
@@ -168,9 +231,32 @@ export const getAvailableTokensFor_L2_L1 = (chainName: string) => {
   const config = getChainConfigFor_L2_L1(chainId);
   if (!config) return [];
   
+  // Check if tokens is in NEW array format
+  if (Array.isArray(config.tokens)) {
+    return config.tokens
+      .filter(token => token.address && token.address !== '')
+      .map(token => token.name);
+  }
+  
+  // Old format: object with key-value pairs
   return Object.entries(config.tokens)
     .filter(([symbol, address]) => address && address !== '')
     .map(([symbol]) => symbol);
+};
+
+// NEW: Get destination chains for a specific token on a source chain (L2_L1 mode)
+export const getDestinationChainsFor_L2_L1 = (sourceChainId: number, tokenSymbol: string): number[] => {
+  const config = getChainConfigFor_L2_L1(sourceChainId);
+  if (!config) return [];
+  
+  // Only NEW array format has destination_chains
+  if (Array.isArray(config.tokens)) {
+    const token = config.tokens.find(t => t.name.toUpperCase() === tokenSymbol.toUpperCase());
+    return token?.destination_chains || [];
+  }
+  
+  // Old format doesn't have destination restrictions - return empty array
+  return [];
 };
 
 // Helper function to get token decimals

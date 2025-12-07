@@ -9,11 +9,13 @@ import {
   getTokenAddressFor_L2_L2,
   getContractAddressFor_L2_L2,
   getAvailableTokensFor_L2_L2,
+  getDestinationChainsFor_L2_L2,  // NEW: For filtering destination chains
   // L2_L1 specific imports
   getChainsFor_L2_L1,
   getTokenAddressFor_L2_L1,
   getContractAddressFor_L2_L1,
   getAvailableTokensFor_L2_L1,
+  getDestinationChainsFor_L2_L1,  // NEW: For filtering destination chains
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
@@ -105,6 +107,26 @@ export const CreateRequest = () => {
     chains = getChainsFor_L2_L1()
     chain = chains.find(c => c.config.display_name === chainName)
     return chain?.chainId || 0
+  }
+
+  // NEW: Get allowed destination chains for the selected token and source chain
+  const getAllowedDestinationChains = (): number[] => {
+    if (!requestFrom || !sendToken) return []
+    
+    const fromChainId = getChainIdByName(requestFrom)
+    if (!fromChainId) return []
+    
+    // Get destination chains from the appropriate config based on communication mode
+    let destinationChains: number[] = []
+    
+    if (communicationMode === 'L2_L2') {
+      destinationChains = getDestinationChainsFor_L2_L2(fromChainId, sendToken)
+    } else {
+      destinationChains = getDestinationChainsFor_L2_L1(fromChainId, sendToken)
+    }
+    
+    // If no destination_chains defined (old format or L1 chain), allow all chains
+    return destinationChains
   }
 
   // Check if a chain is L1 (Ethereum)
@@ -207,6 +229,23 @@ export const CreateRequest = () => {
     
     // Note: receiveToken is always the same as sendToken, no need to reset separately
   }, [requestFrom, requestTo, sendToken])
+
+  // NEW: Reset destination chain if it's not in the allowed destinations for the current token
+  useEffect(() => {
+    if (!requestFrom || !requestTo || !sendToken) return
+    
+    const allowedDestinations = getAllowedDestinationChains()
+    
+    // If there are destination restrictions
+    if (allowedDestinations && allowedDestinations.length > 0) {
+      const toChainId = getChainIdByName(requestTo)
+      
+      // If current destination is not in allowed list, reset it
+      if (toChainId && !allowedDestinations.includes(toChainId)) {
+        setRequestTo('')
+      }
+    }
+  }, [requestFrom, sendToken, requestTo])
 
   // Helper function to convert amount to wei based on token decimals
   const toTokenWei = (amount: string, tokenSymbol: string) => {
@@ -740,26 +779,39 @@ export const CreateRequest = () => {
                     className="chain-select"
                   >
                     <option value="" disabled>Select destination chain...</option>
-                    {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
-                      // Remove duplicates by chain ID
-                      .filter((chain, index, self) => 
-                        index === self.findIndex(c => c.chainId === chain.chainId)
-                      )
-                      // Filter out the source chain - can't send to the same chain
-                      .filter(({ config }) => config.display_name !== requestFrom)
-                      // Filter out L1 chains if L2_L1 config is not available
-                      .filter(({ chainId }) => {
-                        if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
-                          return false; // Hide L1 chains when L2_L1 config is unavailable
-                        }
-                        return true;
-                      })
-                      .map(({ chainId, config }) => (
-                        <option key={chainId} value={config.display_name}>
-                          {config.display_name}
-                        </option>
-                      ))
-                    }
+                    {(() => {
+                      // Get allowed destination chains for the selected token
+                      const allowedDestinations = getAllowedDestinationChains()
+                      
+                      return [...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                        // Remove duplicates by chain ID
+                        .filter((chain, index, self) => 
+                          index === self.findIndex(c => c.chainId === chain.chainId)
+                        )
+                        // Filter out the source chain - can't send to the same chain
+                        .filter(({ config }) => config.display_name !== requestFrom)
+                        // Filter out L1 chains if L2_L1 config is not available
+                        .filter(({ chainId }) => {
+                          if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
+                            return false; // Hide L1 chains when L2_L1 config is unavailable
+                          }
+                          return true;
+                        })
+                        // NEW: Filter based on allowed destination chains for the selected token
+                        .filter(({ chainId }) => {
+                          // If no restrictions (empty array or old format), show all chains
+                          if (!allowedDestinations || allowedDestinations.length === 0) {
+                            return true
+                          }
+                          // Otherwise, only show chains in the destination_chains array
+                          return allowedDestinations.includes(chainId)
+                        })
+                        .map(({ chainId, config }) => (
+                          <option key={chainId} value={config.display_name}>
+                            {config.display_name}
+                          </option>
+                        ))
+                    })()}
                   </select>
                 </div>
               </div>
