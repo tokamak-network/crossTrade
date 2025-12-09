@@ -107,3 +107,26 @@ pre {
    margin-bottom: 10px;
    line-height: 25px;
 }
+
+/* AppKit wallet button styling fixes */
+appkit-button {
+  --wui-color-fg-100: #ffffff !important;
+  --wui-color-fg-125: #ffffff !important;
+  --wui-color-fg-150: #e5e5e5 !important;
+  --wui-color-fg-175: #d4d4d4 !important;
+  --wui-color-fg-200: #a3a3a3 !important;
+  --wui-color-fg-225: #737373 !important;
+  --wui-color-fg-250: #525252 !important;
+  --wui-color-fg-275: #404040 !important;
+  --wui-color-fg-300: #262626 !important;
+}
+
+/* Override appkit button text colors */
+appkit-button::part(button) {
+  color: #ffffff !important;
+}
+
+/* Target the balance text specifically */
+appkit-button * {
+  color: #ffffff !important;
+}

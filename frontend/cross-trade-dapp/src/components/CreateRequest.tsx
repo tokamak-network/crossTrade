@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useBalance, useReadContract } from 'wagmi'
-import { 
-  l2_cross_trade_ABI, 
+import {
+  l2_cross_trade_ABI,
   // L2_L2 specific imports
   getChainsFor_L2_L2,
   getTokenAddressFor_L2_L2,
@@ -19,6 +20,7 @@ import {
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
+import { getTokenLogo } from '@/utils/chainLogos'
 
 // ERC20 ABI for approve and balanceOf functions
 const ERC20_ABI = [
@@ -829,7 +831,9 @@ export const CreateRequest = () => {
                   className="amount-input"
                 />
                 <div className="token-selector">
-                  <div className="token-icon">🔵</div>
+                  <div className="token-icon">
+                    <Image src={getTokenLogo(sendToken)} alt={sendToken} width={20} height={20} style={{ borderRadius: '50%' }} />
+                  </div>
                   <select 
                     value={sendToken} 
                     onChange={(e) => setSendToken(e.target.value)}
@@ -873,7 +877,9 @@ export const CreateRequest = () => {
                     className="amount-input readonly you-receive"
                   />
                   <div className="token-display">
-                    <div className="token-icon">🔵</div>
+                    <div className="token-icon">
+                      <Image src={getTokenLogo(sendToken)} alt={sendToken} width={20} height={20} style={{ borderRadius: '50%' }} />
+                    </div>
                     <span className="token-text">{sendToken.toUpperCase()}</span>
                   </div>
                 </div>
@@ -992,11 +998,15 @@ export const CreateRequest = () => {
               </div>
               <div className="detail-row">
                 <span className="detail-label">Send</span>
-                <span className="detail-value">{sendAmount} 🔵 {sendToken}</span>
+                <span className="detail-value">
+                  {sendAmount} <Image src={getTokenLogo(sendToken)} alt={sendToken} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle' }} /> {sendToken}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Receive</span>
-                <span className="detail-value">{currentReceiveAmount} 🔵 {sendToken.toUpperCase()}</span>
+                <span className="detail-value">
+                  {currentReceiveAmount} <Image src={getTokenLogo(sendToken)} alt={sendToken} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle' }} /> {sendToken.toUpperCase()}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">From address</span>

@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { usePublicClient, useAccount } from 'wagmi'
 import { createPublicClient, http, defineChain } from 'viem'
 import { CHAIN_CONFIG_L2_L2, CHAIN_CONFIG_L2_L1, getTokenDecimals, getChainsFor_L2_L2, getChainsFor_L2_L1 } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { ReviewProvideModal } from './ReviewProvideModal'
+import { getChainLogo, getTokenLogo } from '@/utils/chainLogos'
 
 interface RequestData {
   l1token: string
@@ -71,14 +73,13 @@ export const RequestPool = () => {
 
   const l2Chains = getL2Chains()
 
-  // Generate random color for icons
-  const generateRandomColor = (seed: string) => {
-    const colors = ['🔵', '🟢', '🟡', '🟠', '🔴', '🟣', '🟤', '⚫', '⚪', '🔘']
-    let hash = 0
-    for (let i = 0; i < seed.length; i++) {
-      hash = seed.charCodeAt(i) + ((hash << 5) - hash)
-    }
-    return colors[Math.abs(hash) % colors.length]
+  // Generate logo path for tokens and chains instead of random emojis
+  const getTokenLogoPath = (tokenSymbol: string): string => {
+    return getTokenLogo(tokenSymbol)
+  }
+
+  const getChainLogoPath = (chainName: string): string => {
+    return getChainLogo(chainName)
   }
 
   // Get all unique tokens from all chain configs
@@ -99,7 +100,7 @@ export const RequestPool = () => {
             if (!tokenMap[tokenSymbol]) {
               tokenMap[tokenSymbol] = {
                 symbol: tokenSymbol,
-                emoji: generateRandomColor(tokenSymbol),
+                logo: getTokenLogoPath(tokenSymbol),
                 addresses: []
               }
             }
@@ -116,7 +117,7 @@ export const RequestPool = () => {
             if (!tokenMap[tokenSymbol]) {
               tokenMap[tokenSymbol] = {
                 symbol: tokenSymbol,
-                emoji: generateRandomColor(tokenSymbol),
+                logo: getTokenLogoPath(tokenSymbol),
                 addresses: []
               }
             }
@@ -141,7 +142,7 @@ export const RequestPool = () => {
             if (!tokenMap[tokenSymbol]) {
               tokenMap[tokenSymbol] = {
                 symbol: tokenSymbol,
-                emoji: generateRandomColor(tokenSymbol),
+                logo: getTokenLogoPath(tokenSymbol),
                 addresses: []
               }
             }
@@ -158,7 +159,7 @@ export const RequestPool = () => {
             if (!tokenMap[tokenSymbol]) {
               tokenMap[tokenSymbol] = {
                 symbol: tokenSymbol,
-                emoji: generateRandomColor(tokenSymbol),
+                logo: getTokenLogoPath(tokenSymbol),
                 addresses: []
               }
             }
@@ -183,7 +184,7 @@ export const RequestPool = () => {
         chainMap[chainId.toString()] = {
           id: chainId,
           name: config.display_name,
-          emoji: generateRandomColor(config.display_name)
+          logo: getChainLogoPath(config.display_name)
         }
       }
     })
@@ -196,7 +197,7 @@ export const RequestPool = () => {
       chainMap[l1ChainId.toString()] = {
         id: l1ChainId,
         name: l1Config.display_name,
-        emoji: generateRandomColor(l1Config.display_name)
+        logo: getChainLogoPath(l1Config.display_name)
       }
     }
     
@@ -285,17 +286,20 @@ export const RequestPool = () => {
     return config?.display_name || `Chain ${chainId}`
   }
 
-  // Helper function to get chain emoji (uses dynamic mapping)
-  const getChainEmoji = (chainName: string) => {
+  // Helper function to render chain logo (uses dynamic mapping)
+  const renderChainLogo = (chainName: string) => {
     const chain = allChains.find(c => c.name === chainName)
-    return chain?.emoji || '⚫'
+    const logoSrc = chain?.logo || getChainLogo(chainName)
+    return <Image src={logoSrc} alt={chainName} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px' }} />
   }
 
-  // Helper function to get token emoji (uses dynamic mapping)
-  const getTokenEmoji = (tokenAddress: string) => {
+  // Helper function to render token logo (uses dynamic mapping)
+  const renderTokenLogo = (tokenAddress: string) => {
     const normalizedAddress = tokenAddress.toLowerCase()
     const token = allTokens.find(t => t.addresses.includes(normalizedAddress))
-    return token?.emoji || '🔘'
+    const logoSrc = token?.logo || getTokenLogo('ETH')
+    const tokenSymbol = token?.symbol || 'TOKEN'
+    return <Image src={logoSrc} alt={tokenSymbol} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px' }} />
   }
 
   // Helper function to create chain-specific publicClient
@@ -738,12 +742,13 @@ export const RequestPool = () => {
                   ALL
                 </button>
                 {allTokens.slice(0, 3).map((token) => (
-                  <button 
+                  <button
                     key={token.symbol}
                     className={`filter-btn ${selectedToken === token.symbol ? 'active' : ''}`}
                     onClick={() => setSelectedToken(token.symbol)}
                   >
-                    {token.emoji} {token.symbol}
+                    <Image src={token.logo} alt={token.symbol} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px', verticalAlign: 'middle' }} />
+                    {token.symbol}
                   </button>
                 ))}
                 {allTokens.length > 3 && (
@@ -756,7 +761,7 @@ export const RequestPool = () => {
                       <option value="">More...</option>
                       {allTokens.map((token) => (
                         <option key={token.symbol} value={token.symbol}>
-                          {token.emoji} {token.symbol}
+                          {token.symbol}
                         </option>
                       ))}
                     </select>
@@ -775,12 +780,13 @@ export const RequestPool = () => {
                   ALL
                 </button>
                 {allChains.slice(0, 2).map((chain) => (
-                  <button 
+                  <button
                     key={chain.id}
                     className={`filter-btn ${selectedChain === chain.name ? 'active' : ''}`}
                     onClick={() => setSelectedChain(chain.name)}
                   >
-                    {chain.emoji} {chain.name}
+                    <Image src={chain.logo} alt={chain.name} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px', verticalAlign: 'middle' }} />
+                    {chain.name}
                   </button>
                 ))}
                 <div className="dropdown-wrapper">
@@ -792,7 +798,7 @@ export const RequestPool = () => {
                     <option value="">More...</option>
                     {allChains.map((chain) => (
                       <option key={chain.id} value={chain.name}>
-                        {chain.emoji} {chain.name}
+                        {chain.name}
                       </option>
                     ))}
                   </select>
@@ -856,7 +862,7 @@ export const RequestPool = () => {
                     {/* Token Column */}
                     <div className="table-cell token-col">
                       <div className="token-info">
-                        <span className="token-icon">{getTokenEmoji(data.l2SourceToken)}</span>
+                        <span className="token-icon">{renderTokenLogo(data.l2SourceToken)}</span>
                         <span className="token-symbol">
                           {allTokens.find(t => t.addresses.includes(data.l2SourceToken.toLowerCase()))?.symbol || 'UNKNOWN'}
                         </span>
@@ -868,7 +874,9 @@ export const RequestPool = () => {
                       <div className="amount-info">
                         <span className="amount-value">{provideAmount}</span>
                         <div className="chain-info">
-                          <span className="chain-icon">⚪</span>
+                          <span className="chain-icon">
+                            <Image src={getChainLogo('Ethereum')} alt="Ethereum" width={16} height={16} style={{ borderRadius: '50%' }} />
+                          </span>
                           <span className="chain-name">Ethereum</span>
                         </div>
                       </div>
@@ -880,7 +888,7 @@ export const RequestPool = () => {
                         <span className="amount-value">{rewardAmount}</span>
                         <span className="profit-badge">+{profitPercentage}%</span>
                         <div className="chain-info">
-                          <span className="chain-icon">{getChainEmoji(request.chainName)}</span>
+                          <span className="chain-icon">{renderChainLogo(request.chainName)}</span>
                           <span className="chain-name">{request.chainName}</span>
                         </div>
                       </div>
@@ -889,7 +897,7 @@ export const RequestPool = () => {
                     {/* Request From Column */}
                     <div className="table-cell request-col">
                       <div className="chain-info">
-                        <span className="chain-icon">{getChainEmoji(request.chainName)}</span>
+                        <span className="chain-icon">{renderChainLogo(request.chainName)}</span>
                         <span className="chain-name">{request.chainName}</span>
                       </div>
                     </div>

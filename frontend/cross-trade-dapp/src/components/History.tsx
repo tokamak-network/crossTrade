@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient, useContractRead } from 'wagmi'
 import { createPublicClient, http, defineChain } from 'viem'
-import { 
+import Image from 'next/image'
+import {
   CHAIN_CONFIG_L2_L2,
-  CHAIN_CONFIG_L2_L1, 
-  getTokenDecimals, 
+  CHAIN_CONFIG_L2_L1,
+  getTokenDecimals,
   // L2_L2 specific imports
   getChainsFor_L2_L2,
   getContractAddressFor_L2_L2,
@@ -21,6 +22,7 @@ import {
 import { Navigation } from './Navigation'
 import { EditFeeModal } from './EditFeeModal'
 import { CancelCTModal } from './CancelCTModal'
+import { getChainLogo, getTokenLogo } from '@/utils/chainLogos'
 
 interface RequestData {
   l1token: string
@@ -207,16 +209,18 @@ export const History = () => {
     return config?.display_name || `Chain ${chainId}`
   }
 
-  // Helper function to get chain emoji
-  const getChainEmoji = (chainName: string) => {
-    switch (chainName) {
-      case 'GeorgeChain': return '🟣'
-      case 'MonicaChain': return '🟢'
-      case 'Thanos Sepolia': return '🔵'
-      case 'Ethereum Sepolia': return '⚪'
-      case 'Optimism Sepolia': return '🔴'
-      default: return '⚫'
-    }
+  // Helper function to render chain icon
+  const renderChainIcon = (chainName: string) => {
+    const logoSrc = getChainLogo(chainName)
+    return (
+      <Image
+        src={logoSrc}
+        alt={chainName}
+        width={16}
+        height={16}
+        style={{ borderRadius: '50%', objectFit: 'cover' }}
+      />
+    )
   }
 
   // Helper function to get token symbol from address
@@ -265,15 +269,18 @@ export const History = () => {
     return symbol
   }
 
-  // Helper function to get token emoji
-  const getTokenEmoji = (tokenSymbol: string) => {
-    switch (tokenSymbol) {
-      case 'USDC': return '🔵'
-      case 'USDT': return '🟢'
-      case 'ETH': return '⚪'
-      case 'TON': return '💎'
-      default: return '🔘'
-    }
+  // Helper function to render token icon
+  const renderTokenIcon = (tokenSymbol: string) => {
+    const logoSrc = getTokenLogo(tokenSymbol)
+    return (
+      <Image
+        src={logoSrc}
+        alt={tokenSymbol}
+        width={16}
+        height={16}
+        style={{ borderRadius: '50%', objectFit: 'cover' }}
+      />
+    )
   }
 
   // Helper function to get edited ctAmount from L1 contract
@@ -753,7 +760,7 @@ export const History = () => {
                   {filteredRequests.map((request, index) => {
                     const data = request.data!
                     const tokenSymbol = getTokenSymbol(data.l2SourceToken)
-                    const tokenEmoji = getTokenEmoji(tokenSymbol)
+                    const tokenIcon = renderTokenIcon(tokenSymbol)
                     // Use edited amount if available, otherwise use original ctAmount
                     const actualCtAmount = data.editedCtAmount || data.ctAmount
                     const amount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
@@ -785,7 +792,7 @@ export const History = () => {
                         {/* Network From Column */}
                         <div className="table-cell from-col">
                           <div className="network-info">
-                            <span className="network-icon">{getChainEmoji(fromChain)}</span>
+                            <span className="network-icon">{renderChainIcon(fromChain)}</span>
                             <span className="network-name">{fromChain}</span>
                           </div>
                         </div>
@@ -793,7 +800,7 @@ export const History = () => {
                         {/* Network To Column */}
                         <div className="table-cell to-col">
                           <div className="network-info">
-                            <span className="network-icon">{getChainEmoji(toChain)}</span>
+                            <span className="network-icon">{renderChainIcon(toChain)}</span>
                             <span className="network-name">{toChain}</span>
                           </div>
                         </div>
