@@ -297,7 +297,7 @@ export const RequestPool = () => {
   const renderTokenLogo = (tokenAddress: string) => {
     const normalizedAddress = tokenAddress.toLowerCase()
     const token = allTokens.find(t => t.addresses.includes(normalizedAddress))
-    const logoSrc = token?.logo || getTokenLogo('ETH')
+    const logoSrc = token?.logo || getTokenLogo('ERC20')
     const tokenSymbol = token?.symbol || 'TOKEN'
     return <Image src={logoSrc} alt={tokenSymbol} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px' }} />
   }

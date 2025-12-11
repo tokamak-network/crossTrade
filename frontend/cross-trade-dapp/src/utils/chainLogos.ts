@@ -32,7 +32,9 @@ export const getTokenLogo = (tokenSymbol: string): string => {
       return '/usdt.png'
     case 'TON':
       return '/eth.png' // Add TON logo if available
+    case 'ERC20':
+      return '/erc20.png'
     default:
-      return '/eth.png'
+      return '/erc20.png'
   }
 }
