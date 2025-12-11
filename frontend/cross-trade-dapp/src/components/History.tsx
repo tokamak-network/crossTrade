@@ -781,7 +781,7 @@ export const History = () => {
                         {/* Token Column */}
                         <div className="table-cell token-col">
                           <div className="token-info">
-                            <span className="token-icon">{tokenEmoji}</span>
+                            <span className="token-icon">{tokenIcon}</span>
                             <div className="token-details">
                               <span className="token-amount">{amount}</span>
                               <span className="token-symbol">{tokenSymbol}</span>
