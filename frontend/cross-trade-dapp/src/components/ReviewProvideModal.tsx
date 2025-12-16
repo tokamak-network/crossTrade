@@ -2,8 +2,9 @@
 
 import React, { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useReadContract } from 'wagmi'
-import { 
-  PROVIDE_CT_ABI, 
+import Image from 'next/image'
+import {
+  PROVIDE_CT_ABI,
   CHAIN_CONFIG_L2_L2,
   CHAIN_CONFIG_L2_L1,
   getTokenDecimals,
@@ -13,6 +14,7 @@ import {
   getContractAddressFor_L2_L1,
   L2_L1_PROVIDE_CT_ABI
 } from '@/config/contracts'
+import { getChainLogo } from '@/utils/chainLogos'
 
 // ERC20 ABI for approve and allowance functions
 const ERC20_ABI = [
@@ -208,16 +210,18 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
     return config?.name || `Chain ${chainId}`
   }
 
-  // Helper function to get chain icon
-  const getChainIcon = (chainName: string) => {
-    switch (chainName) {
-      case 'Ethereum Sepolia': return '⚪'
-      case 'Optimism Sepolia': return '🔴'
-      case 'Thanos Sepolia': return '🔵'
-      case 'GeorgeChain': return '🟣'
-      case 'MonicaChain': return '🟢'
-      default: return '⚫'
-    }
+  // Helper function to render chain icon as image
+  const renderChainIcon = (chainName: string) => {
+    const logoSrc = getChainLogo(chainName)
+    return (
+      <Image
+        src={logoSrc}
+        alt={chainName}
+        width={20}
+        height={20}
+        style={{ borderRadius: '50%', objectFit: 'cover' }}
+      />
+    )
   }
 
   // Helper function to get token symbol from address
@@ -278,7 +282,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const provideAmount = formatTokenAmount(actualCtAmount, requestData.l2SourceToken)
   const rewardAmount = formatTokenAmount(requestData.totalAmount, requestData.l2SourceToken)
   const provideChain = getChainName(BigInt(11155111)) // Always Ethereum for L1
-  const rewardChain = getChainName(requestData.l2DestinationChainId)
+  const rewardChain = requestData.chainName // Provider gets reward on SOURCE chain (where request originated)
   const sourceChain = requestData.chainName // Source chain from request data
   const tokenSymbol = getTokenSymbol(requestData.l2SourceToken) // Get actual token symbol
 
@@ -523,7 +527,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             <div className="amount-display">
               <span className="amount-value">{provideAmount} {tokenSymbol}</span>
               <div className="chain-badge">
-                <span className="chain-icon">{getChainIcon(provideChain)}</span>
+                <span className="chain-icon">{renderChainIcon(provideChain)}</span>
               </div>
             </div>
             <div className="chain-name-display">{provideChain}</div>
@@ -543,7 +547,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             <div className="amount-display">
               <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
               <div className="chain-badge reward">
-                <span className="chain-icon">{getChainIcon(rewardChain)}</span>
+                <span className="chain-icon">{renderChainIcon(rewardChain)}</span>
                 <span className="reward-symbol">🔥</span>
               </div>
             </div>
@@ -559,7 +563,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             <div className="amount-display">
               <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
               <div className="chain-badge">
-                <span className="chain-icon">{getChainIcon(sourceChain)}</span>
+                <span className="chain-icon">{renderChainIcon(sourceChain)}</span>
               </div>
             </div>
             <div className="chain-name-display">{sourceChain}</div>
