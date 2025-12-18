@@ -10,13 +10,22 @@ async function main() {
   //   process.env.Titan_L1_URL
   // )
 
-  const L2CrossTradeProxyDep = await ethers.getContractFactory("L2CrossTradeProxy");
-  let L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy();
-  console.log('L2CrossTradeProxy' , L2CrossTradeProxy.address)
+  // console.log("L2proxy:....")
+  // const L2CrossTradeProxyDep = await ethers.getContractFactory("L2CrossTradeProxy");
+  // let L2CrossTradeProxy = await L2CrossTradeProxyDep.deploy();
+  // console.log('L2CrossTradeProxy' , await L2CrossTradeProxy.getAddress())
+  // await L2CrossTradeProxy.waitForDeployment()
+  
+  // console.log("L2CrossTradeLogic:....")
+  // let L2CrossTradeLogicContract = await ethers.getContractFactory("L2CrossTrade");
+  // let L2CrossTradeLogic = await L2CrossTradeLogicContract.deploy();
+  // let addressLogic = await L2CrossTradeLogic.getAddress()
+  // console.log('L2CrossTradeLogic' , addressLogic)
+  // await L2CrossTradeLogic.waitForDeployment()
 
-  const L2CrossTradeLogicDep = await ethers.getContractFactory("L2CrossTrade");
-  let L2CrossTradeLogic = await L2CrossTradeLogicDep.deploy();
-  console.log('L2CrossTradeLogic' , L2CrossTradeLogic.address)
+  // const L2CrossTradeProxy = await ethers.getContractAt("L2CrossTradeProxy","0xf7571F832b831dDbBA3F618A19EDC18F959673b4");
+  // let L2CrossTradeLogic = await L2CrossTradeLogicDep.deploy();
+  // console.log('L2CrossTradeLogic' , await L2CrossTradeLogic.getAddress())
 
   // const L1CrossTradeProxyLogic = new ethers.Contract(
   //   L1CrossTradeProxy.address,
@@ -24,9 +33,11 @@ async function main() {
   //   l1Provider
   // ) 
   
-  await (await L2CrossTradeProxy.upgradeTo(
-    L2CrossTradeLogic.address)).wait()
-  console.log("1")
+  let L2CrossTradeProxy = await ethers.getContractAt("L2CrossTradeProxy","0xd520b0d021c779Df9296Fed737ee8d4ff87d512b");
+
+  console.log("upgrade proxy to logic...")
+  await L2CrossTradeProxy.upgradeTo("0xa3453f5b1e89b9Df59036B6a799f9EA84AAD8859");
+  console.log("upgraded")
 
   let imp2 = await L2CrossTradeProxy.implementation()
   console.log('check upgradeAddress : ', imp2)

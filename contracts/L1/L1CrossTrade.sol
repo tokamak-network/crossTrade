@@ -8,7 +8,7 @@ import { AccessibleCommon } from "../common/AccessibleCommon.sol";
 import { IL1CrossDomainMessenger } from "../interfaces/IL1CrossDomainMessenger.sol";
 import { L1CrossTradeStorage } from "./L1CrossTradeStorage.sol";
 import { ReentrancyGuard } from "../utils/ReentrancyGuard.sol";
-
+import { EOA } from "../libraries/EOA.sol";
 contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, ReentrancyGuard {
 
     using SafeERC20 for IERC20;
@@ -17,6 +17,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 indexed _saleCount,
@@ -28,6 +29,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         address _provider,
         uint256 _totalAmount,
         uint256 _ctAmount,
@@ -40,6 +42,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requester,
+        address _receiver,
         uint256 _totalAmount,
         uint256 indexed _saleCount,
         uint256 _l2chainId,
@@ -47,7 +50,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     );
 
     modifier onlyEOA() {
-        require(msg.sender == tx.origin, "L2FW: function can only be called from an EOA");
+        require(EOA.isSenderEOA(), "CT: Function can only be called from an EOA");
         _;
     }
 
@@ -56,15 +59,13 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. (In this case, you will lose your assets in L1.)
     ///         Please be aware of double-check the request made in L2 and execute the provideCT in L1.
-    ///         And We do not support ERC20, which is specially created and incurs a fee when transferring.
-    ///         And Here, there is no need to input a hash value and check it, 
-    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor requester's address
+    /// @param _receiver receiver's address (who will receive the tokens on L1)
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
-    /// @param _editedAmount input the edited amount
+    /// @param _editedctAmount ctAmount edited by the requester
     /// @param _salecount Number generated upon request
     /// @param _l2chainId request requested chainId
     /// @param _minGasLimit minGasLimit
@@ -73,9 +74,10 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
-        uint256 _editedAmount,
+        uint256 _editedctAmount,
         uint256 _salecount,
         uint256 _l2chainId,
         uint32 _minGasLimit,
@@ -83,7 +85,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     )
         external
         payable
-        onlyEOA
+        onlyEOA  
         nonReentrant
     {
         uint256 thisChainId = _getChainID();
@@ -91,20 +93,21 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             _requestor,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match");
-        require(successCT[l2HashValue] == false, "already sold");
-        
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already sold");
+        require(_editedctAmount == editCtAmount[l2HashValue], "CT: EditedctAmount not match");
+
         uint256 ctAmount = _initialctAmount;
 
-        if (_editedAmount > 0) {
-            require(editCtAmount[l2HashValue] == _editedAmount, "The edited amount does not match");
-            ctAmount = _editedAmount;
+        if (editCtAmount[l2HashValue] > 0) {
+            ctAmount = editCtAmount[l2HashValue];
         }
 
         bytes memory message;
@@ -118,7 +121,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
         
         provideAccount[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
         
         IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
@@ -126,21 +129,32 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _minGasLimit
         );
 
-        if (chainData[_l2chainId].l1TON == _l1token) {
-            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
-            IERC20(_l1token).safeTransfer(_requestor,ctAmount);
-        } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
-            require(msg.value == ctAmount, "CT: ETH need same amount");
-            (bool sent, ) = payable(_requestor).call{value: msg.value}("");
-            require(sent, "claim fail");
+        // if (chainData[_l2chainId].l1TON == _l1token) {
+        //     IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
+        //     IERC20(_l1token).safeTransfer(_requestor,ctAmount);
+        // } else if (chainData[_l2chainId].legacyERC20ETH == _l1token) {
+        //     require(msg.value == ctAmount, "CT: ETH need same amount");
+        //     (bool sent, ) = payable(_requestor).call{value: msg.value}("");
+        //     require(sent, "claim fail");
+        // } else {
+        //     IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
+        // }
+
+
+        if(NATIVE_TOKEN == _l1token){
+            require(msg.value == ctAmount, "CT: Need to insert the exact amount");
+            (bool sent, ) = payable(_receiver).call{value: msg.value, gas: 51000}("");
+            require(sent, "CT: Claim fail");
         } else {
-            IERC20(_l1token).safeTransferFrom(msg.sender, _requestor, ctAmount);
+            IERC20(_l1token).safeTransferFrom(msg.sender, address(this), ctAmount);
+            IERC20(_l1token).safeTransfer(_receiver, ctAmount);
         }
 
         emit ProvideCT(
             _l1token,
             _l2token,
             _requestor,
+            _receiver,
             msg.sender,
             _totalAmount,
             ctAmount,
@@ -149,6 +163,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _hash
         );
     }
+
 
     /// @notice If provide is successful in L1 but the transaction fails in L2, this is a function that can recreate the transaction in L2.
     /// @param _salecount Number generated upon request
@@ -161,12 +176,14 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         uint32 _minGasLimit,
         bytes32 _hash
     )
+    
+    
         external
         onlyEOA
         nonReentrant
     {
-        require(successCT[_hash] == true, "not provide");
-        require(provideAccount[_hash] != address(0), "not provide");
+        require(completedCT[_hash] == true, "CT: Is not yet completed");
+        require(provideAccount[_hash] != address(0), "CT: Provider is not found");
         
         uint256 ctAmount;
         if (editCtAmount[_hash] > 0) {
@@ -195,10 +212,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the cancel in L1.
-    ///         And Here, there is no need to input a hash value and check it, 
-    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
+    /// @param _receiver Address that would receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _salecount Number generated upon request
@@ -208,6 +224,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     function cancel( 
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _salecount,
@@ -225,14 +242,15 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
             _l2chainId,
             thisChainId
         );
-        require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(l2HashValue == _hash, "CT: Hash values do not match.");
+        require(completedCT[l2HashValue] == false, "CT: Already completed");
 
         bytes memory message;
 
@@ -245,7 +263,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         );
 
         cancelL1[l2HashValue] = msg.sender;
-        successCT[l2HashValue] = true;
+        completedCT[l2HashValue] = true;
 
         IL1CrossDomainMessenger(chainData[_l2chainId].crossDomainMessenger).sendMessage(
             chainData[_l2chainId].l2CrossTradeContract, 
@@ -256,7 +274,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         emit L1CancelCT(
             _l1token,
             _l2token,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount, 
             _salecount,
             _l2chainId,
@@ -281,8 +300,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         nonReentrant
     {
         address cancelL1Address = cancelL1[_hash];
-        require(successCT[_hash] == true, "not cancel");
-        require(cancelL1Address != address(0), "not cancel");
+        require(completedCT[_hash] == true, "CT: Is not yet canceled");
+        require(cancelL1Address != address(0), "CT: CancelL1Address is not found");
         bytes memory message;
 
         message = makeEncodeWithSignature(
@@ -305,10 +324,9 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     ///         Even if it does not match the request made in L2, 
     ///         the transaction in L1 will pass if only the hash value of the input information matches. 
     ///         Please be aware of double-check the request made in L2 and execute the editFee in L1.
-    ///         And Here, there is no need to input a hash value and check it, 
-    ///         but in order to reduce any accidents, we input a hash value and check it.
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
+    /// @param _receiver Address that would receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _initialctAmount ctAmount requested when creating the initial request
     /// @param _editedctAmount The amount that the requester requested to edit
@@ -318,6 +336,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     function editFee(
         address _l1token,
         address _l2token,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _initialctAmount,
         uint256 _editedctAmount,
@@ -334,6 +353,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             _l1token,
             _l2token,
             msg.sender,
+            _receiver,
             _totalAmount,
             _initialctAmount,
             _salecount,
@@ -341,7 +361,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             thisChainId
         );
         require(l2HashValue == _hash, "Hash values do not match.");
-        require(successCT[l2HashValue] == false, "already sold");
+        require(completedCT[l2HashValue] == false, "already sold");
         require(_editedctAmount > 0, "ctAmount need nonZero");
         
         editCtAmount[l2HashValue] = _editedctAmount;
@@ -349,7 +369,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         emit EditCT(
             _l1token,
             _l2token,
-            msg.sender, 
+            msg.sender,
+            _receiver,
             _totalAmount,
             _editedctAmount, 
             _salecount,
@@ -362,6 +383,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
     /// @param _l1token Address of requested l1token
     /// @param _l2token Address of requested l2token
     /// @param _requestor This is the address of the request.
+    /// @param _receiver Address that will receive the tokens on L1
     /// @param _totalAmount Total amount requested by l2
     /// @param _ctAmount Amount to be received from L1
     /// @param _saleCount Number generated upon request
@@ -371,6 +393,7 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
         address _l1token,
         address _l2token,
         address _requestor,
+        address _receiver,
         uint256 _totalAmount,
         uint256 _ctAmount,
         uint256 _saleCount,
@@ -385,7 +408,8 @@ contract L1CrossTrade is ProxyStorage, AccessibleCommon, L1CrossTradeStorage, Re
             abi.encode(
                 _l1token, 
                 _l2token, 
-                _requestor, 
+                _requestor,
+                _receiver,
                 _totalAmount, 
                 _ctAmount, 
                 _saleCount, 

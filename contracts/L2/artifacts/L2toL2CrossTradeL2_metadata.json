@@ -1,0 +1,1428 @@
+{
+	"compiler": {
+		"version": "0.8.24+commit.e11b9ed9"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AccessControlBadConfirmation",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "neededRole",
+						"type": "bytes32"
+					}
+				],
+				"name": "AccessControlUnauthorizedAccount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ReentrancyGuardReentrantCall",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "CancelCT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "_hashValue",
+						"type": "bytes32"
+					}
+				],
+				"name": "NonRequestCT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_provider",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "ProviderClaimCT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "_hashValue",
+						"type": "bytes32"
+					}
+				],
+				"name": "RequestCT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "previousAdminRole",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "newAdminRole",
+						"type": "bytes32"
+					}
+				],
+				"name": "RoleAdminChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					}
+				],
+				"name": "RoleGranted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					}
+				],
+				"name": "RoleRevoked",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "ADMIN_ROLE",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "DEFAULT_ADMIN_ROLE",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "POLICY_ROLE",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "addAdmin",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "aliveImplementation",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_msgSender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_salecount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "cancelCT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "chainData",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "l1CrossTradeContract",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "l1TON",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_from",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "claimCT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "crossDomainMessenger",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "dealData",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "provider",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "l2TargetChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "hashValue",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					}
+				],
+				"name": "deleteToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_requestor",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_saleCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					}
+				],
+				"name": "getHash",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					}
+				],
+				"name": "getRoleAdmin",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "grantRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "hasRole",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "isAdmin",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "legacyERC20ETH",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "pauseProxy",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "proxyImplementation",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "registerCheck",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2SourceChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					}
+				],
+				"name": "registerToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "removeAdmin",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "callerConfirmation",
+						"type": "address"
+					}
+				],
+				"name": "renounceRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					}
+				],
+				"name": "requestNonRegisteredToken",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_l1token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2SourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_l2TargetToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_ctAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l1ChainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_l2TargetChainId",
+						"type": "uint256"
+					}
+				],
+				"name": "requestRegisteredToken",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "role",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "revokeRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "saleCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes4",
+						"name": "",
+						"type": "bytes4"
+					}
+				],
+				"name": "selectorImplementation",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes4",
+						"name": "interfaceId",
+						"type": "bytes4"
+					}
+				],
+				"name": "supportsInterface",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newAdmin",
+						"type": "address"
+					}
+				],
+				"name": "transferAdmin",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"AccessControlBadConfirmation()": [
+					{
+						"details": "The caller of a function is not the expected one. NOTE: Don't confuse with {AccessControlUnauthorizedAccount}."
+					}
+				],
+				"AccessControlUnauthorizedAccount(address,bytes32)": [
+					{
+						"details": "The `account` is missing a role."
+					}
+				],
+				"ReentrancyGuardReentrantCall()": [
+					{
+						"details": "Unauthorized reentrant call."
+					}
+				]
+			},
+			"events": {
+				"RoleAdminChanged(bytes32,bytes32,bytes32)": {
+					"details": "Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted signaling this."
+				},
+				"RoleGranted(bytes32,address,address)": {
+					"details": "Emitted when `account` is granted `role`. `sender` is the account that originated the contract call, an admin role bearer except when using {AccessControl-_setupRole}."
+				},
+				"RoleRevoked(bytes32,address,address)": {
+					"details": "Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)"
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"addAdmin(address)": {
+					"details": "add admin",
+					"params": {
+						"account": "address to add"
+					}
+				},
+				"cancelCT(address,uint256,uint256,uint256,bytes32)": {
+					"params": {
+						"_hash": "Hash value generated upon request",
+						"_l1ChainId": "chainId of l1token",
+						"_l2TargetChainId": "chainId of l2Target",
+						"_msgSender": "Address where cancellation was requested",
+						"_salecount": "Number generated upon request"
+					}
+				},
+				"claimCT(address,uint256,uint256,uint256,uint256,bytes32)": {
+					"params": {
+						"_ctAmount": "Amount paid by L1",
+						"_from": "provider Address",
+						"_hash": "Hash value generated upon request",
+						"_l1ChainId": "chainId of l1token",
+						"_l2TargetChainId": "chainId of l2Target",
+						"_saleCount": "Number generated upon request"
+					}
+				},
+				"deleteToken(address,address,address,uint256,uint256,uint256)": {
+					"params": {
+						"_l1ChainId": "chainId of l1token",
+						"_l1token": "l1token Address",
+						"_l2SourceChainId": "chainId of l2Source",
+						"_l2SourceToken": "_l2SourceToken Address",
+						"_l2TargetChainId": "chainId of l2Target",
+						"_l2TargetToken": "_l2TargetToken Address"
+					}
+				},
+				"getHash(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_ctAmount": "Amount provided to L2",
+						"_l1ChainId": "Destination chainID",
+						"_l1token": "l1token Address",
+						"_l2SourceChainId": "The chainId where this contract was deployed",
+						"_l2SourceToken": "l2SourceToken Address",
+						"_l2TargetChainId": "The chainId where this contract was deployed",
+						"_l2TargetToken": "l2TargetToken Address",
+						"_requestor": "requester's address",
+						"_saleCount": "Number generated upon request",
+						"_totalAmount": "Amount provided to L2"
+					}
+				},
+				"getRoleAdmin(bytes32)": {
+					"details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+				},
+				"grantRole(bytes32,address)": {
+					"details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event."
+				},
+				"hasRole(bytes32,address)": {
+					"details": "Returns `true` if `account` has been granted `role`."
+				},
+				"isAdmin(address)": {
+					"details": "whether admin",
+					"params": {
+						"account": "address to check"
+					}
+				},
+				"registerToken(address,address,address,uint256,uint256,uint256)": {
+					"params": {
+						"_l1ChainId": "chainId of l1token",
+						"_l1token": "l1token Address",
+						"_l2SourceChainId": "chainId of l2Source",
+						"_l2SourceToken": "_l2SourceToken Address",
+						"_l2TargetChainId": "chainId of l2Target",
+						"_l2TargetToken": "_l2TargetToken Address"
+					}
+				},
+				"removeAdmin(address)": {
+					"details": "remove admin",
+					"params": {
+						"account": "address to remove"
+					}
+				},
+				"renounceRole(bytes32,address)": {
+					"details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event."
+				},
+				"requestNonRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_ctAmount": "Amount to be received from L1",
+						"_l1ChainId": "chainId of l1token",
+						"_l1token": "l1token Address",
+						"_l2SourceToken": "_l2SourceToken Address",
+						"_l2TargetChainId": "chainId of l2TargetToken",
+						"_l2TargetToken": "_l2TargetToken Address",
+						"_totalAmount": "Amount provided to L2"
+					}
+				},
+				"requestRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_ctAmount": "Amount to be received from L1",
+						"_l1ChainId": "chainId of l1token",
+						"_l1token": "l1token Address",
+						"_l2SourceToken": "_l2SourceToken Address",
+						"_l2TargetChainId": "chainId of l2TargetToken",
+						"_l2TargetToken": "_l2TargetToken Address",
+						"_totalAmount": "Amount provided to L2"
+					}
+				},
+				"revokeRole(bytes32,address)": {
+					"details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event."
+				},
+				"supportsInterface(bytes4)": {
+					"details": "See {IERC165-supportsInterface}."
+				},
+				"transferAdmin(address)": {
+					"details": "transfer admin",
+					"params": {
+						"newAdmin": "new admin address"
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"cancelCT(address,uint256,uint256,uint256,bytes32)": {
+					"notice": "When canceling a function called from L1, the amount is given to the requester."
+				},
+				"claimCT(address,uint256,uint256,uint256,uint256,bytes32)": {
+					"notice": "When providing a function called from L1, the amount is given to the provider."
+				},
+				"deleteToken(address,address,address,uint256,uint256,uint256)": {
+					"notice": "Register L1token and L2token and use them in requestRegisteredToken"
+				},
+				"getHash(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"notice": "Function that calculates hash value in L2CrossTradeContract"
+				},
+				"registerToken(address,address,address,uint256,uint256,uint256)": {
+					"notice": "Register L1token and L2token and use them in requestRegisteredToken"
+				},
+				"requestNonRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
+					"notice": "Token transaction request not registered in register"
+				},
+				"requestRegisteredToken(address,address,address,uint256,uint256,uint256,uint256)": {
+					"notice": "Token transaction request registered in register"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/L2/L2toL2CrossTradeL2.sol": "L2toL2CrossTradeL2"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100000000
+		},
+		"remappings": [],
+		"viaIR": true
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/AccessControl.sol": {
+			"keccak256": "0xa0e92d42942f4f57c5be50568dac11e9d00c93efcb458026e18d2d9b9b2e7308",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://46326c0bb1e296b67185e81c918e0b40501b8b6386165855df0a3f3c634b6a80",
+				"dweb:/ipfs/QmTwyrDYtsxsk6pymJTK94PnEpzsmkpUxFuzEiakDopy4Z"
+			]
+		},
+		"@openzeppelin/contracts/access/IAccessControl.sol": {
+			"keccak256": "0xb6b36edd6a2999fd243ff226d6cbf84bd71af2432bbd0dfe19392996a1d9cb41",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1fd2f35495652e57e3f99bc6c510bc5f7dd398a176ea2e72d8ed730aebc6ca26",
+				"dweb:/ipfs/QmTQV6X4gkikTib49cho5iDX3JvSQbdsoEChoDwrk3CbbH"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+			"keccak256": "0x9e8778b14317ba9e256c30a76fd6c32b960af621987f56069e1e819c77c6a133",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1777404f1dcd0fac188e55a288724ec3c67b45288e49cc64723e95e702b49ab8",
+				"dweb:/ipfs/QmZFdC626GButBApwDUvvTnUzdinevC3B24d7yyh57XkiA"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+			"keccak256": "0x4296879f55019b23e135000eb36896057e7101fb7fb859c5ef690cf14643757b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://87b3541437c8c443ccd36795e56a338ed12855eec17f8da624511b8d1a7e14df",
+				"dweb:/ipfs/QmeJQCtZrQjtJLr6u7ZHWeH3pBnjtLWzvRrKViAi7UZqxL"
+			]
+		},
+		"contracts/L2/L2toL2CrossTradeL2.sol": {
+			"keccak256": "0x879c903f966edf8aba871f536f44ac09c9120d22860069cfd55a5127307812de",
+			"license": "Unlicense",
+			"urls": [
+				"bzz-raw://283f786f4b7265bac7517f6f77873e1bf6947f0f46c56f5569c8a67ec9a1d719",
+				"dweb:/ipfs/QmWf4ZyuH6rJaBjFg7emB7qgR2Ap3dEwwrLeb2XfEUyYvF"
+			]
+		},
+		"contracts/L2/L2toL2CrossTradeStorage.sol": {
+			"keccak256": "0xd88161a10827f2e84bcc4b699ee6e361d9f66a58ddb9988845fe4755b9753a00",
+			"license": "Unlicense",
+			"urls": [
+				"bzz-raw://47d8ebe7b8e28db898f1f84a82b6c3839b39992ca8633bbc477400bf8ddc24be",
+				"dweb:/ipfs/QmZ6UHXjQLrpF8zVJwT4CCTj8726XyHvud2XHuGJsMADMz"
+			]
+		},
+		"contracts/common/AccessRoleCommon.sol": {
+			"keccak256": "0xcdd2dcbdf96134ffff98d7637a8bb0efd18c03d7c4697e6a1da4157a6aec6293",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://06e8d40177c57ad9b312c6e2ee0408bbc25f405f1b36056580949086e55a31c7",
+				"dweb:/ipfs/QmZa1mxeGPcmSSxbJtvUTSFaYg3paAFhmmf9dZ44PRJN6J"
+			]
+		},
+		"contracts/common/AccessibleCommon.sol": {
+			"keccak256": "0x5dc1423a2eae20cb7bd05da7ce63733489fbf58a9e7893039c2e88991c4c9760",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c0733e0099198bd28ec341c493f74ad29fb8673ee085e54902345ba1b7bb202a",
+				"dweb:/ipfs/QmQwBksv4oCaThyoR7y1u8XZdyjhdZkAeD7gahfcig3Uvw"
+			]
+		},
+		"contracts/interfaces/IERC20.sol": {
+			"keccak256": "0x4dfcbed37adf9f54e4544d13382814f51c9ef5d52ca4277d2080f988857f3b23",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://0d5912aefaae898fe23ca62fcacbe89a04ce456b06a13e735f8e6174ea3dd59e",
+				"dweb:/ipfs/QmcmKRNAtnBVFADpf5mjuq6e6rLgYLjUMHaRkn3YY3mdtG"
+			]
+		},
+		"contracts/interfaces/IL2CrossDomainMessenger.sol": {
+			"keccak256": "0x09ccbb8f6988976ad5f7e2c76047bf0c573d2b9c57b8705306a7bf3c0624957b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1b1495b279c979faca08447dea4f96685df7f709770ec6d71dad68b0023a8640",
+				"dweb:/ipfs/QmQTCkSbji1C5Pk5XmVJnPNXdeWrvyk8Pq2YW6N11igTKD"
+			]
+		},
+		"contracts/interfaces/IOptimismMintableERC20.sol": {
+			"keccak256": "0x6f8133b39efcbcbd5088f195dfacf1bedc3146508429c3865443909af735a04c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://adc36971e2e120458769f050428d9d2b0504516660345020c2521ee46e6d8abf",
+				"dweb:/ipfs/QmPbFusQkZgGKpU8Fv5JoqL4oVeJtM3yqnhRGLY9eZT5zZ"
+			]
+		},
+		"contracts/libraries/SafeERC20.sol": {
+			"keccak256": "0x778abe92595c692abcf3bec8b72f4491746626d1a057c76b97c8d1a7d759f7b0",
+			"license": "AGPL-3.0-only",
+			"urls": [
+				"bzz-raw://466b8a5fae532ca4fc34bff92b0f23f3abe6689f5dbbb1aeb6ef2351c00e1f54",
+				"dweb:/ipfs/QmZr7LTTXLdDzfoAJtbKFfCDLmq4hX9r2dycDiEMdzk2Wk"
+			]
+		},
+		"contracts/proxy/ProxyStorage.sol": {
+			"keccak256": "0x05b29ca0f868dbf7f4659867af0e3a30e224269e18fee67264e07c7c758caf00",
+			"license": "Unlicense",
+			"urls": [
+				"bzz-raw://e18a141dcb63182f6a5b51975fc2a02a76bc1214db82e816f4e3f08123ef871d",
+				"dweb:/ipfs/QmQLvpZ6KKbeEP92z6xz9MiQ96P36rQCqeBoyL17XwY42G"
+			]
+		},
+		"contracts/utils/ReentrancyGuard.sol": {
+			"keccak256": "0x6fa5286659bd67699ea8aa0a76fd1c5a71ac2536ea0b5c62b8e27b99cdca2d60",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3a21c361ede524ea7564f2eddaaa723e2d1860df78a9e4f33eb5edeab68f2486",
+				"dweb:/ipfs/QmR27gtixYj5yyAjeVyiP5oUkFxezKMRrt2UZe2PCrxu22"
+			]
+		}
+	},
+	"version": 1
+}

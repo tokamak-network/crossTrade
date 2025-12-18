@@ -1,0 +1,28 @@
+[profile.default]
+src = "contracts"
+out = "artifacts"
+libs = ["node_modules", "lib"]
+via_ir = true
+optimizer = true
+optimizer_runs = 200
+optimizer_details = { yul = true }
+env_file = ".env"
+remappings = [
+    "@eth-optimism/=node_modules/@eth-optimism/",
+    "@openzeppelin/=node_modules/@openzeppelin/",
+    "@tokamak-network/=node_modules/@tokamak-network/",
+    "hardhat/=node_modules/hardhat/",
+]
+
+
+[lint]
+lint_on_build = false
+
+[rpc_endpoints]
+thanosSepolia = "https://rpc.thanos-sepolia.tokamak.network"
+optimismSepolia = "https://sepolia.optimism.io"
+
+[etherscan]
+thanosSepolia = { key = "abcd", url = "https://explorer.thanos-sepolia.tokamak.network/api" }
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

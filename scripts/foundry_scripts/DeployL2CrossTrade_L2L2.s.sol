@@ -1,0 +1,54 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Script.sol";
+import "../../contracts/L2/L2toL2CrossTradeProxy.sol";
+import "../../contracts/L2/L2toL2CrossTradeL2.sol";
+
+contract DeployL2CrossTrade_L2L2 is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+
+        console.log("Deploying L2 CrossTrade Proxy...");
+        L2toL2CrossTradeProxy proxy = new L2toL2CrossTradeProxy();
+        console.log("L2CrossTradeProxy deployed at:", address(proxy));
+
+        console.log("Deploying L2 CrossTrade Logic...");
+        L2toL2CrossTradeL2 logic = new L2toL2CrossTradeL2();
+        console.log("L2toL2CrossTradeLogic deployed at:", address(logic));
+
+        console.log("Upgrading proxy to logic...");
+        proxy.upgradeTo(address(logic));
+        console.log("Proxy upgraded successfully");
+
+        // Verify the upgrade worked
+        address implementation = proxy.implementation();
+        console.log("Current implementation address:", implementation);
+        require(implementation == address(logic), "Upgrade failed - implementation mismatch");
+
+  
+        // Initialize the proxy
+        console.log("Initializing proxy...");
+        address crossDomainMessanger = vm.envAddress("L2_CROSS_DOMAIN_MESSENGER");
+        proxy.initialize(crossDomainMessanger);
+        console.log("Proxy initialized with crossDomainMessanger:", crossDomainMessanger);
+
+
+        vm.stopBroadcast();
+    }
+} 
+
+// PRIVATE_KEY=0X1233 forge script script/foundry_scripts/DeployL2CrossTrade_L2L2.s.sol:DeployL2CrossTrade_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast --verify --etherscan-api-key apykey --chain thanosSepolia
+// PRIVATE_KEY=0X1233 forge script scripts/foundry_scripts/DeployL2CrossTrade_L2L2.s.sol:DeployL2CrossTrade_L2L2 --rpc-url https://rpc.thanos-sepolia.tokamak.network --broadcast network thanosSepolia
+
+// forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --etherscan-api-key APYKEY --chain thanosSepolia
+// forge verify-contract 0x0000000000000000000000000000000000000000 contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --etherscan-api-key APYKEY --chain thanosSepolia
+
+// forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x9C7AECe87D15209C805FC9BEea260fc20918669C contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2 --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
+// forge verify-contract --rpc-url https://rpc.thanos-sepolia.tokamak.network 0x2d59F484c8bb2d972D66b687D9fd62E1e2f8720B contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy --verifier blockscout --verifier-url https://explorer.thanos-sepolia.tokamak.network/api
+
+// forge verify-contract --etherscan-api-key apiKey --chain optimism-sepolia --compiler-version 0.8.24 --optimizer-runs 200 --via-ir 0x68664Cf56aD3B2c651953c392642fcf8DeF3b346 contracts/L2/L2toL2CrossTradeL2.sol:L2toL2CrossTradeL2
+// forge verify-contract --etherscan-api-key apiKey --chain optimism-sepolia --compiler-version 0.8.24 --optimizer-runs 200 --via-ir 0x68664Cf56aD3B2c651953c392642fcf8DeF3b346 contracts/L2/L2toL2CrossTradeProxy.sol:L2toL2CrossTradeProxy
+
+// ?? how do you verify the contract on a L2 SDK network? 

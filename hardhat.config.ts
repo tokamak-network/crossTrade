@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
       },
       {
         version: '0.4.17'
-      }
+      },
     ],
     settings: {
       // evmVersion: "cancun",
@@ -53,12 +53,35 @@ const config: HardhatUserConfig = {
         'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       ],
     },
-    sepolia: {
-      url: `${process.env.ETH_NODE_URI_sepolia}`,
+    arbitrumSepolia: {
+      url: `https://endpoints.omniatech.io/v1/arbitrum/sepolia/public`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
+    sepolia: {
+      url: `https://eth-sepolia.public.blastapi.io`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+      gasPrice:"auto"
+    },
     titanSepolia: {
-      url: 'https://rpc.thanos-sepolia-test.tokamak.network',
+      url: 'https://rpc.titan-sepolia.tokamak.network',
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    thanosSepolia:{
+      url: 'https://rpc.thanos-sepolia.tokamak.network',
+      accounts: [`${process.env.PRIVATE_KEY}`]
+    },
+    optimismSepolia: {
+      url: `https://sepolia.optimism.io`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    ge11SDKSepolia: {
+      url: "http://k8s-opgeth-77100d84c4-149585002.eu-west-1.elb.amazonaws.com",
+      chainId: 111551157350,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    ge15SDKSepolia: {
+      url: "http://k8s-opgeth-550f030b78-906572462.eu-west-2.elb.amazonaws.com",
+      chainId: 111551216867,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
     devnetL1: {
@@ -113,12 +136,8 @@ const config: HardhatUserConfig = {
         'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e', // 19
       ],
     },
-    titan: {
-      url: 'http://localhost:9545',
-      accounts: [
-        'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-      ],
-    }
+   
+
   },
   gasReporter: {
     // enabled: true,
@@ -135,6 +154,62 @@ const config: HardhatUserConfig = {
     tokenPrice: "1",       // ETH per ETH
     token: "ETH"
   },
+
+  etherscan: {
+
+    apiKey: { 
+      optimismSepolia: `${process.env.OP_SEPOLIA_APY_KEY}`,
+      titanSepolia: "abcde",
+      thanosSepolia: "abcde",
+      bscTestnet: "abcd",
+      sepolia: `${process.env.SEPOLIA_APY_KEY}`,
+      namSDKSepolia: "abcde",
+      ge11SDKSepolia: "abcde",
+      ge15SDKSepolia: "abcde",
+    },
+    customChains: [
+      {
+        network: "optimismSepolia",
+        chainId: 11155420,
+        urls: {
+          apiURL: "https://api-sepolia-optimistic.etherscan.io/v2/api?chainid=11155420",
+          browserURL: "https://sepolia-optimistic.etherscan.io"
+        },
+      },
+      {
+        network: "thanosSepolia",
+        chainId: 111551119090,
+        urls: {
+            apiURL: "https://explorer.thanos-sepolia.tokamak.network/api",
+            browserURL: "https://explorer.thanos-sepolia.tokamak.network/",
+        },
+      },
+      {
+        network: "sepolia",
+        chainId: 11155111,
+        urls: {
+            apiURL: "https://api-sepolia.etherscan.io/api",
+            browserURL: "https://sepolia.etherscan.io/",
+        },
+      },
+      {
+        network: "ge11SDKSepolia",
+        chainId: 111551157350,
+        urls: {
+          apiURL: "http://k8s-blockscout-a9b37cd19a-1254170311.eu-west-1.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-a9b37cd19a-1254170311.eu-west-1.elb.amazonaws.com/"  // Add if there's an explorer
+        }
+      },
+      {
+        network: "ge15SDKSepolia",
+        chainId: 111551216867,
+        urls: {
+          apiURL: "http://k8s-blockscout-c2810d3dad-616867834.eu-west-2.elb.amazonaws.com/api",  // Add if there's an explorer API
+          browserURL: "http://k8s-blockscout-c2810d3dad-616867834.eu-west-2.elb.amazonaws.com/"  // Add if there's an explorer
+        }
+      }
+    ]
+  }
 };
 
 export default config;

@@ -1,20 +1,20 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
 contract L1CrossTradeStorage {
 
     uint8 internal constant CLAIM_CT = 1;
     uint8 internal constant CANCEL_CT = 2;
+    address constant NATIVE_TOKEN = address(0);
+    address public usdcAddress;
 
     struct ChainIdData {
         address crossDomainMessenger;
         address l2CrossTradeContract;
-        address legacyERC20ETH;
-        address l1TON;
     }
 
     //hashValue => bool -> Check whether provision has been made using the hash value.
-    mapping(bytes32 => bool) public successCT;
+    mapping(bytes32 => bool) public completedCT;
     //hashValue => address -> Store address requesting cancel using hash value
     mapping(bytes32 => address) public cancelL1;
     //hashValue => address -> Record the address provided using the hash value
