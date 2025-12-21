@@ -872,7 +872,17 @@ export const RequestPool = () => {
                     {/* Provide On Column - Provider sends ctAmount on Ethereum (L1) */}
                     <div className="table-cell provide-col">
                       <div className="amount-info">
-                        <span className="amount-value">{provideAmount}</span>
+                        <div className="amount-row">
+                          <span className="amount-value">{provideAmount}</span>
+                          {data.editedCtAmount && data.editedCtAmount !== data.ctAmount && (
+                            <span
+                              className="edited-badge"
+                              title={`Original: ${formatTokenAmount(data.ctAmount, data.l2SourceToken)}`}
+                            >
+                              EDITED
+                            </span>
+                          )}
+                        </div>
                         <div className="chain-info">
                           <span className="chain-icon">
                             <Image src={getChainLogo('Ethereum')} alt="Ethereum" width={16} height={16} style={{ borderRadius: '50%' }} />
@@ -1247,10 +1257,27 @@ export const RequestPool = () => {
           gap: 4px;
         }
 
+        .amount-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
         .amount-value {
           color: #ffffff;
           font-size: 16px;
           font-weight: 600;
+        }
+
+        .edited-badge {
+          background: #f59e0b;
+          color: #000000;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          cursor: help;
         }
 
         .chain-info {
