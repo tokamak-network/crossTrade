@@ -14,7 +14,7 @@ import {
   getContractAddressFor_L2_L1,
   L2_L1_PROVIDE_CT_ABI
 } from '@/config/contracts'
-import { getChainLogo } from '@/utils/chainLogos'
+import { getChainLogo, getExplorerUrl } from '@/utils/chainLogos'
 
 // ERC20 ABI for approve and allowance functions
 const ERC20_ABI = [
@@ -284,7 +284,12 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   const provideChain = getChainName(BigInt(11155111)) // Always Ethereum for L1
   const rewardChain = requestData.chainName // Provider gets reward on SOURCE chain (where request originated)
   const sourceChain = requestData.chainName // Source chain from request data
-  const tokenSymbol = getTokenSymbol(requestData.l2SourceToken) // Get actual token symbol
+  const tokenSymbol = getTokenSymbol(requestData.l2SourceToken)
+
+  // Calculate profit percentage (what provider gains as % of what they sent)
+  const profitPercentage = actualCtAmount > BigInt(0)
+    ? Number(((requestData.totalAmount - actualCtAmount) * BigInt(10000)) / actualCtAmount) / 100
+    : 0
 
   // Calculate cross chain path - source chain to destination chain
   const crossChainPath = `${sourceChain} → ${getChainName(requestData.l2DestinationChainId)}`
@@ -512,16 +517,6 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
           <div className="chain-section">
             <div className="section-header">
               <span className="section-label">Provide Chain</span>
-              {actualCtAmount !== requestData.ctAmount && (
-                <span style={{ 
-                  fontSize: '11px', 
-                  color: '#f59e0b', 
-                  fontWeight: '600',
-                  marginLeft: '8px'
-                }}>
-                  📝 EDITED
-                </span>
-              )}
               <span className="help-icon">ⓘ</span>
             </div>
             <div className="amount-display">
@@ -546,9 +541,8 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
             </div>
             <div className="amount-display">
               <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
-              <div className="chain-badge reward">
+              <div className="chain-badge">
                 <span className="chain-icon">{renderChainIcon(rewardChain)}</span>
-                <span className="reward-symbol">🔥</span>
               </div>
             </div>
             <div className="chain-name-display">{rewardChain}</div>
@@ -642,23 +636,45 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="success-modal-overlay" onClick={() => {
-          setShowSuccessModal(false)
-          onClose()
-        }}>
+        <div className="success-modal-overlay" onClick={() => { setShowSuccessModal(false); onClose() }}>
           <div className="success-modal" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => {
-              setShowSuccessModal(false)
-              onClose()
-            }} className="close-btn-success">✕</button>
-            <h3>Transaction Confirmed!</h3>
-            <div className="success-checkmark">✓</div>
-            <p>Your provide transaction has been confirmed</p>
-            {hash && (
-              <div className="tx-hash">
-                <small>TX: {hash}</small>
+            <button onClick={() => { setShowSuccessModal(false); onClose() }} className="success-close-btn" aria-label="Close">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            <div className="success-glow-container">
+              <div className="success-glow"></div>
+              <div className="success-check-circle">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path className="check-path" d="M4 12L9 17L20 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
+            </div>
+
+            <h3 className="success-heading">Liquidity Provided</h3>
+
+            <div className="reward-display">
+              <span className="reward-amount">{rewardAmount} {tokenSymbol}</span>
+              {profitPercentage > 0 && (
+                <span className="reward-profit">+{profitPercentage.toFixed(2)}% profit</span>
+              )}
+              <span className="reward-chain">on {rewardChain}</span>
+            </div>
+
+            {hash && (
+              <a href={getExplorerUrl(l1ChainId, hash)} target="_blank" rel="noopener noreferrer" className="tx-hash-link">
+                <span>{hash.slice(0, 14)}...{hash.slice(-12)}</span>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 2L2 10M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
             )}
+
+            <button onClick={() => { setShowSuccessModal(false); onClose() }} className="done-btn">
+              Done
+            </button>
           </div>
         </div>
       )}
@@ -762,14 +778,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         .chain-badge {
           display: flex;
           align-items: center;
-          gap: 4px;
-          background: #2563eb;
-          padding: 6px 10px;
-          border-radius: 20px;
-        }
-
-        .chain-badge.reward {
-          background: #2563eb;
+          gap: 6px;
         }
 
         .chain-icon {
@@ -1004,14 +1013,11 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
           background: #d97706;
         }
 
-        /* Success Modal Styles */
+        /* Success Modal */
         .success-modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.9);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.85);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1019,71 +1025,139 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         }
 
         .success-modal {
-          background: #1a1a1a;
-          border: 1px solid #333;
+          background: #0d0d0d;
           border-radius: 16px;
-          padding: 32px;
+          padding: 32px 28px 28px;
+          width: 100%;
+          max-width: 360px;
           text-align: center;
-          width: 90%;
-          max-width: 400px;
           position: relative;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
         }
 
-        .close-btn-success {
+        .success-close-btn {
           position: absolute;
-          top: 12px;
-          right: 12px;
-          background: none;
+          top: 8px;
+          right: 8px;
+          background: transparent;
           border: none;
-          color: #9ca3af;
-          font-size: 20px;
-          cursor: pointer;
+          color: #ffffff;
           padding: 4px;
-          margin: 0;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+        }
+        .success-close-btn:hover { opacity: 1; }
+        .success-close-btn svg { width: 18px; height: 18px; }
+
+        .success-glow-container {
+          position: relative;
+          width: 64px;
+          height: 64px;
+          margin: 0 auto 20px;
         }
 
-        .close-btn-success:hover {
-          color: #ffffff;
+        .success-glow {
+          position: absolute;
+          inset: -8px;
+          background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: glow-pulse 2.5s ease-in-out infinite;
         }
 
-        .success-modal h3 {
-          color: #ffffff;
-          font-size: 24px;
-          font-weight: 600;
-          margin: 0 0 24px 0;
-        }
-
-        .success-checkmark {
-          width: 48px;
-          height: 48px;
-          background: #10b981;
+        .success-check-circle {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 0 auto 24px auto;
+          color: white;
+          box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+        }
+
+        .check-path {
+          stroke-dasharray: 30;
+          stroke-dashoffset: 30;
+          animation: draw-check 0.5s ease forwards 0.2s;
+        }
+
+        @keyframes draw-check { to { stroke-dashoffset: 0; } }
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        .success-heading {
           color: #ffffff;
-          font-size: 24px;
-          font-weight: bold;
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0 0 20px 0;
         }
 
-        .success-modal p {
-          color: #9ca3af;
-          font-size: 16px;
-          margin: 0 0 16px 0;
+        .reward-display {
+          text-align: center;
+          margin-bottom: 24px;
+        }
+        .reward-amount {
+          display: block;
+          font-size: 28px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+        .reward-profit {
+          display: block;
+          color: #4ade80;
+          font-size: 14px;
+          font-weight: 500;
+          margin: 8px 0;
+        }
+        .reward-chain {
+          display: block;
+          color: #6b7280;
+          font-size: 13px;
         }
 
-        .tx-hash {
-          margin-top: 16px;
-          padding: 8px;
-          background: #262626;
+        .tx-hash-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          color: #e5e7eb;
+          font-size: 13px;
+          font-family: monospace;
+          text-decoration: none;
+          margin-bottom: 12px;
+          padding: 12px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 8px;
-          word-break: break-all;
+          box-sizing: border-box;
+        }
+        .tx-hash-link:hover {
+          background: rgba(255, 255, 255, 0.06);
+          color: #ffffff;
         }
 
-        .tx-hash small {
-          color: #9ca3af;
-          font-size: 12px;
+        .done-btn {
+          display: block;
+          width: 100%;
+          padding: 12px;
+          background: #6366f1;
+          color: white;
+          font-size: 14px;
+          font-weight: 500;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          box-sizing: border-box;
+          margin: 0 auto;
+        }
+        .done-btn:hover {
+          background: #5558e3;
         }
       `}</style>
     </div>

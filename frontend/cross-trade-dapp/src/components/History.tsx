@@ -693,11 +693,12 @@ export const History = () => {
         <h1 className="page-title">Transaction History</h1>
         <p className="page-subtitle">View your past cross-trade requests and provides</p>
         
-        {/* Debug info - show which chains are being queried */}
+        {/* Debug info - show which chains are being queried
         <div className="debug-info">
           <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
         </div>
-        
+        */}
+
         <div className="history-wrapper">
           {!userAddress ? (
             <div className="connect-wallet-message">

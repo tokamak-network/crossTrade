@@ -704,12 +704,12 @@ export const RequestPool = () => {
       <div className="content">
         <h1 className="page-title">Cross Trade Requests</h1>
         <p className="page-subtitle">Provide liquidity for a cross trade request and receive it back on L2 with a service fee.</p>
-        
-      //   Debug info - show which chains are being queried
-      //  <div className="debug-info">
-      //    <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
-      //  </div>
-      //  
+
+        {/* Debug info - show which chains are being queried
+        <div className="debug-info">
+          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
+        </div>
+        */}
 
         <div className="pool-container">
           {loading && (
@@ -875,14 +875,6 @@ export const RequestPool = () => {
                       <div className="amount-info">
                         <div className="amount-row">
                           <span className="amount-value">{provideAmount}</span>
-                          {data.editedCtAmount && data.editedCtAmount !== data.ctAmount && (
-                            <span
-                              className="edited-badge"
-                              title={`Original: ${formatTokenAmount(data.ctAmount, data.l2SourceToken)}`}
-                            >
-                              EDITED
-                            </span>
-                          )}
                         </div>
                         <div className="chain-info">
                           <span className="chain-icon">
@@ -1268,17 +1260,6 @@ export const RequestPool = () => {
           color: #ffffff;
           font-size: 16px;
           font-weight: 600;
-        }
-
-        .edited-badge {
-          background: #f59e0b;
-          color: #000000;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          cursor: help;
         }
 
         .chain-info {

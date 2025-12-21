@@ -20,7 +20,8 @@ import {
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
-import { getTokenLogo } from '@/utils/chainLogos'
+import { getTokenLogo, getChainLogo, getExplorerUrl } from '@/utils/chainLogos'
+import Link from 'next/link'
 
 // ERC20 ABI for approve and balanceOf functions
 const ERC20_ABI = [
@@ -678,9 +679,15 @@ export const CreateRequest = () => {
     }
   }, [isApprovalSuccess, isApprovalTxError, isApproving])
 
+  // Debug: Log transaction state changes
+  useEffect(() => {
+    console.log('🔄 Transaction state:', { hash, isConfirming, isSuccess, txError: !!txError, writeError: !!writeError })
+  }, [hash, isConfirming, isSuccess, txError, writeError])
+
   // Handle main transaction states
   useEffect(() => {
     if (isSuccess) {
+      console.log('✅ Transaction confirmed! Hash:', hash)
       setShowConfirmingModal(false)
       setShowConfirmModal(false) // Close confirm modal
       setShowSuccessModal(true)
@@ -692,7 +699,7 @@ export const CreateRequest = () => {
       setShowConfirmingModal(false)
       setIsApproving(false)
     }
-  }, [isSuccess, txError, writeError])
+  }, [isSuccess, txError, writeError, hash])
 
   return (
     <div className="create-request-container">
@@ -826,6 +833,7 @@ export const CreateRequest = () => {
                 <input
                   type="number"
                   min="0"
+                  step="any"
                   value={sendAmount}
                   onChange={(e) => setSendAmount(e.target.value)}
                   placeholder="10.01"
@@ -934,6 +942,7 @@ export const CreateRequest = () => {
                   <input
                     type="number"
                     min="0"
+                    step="any"
                     value={customFee}
                     onChange={(e) => setCustomFee(e.target.value)}
                     placeholder="1"
@@ -992,11 +1001,17 @@ export const CreateRequest = () => {
             <div className="confirm-details">
               <div className="detail-row">
                 <span className="detail-label">From</span>
-                <span className="detail-value">🟣 {requestFrom}</span>
+                <span className="detail-value">
+                  <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
+                  {requestFrom}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">To</span>
-                <span className="detail-value">🟢 {requestTo}</span>
+                <span className="detail-value">
+                  <Image src={getChainLogo(requestTo)} alt={requestTo} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
+                  {requestTo}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Send</span>
@@ -1091,16 +1106,78 @@ export const CreateRequest = () => {
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
-          <div className="status-modal">
-            <button onClick={() => setShowSuccessModal(false)} className="close-btn">✕</button>
-            <h3>Transaction Confirmed!</h3>
-            <div className="success-checkmark">✓</div>
-            <p>See your transaction history</p>
-            {hash && (
-              <div className="tx-hash">
-                <small>TX: {hash}</small>
+          <div className="success-modal">
+            <button onClick={() => setShowSuccessModal(false)} className="success-close-btn" aria-label="Close">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            {/* Animated Success Icon */}
+            <div className="success-glow-container">
+              <div className="success-glow"></div>
+              <div className="success-check-circle">
+                <svg className="success-check-svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path className="check-path" d="M4 12L9 17L20 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
+            </div>
+
+            <h3 className="success-heading">Request Live</h3>
+
+            {/* Chain Flow */}
+            <div className="chain-flow">
+              <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={22} height={22} style={{ borderRadius: '50%' }} />
+              <span className="chain-name">{requestFrom}</span>
+              <span className="flow-arrow">→</span>
+              <Image src={getChainLogo(requestTo)} alt={requestTo} width={22} height={22} style={{ borderRadius: '50%' }} />
+              <span className="chain-name">{requestTo}</span>
+            </div>
+
+            <p className="success-message">
+              <span className="status-dot"></span>
+              Awaiting provider fulfillment
+            </p>
+
+            {hash && (
+              <a
+                href={getExplorerUrl(chainId, hash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tx-hash-link"
+              >
+                <span>{hash.slice(0, 14)}...{hash.slice(-12)}</span>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 2L2 10M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
             )}
+
+            <Link
+              href="/request-pool"
+              onClick={() => setShowSuccessModal(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                width: '100%',
+                padding: '14px 20px',
+                background: '#6366f1',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                textDecoration: 'none',
+              }}
+            >
+              View in Request Pool
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
           </div>
         </div>
       )}
@@ -1719,6 +1796,177 @@ export const CreateRequest = () => {
         .tx-hash small {
           color: #9ca3af;
           font-size: 12px;
+        }
+
+        /* Success Modal - Premium Refined Design */
+        .success-modal {
+          background: #0d0d0d;
+          border-radius: 16px;
+          padding: 32px 28px 28px;
+          width: 100%;
+          max-width: 360px;
+          text-align: center;
+          position: relative;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .success-close-btn {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          padding: 4px;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+        }
+        .success-close-btn:hover {
+          opacity: 1;
+        }
+        .success-close-btn svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        /* Animated Success Icon with Glow */
+        .success-glow-container {
+          position: relative;
+          width: 64px;
+          height: 64px;
+          margin: 0 auto 20px;
+        }
+
+        .success-glow {
+          position: absolute;
+          inset: -8px;
+          background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: glow-pulse 2.5s ease-in-out infinite;
+        }
+
+        .success-check-circle {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+        }
+
+        .check-path {
+          stroke-dasharray: 30;
+          stroke-dashoffset: 30;
+          animation: draw-check 0.5s ease forwards 0.2s;
+        }
+
+        @keyframes draw-check {
+          to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        .success-heading {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0 0 20px 0;
+          letter-spacing: -0.01em;
+        }
+
+        /* Chain Flow */
+        .chain-flow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .chain-name {
+          color: #e5e7eb;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .flow-arrow {
+          color: #6b7280;
+          font-size: 16px;
+          margin: 0 4px;
+        }
+
+        .success-message {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          color: #9ca3af;
+          font-size: 13px;
+          margin: 0 0 20px 0;
+          font-weight: 400;
+        }
+
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          background: #22c55e;
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        .tx-hash-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          color: #9ca3af;
+          font-size: 13px;
+          font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+          text-decoration: none;
+          margin-bottom: 20px;
+          padding: 12px 16px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
+          transition: all 0.2s ease;
+        }
+
+        .tx-hash-link:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+
+        .success-modal .pool-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          padding: 14px 20px;
+          background: #6366f1;
+          color: white !important;
+          font-size: 14px;
+          font-weight: 600;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          text-decoration: none;
+          white-space: nowrap;
         }
 
         .approval-info {

@@ -1,39 +1,35 @@
-// Chain logo utilities
+import { getMergedChainConfig } from '@/config'
+
 export const getChainLogo = (chainName: string): string => {
-  const normalizedName = chainName.toLowerCase()
+  if (!chainName) return '/erc20.png'
 
-  if (normalizedName.includes('ethereum') || normalizedName.includes('sepolia')) {
-    return '/eth.png'
-  }
-  if (normalizedName.includes('optimism') || normalizedName.includes('op')) {
-    return '/op.png'
-  }
-  if (normalizedName.includes('base')) {
-    return '/base.png'
-  }
-  if (normalizedName.includes('thanos')) {
-    return '/eth.png' // Use ETH logo for Thanos (or add a specific one if available)
-  }
+  const name = chainName.toLowerCase()
 
-  // Default fallback
-  return '/eth.png'
+  if (name.includes('optimism') || name.includes('op sepolia')) return '/op.png'
+  if (name.includes('base')) return '/base.png'
+  if (name.includes('ethereum') || name.includes('sepolia')) return '/eth.png'
+
+  return '/erc20.png'
 }
 
-// Token logo utilities
-export const getTokenLogo = (tokenSymbol: string): string => {
-  const symbol = tokenSymbol.toUpperCase()
+export const getExplorerUrl = (chainId: number, txHash: string): string => {
+  if (!txHash || !chainId) return '#'
 
-  switch (symbol) {
+  const config = getMergedChainConfig()[chainId.toString()]
+  return config?.block_explorer_url ? `${config.block_explorer_url}/tx/${txHash}` : '#'
+}
+
+export const getTokenLogo = (tokenSymbol: string): string => {
+  if (!tokenSymbol) return '/erc20.png'
+
+  switch (tokenSymbol.toUpperCase()) {
     case 'ETH':
+    case 'WETH':
       return '/eth.png'
     case 'USDC':
       return '/usdc.png'
     case 'USDT':
       return '/usdt.png'
-    case 'TON':
-      return '/eth.png' // Add TON logo if available
-    case 'ERC20':
-      return '/erc20.png'
     default:
       return '/erc20.png'
   }
