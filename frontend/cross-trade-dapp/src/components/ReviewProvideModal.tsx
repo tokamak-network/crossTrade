@@ -636,9 +636,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="success-modal-overlay" onClick={() => { setShowSuccessModal(false); onClose() }}>
+        <div className="success-modal-overlay" onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }}>
           <div className="success-modal" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => { setShowSuccessModal(false); onClose() }} className="success-close-btn" aria-label="Close">
+            <button onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }} className="success-close-btn" aria-label="Close">
               <svg viewBox="0 0 12 12" fill="none">
                 <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
@@ -672,7 +672,7 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
               </a>
             )}
 
-            <button onClick={() => { setShowSuccessModal(false); onClose() }} className="done-btn">
+            <button onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }} className="done-btn">
               Done
             </button>
           </div>
