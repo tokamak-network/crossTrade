@@ -825,6 +825,7 @@ export const CreateRequest = () => {
               <div className="amount-input-container">
                 <input
                   type="number"
+                  min="0"
                   value={sendAmount}
                   onChange={(e) => setSendAmount(e.target.value)}
                   placeholder="10.01"
@@ -932,6 +933,7 @@ export const CreateRequest = () => {
                   </span>
                   <input
                     type="number"
+                    min="0"
                     value={customFee}
                     onChange={(e) => setCustomFee(e.target.value)}
                     placeholder="1"

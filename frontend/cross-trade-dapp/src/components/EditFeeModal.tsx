@@ -415,6 +415,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
               <input
                 id="newFee"
                 type="number"
+                min="0"
                 step="0.000001"
                 placeholder={`Enter new amount (max: ${totalAmount})`}
                 value={newFeeAmount}

@@ -705,11 +705,12 @@ export const RequestPool = () => {
         <h1 className="page-title">Cross Trade Requests</h1>
         <p className="page-subtitle">Provide liquidity for a cross trade request and receive it back on L2 with a service fee.</p>
         
-        {/* Debug info - show which chains are being queried */}
-        <div className="debug-info">
-          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
-        </div>
-        
+      //   Debug info - show which chains are being queried
+      //  <div className="debug-info">
+      //    <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
+      //  </div>
+      //  
+
         <div className="pool-container">
           {loading && (
             <div className="loading-state">
@@ -1031,7 +1032,7 @@ export const RequestPool = () => {
           max-width: 600px;
         }
 
-        .debug-info {
+        /* .debug-info {
           color: #6b7280;
           font-size: 14px;
           margin-bottom: 40px;
@@ -1044,7 +1045,7 @@ export const RequestPool = () => {
 
         .debug-info p {
           margin: 0;
-        }
+        } */
 
         .pool-container {
           width: 100%;
