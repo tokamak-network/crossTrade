@@ -58,6 +58,7 @@ export const History = () => {
   const [selectedRequest, setSelectedRequest] = useState<HistoryRequest | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
   // Get all L2 chains that have l2_cross_trade contracts from both L2_L2 and L2_L1 configs
   const getL2Chains = () => {
@@ -673,6 +674,55 @@ export const History = () => {
     setSelectedRequest(null)
   }
 
+  const toggleRowExpanded = (rowKey: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev)
+      if (next.has(rowKey)) {
+        next.delete(rowKey)
+      } else {
+        next.add(rowKey)
+      }
+      return next
+    })
+  }
+
+  const truncateAddress = (address: string, chars: number = 6) => {
+    if (!address) return ''
+    if (address.length <= chars + 4) return address
+    return `${address.slice(0, chars)}...${address.slice(-4)}`
+  }
+
+  const formatHash = (hash: string) => {
+    if (!hash) return ''
+    if (hash.length <= 18) return hash
+    return `${hash.slice(0, 10)}...${hash.slice(-8)}`
+  }
+
+  const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
+
+  const getExplorerUrl = (chainId: number, hash: string) => {
+    const config = CHAIN_CONFIG_L2_L2[chainId.toString()] || CHAIN_CONFIG_L2_L1[chainId.toString()]
+    return config?.block_explorer_url ? `${config.block_explorer_url}/tx/${hash}` : null
+  }
+
+  const DetailRow = ({ label, value, className = '' }: { label: string; value: React.ReactNode; className?: string }) => (
+    <div className="detail-row">
+      <span className="detail-label">{label}</span>
+      <span className={`detail-value ${className}`}>{value}</span>
+    </div>
+  )
+
+  const CopyableAddress = ({ address, label }: { address: string; label: string }) => (
+    <DetailRow
+      label={label}
+      value={
+        <span className="copyable" onClick={(e) => { e.stopPropagation(); copyToClipboard(address) }} title={address}>
+          {truncateAddress(address)}
+        </span>
+      }
+    />
+  )
+
   return (
     <div className="history-container">
       {/* Navigation */}
@@ -749,6 +799,7 @@ export const History = () => {
               {/* Table */}
               <div className="table-container">
                 <div className="table-header">
+                  <div className="header-cell expand-col"></div>
                   <div className="header-cell type-col">Type</div>
                   <div className="header-cell token-col">Token</div>
                   <div className="header-cell from-col">Network From</div>
@@ -760,80 +811,168 @@ export const History = () => {
                 <div className="table-body">
                   {filteredRequests.map((request, index) => {
                     const data = request.data!
+                    const rowKey = `history-${request.chainId}-${request.saleCount}-${index}`
+                    const isExpanded = expandedRows.has(rowKey)
                     const tokenSymbol = getTokenSymbol(data.l2SourceToken)
                     const tokenIcon = renderTokenIcon(tokenSymbol)
                     // Use edited amount if available, otherwise use original ctAmount
                     const actualCtAmount = data.editedCtAmount || data.ctAmount
                     const amount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
-                    const fromChain = request.type === 'Provide' 
+                    const originalAmount = formatTokenAmount(data.ctAmount, data.l2SourceToken)
+                    const totalAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
+                    const hasEdited = data.editedCtAmount !== undefined && data.editedCtAmount !== data.ctAmount
+                    const fromChain = request.type === 'Provide'
                       ? getChainName(BigInt(11155111)) // Ethereum for provides
                       : request.chainName // Source chain from request data
                     const toChain = getChainName(data.l2DestinationChainId)
+                    const reward = data.totalAmount - actualCtAmount
+                    const rewardAmount = formatTokenAmount(reward, data.l2SourceToken)
 
                     return (
-                      <div key={`history-${request.chainId}-${request.saleCount}-${index}`} className="table-row">
-                        {/* Type Column */}
-                        <div className="table-cell type-col">
-                          <span className={`type-badge ${request.type.toLowerCase()}`}>
-                            {request.type}
-                          </span>
-                        </div>
+                      <div key={rowKey} className={`table-row-wrapper ${isExpanded ? 'expanded' : ''}`}>
+                        <div
+                          className="table-row"
+                          onClick={() => toggleRowExpanded(rowKey)}
+                        >
+                          {/* Expand Indicator */}
+                          <div className="expand-indicator">
+                            <svg
+                              className={`chevron ${isExpanded ? 'rotated' : ''}`}
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                            >
+                              <path
+                                d="M3 4.5L6 7.5L9 4.5"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
 
-                        {/* Token Column */}
-                        <div className="table-cell token-col">
-                          <div className="token-info">
-                            <span className="token-icon">{tokenIcon}</span>
-                            <div className="token-details">
-                              <span className="token-amount">{amount}</span>
-                              <span className="token-symbol">{tokenSymbol}</span>
+                          {/* Type Column */}
+                          <div className="table-cell type-col">
+                            <span className={`type-badge ${request.type.toLowerCase()}`}>
+                              {request.type}
+                            </span>
+                          </div>
+
+                          {/* Token Column */}
+                          <div className="table-cell token-col">
+                            <div className="token-info">
+                              <span className="token-icon">{tokenIcon}</span>
+                              <div className="token-details">
+                                <span className="token-amount">
+                                  {amount}
+                                  {hasEdited && <span className="edited-badge">EDITED</span>}
+                                </span>
+                                <span className="token-symbol">{tokenSymbol}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Network From Column */}
-                        <div className="table-cell from-col">
-                          <div className="network-info">
-                            <span className="network-icon">{renderChainIcon(fromChain)}</span>
-                            <span className="network-name">{fromChain}</span>
-                          </div>
-                        </div>
-
-                        {/* Network To Column */}
-                        <div className="table-cell to-col">
-                          <div className="network-info">
-                            <span className="network-icon">{renderChainIcon(toChain)}</span>
-                            <span className="network-name">{toChain}</span>
-                          </div>
-                        </div>
-
-                        {/* Status Column */}
-                        <div className="table-cell status-col">
-                          <span 
-                            className="status-badge"
-                            style={{ backgroundColor: getStatusColor(request.status) }}
-                          >
-                            {request.status}
-                          </span>
-                        </div>
-
-                        {/* Action Column - Only for Waiting status */}
-                        <div className="table-cell action-col">
-                          {request.status === 'Waiting' && request.type === 'Request' && (
-                            <div className="action-buttons">
-                              <button 
-                                className="edit-btn"
-                                onClick={() => handleEdit(request)}
-                              >
-                                Edit
-                              </button>
-                              <button 
-                                className="cancel-btn"
-                                onClick={() => handleCancel(request)}
-                              >
-                                Cancel
-                              </button>
+                          {/* Network From Column */}
+                          <div className="table-cell from-col">
+                            <div className="network-info">
+                              <span className="network-icon">{renderChainIcon(fromChain)}</span>
+                              <span className="network-name">{fromChain}</span>
                             </div>
-                          )}
+                          </div>
+
+                          {/* Network To Column */}
+                          <div className="table-cell to-col">
+                            <div className="network-info">
+                              <span className="network-icon">{renderChainIcon(toChain)}</span>
+                              <span className="network-name">{toChain}</span>
+                            </div>
+                          </div>
+
+                          {/* Status Column */}
+                          <div className="table-cell status-col">
+                            <span
+                              className="status-badge"
+                              style={{ backgroundColor: getStatusColor(request.status) }}
+                            >
+                              {request.status}
+                            </span>
+                          </div>
+
+                          {/* Action Column */}
+                          <div className="table-cell action-col">
+                            {request.status === 'Waiting' && request.type === 'Request' && (
+                              <div className="action-buttons">
+                                <button
+                                  className="edit-btn"
+                                  onClick={(e) => { e.stopPropagation(); handleEdit(request) }}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="cancel-btn"
+                                  onClick={(e) => { e.stopPropagation(); handleCancel(request) }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={`expanded-details ${isExpanded ? 'show' : ''}`}>
+                          <div className="expanded-details-inner">
+                            <div className="details-grid">
+                              <div className="detail-section">
+                                <h4 className="section-title">Amounts</h4>
+                                <DetailRow label="Total" value={`${totalAmount} ${tokenSymbol}`} />
+                                <DetailRow label="Bridge" value={`${amount} ${tokenSymbol}`} />
+                                {hasEdited && <DetailRow label="Original" value={`${originalAmount} ${tokenSymbol}`} className="muted" />}
+                                {request.status !== 'Cancelled' && (
+                                  <DetailRow label="Reward" value={`+${rewardAmount} ${tokenSymbol}`} className="profit" />
+                                )}
+                              </div>
+
+                              <div className="detail-section">
+                                <h4 className="section-title">Addresses</h4>
+                                <CopyableAddress label="Requester" address={data.requester} />
+                                <CopyableAddress label="Receiver" address={data.receiver} />
+                                {data.provider.toLowerCase() !== '0x0000000000000000000000000000000000000000' && (
+                                  <CopyableAddress label="Provider" address={data.provider} />
+                                )}
+                              </div>
+
+                              <div className="detail-section">
+                                <h4 className="section-title">Transaction</h4>
+                                <DetailRow label="ID" value={`#${request.saleCount}`} />
+                                <DetailRow label="Route" value={`${request.chainName} → ${toChain}`} />
+                                <DetailRow
+                                  label="Hash"
+                                  value={
+                                    <span className="hash-value">
+                                      <span className="copyable" onClick={(e) => { e.stopPropagation(); copyToClipboard(data.hashValue) }} title={data.hashValue}>
+                                        {formatHash(data.hashValue)}
+                                      </span>
+                                      {getExplorerUrl(request.chainId, data.hashValue) && (
+                                        <a href={getExplorerUrl(request.chainId, data.hashValue)!} target="_blank" rel="noopener noreferrer" className="explorer-link" onClick={(e) => e.stopPropagation()}>↗</a>
+                                      )}
+                                    </span>
+                                  }
+                                />
+                              </div>
+
+                              {request.status === 'Waiting' && request.type === 'Request' && (
+                                <div className="detail-section actions-section">
+                                  <h4 className="section-title">Actions</h4>
+                                  <div className="detail-actions">
+                                    <button className="edit-btn" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit Request</button>
+                                    <button className="cancel-btn" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel Request</button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )
@@ -1050,11 +1189,15 @@ export const History = () => {
 
         .table-header {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 140px;
+          grid-template-columns: 32px 100px 200px 180px 180px 120px 120px;
           gap: 16px;
           padding: 16px 20px;
           background: rgba(26, 26, 26, 0.5);
           border-bottom: 1px solid #333333;
+        }
+
+        .expand-col {
+          width: 32px;
         }
 
         .header-cell {
@@ -1069,21 +1212,149 @@ export const History = () => {
           overflow-y: auto;
         }
 
+        .table-row-wrapper {
+          border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+        }
+
+        .table-row-wrapper:last-child {
+          border-bottom: none;
+        }
+
         .table-row {
           display: grid;
-          grid-template-columns: 100px 200px 180px 180px 120px 140px;
+          grid-template-columns: 32px 100px 200px 180px 180px 120px 120px;
           gap: 16px;
           padding: 20px;
-          border-bottom: 1px solid rgba(51, 51, 51, 0.3);
-          transition: all 0.2s ease;
+          cursor: pointer;
+          transition: background 0.15s ease;
         }
 
         .table-row:hover {
-          background: rgba(99, 102, 241, 0.05);
+          background: rgba(255, 255, 255, 0.02);
         }
 
-        .table-row:last-child {
-          border-bottom: none;
+        .expand-indicator {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #4b5563;
+        }
+
+        .chevron {
+          transition: transform 0.25s ease;
+        }
+
+        .chevron.rotated {
+          transform: rotate(180deg);
+          color: #6366f1;
+        }
+
+        .edited-badge {
+          display: inline-block;
+          margin-left: 8px;
+          padding: 2px 6px;
+          background: #f59e0b;
+          color: #000;
+          font-size: 9px;
+          font-weight: 600;
+          border-radius: 3px;
+          vertical-align: middle;
+        }
+
+        .expanded-details {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 0.2s ease-out;
+        }
+
+        .expanded-details.show {
+          grid-template-rows: 1fr;
+        }
+
+        .expanded-details-inner {
+          overflow: hidden;
+        }
+
+        .details-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 32px;
+          padding: 20px 24px 24px 52px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(17, 17, 17, 0.6);
+        }
+
+        .detail-section {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .section-title {
+          color: #6b7280;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin: 0 0 4px 0;
+        }
+
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .detail-label {
+          color: #6b7280;
+          font-size: 13px;
+        }
+
+        .detail-value {
+          color: #e5e7eb;
+          font-size: 13px;
+          font-weight: 500;
+          font-family: 'SF Mono', ui-monospace, monospace;
+        }
+
+        .detail-value.muted {
+          color: #6b7280;
+          text-decoration: line-through;
+        }
+
+        .detail-value.profit {
+          color: #10b981;
+        }
+
+        .detail-value.copyable {
+          cursor: pointer;
+          padding: 2px 6px;
+          border-radius: 4px;
+          transition: background 0.15s;
+        }
+
+        .detail-value.copyable:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hash-value {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .hash-value .copyable {
+          color: #a78bfa;
+        }
+
+        .explorer-link {
+          color: #6366f1;
+          text-decoration: none;
+          font-size: 14px;
+        }
+
+        .explorer-link:hover {
+          color: #818cf8;
         }
 
         .table-cell {
@@ -1202,6 +1473,19 @@ export const History = () => {
           transform: translateY(-1px);
         }
 
+        .actions-section {
+          grid-column: span 3;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          padding-top: 16px;
+          margin-top: 8px;
+        }
+
+        .detail-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 8px;
+        }
+
         .footer {
           position: absolute;
           bottom: 20px;
@@ -1221,8 +1505,18 @@ export const History = () => {
         @media (max-width: 1024px) {
           .table-header,
           .table-row {
-            grid-template-columns: 80px 150px 140px 140px 100px 120px;
+            grid-template-columns: 32px 80px 150px 130px 130px 90px 100px;
             gap: 12px;
+          }
+
+          .details-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 16px 20px 20px 44px;
+          }
+
+          .actions-section {
+            grid-column: span 2;
           }
         }
 
@@ -1230,28 +1524,75 @@ export const History = () => {
           .page-title {
             font-size: 28px;
           }
-          
-          .table-header,
-          .table-row {
-            grid-template-columns: 1fr;
-            gap: 12px;
-          }
-          
-          .header-cell {
+
+          .table-header {
             display: none;
           }
-          
-          .table-cell {
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(51, 51, 51, 0.2);
+
+          .table-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 16px;
           }
-          
-          .table-cell:before {
-            content: attr(data-label);
-            color: #9ca3af;
-            font-size: 12px;
-            font-weight: 500;
+
+          .expand-indicator {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+          }
+
+          .table-row-wrapper {
+            position: relative;
+          }
+
+          .table-cell {
+            flex-basis: calc(50% - 6px);
+          }
+
+          .table-cell.type-col {
+            order: 1;
+          }
+
+          .table-cell.token-col {
+            order: 2;
+          }
+
+          .table-cell.from-col {
+            order: 3;
+          }
+
+          .table-cell.to-col {
+            order: 4;
+          }
+
+          .table-cell.status-col {
+            order: 5;
+          }
+
+          .table-cell.action-col {
+            order: 6;
+            flex-basis: 100%;
+            justify-content: flex-start;
+          }
+
+          .details-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 16px;
+          }
+
+          .actions-section {
+            grid-column: span 1;
+          }
+
+          .detail-actions {
+            flex-direction: column;
+          }
+
+          .hash-value {
+            flex-wrap: wrap;
+            gap: 6px;
           }
         }
       `}</style>
