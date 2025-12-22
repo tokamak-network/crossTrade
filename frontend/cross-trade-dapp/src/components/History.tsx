@@ -705,22 +705,33 @@ export const History = () => {
     return config?.block_explorer_url ? `${config.block_explorer_url}/tx/${hash}` : null
   }
 
-  const DetailRow = ({ label, value, className = '' }: { label: string; value: React.ReactNode; className?: string }) => (
-    <div className="detail-row">
-      <span className="detail-label">{label}</span>
-      <span className={`detail-value ${className}`}>{value}</span>
-    </div>
-  )
+  const DetailRow = ({ label, value, className = '' }: { label: string; value: React.ReactNode; className?: string }) => {
+    const valueStyle: React.CSSProperties = {
+      color: className === 'profit' ? '#34d399' : className === 'muted' ? '#9ca3af' : '#ffffff',
+      fontSize: '13px',
+      fontWeight: 500,
+      fontFamily: "'SF Mono', ui-monospace, monospace",
+      textDecoration: className === 'muted' ? 'line-through' : 'none',
+    }
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ color: '#9ca3af', fontSize: '13px' }}>{label}</span>
+        <span style={valueStyle}>{value}</span>
+      </div>
+    )
+  }
 
   const CopyableAddress = ({ address, label }: { address: string; label: string }) => (
-    <DetailRow
-      label={label}
-      value={
-        <span className="copyable" onClick={(e) => { e.stopPropagation(); copyToClipboard(address) }} title={address}>
-          {truncateAddress(address)}
-        </span>
-      }
-    />
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span style={{ color: '#9ca3af', fontSize: '13px' }}>{label}</span>
+      <span
+        style={{ color: '#c4b5fd', fontSize: '13px', fontWeight: 500, fontFamily: "'SF Mono', ui-monospace, monospace", cursor: 'pointer', padding: '2px 6px', borderRadius: '4px' }}
+        onClick={(e) => { e.stopPropagation(); copyToClipboard(address) }}
+        title={address}
+      >
+        {truncateAddress(address)}
+      </span>
+    </div>
   )
 
   return (
@@ -925,7 +936,7 @@ export const History = () => {
                           <div className="expanded-details-inner">
                             <div className="details-grid">
                               <div className="detail-section">
-                                <h4 className="section-title">Amounts</h4>
+                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Amounts</h4>
                                 <DetailRow label="Total" value={`${totalAmount} ${tokenSymbol}`} />
                                 <DetailRow label="Bridge" value={`${amount} ${tokenSymbol}`} />
                                 {hasEdited && <DetailRow label="Original" value={`${originalAmount} ${tokenSymbol}`} className="muted" />}
@@ -935,7 +946,7 @@ export const History = () => {
                               </div>
 
                               <div className="detail-section">
-                                <h4 className="section-title">Addresses</h4>
+                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Addresses</h4>
                                 <CopyableAddress label="Requester" address={data.requester} />
                                 <CopyableAddress label="Receiver" address={data.receiver} />
                                 {data.provider.toLowerCase() !== '0x0000000000000000000000000000000000000000' && (
@@ -944,18 +955,28 @@ export const History = () => {
                               </div>
 
                               <div className="detail-section">
-                                <h4 className="section-title">Transaction</h4>
+                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Transaction</h4>
                                 <DetailRow label="ID" value={`#${request.saleCount}`} />
                                 <DetailRow label="Route" value={`${request.chainName} → ${toChain}`} />
                                 <DetailRow
                                   label="Hash"
                                   value={
-                                    <span className="hash-value">
-                                      <span className="copyable" onClick={(e) => { e.stopPropagation(); copyToClipboard(data.hashValue) }} title={data.hashValue}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span
+                                        style={{ color: '#c4b5fd', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px' }}
+                                        onClick={(e) => { e.stopPropagation(); copyToClipboard(data.hashValue) }}
+                                        title={data.hashValue}
+                                      >
                                         {formatHash(data.hashValue)}
                                       </span>
                                       {getExplorerUrl(request.chainId, data.hashValue) && (
-                                        <a href={getExplorerUrl(request.chainId, data.hashValue)!} target="_blank" rel="noopener noreferrer" className="explorer-link" onClick={(e) => e.stopPropagation()}>↗</a>
+                                        <a
+                                          href={getExplorerUrl(request.chainId, data.hashValue)!}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          style={{ color: '#818cf8', textDecoration: 'none', fontSize: '14px' }}
+                                          onClick={(e) => e.stopPropagation()}
+                                        >↗</a>
                                       )}
                                     </span>
                                   }
@@ -964,7 +985,7 @@ export const History = () => {
 
                               {request.status === 'Waiting' && request.type === 'Request' && (
                                 <div className="detail-section actions-section">
-                                  <h4 className="section-title">Actions</h4>
+                                  <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Actions</h4>
                                   <div className="detail-actions">
                                     <button className="edit-btn" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit Request</button>
                                     <button className="cancel-btn" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel Request</button>
@@ -1291,7 +1312,7 @@ export const History = () => {
         }
 
         .section-title {
-          color: #6b7280;
+          color: #9ca3af !important;
           font-size: 11px;
           font-weight: 600;
           text-transform: uppercase;
@@ -1306,34 +1327,35 @@ export const History = () => {
         }
 
         .detail-label {
-          color: #6b7280;
+          color: #9ca3af !important;
           font-size: 13px;
         }
 
         .detail-value {
-          color: #e5e7eb;
+          color: #fff !important;
           font-size: 13px;
           font-weight: 500;
           font-family: 'SF Mono', ui-monospace, monospace;
         }
 
         .detail-value.muted {
-          color: #6b7280;
+          color: #9ca3af !important;
           text-decoration: line-through;
         }
 
         .detail-value.profit {
-          color: #10b981;
+          color: #34d399 !important;
         }
 
-        .detail-value.copyable {
+        .copyable {
           cursor: pointer;
           padding: 2px 6px;
           border-radius: 4px;
           transition: background 0.15s;
+          color: #c4b5fd !important;
         }
 
-        .detail-value.copyable:hover {
+        .copyable:hover {
           background: rgba(255, 255, 255, 0.1);
         }
 
@@ -1344,7 +1366,7 @@ export const History = () => {
         }
 
         .hash-value .copyable {
-          color: #a78bfa;
+          color: #c4b5fd !important;
         }
 
         .explorer-link {
