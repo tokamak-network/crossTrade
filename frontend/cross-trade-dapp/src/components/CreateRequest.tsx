@@ -222,14 +222,16 @@ export const CreateRequest = () => {
   useEffect(() => {
     // Only update tokens if chains are selected
     if (!requestFrom || !requestTo) return
-    
+
     const availableSendTokens = getAvailableTokensForMode(requestFrom)
-    
+
     // Reset send token if current selection is not available
     if (!availableSendTokens.includes(sendToken) && availableSendTokens.length > 0) {
       setSendToken(availableSendTokens[0])
     }
-    
+    // resets approval state when chain or token changes (different contract/chain = different approval)
+    setIsTokenApproved(false)
+
     // Note: receiveToken is always the same as sendToken, no need to reset separately
   }, [requestFrom, requestTo, sendToken])
 
@@ -257,17 +259,37 @@ export const CreateRequest = () => {
   }
 
   // Calculate service fee and you receive amount
+  //Gets the effective custom fee percentage empty defaults to 2%
+  const getCustomFeePercent = (): number => {
+    if (customFee === '') return 2
+    const parsed = parseFloat(customFee)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
+  // calc fee based on current mode
   const calculateFee = () => {
-    const sendAmountNum = parseFloat(sendAmount) || 0
-    
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return 0
+
     if (serviceFeeMode === 'recommended') {
-      // 2% fee for recommended
       return sendAmountNum * 0.02
     } else {
-      // Advanced mode - use custom fee value or default 1
-      const feeValue = parseFloat(customFee) || 1
-      return feeValue
+      return sendAmountNum * (getCustomFeePercent() / 100)
     }
+  }
+
+  // Get fee amount for recommended (2%) this always shows this regardless of mode
+  const getRecommendedFeeAmount = (): string => {
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return '0.0000'
+    return (sendAmountNum * 0.02).toFixed(4)
+  }
+
+  // Get fee amount for custom percentage this always shows this regardless of mode
+  const getCustomFeeAmount = (): string => {
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return '0.0000'
+    return (sendAmountNum * (getCustomFeePercent() / 100)).toFixed(4)
   }
 
   const calculateReceiveAmount = () => {
@@ -883,7 +905,7 @@ export const CreateRequest = () => {
                     value={currentReceiveAmount}
                     readOnly
                     placeholder="9.5"
-                    className="amount-input readonly you-receive"
+                    className="amount-input readonly"
                   />
                   <div className="token-display">
                     <div className="token-icon">
@@ -908,48 +930,60 @@ export const CreateRequest = () => {
 
             {/* Service Fee Section */}
             <div className="service-fee-section">
-              <label className="form-label">Service Fee</label>
-              
-              {/* Recommended Option */}
-              <div 
-                className={`fee-option ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
-                onClick={() => setServiceFeeMode('recommended')}
-              >
-                <div className="fee-option-header">
-                  <span className="fee-label">Recommended ⓘ</span>
-                  <span className="fee-amount">≈ 0.0012 ETH</span>
-                </div>
-                <div className="fee-details">
-                  <span className="fee-percentage">2.00%</span>
-                  <span className="fee-value">{calculateFee().toFixed(6)}</span>
-                  <span className="fee-token">{sendToken}</span>
-                </div>
-              </div>
+              <label className="form-label">Service Fee (Provider Reward)</label>
 
-              {/* Advanced Option */}
-              <div 
-                className={`fee-option advanced ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
-                onClick={() => setServiceFeeMode('advanced')}
-              >
-                <div className="fee-option-header">
-                  <span className="fee-label">Advanced ⓘ</span>
-                  <span className="fee-amount">≈ 0.0012 ETH</span>
+              <div className="fee-row">
+                {/* Recommended */}
+                <div
+                  className={`fee-box ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
+                  onClick={() => setServiceFeeMode('recommended')}
+                >
+                  <span className="fee-title">Recommended</span>
+                  <div className="fee-content">
+                    <span className="fee-badge">2%</span>
+                    <span className="fee-amount">
+                      {getRecommendedFeeAmount()} {sendToken.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
-                <div className="fee-details">
-                  <span className="fee-percentage">
-                    {sendAmount ? ((parseFloat(customFee) || 1) / (parseFloat(sendAmount) || 1) * 100).toFixed(2) + '%' : '10.00%'}
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={customFee}
-                    onChange={(e) => setCustomFee(e.target.value)}
-                    placeholder="1"
-                    className="fee-input"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <span className="fee-token">{sendToken}</span>
+
+                {/* Custom */}
+                <div
+                  className={`fee-box ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    setServiceFeeMode('advanced')
+                    const input = e.currentTarget.querySelector('input')
+                    if (input) setTimeout(() => input.focus(), 0)
+                  }}
+                >
+                  <span className="fee-title">Custom</span>
+                  <div className="fee-content">
+                    <div className="fee-input-wrap">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={customFee}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          if (val === '') {
+                            setCustomFee('')
+                            return
+                          }
+                          const num = parseFloat(val)
+                          if (!isNaN(num) && num >= 0 && num <= 100) {
+                            setCustomFee(val)
+                          }
+                        }}
+                        placeholder="2"
+                      />
+                      <span className="percent-sign">%</span>
+                    </div>
+                    <span className="fee-amount">
+                      {getCustomFeeAmount()} {sendToken.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1038,14 +1072,10 @@ export const CreateRequest = () => {
                 <span className="detail-value">{requestFrom} → {requestTo}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Network fee</span>
-                <span className="detail-value">0.0012 ETH</span>
-              </div>
-              <div className="detail-row">
                 <span className="detail-label">Service fee</span>
                 <span className="detail-value">
-                  <span className="fee-badge">{serviceFeeMode === 'recommended' ? '2.00%' : ((parseFloat(customFee) || 1) / (parseFloat(sendAmount) || 1) * 100).toFixed(2) + '%'}</span>
-                  {calculateFee().toFixed(6)} {sendToken}
+                  <span className="fee-badge-modal">{serviceFeeMode === 'recommended' ? '2.00%' : getCustomFeePercent().toFixed(2) + '%'}</span>
+                  {calculateFee().toFixed(6)} {sendToken.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -1252,9 +1282,6 @@ export const CreateRequest = () => {
           border-color: #6366f1;
           background: rgba(99, 102, 241, 0.1);
         }
-        .you-receive {
-          width: 120px;
-        }
 
         .form-container {
           background: rgba(20, 20, 20, 0.8);
@@ -1347,11 +1374,13 @@ export const CreateRequest = () => {
 
         .receive-address-row {
           display: flex;
-          gap: 6px;
+          gap: 12px;
+          align-items: stretch;
         }
 
         .receive-section {
-          flex: 0.35;
+          flex: 0 0 auto;
+          min-width: 160px;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -1359,10 +1388,12 @@ export const CreateRequest = () => {
 
         .amount-input-container {
           display: flex;
+          flex: 1;
           background: #1a1a1a;
           border: 1px solid #333333;
           border-radius: 8px;
           overflow: hidden;
+          box-sizing: border-box;
         }
 
         .amount-input {
@@ -1450,20 +1481,25 @@ export const CreateRequest = () => {
         }
 
         .address-section {
-          flex: 1.65;
+          flex: 1;
           display: flex;
           flex-direction: column;
           gap: 8px;
+          min-width: 0;
         }
 
         .address-input {
+          flex: 1;
           background: #1a1a1a;
           border: 1px solid #333333;
           border-radius: 8px;
           padding: 10px 14px;
           color: #ffffff;
-          font-size: 14px;
+          font-size: 13px;
+          font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
           outline: none;
+          min-width: 0;
+          box-sizing: border-box;
         }
 
         .address-input:focus {
@@ -1499,84 +1535,96 @@ export const CreateRequest = () => {
           gap: 8px;
         }
 
-        .fee-option {
+        .fee-row {
+          display: flex;
+          gap: 10px;
+        }
+
+        .fee-box {
+          flex: 1;
           background: #1a1a1a;
-          border: 1px solid #333333;
+          border: 1px solid #333;
           border-radius: 8px;
           padding: 12px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: border-color 0.15s;
         }
 
-        .fee-option:hover {
+        .fee-box:hover {
           border-color: #6366f1;
         }
 
-        .fee-option.active {
+        .fee-box.active {
           border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.1);
+          background: rgba(99, 102, 241, 0.08);
         }
 
-        .fee-option.advanced.active {
-          border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.2);
-        }
-
-        .fee-option-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .fee-title {
+          display: block;
+          color: #9ca3af;
+          font-size: 12px;
           margin-bottom: 8px;
         }
 
-        .fee-label {
-          color: #ffffff;
+        .fee-content {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .fee-badge {
+          background: #6366f1;
+          color: #fff;
+          padding: 6px 12px;
+          border-radius: 6px;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .fee-amount {
-          color: #9ca3af;
-          font-size: 12px;
+          color: #fff;
+          font-size: 13px;
         }
 
-        .fee-details {
+        .fee-input-wrap {
           display: flex;
           align-items: center;
-          gap: 12px;
+          background: #111;
+          border: 1px solid #333;
+          border-radius: 6px;
+          padding: 5px 10px;
         }
 
-        .fee-percentage {
-          background: #6366f1;
-          color: #ffffff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 600;
-          min-width: 50px;
-          text-align: center;
+        .fee-box.active .fee-input-wrap {
+          border-color: #6366f1;
         }
 
-        .fee-value {
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .fee-token {
-          color: #9ca3af;
-          font-size: 14px;
-        }
-
-        .fee-input {
+        .fee-input-wrap input {
           background: transparent;
           border: none;
-          color: #ffffff;
+          color: #fff;
           font-size: 14px;
-          font-weight: 500;
-          width: 40px;
+          font-weight: 600;
+          width: 45px;
           outline: none;
-          text-align: center;
+          text-align: right;
+          -moz-appearance: textfield;
+        }
+
+        .fee-input-wrap input::-webkit-outer-spin-button,
+        .fee-input-wrap input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .fee-input-wrap input::placeholder {
+          color: #555;
+        }
+
+        .percent-sign {
+          color: #9ca3af;
+          font-size: 14px;
+          margin-left: 2px;
         }
 
         .request-button {
@@ -1698,7 +1746,7 @@ export const CreateRequest = () => {
           gap: 8px;
         }
 
-        .fee-badge {
+        .fee-badge-modal {
           background: #6366f1;
           color: #ffffff;
           padding: 2px 6px;
@@ -2001,6 +2049,10 @@ export const CreateRequest = () => {
           .receive-address-row {
             flex-direction: column;
             gap: 16px;
+          }
+
+          .receive-section {
+            flex: 1;
           }
 
           .arrow-container {
