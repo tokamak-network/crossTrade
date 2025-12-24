@@ -53,6 +53,8 @@ export const RequestPool = () => {
   const [isProvideModalOpen, setIsProvideModalOpen] = useState(false)
   const [selectedToken, setSelectedToken] = useState<string>('ALL')
   const [selectedChain, setSelectedChain] = useState<string>('ALL')
+  const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false)
+  const [chainDropdownOpen, setChainDropdownOpen] = useState(false)
 
   // Get all L2 chains that have l2_cross_trade contracts (both L2_L2 and L2_L1)
   const getL2Chains = () => {
@@ -84,8 +86,7 @@ export const RequestPool = () => {
 
   // Get all unique tokens from all chain configs
   const getAllUniqueTokens = () => {
-    const tokenSet = new Set<string>()
-    const tokenMap: { [key: string]: { symbol: string; emoji: string; addresses: string[] } } = {}
+    const tokenMap: { [key: string]: { symbol: string; logo: string; addresses: string[] } } = {}
     
     // Collect from L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
@@ -174,9 +175,9 @@ export const RequestPool = () => {
     return Object.values(tokenMap)
   }
 
-  // Get all unique chains with emojis (includes L1 for L2_L1 rewards)
+  // Get all unique chains with logos (includes L1 for L2_L1 rewards)
   const getAllUniqueChains = () => {
-    const chainMap: { [key: string]: { id: number; name: string; emoji: string } } = {}
+    const chainMap: { [key: string]: { id: number; name: string; logo: string } } = {}
     
     // Add all L2 chains
     l2Chains.forEach(({ chainId, config }) => {
@@ -731,204 +732,200 @@ export const RequestPool = () => {
             </div>
           )}
 
-          {/* Filter Controls */}
-          <div className="filter-controls">
-            <div className="filter-section">
-              <span className="filter-label">Token</span>
-              <div className="filter-buttons">
-                <button 
-                  className={`filter-btn ${selectedToken === 'ALL' ? 'active' : ''}`}
-                  onClick={() => setSelectedToken('ALL')}
-                >
-                  ALL
-                </button>
-                {allTokens.slice(0, 3).map((token) => (
-                  <button
-                    key={token.symbol}
-                    className={`filter-btn ${selectedToken === token.symbol ? 'active' : ''}`}
-                    onClick={() => setSelectedToken(token.symbol)}
-                  >
-                    <Image src={token.logo} alt={token.symbol} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px', verticalAlign: 'middle' }} />
-                    {token.symbol}
-                  </button>
-                ))}
-                {allTokens.length > 3 && (
-                  <div className="dropdown-wrapper">
-                    <select 
-                      className={`filter-dropdown ${selectedToken !== 'ALL' && !allTokens.slice(0, 3).find(t => t.symbol === selectedToken) ? 'active' : ''}`}
-                      value={selectedToken !== 'ALL' && !allTokens.slice(0, 3).find(t => t.symbol === selectedToken) ? selectedToken : ''}
-                      onChange={(e) => e.target.value && setSelectedToken(e.target.value)}
-                    >
-                      <option value="">More...</option>
-                      {allTokens.map((token) => (
-                        <option key={token.symbol} value={token.symbol}>
-                          {token.symbol}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="filter-section">
-              <span className="filter-label">Reward On</span>
-              <div className="filter-buttons">
-                <button 
-                  className={`filter-btn ${selectedChain === 'ALL' ? 'active' : ''}`}
-                  onClick={() => setSelectedChain('ALL')}
-                >
-                  ALL
-                </button>
-                {allChains.slice(0, 2).map((chain) => (
-                  <button
-                    key={chain.id}
-                    className={`filter-btn ${selectedChain === chain.name ? 'active' : ''}`}
-                    onClick={() => setSelectedChain(chain.name)}
-                  >
-                    <Image src={chain.logo} alt={chain.name} width={20} height={20} style={{ borderRadius: '50%', marginRight: '6px', verticalAlign: 'middle' }} />
-                    {chain.name}
-                  </button>
-                ))}
-                <div className="dropdown-wrapper">
-                  <select 
-                    className={`filter-dropdown ${selectedChain !== 'ALL' && !allChains.slice(0, 2).find(c => c.name === selectedChain) ? 'active' : ''}`}
-                    value={selectedChain !== 'ALL' && !allChains.slice(0, 2).find(c => c.name === selectedChain) ? selectedChain : ''}
-                    onChange={(e) => e.target.value && setSelectedChain(e.target.value)}
-                  >
-                    <option value="">More...</option>
-                    {allChains.map((chain) => (
-                      <option key={chain.id} value={chain.name}>
-                        {chain.name}
-                      </option>
-                    ))}
-                  </select>
+          {/* Filter Row */}
+          <div className="filter-row">
+            {/* Token Dropdown */}
+            <div className="dropdown-wrapper">
+              <div className="dropdown-label">Token</div>
+              <div
+                className={`dropdown-trigger ${tokenDropdownOpen ? 'open' : ''}`}
+                onClick={() => {
+                  setTokenDropdownOpen(!tokenDropdownOpen)
+                  setChainDropdownOpen(false)
+                }}
+              >
+                <div className="dropdown-value">
+                  {selectedToken !== 'ALL' && (
+                    <Image
+                      src={allTokens.find(t => t.symbol === selectedToken)?.logo || getTokenLogo(selectedToken)}
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="dropdown-icon"
+                    />
+                  )}
+                  <span>{selectedToken === 'ALL' ? 'All Tokens' : selectedToken}</span>
                 </div>
+                <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
+              {tokenDropdownOpen && (
+                <>
+                  <div className="dropdown-backdrop" onClick={() => setTokenDropdownOpen(false)} />
+                  <div className="dropdown-menu">
+                    <div
+                      className={`dropdown-item ${selectedToken === 'ALL' ? 'selected' : ''}`}
+                      onClick={() => { setSelectedToken('ALL'); setTokenDropdownOpen(false) }}
+                    >
+                      <span>All Tokens</span>
+                      {selectedToken === 'ALL' && <span className="check-mark">✓</span>}
+                    </div>
+                    {allTokens.map((token) => (
+                      <div
+                        key={token.symbol}
+                        className={`dropdown-item ${selectedToken === token.symbol ? 'selected' : ''}`}
+                        onClick={() => { setSelectedToken(token.symbol); setTokenDropdownOpen(false) }}
+                      >
+                        <Image src={token.logo} alt="" width={22} height={22} className="dropdown-item-icon" />
+                        <span>{token.symbol}</span>
+                        {selectedToken === token.symbol && <span className="check-mark">✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Chain Dropdown */}
+            <div className="dropdown-wrapper">
+              <div className="dropdown-label">Reward Chain</div>
+              <div
+                className={`dropdown-trigger ${chainDropdownOpen ? 'open' : ''}`}
+                onClick={() => {
+                  setChainDropdownOpen(!chainDropdownOpen)
+                  setTokenDropdownOpen(false)
+                }}
+              >
+                <div className="dropdown-value">
+                  {selectedChain !== 'ALL' && (
+                    <Image
+                      src={allChains.find(c => c.name === selectedChain)?.logo || getChainLogo(selectedChain)}
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="dropdown-icon"
+                    />
+                  )}
+                  <span>{selectedChain === 'ALL' ? 'All Chains' : selectedChain}</span>
+                </div>
+                <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              {chainDropdownOpen && (
+                <>
+                  <div className="dropdown-backdrop" onClick={() => setChainDropdownOpen(false)} />
+                  <div className="dropdown-menu">
+                    <div
+                      className={`dropdown-item ${selectedChain === 'ALL' ? 'selected' : ''}`}
+                      onClick={() => { setSelectedChain('ALL'); setChainDropdownOpen(false) }}
+                    >
+                      <span>All Chains</span>
+                      {selectedChain === 'ALL' && <span className="check-mark">✓</span>}
+                    </div>
+                    {allChains.map((chain) => (
+                      <div
+                        key={chain.id}
+                        className={`dropdown-item ${selectedChain === chain.name ? 'selected' : ''}`}
+                        onClick={() => { setSelectedChain(chain.name); setChainDropdownOpen(false) }}
+                      >
+                        <Image src={chain.logo} alt="" width={22} height={22} className="dropdown-item-icon" />
+                        <span>{chain.name}</span>
+                        {selectedChain === chain.name && <span className="check-mark">✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Table Header */}
-          <div className="table-container">
-            <div className="table-header">
-              <div className="header-cell token-col">Token</div>
-              <div className="header-cell provide-col">Provide On</div>
-              <div className="header-cell reward-col">Reward On</div>
-              <div className="header-cell request-col">Request From</div>
-              <div className="header-cell action-col"></div>
-            </div>
-
-            {/* Table Rows */}
-            <div className="table-body">
-              {requests
-                .filter(req => req.data !== null)
-                .filter(req => {
-                  if (!req.data) return false
-                  
-                  // Filter by token
-                  if (selectedToken !== 'ALL') {
-                    const tokenData = allTokens.find(t => t.symbol === selectedToken)
-                    if (tokenData) {
-                      const requestTokenAddress = req.data.l2SourceToken.toLowerCase()
-                      if (!tokenData.addresses.includes(requestTokenAddress)) {
-                        return false
-                      }
-                    }
+          {/* Request Cards */}
+          <div className="cards-container">
+            {requests
+              .filter(req => req.data !== null)
+              .filter(req => {
+                if (!req.data) return false
+                if (selectedToken !== 'ALL') {
+                  const tokenData = allTokens.find(t => t.symbol === selectedToken)
+                  if (tokenData && !tokenData.addresses.includes(req.data.l2SourceToken.toLowerCase())) {
+                    return false
                   }
-                  
-                  // Filter by chain (reward on = source chain where request originated)
-                  if (selectedChain !== 'ALL') {
-                    if (req.chainName !== selectedChain) {
-                      return false
-                    }
-                  }
-                  
-                  return true
-                })
-                .map((request, index) => {
-                const data = request.data!
-                const destinationChain = getChainName(data.l2DestinationChainId)
-                // Use edited amount if available, otherwise use original ctAmount
-                const actualCtAmount = data.editedCtAmount || data.ctAmount
-                // Provider PROVIDES actualCtAmount on L1 (Ethereum)
-                const provideAmount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
-                // Provider GETS REWARDED totalAmount on L2 source chain (where request came from)
-                const rewardAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
-                const serviceFeeBigInt = data.totalAmount - actualCtAmount
-                const serviceFeeAmount = formatTokenAmount(serviceFeeBigInt, data.l2SourceToken)
-                const profitPercentage = ((Number(serviceFeeBigInt) / Number(data.totalAmount)) * 100).toFixed(2)
+                }
+                if (selectedChain !== 'ALL' && req.chainName !== selectedChain) {
+                  return false
+                }
+                return true
+              })
+              .map((request) => {
+              const data = request.data!
+              const actualCtAmount = data.editedCtAmount || data.ctAmount
+              const provideAmount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
+              const rewardAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
+              const serviceFeeBigInt = data.totalAmount - actualCtAmount
+              const profitPercentage = ((Number(serviceFeeBigInt) / Number(data.totalAmount)) * 100).toFixed(2)
+              const tokenSymbol = allTokens.find(t => t.addresses.includes(data.l2SourceToken.toLowerCase()))?.symbol || 'TOKEN'
+              const tokenLogo = allTokens.find(t => t.addresses.includes(data.l2SourceToken.toLowerCase()))?.logo || getTokenLogo('ERC20')
+              const isOwnRequest = request.data && connectedAddress && request.data.requester.toLowerCase() === connectedAddress.toLowerCase()
 
-                return (
-                  <div key={`request-${request.contractAddress}-${request.saleCount}`} className="table-row">
-                    {/* Token Column */}
-                    <div className="table-cell token-col">
-                      <div className="token-info">
-                        <span className="token-icon">{renderTokenLogo(data.l2SourceToken)}</span>
-                        <span className="token-symbol">
-                          {allTokens.find(t => t.addresses.includes(data.l2SourceToken.toLowerCase()))?.symbol || 'UNKNOWN'}
-                        </span>
-                      </div>
+              return (
+                <div
+                  key={`request-${request.contractAddress}-${request.saleCount}`}
+                  className={`request-card ${isOwnRequest ? 'own-request' : ''}`}
+                  onClick={() => !isOwnRequest && handleProvide(request)}
+                >
+                  <div className="card-send">
+                    <div className="card-label">Send</div>
+                    <div className="card-amount">
+                      <Image src={tokenLogo} alt={tokenSymbol} width={22} height={22} className="token-logo" />
+                      <span>{provideAmount}</span>
                     </div>
-
-                    {/* Provide On Column - Provider sends ctAmount on Ethereum (L1) */}
-                    <div className="table-cell provide-col">
-                      <div className="amount-info">
-                        <div className="amount-row">
-                          <span className="amount-value">{provideAmount}</span>
-                        </div>
-                        <div className="chain-info">
-                          <span className="chain-icon">
-                            <Image src={getChainLogo('Ethereum')} alt="Ethereum" width={16} height={16} style={{ borderRadius: '50%' }} />
-                          </span>
-                          <span className="chain-name">Ethereum</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Reward On Column - Provider gets totalAmount on source L2 chain */}
-                    <div className="table-cell reward-col">
-                      <div className="amount-info">
-                        <span className="amount-value">{rewardAmount}</span>
-                        <span className="profit-badge">+{profitPercentage}%</span>
-                        <div className="chain-info">
-                          <span className="chain-icon">{renderChainLogo(request.chainName)}</span>
-                          <span className="chain-name">{request.chainName}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Request From Column */}
-                    <div className="table-cell request-col">
-                      <div className="chain-info">
-                        <span className="chain-icon">{renderChainLogo(request.chainName)}</span>
-                        <span className="chain-name">{request.chainName}</span>
-                      </div>
-                    </div>
-
-                    {/* Action Column */}
-                    <div className="table-cell action-col">
-                      {request.data && connectedAddress && 
-                       request.data.requester.toLowerCase() === connectedAddress.toLowerCase() ? (
-                        <button 
-                          className="pending-btn"
-                          disabled
-                          title="You cannot provide liquidity for your own request"
-                        >
-                          Pending
-                        </button>
-                      ) : (
-                        <button 
-                          onClick={() => handleProvide(request)}
-                          className="provide-btn"
-                        >
-                          Provide
-                        </button>
-                      )}
+                    <div className="card-chain">
+                      <span className="chain-prefix">on</span>
+                      <Image src={getChainLogo('Ethereum')} alt="" width={14} height={14} className="chain-logo" />
+                      <span>Ethereum</span>
                     </div>
                   </div>
-                )
-              })}
-            </div>
+
+                  <div className="card-arrow">
+                    <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
+                      <path d="M0 6h16M12 1l5 5-5 5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+
+                  <div className="card-receive">
+                    <div className="card-label">Receive</div>
+                    <div className="card-amount">
+                      <Image src={tokenLogo} alt={tokenSymbol} width={22} height={22} className="token-logo" />
+                      <span>{rewardAmount}</span>
+                    </div>
+                    <div className="card-chain">
+                      <span className="chain-prefix">on</span>
+                      <Image src={getChainLogo(request.chainName)} alt="" width={14} height={14} className="chain-logo" />
+                      <span>{request.chainName}</span>
+                    </div>
+                  </div>
+
+                  <div className="card-profit">
+                    <div className="profit-label">Profit</div>
+                    <span className="profit-value">+{profitPercentage}%</span>
+                  </div>
+
+                  <div className="card-action">
+                    {isOwnRequest ? (
+                      <button className="btn-yours" disabled>Yours</button>
+                    ) : (
+                      <button onClick={() => handleProvide(request)} className="btn-provide">Provide</button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+
+            {requests.filter(req => req.data !== null).length === 0 && !loading && (
+              <div className="empty-cards">No requests available</div>
+            )}
           </div>
 
           {/* Refresh Buttons */}
@@ -944,7 +941,7 @@ export const RequestPool = () => {
       </div>
 
       <footer className="footer">
-        © 2026 All rights reserved.
+        © 2025 CrossTrade. All rights reserved.
       </footer>
 
       {/* Review Provide Modal */}
@@ -1004,8 +1001,8 @@ export const RequestPool = () => {
           align-items: center;
           justify-content: flex-start;
           min-height: calc(100vh - 80px);
-          padding: 40px 20px 60px 20px;
-          margin-top: 80px;
+          padding: 0 20px 60px 20px;
+          margin-top: 70px;
         }
 
         .page-title {
@@ -1041,7 +1038,10 @@ export const RequestPool = () => {
 
         .pool-container {
           width: 100%;
-          max-width: 1200px;
+          max-width: 1000px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         .loading-state, .error-state, .empty-state {
@@ -1060,252 +1060,297 @@ export const RequestPool = () => {
           margin: 0 auto 16px auto;
         }
 
-        .filter-controls {
+        /* Filter Section - matches CreateRequest style */
+        .filter-row {
           display: flex;
-          gap: 32px;
-          margin-bottom: 16px;
-          padding: 20px 24px;
-          background: linear-gradient(145deg, #161618 0%, #111113 100%);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        .filter-section {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .filter-label {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .filter-buttons {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .filter-btn {
-          background: #1f1f23;
-          border: 1px solid #27272a;
-          border-radius: 10px;
-          padding: 8px 14px;
-          color: #9ca3af;
-          font-size: 13px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          display: inline-flex;
-          align-items: center;
-        }
-
-        .filter-btn:hover {
-          border-color: #6366f1;
-          color: #ffffff;
-          background: rgba(99, 102, 241, 0.1);
-        }
-
-        .filter-btn.active {
-          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-          border-color: transparent;
-          color: #ffffff;
+          gap: 16px;
+          margin-bottom: 24px;
+          width: 100%;
+          max-width: 1000px;
         }
 
         .dropdown-wrapper {
+          flex: 1;
           position: relative;
-          display: inline-flex;
-          align-items: center;
         }
 
-        .filter-dropdown {
-          background: #1f1f23;
-          border: 1px solid #27272a;
-          border-radius: 10px;
-          padding: 8px 32px 8px 14px;
-          color: #9ca3af;
+        .dropdown-label {
+          color: #6b7280;
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 400;
+          margin-bottom: 8px;
+        }
+
+        .dropdown-trigger {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #1f1f23;
+          border-radius: 16px;
+          padding: 14px 16px;
           cursor: pointer;
-          transition: all 0.15s ease;
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 10px center;
+          transition: all 0.2s ease;
         }
 
-        .filter-dropdown:hover {
-          border-color: #6366f1;
-          color: #ffffff;
-          background-color: rgba(99, 102, 241, 0.1);
+        .dropdown-trigger:hover {
+          background: #27272a;
         }
 
-        .filter-dropdown:focus {
-          outline: none;
-          border-color: #6366f1;
-          color: #ffffff;
+        .dropdown-trigger.open {
+          background: #27272a;
         }
 
-        .filter-dropdown.active {
-          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-          border-color: transparent;
-          color: #ffffff;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 10px center;
-        }
-
-        .filter-dropdown option {
-          background: #1a1a1a;
-          color: #ffffff;
-          padding: 10px 14px;
-        }
-
-        .table-container {
-          background: linear-gradient(145deg, #161618 0%, #111113 100%);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        .table-header {
-          display: grid;
-          grid-template-columns: 100px 1fr 1fr 120px 100px;
-          gap: 16px;
-          padding: 16px 24px;
-          background: rgba(0, 0, 0, 0.2);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .header-cell {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-          text-align: left;
-        }
-
-        .table-body {
-          max-height: 600px;
-          overflow-y: auto;
-        }
-
-        .table-row {
-          display: grid;
-          grid-template-columns: 100px 1fr 1fr 120px 100px;
-          gap: 16px;
-          padding: 18px 24px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-          transition: all 0.15s ease;
-        }
-
-        .table-row:hover {
-          background: rgba(99, 102, 241, 0.06);
-        }
-
-        .table-row:last-child {
-          border-bottom: none;
-        }
-
-        .table-cell {
+        .dropdown-value {
           display: flex;
           align-items: center;
+          gap: 12px;
         }
 
-        .token-info {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .token-icon {
-          font-size: 20px;
-        }
-
-        .token-symbol {
+        .dropdown-value span {
           color: #ffffff;
           font-size: 16px;
           font-weight: 600;
         }
 
-        .amount-info {
+        .dropdown-icon {
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .dropdown-chevron {
+          color: #6b7280;
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .dropdown-trigger.open .dropdown-chevron {
+          transform: rotate(180deg);
+        }
+
+        .dropdown-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 99;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: #1f1f23;
+          border-radius: 16px;
+          padding: 8px;
+          z-index: 100;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          max-height: 280px;
+          overflow-y: auto;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: background 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-item.selected {
+          background: rgba(99, 102, 241, 0.12);
+        }
+
+        .dropdown-item span {
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 500;
+          flex: 1;
+        }
+
+        .dropdown-item-icon {
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .check-mark {
+          color: #818cf8;
+          font-size: 16px;
+        }
+
+        /* Cards - clean table style */
+        .cards-container {
+          width: 100%;
+          max-width: 1000px;
+          background: linear-gradient(145deg, #161618 0%, #111113 100%);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .request-card {
+          display: grid;
+          grid-template-columns: 1fr 48px 1fr 90px 110px;
+          align-items: center;
+          gap: 20px;
+          padding: 20px 24px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+          transition: background 0.15s ease;
+          cursor: pointer;
+        }
+
+        .request-card:last-child {
+          border-bottom: none;
+        }
+
+        .request-card:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .request-card.own-request {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .card-send,
+        .card-receive {
           display: flex;
           flex-direction: column;
-          gap: 4px;
-        }
-
-        .amount-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .amount-value {
-          color: #ffffff;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 15px;
-          font-weight: 600;
-          font-feature-settings: 'tnum' on, 'lnum' on;
-        }
-
-        .chain-info {
-          display: flex;
-          align-items: center;
           gap: 6px;
         }
 
-        .chain-icon {
-          font-size: 14px;
-        }
-
-        .chain-name {
-          color: #9ca3af;
+        .card-label {
+          color: #6b7280;
           font-size: 12px;
+          font-weight: 500;
         }
 
-        .profit-badge {
-          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-          color: #ffffff;
-          padding: 4px 8px;
-          border-radius: 6px;
+        .card-amount {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .card-amount span {
           font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
+          font-size: 16px;
           font-weight: 600;
-          margin-left: 8px;
+          color: #ffffff;
         }
 
-        .provide-btn {
-          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-          color: #ffffff;
+        .token-logo {
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .card-chain {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 2px;
+        }
+
+        .card-chain span {
+          color: #9ca3af;
+          font-size: 13px;
+          font-weight: 400;
+        }
+
+        .chain-prefix {
+          color: #6b7280;
+          font-size: 12px;
+          margin-right: 2px;
+        }
+
+        .chain-logo {
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .card-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transform: translateX(-100px);
+        }
+
+        .card-profit {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          margin-right: 16px;
+        }
+
+        .profit-label {
+          color: #9ca3af;
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .profit-value {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 18px;
+          font-weight: 700;
+          color: #4ade80;
+          text-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .card-action {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .btn-provide {
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
           border: none;
           border-radius: 10px;
-          padding: 10px 18px;
+          padding: 10px 20px;
+          color: #ffffff;
           font-size: 13px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+          box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
+          letter-spacing: 0.3px;
         }
 
-        .provide-btn:hover {
-          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        .btn-provide:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+          background: linear-gradient(135deg, #2dd968 0%, #22c55e 100%);
         }
 
-        .pending-btn {
-          background: #27272a;
-          color: #71717a;
+        .btn-provide:active {
+          transform: translateY(0);
+        }
+
+        .btn-yours {
+          background: rgba(39, 39, 42, 0.5);
           border: 1px solid #3f3f46;
-          border-radius: 10px;
-          padding: 10px 18px;
-          font-size: 13px;
-          font-weight: 600;
+          border-radius: 12px;
+          padding: 12px 24px;
+          color: #52525b;
+          font-size: 14px;
+          font-weight: 500;
           cursor: not-allowed;
+        }
+
+        .empty-cards {
+          text-align: center;
+          padding: 60px 20px;
+          color: #6b7280;
+          font-size: 14px;
         }
 
         .refresh-buttons {
@@ -1355,60 +1400,106 @@ export const RequestPool = () => {
           100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
-          .filter-controls {
-            flex-direction: column;
+        @media (max-width: 900px) {
+          .request-card {
+            grid-template-columns: 1fr 30px 1fr 80px 90px;
+            gap: 12px;
+            padding: 14px 16px;
+          }
+
+          .card-amount {
+            font-size: 14px;
+          }
+        }
+
+        @media (max-width: 900px) {
+          .request-card {
+            grid-template-columns: 1fr 40px 1fr 80px 100px;
             gap: 16px;
+            padding: 18px 20px;
+          }
+
+          .card-amount span {
+            font-size: 14px;
+          }
+
+          .btn-provide,
+          .btn-yours {
+            padding: 10px 18px;
+            font-size: 13px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .filter-row {
+            flex-direction: column;
+            gap: 12px;
           }
 
           .page-title {
             font-size: 24px;
           }
 
-          .table-header,
-          .table-row {
-            grid-template-columns: 80px 1fr 1fr 80px 80px;
-            gap: 8px;
-            padding: 14px 16px;
+          .request-card {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 16px;
+            padding: 20px;
           }
 
-          .amount-value {
-            font-size: 13px;
-          }
-
-          .chain-name {
+          .card-arrow {
             display: none;
           }
 
-          .provide-btn,
-          .pending-btn {
-            padding: 8px 12px;
-            font-size: 12px;
+          .card-send {
+            grid-column: 1;
+            grid-row: 1;
+          }
+
+          .card-receive {
+            grid-column: 2;
+            grid-row: 1;
+          }
+
+          .card-profit {
+            grid-column: 1;
+            grid-row: 2;
+            justify-content: flex-start;
+          }
+
+          .card-action {
+            grid-column: 2;
+            grid-row: 2;
           }
         }
 
         @media (max-width: 480px) {
-          .table-header,
-          .table-row {
-            grid-template-columns: 1fr;
-            gap: 12px;
+          .content {
+            padding: 0 16px 40px;
           }
 
-          .table-cell {
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          .request-card {
+            padding: 16px;
+            gap: 14px;
           }
 
-          .table-cell:before {
-            content: attr(data-label);
-            color: #9ca3af;
+          .card-amount span {
+            font-size: 13px;
+          }
+
+          .card-chain span {
             font-size: 12px;
-            font-weight: 500;
           }
 
-          .header-cell {
-            display: none;
+          .btn-provide,
+          .btn-yours {
+            padding: 10px 16px;
+            font-size: 13px;
+          }
+
+          .profit-value {
+            font-size: 13px;
+            padding: 5px 10px;
           }
         }
       `}</style>
