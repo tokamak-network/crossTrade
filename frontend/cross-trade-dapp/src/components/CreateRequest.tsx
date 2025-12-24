@@ -51,7 +51,6 @@ export const CreateRequest = () => {
   const [requestTo, setRequestTo] = useState('')
   const [sendAmount, setSendAmount] = useState('')
   const [sendToken, setSendToken] = useState('eth') // Default to eth (lowercase to match config)
-  const [receiveAmount, setReceiveAmount] = useState('')
   // receiveToken is always the same as sendToken - no separate state needed
   const [toAddress, setToAddress] = useState('')
   const [serviceFeeMode, setServiceFeeMode] = useState('recommended') // 'recommended' or 'advanced'
@@ -62,6 +61,10 @@ export const CreateRequest = () => {
   const [isApproving, setIsApproving] = useState(false)
   const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>()
   const [isTokenApproved, setIsTokenApproved] = useState(false) // Track if token is approved
+  const [fromDropdownOpen, setFromDropdownOpen] = useState(false)
+  const [toDropdownOpen, setToDropdownOpen] = useState(false)
+  const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState({ noDeadline: true, canBeEdited: true })
 
   // Native token address constant (0x0000... means native token - ETH, TON, etc.)
   const NATIVE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -210,6 +213,12 @@ export const CreateRequest = () => {
   // Validate that source and destination chains are different
   // Trim whitespace and compare to handle any edge cases
   const isSameChain = !!(requestFrom && requestTo && requestFrom.trim() === requestTo.trim())
+
+  // Validate amount is valid number > 0
+  const isValidAmount = !!(sendAmount && parseFloat(sendAmount) > 0)
+
+  // Validate toAddress is valid Ethereum address
+  const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(toAddress)
 
   // Auto-reset requestTo if it becomes the same as requestFrom
   useEffect(() => {
@@ -627,52 +636,65 @@ export const CreateRequest = () => {
       <div className="content">
         <div className="header-section">
           <h1 className="page-title">Create a request</h1>
-          <span className="mode-badge" style={{
-            color: communicationMode === 'L2_L2' ? '#818cf8' : '#4ade80'
-          }}>
+          <span className={`mode-badge ${communicationMode === 'L2_L2' ? 'l2-l2' : 'l2-l1'}`}>
             {communicationMode === 'L2_L2' ? 'L2 ↔ L2' : 'L2 → L1'}
           </span>
-          <a href="/request-pool" className="request-pool-button">
-            Request Pool
-          </a>
         </div>
 
         <form onSubmit={handleSubmit} className="request-form">
           {/* Card 1: Chain & Amount */}
           <div className="form-card">
-            {/* Request From/To Section - Superbridge Style */}
+            {/* Request From/To Section - Custom Dropdowns */}
             <div className="chain-selector-row">
-              <label className="chain-box">
-                <Image
-                  src={getChainLogo(requestFrom)}
-                  alt={requestFrom || 'chain'}
-                  width={36}
-                  height={36}
-                  style={{ borderRadius: '10px', flexShrink: 0 }}
-                />
-                <div className="chain-info">
-                  <span className="chain-label">From</span>
-                  <span className="chain-name">{requestFrom || 'Select chain'}</span>
-                </div>
-                <select
-                  value={requestFrom}
-                  onChange={(e) => setRequestFrom(e.target.value)}
-                  className="chain-select-hidden"
+              <div className="chain-dropdown-wrapper">
+                <div
+                  className={`chain-box ${fromDropdownOpen ? 'open' : ''}`}
+                  onClick={() => {
+                    setFromDropdownOpen(!fromDropdownOpen)
+                    setToDropdownOpen(false)
+                    setTokenDropdownOpen(false)
+                  }}
                 >
-                  <option value="" disabled>Select chain</option>
-                  {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
-                    .filter((chain, index, self) =>
-                      index === self.findIndex(c => c.chainId === chain.chainId)
-                    )
-                    .filter(({ chainId }) => !isL1Chain(chainId))
-                    .map(({ chainId, config }) => (
-                      <option key={chainId} value={config.display_name}>
-                        {config.display_name}
-                      </option>
-                    ))
-                  }
-                </select>
-              </label>
+                  <Image
+                    src={getChainLogo(requestFrom)}
+                    alt={requestFrom || 'chain'}
+                    width={36}
+                    height={36}
+                    style={{ borderRadius: '10px', flexShrink: 0 }}
+                  />
+                  <div className="chain-info">
+                    <span className="chain-label">From</span>
+                    <span className="chain-name">{requestFrom || 'Select chain'}</span>
+                  </div>
+                </div>
+                {fromDropdownOpen && (
+                  <>
+                    <div className="dropdown-backdrop" onClick={() => setFromDropdownOpen(false)} />
+                    <div className="chain-dropdown-menu">
+                      {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                        .filter((chain, index, self) =>
+                          index === self.findIndex(c => c.chainId === chain.chainId)
+                        )
+                        .filter(({ chainId }) => !isL1Chain(chainId))
+                        .map(({ chainId, config }) => (
+                          <div
+                            key={chainId}
+                            className={`dropdown-item ${requestFrom === config.display_name ? 'selected' : ''}`}
+                            onClick={() => {
+                              setRequestFrom(config.display_name)
+                              setFromDropdownOpen(false)
+                            }}
+                          >
+                            <Image src={getChainLogo(config.display_name)} alt="" width={24} height={24} style={{ borderRadius: '8px' }} />
+                            <span>{config.display_name}</span>
+                            {requestFrom === config.display_name && <span className="check-mark">✓</span>}
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </>
+                )}
+              </div>
 
               <svg
                 className="swap-icon"
@@ -682,6 +704,11 @@ export const CreateRequest = () => {
                 fill="#6b7280"
                 onClick={() => {
                   if (requestFrom && requestTo) {
+                    // Prevent swap if it would put L1 as source
+                    const toChainId = getChainIdByName(requestTo)
+                    if (isL1Chain(toChainId)) {
+                      return // Don't swap - L1 cannot be source
+                    }
                     const temp = requestFrom
                     setRequestFrom(requestTo)
                     setRequestTo(temp)
@@ -691,51 +718,69 @@ export const CreateRequest = () => {
                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
               </svg>
 
-              <label className="chain-box">
-                <div className="chain-info" style={{ alignItems: 'flex-end' }}>
-                  <span className="chain-label">To</span>
-                  <span className="chain-name">{requestTo || 'Select chain'}</span>
-                </div>
-                <Image
-                  src={getChainLogo(requestTo)}
-                  alt={requestTo || 'chain'}
-                  width={36}
-                  height={36}
-                  style={{ borderRadius: '10px', flexShrink: 0 }}
-                />
-                <select
-                  value={requestTo}
-                  onChange={(e) => setRequestTo(e.target.value)}
-                  className="chain-select-hidden"
+              <div className="chain-dropdown-wrapper">
+                <div
+                  className={`chain-box ${toDropdownOpen ? 'open' : ''}`}
+                  onClick={() => {
+                    setToDropdownOpen(!toDropdownOpen)
+                    setFromDropdownOpen(false)
+                    setTokenDropdownOpen(false)
+                  }}
                 >
-                  <option value="" disabled>Select chain</option>
-                  {(() => {
-                    const allowedDestinations = getAllowedDestinationChains()
-                    return [...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
-                      .filter((chain, index, self) =>
-                        index === self.findIndex(c => c.chainId === chain.chainId)
-                      )
-                      .filter(({ config }) => config.display_name !== requestFrom)
-                      .filter(({ chainId }) => {
-                        if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
-                          return false
-                        }
-                        return true
-                      })
-                      .filter(({ chainId }) => {
-                        if (!allowedDestinations || allowedDestinations.length === 0) {
-                          return true
-                        }
-                        return allowedDestinations.includes(chainId)
-                      })
-                      .map(({ chainId, config }) => (
-                        <option key={chainId} value={config.display_name}>
-                          {config.display_name}
-                        </option>
-                      ))
-                  })()}
-                </select>
-              </label>
+                  <div className="chain-info" style={{ alignItems: 'flex-end' }}>
+                    <span className="chain-label">To</span>
+                    <span className="chain-name">{requestTo || 'Select chain'}</span>
+                  </div>
+                  <Image
+                    src={getChainLogo(requestTo)}
+                    alt={requestTo || 'chain'}
+                    width={36}
+                    height={36}
+                    style={{ borderRadius: '10px', flexShrink: 0 }}
+                  />
+                </div>
+                {toDropdownOpen && (
+                  <>
+                    <div className="dropdown-backdrop" onClick={() => setToDropdownOpen(false)} />
+                    <div className="chain-dropdown-menu">
+                      {(() => {
+                        const allowedDestinations = getAllowedDestinationChains()
+                        return [...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                          .filter((chain, index, self) =>
+                            index === self.findIndex(c => c.chainId === chain.chainId)
+                          )
+                          .filter(({ config }) => config.display_name !== requestFrom)
+                          .filter(({ chainId }) => {
+                            if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
+                              return false
+                            }
+                            return true
+                          })
+                          .filter(({ chainId }) => {
+                            if (!allowedDestinations || allowedDestinations.length === 0) {
+                              return true
+                            }
+                            return allowedDestinations.includes(chainId)
+                          })
+                          .map(({ chainId, config }) => (
+                            <div
+                              key={chainId}
+                              className={`dropdown-item ${requestTo === config.display_name ? 'selected' : ''}`}
+                              onClick={() => {
+                                setRequestTo(config.display_name)
+                                setToDropdownOpen(false)
+                              }}
+                            >
+                              <Image src={getChainLogo(config.display_name)} alt="" width={24} height={24} style={{ borderRadius: '8px' }} />
+                              <span>{config.display_name}</span>
+                              {requestTo === config.display_name && <span className="check-mark">✓</span>}
+                            </div>
+                          ))
+                      })()}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* You Send Section */}
@@ -755,36 +800,54 @@ export const CreateRequest = () => {
                   placeholder="0.00"
                   className="amount-input"
                 />
-                <label className="token-pill">
-                  <Image src={getTokenLogo(sendToken)} alt={sendToken} width={22} height={22} style={{ borderRadius: '50%' }} />
-                  <span className="token-name">{sendToken}</span>
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                    <path d="M3 4.5L6 7.5L9 4.5" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <select
-                    value={sendToken}
-                    onChange={(e) => setSendToken(e.target.value)}
-                    className="token-select-hidden"
+                <div className="token-dropdown-wrapper">
+                  <div
+                    className={`token-pill ${tokenDropdownOpen ? 'open' : ''}`}
+                    onClick={() => {
+                      setTokenDropdownOpen(!tokenDropdownOpen)
+                      setFromDropdownOpen(false)
+                      setToDropdownOpen(false)
+                    }}
                   >
-                    {getAvailableTokensForMode(requestFrom).map((token) => (
-                      <option key={token} value={token}>
-                        {token}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    <Image src={getTokenLogo(sendToken)} alt={sendToken} width={22} height={22} style={{ borderRadius: '50%' }} />
+                    <span className="token-name">{sendToken}</span>
+                  </div>
+                  {tokenDropdownOpen && (
+                    <>
+                      <div className="dropdown-backdrop" onClick={() => setTokenDropdownOpen(false)} />
+                      <div className="token-dropdown-menu">
+                        {getAvailableTokensForMode(requestFrom).map((token) => (
+                          <div
+                            key={token}
+                            className={`dropdown-item ${sendToken === token ? 'selected' : ''}`}
+                            onClick={() => {
+                              setSendToken(token)
+                              setTokenDropdownOpen(false)
+                            }}
+                          >
+                            <Image src={getTokenLogo(token)} alt="" width={22} height={22} style={{ borderRadius: '50%' }} />
+                            <span>{token.toUpperCase()}</span>
+                            {sendToken === token && <span className="check-mark">✓</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
               <div className="balance-row">
-                <span className="balance-text">Balance: {displayBalance} {sendToken}</span>
-                <span
-                  className="max-link"
-                  onClick={() => {
-                    if (displayBalance && displayBalance !== '0.00') {
-                      setSendAmount(displayBalance)
-                    }
-                  }}
-                >
-                  Max
+                <span className="balance-text">
+                  Balance: {displayBalance} {sendToken}
+                  <span
+                    className="max-link"
+                    onClick={() => {
+                      if (displayBalance && displayBalance !== '0.00') {
+                        setSendAmount(displayBalance)
+                      }
+                    }}
+                  >
+                    Max
+                  </span>
                 </span>
               </div>
             </div>
@@ -803,7 +866,7 @@ export const CreateRequest = () => {
           </div>
 
           {/* Card 2: You Receive (Preview) */}
-          <div className="form-card">
+          <div className="form-card receive-card">
             <div className="receive-section">
               <span className="receive-label">You receive</span>
               <div className="receive-row">
@@ -868,27 +931,31 @@ export const CreateRequest = () => {
           </div>
 
           {/* Request/Connect Button */}
-          <button 
-              type={connectedAddress ? "submit" : "button"} 
+          <button
+              type={connectedAddress ? "submit" : "button"}
               className="request-button"
-              disabled={connectedAddress && (!requestFrom || !requestTo || isSameChain)}
+              disabled={connectedAddress && (!requestFrom || !requestTo || isSameChain || !isValidAmount || !isValidAddress)}
               onClick={connectedAddress ? undefined : () => {
                 // Trigger AppKit modal programmatically
                 const appkitButton = document.querySelector('appkit-button') as any;
                 if (appkitButton) appkitButton.click();
               }}
-              style={{ 
-                opacity: connectedAddress && (!requestFrom || !requestTo || isSameChain) ? 0.5 : 1,
-                cursor: connectedAddress && (!requestFrom || !requestTo || isSameChain) ? 'not-allowed' : 'pointer'
+              style={{
+                opacity: connectedAddress && (!requestFrom || !requestTo || isSameChain || !isValidAmount || !isValidAddress) ? 0.5 : 1,
+                cursor: connectedAddress && (!requestFrom || !requestTo || isSameChain || !isValidAmount || !isValidAddress) ? 'not-allowed' : 'pointer'
               }}
             >
-              {!connectedAddress 
-                ? "Please Connect Wallet" 
-                : !requestFrom || !requestTo 
+              {!connectedAddress
+                ? "Connect Wallet"
+                : !requestFrom || !requestTo
                   ? "Select chains to continue"
                   : isSameChain
-                    ? "Cannot transfer to the same chain"
-                    : "Request"}
+                    ? "Cannot transfer to same chain"
+                    : !isValidAmount
+                      ? "Enter amount"
+                      : !isValidAddress
+                        ? "Enter valid address"
+                        : "Request"}
           </button>
         </form>
 
@@ -960,16 +1027,28 @@ export const CreateRequest = () => {
 
             <div className="terms-section">
               <label className="checkbox-label">
-                <input type="checkbox" defaultChecked />
+                <input
+                  type="checkbox"
+                  checked={termsAccepted.noDeadline}
+                  onChange={(e) => setTermsAccepted(prev => ({ ...prev, noDeadline: e.target.checked }))}
+                />
                 I understand there is no guaranteed deadline.
               </label>
               <label className="checkbox-label">
-                <input type="checkbox" defaultChecked />
+                <input
+                  type="checkbox"
+                  checked={termsAccepted.canBeEdited}
+                  onChange={(e) => setTermsAccepted(prev => ({ ...prev, canBeEdited: e.target.checked }))}
+                />
                 I understand the request can be edited from L1.
               </label>
             </div>
 
-            <button onClick={handleConfirmRequest} className="confirm-btn">
+            <button
+              onClick={handleConfirmRequest}
+              className="confirm-btn"
+              disabled={!termsAccepted.noDeadline || !termsAccepted.canBeEdited}
+            >
               {(() => {
                 const fromChainId = getChainIdByName(requestFrom)
                 const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken)
@@ -1121,17 +1200,17 @@ export const CreateRequest = () => {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
           min-height: 100vh;
-          padding: 40px 20px;
+          padding: 20px 20px 40px;
         }
 
         .header-section {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 16px;
-          margin-bottom: 20px;
+          gap: 12px;
+          margin-bottom: 28px;
           flex-wrap: wrap;
         }
 
@@ -1143,30 +1222,21 @@ export const CreateRequest = () => {
         }
 
         .mode-badge {
-          font-size: 13px;
-          font-weight: 600;
-          color: #a5b4fc;
-          background: rgba(99, 102, 241, 0.1);
-          padding: 6px 12px;
-          border-radius: 20px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 18px;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 10px;
         }
 
-        .request-pool-button {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          border-radius: 8px;
-          padding: 12px 20px;
-          color: #ffffff;
-          text-decoration: none;
-          font-size: 14px;
-          font-weight: 500;
-          transition: all 0.2s ease;
-          backdrop-filter: blur(10px);
+        .mode-badge.l2-l2 {
+          color: #818cf8;
+          background: rgba(99, 102, 241, 0.15);
         }
 
-        .request-pool-button:hover {
-          border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.1);
+        .mode-badge.l2-l1 {
+          color: #4ade80;
+          background: rgba(34, 197, 94, 0.15);
         }
 
         .request-form {
@@ -1178,16 +1248,19 @@ export const CreateRequest = () => {
         }
 
         .form-card {
-          background: linear-gradient(145deg, #161618 0%, #111113 100%);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 24px;
+          background: linear-gradient(145deg, #131315 0%, #0e0e10 100%);
+          border: 1.5px solid rgba(255, 255, 255, 0.15);
+          border-radius: 20px;
           padding: 24px;
           display: flex;
           flex-direction: column;
           gap: 20px;
-          box-shadow:
-            0 4px 24px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-card.receive-card {
+          padding: 16px 32px;
+          gap: 0;
         }
 
         .chain-selector-row {
@@ -1196,17 +1269,96 @@ export const CreateRequest = () => {
           gap: 12px;
         }
 
-        .chain-box {
+        .chain-dropdown-wrapper {
           flex: 1;
           min-width: 0;
-          background: #1f1f23;
+          position: relative;
+        }
+
+        .token-dropdown-wrapper {
+          position: relative;
+        }
+
+        .dropdown-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 99;
+        }
+
+        .chain-dropdown-menu,
+        .token-dropdown-menu {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: #151517;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 6px;
+          z-index: 100;
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+          max-height: 260px;
+          overflow-y: auto;
+        }
+
+        .token-dropdown-menu {
+          min-width: 150px;
+          right: 0;
+          left: auto;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-item.selected {
+          background: rgba(99, 102, 241, 0.15);
+        }
+
+        .dropdown-item span {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          flex: 1;
+        }
+
+        .check-mark {
+          color: #818cf8;
+          font-size: 13px;
+          font-weight: 600;
+        }
+
+        .chain-box {
+          background: #1a1a1d;
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 16px;
           padding: 14px 16px;
           display: flex;
           align-items: center;
           gap: 12px;
           cursor: pointer;
-          position: relative;
+          transition: border-color 0.2s ease;
+        }
+
+        .chain-box:hover {
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .chain-box.open {
+          border-color: rgba(99, 102, 241, 0.4);
         }
 
         .chain-info {
@@ -1231,15 +1383,6 @@ export const CreateRequest = () => {
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: 120px;
-        }
-
-        .chain-select-hidden {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          opacity: 0;
-          cursor: pointer;
         }
 
         .swap-icon {
@@ -1275,9 +1418,10 @@ export const CreateRequest = () => {
 
         .max-link {
           color: #818cf8;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 500;
           cursor: pointer;
+          margin-left: 8px;
         }
 
         .max-link:hover {
@@ -1287,11 +1431,11 @@ export const CreateRequest = () => {
         .receive-section {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 4px;
         }
 
         .receive-label {
-          color: #9ca3af;
+          color: #4ade80;
           font-size: 13px;
           font-weight: 500;
         }
@@ -1326,10 +1470,16 @@ export const CreateRequest = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #1f1f23;
+          background: #1a1a1d;
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 10px 32px 32px 10px;
           padding: 12px;
           gap: 12px;
+          transition: border-color 0.2s ease;
+        }
+
+        .amount-input-container:focus-within {
+          border-color: rgba(99, 102, 241, 0.4);
         }
 
         .amount-input {
@@ -1355,30 +1505,28 @@ export const CreateRequest = () => {
           align-items: center;
           gap: 8px;
           padding: 10px 14px;
-          background: #2d2d32;
+          background: #252528;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 24px;
           cursor: pointer;
           position: relative;
           flex-shrink: 0;
+          transition: all 0.15s ease;
         }
 
         .token-pill:hover {
-          background: #38383e;
+          background: #2d2d32;
+          border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .token-pill.open {
+          border-color: rgba(99, 102, 241, 0.4);
         }
 
         .token-name {
           color: #ffffff;
           font-size: 15px;
           font-weight: 600;
-        }
-
-        .token-select-hidden {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          opacity: 0;
-          cursor: pointer;
         }
 
         .address-section {
@@ -1389,8 +1537,8 @@ export const CreateRequest = () => {
 
         .address-input {
           width: 100%;
-          background: #1f1f23;
-          border: none;
+          background: #1a1a1d;
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 10px;
           padding: 14px 16px;
           color: #ffffff;
@@ -1398,10 +1546,11 @@ export const CreateRequest = () => {
           font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
           outline: none;
           box-sizing: border-box;
+          transition: border-color 0.2s ease;
         }
 
         .address-input:focus {
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+          border-color: rgba(99, 102, 241, 0.4);
         }
 
         .address-input::placeholder {
@@ -1442,8 +1591,8 @@ export const CreateRequest = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #18181b;
-          border: 1px solid #27272a;
+          background: #1a1a1d;
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 12px;
           padding: 14px 16px;
           cursor: pointer;
@@ -1451,12 +1600,12 @@ export const CreateRequest = () => {
         }
 
         .fee-opt:hover {
-          border-color: #3f3f46;
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
         .fee-opt.active {
-          border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.06);
+          border-color: rgba(99, 102, 241, 0.5);
+          background: rgba(99, 102, 241, 0.08);
         }
 
         .fee-name {
@@ -1495,14 +1644,14 @@ export const CreateRequest = () => {
         .fee-input {
           display: flex;
           align-items: center;
-          background: #0a0a0b;
-          border: 1px solid #27272a;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 8px;
           padding: 6px 10px;
         }
 
         .fee-opt.active .fee-input {
-          border-color: #3f3f46;
+          border-color: rgba(99, 102, 241, 0.3);
         }
 
         .fee-input input {
