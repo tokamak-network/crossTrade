@@ -1312,27 +1312,18 @@ export const RequestPool = () => {
         }
 
         .btn-provide {
-          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+          background: #16a34a;
           border: none;
-          border-radius: 10px;
-          padding: 10px 20px;
+          border-radius: 8px;
+          padding: 12px 24px;
           color: #ffffff;
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
-          letter-spacing: 0.3px;
         }
 
         .btn-provide:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-          background: linear-gradient(135deg, #2dd968 0%, #22c55e 100%);
-        }
-
-        .btn-provide:active {
-          transform: translateY(0);
+          background: #15803d;
         }
 
         .btn-yours {
