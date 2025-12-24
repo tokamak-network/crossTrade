@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
-import { 
-  CANCEL_CT_ABI, 
-  getTokenDecimals, 
+import {
+  CANCEL_CT_ABI,
+  getTokenDecimals,
   CHAIN_CONFIG_L2_L2,
   CHAIN_CONFIG_L2_L1,
   // L2_L2 specific imports
@@ -13,6 +13,7 @@ import {
   getContractAddressFor_L2_L1,
   L2_L1_CANCEL_CT_ABI
 } from '@/config/contracts'
+import { getExplorerUrl } from '@/utils/chainLogos'
 
 interface CancelCTModalProps {
   isOpen: boolean
@@ -409,6 +410,16 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
           {isSuccess && (
             <div className="status-message success">
               ✅ Request cancelled successfully!
+              {cancelHash && (
+                <a
+                  href={getExplorerUrl(chainId, cancelHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tx-link"
+                >
+                  View on Explorer ↗
+                </a>
+              )}
             </div>
           )}
 
@@ -626,6 +637,23 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
           background: rgba(16, 185, 129, 0.1);
           border: 1px solid #10b981;
           color: #10b981;
+        }
+
+        .tx-link {
+          display: block;
+          margin-top: 8px;
+          padding: 8px 16px;
+          background: #10b981;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .tx-link:hover {
+          background: #0d9668;
         }
 
         .status-message.error {

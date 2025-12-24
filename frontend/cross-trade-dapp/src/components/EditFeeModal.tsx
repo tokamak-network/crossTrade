@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain } from 'wagmi'
-import { 
-  EDIT_FEE_ABI, 
-  getTokenDecimals, 
+import {
+  EDIT_FEE_ABI,
+  getTokenDecimals,
   CHAIN_CONFIG_L2_L2,
   CHAIN_CONFIG_L2_L1,
   // L2_L2 specific imports
@@ -13,6 +13,7 @@ import {
   getContractAddressFor_L2_L1,
   L2_L1_EDIT_FEE_ABI
 } from '@/config/contracts'
+import { getExplorerUrl } from '@/utils/chainLogos'
 
 interface EditFeeModalProps {
   isOpen: boolean
@@ -382,19 +383,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
               <span className="info-value">{totalAmount} {tokenSymbol}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">
-                Current Amount (After Fee):
-                {hasBeenEdited && (
-                  <span style={{ 
-                    fontSize: '11px', 
-                    color: '#f59e0b', 
-                    fontWeight: '600',
-                    marginLeft: '8px'
-                  }}>
-                    📝 EDITED
-                  </span>
-                )}
-              </span>
+              <span className="info-label">Current Amount (After Fee):</span>
               <span className="info-value">{currentAmount} {tokenSymbol}</span>
             </div>
             {hasBeenEdited && (
@@ -415,6 +404,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
               <input
                 id="newFee"
                 type="number"
+                min="0"
                 step="0.000001"
                 placeholder={`Enter new amount (max: ${totalAmount})`}
                 value={newFeeAmount}
@@ -447,6 +437,16 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           {isSuccess && (
             <div className="status-message success">
               ✅ Fee updated successfully!
+              {editFeeHash && (
+                <a
+                  href={getExplorerUrl(chainId, editFeeHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tx-link"
+                >
+                  View on Explorer ↗
+                </a>
+              )}
             </div>
           )}
 
@@ -650,6 +650,23 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           background: rgba(16, 185, 129, 0.1);
           border: 1px solid #10b981;
           color: #10b981;
+        }
+
+        .tx-link {
+          display: block;
+          margin-top: 8px;
+          padding: 8px 16px;
+          background: #10b981;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .tx-link:hover {
+          background: #0d9668;
         }
 
         .status-message.error {

@@ -20,7 +20,8 @@ import {
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
-import { getTokenLogo } from '@/utils/chainLogos'
+import { getTokenLogo, getChainLogo, getExplorerUrl } from '@/utils/chainLogos'
+import Link from 'next/link'
 
 // ERC20 ABI for approve and balanceOf functions
 const ERC20_ABI = [
@@ -221,14 +222,16 @@ export const CreateRequest = () => {
   useEffect(() => {
     // Only update tokens if chains are selected
     if (!requestFrom || !requestTo) return
-    
+
     const availableSendTokens = getAvailableTokensForMode(requestFrom)
-    
+
     // Reset send token if current selection is not available
     if (!availableSendTokens.includes(sendToken) && availableSendTokens.length > 0) {
       setSendToken(availableSendTokens[0])
     }
-    
+    // resets approval state when chain or token changes (different contract/chain = different approval)
+    setIsTokenApproved(false)
+
     // Note: receiveToken is always the same as sendToken, no need to reset separately
   }, [requestFrom, requestTo, sendToken])
 
@@ -256,17 +259,37 @@ export const CreateRequest = () => {
   }
 
   // Calculate service fee and you receive amount
+  //Gets the effective custom fee percentage empty defaults to 2%
+  const getCustomFeePercent = (): number => {
+    if (customFee === '') return 2
+    const parsed = parseFloat(customFee)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
+  // calc fee based on current mode
   const calculateFee = () => {
-    const sendAmountNum = parseFloat(sendAmount) || 0
-    
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return 0
+
     if (serviceFeeMode === 'recommended') {
-      // 2% fee for recommended
       return sendAmountNum * 0.02
     } else {
-      // Advanced mode - use custom fee value or default 1
-      const feeValue = parseFloat(customFee) || 1
-      return feeValue
+      return sendAmountNum * (getCustomFeePercent() / 100)
     }
+  }
+
+  // Get fee amount for recommended (2%) this always shows this regardless of mode
+  const getRecommendedFeeAmount = (): string => {
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return '0.0000'
+    return (sendAmountNum * 0.02).toFixed(4)
+  }
+
+  // Get fee amount for custom percentage this always shows this regardless of mode
+  const getCustomFeeAmount = (): string => {
+    const sendAmountNum = parseFloat(sendAmount)
+    if (isNaN(sendAmountNum) || sendAmountNum <= 0) return '0.0000'
+    return (sendAmountNum * (getCustomFeePercent() / 100)).toFixed(4)
   }
 
   const calculateReceiveAmount = () => {
@@ -678,9 +701,15 @@ export const CreateRequest = () => {
     }
   }, [isApprovalSuccess, isApprovalTxError, isApproving])
 
+  // Debug: Log transaction state changes
+  useEffect(() => {
+    console.log('🔄 Transaction state:', { hash, isConfirming, isSuccess, txError: !!txError, writeError: !!writeError })
+  }, [hash, isConfirming, isSuccess, txError, writeError])
+
   // Handle main transaction states
   useEffect(() => {
     if (isSuccess) {
+      console.log('✅ Transaction confirmed! Hash:', hash)
       setShowConfirmingModal(false)
       setShowConfirmModal(false) // Close confirm modal
       setShowSuccessModal(true)
@@ -692,7 +721,7 @@ export const CreateRequest = () => {
       setShowConfirmingModal(false)
       setIsApproving(false)
     }
-  }, [isSuccess, txError, writeError])
+  }, [isSuccess, txError, writeError, hash])
 
   return (
     <div className="create-request-container">
@@ -825,6 +854,8 @@ export const CreateRequest = () => {
               <div className="amount-input-container">
                 <input
                   type="number"
+                  min="0"
+                  step="any"
                   value={sendAmount}
                   onChange={(e) => setSendAmount(e.target.value)}
                   placeholder="10.01"
@@ -874,7 +905,7 @@ export const CreateRequest = () => {
                     value={currentReceiveAmount}
                     readOnly
                     placeholder="9.5"
-                    className="amount-input readonly you-receive"
+                    className="amount-input readonly"
                   />
                   <div className="token-display">
                     <div className="token-icon">
@@ -899,46 +930,60 @@ export const CreateRequest = () => {
 
             {/* Service Fee Section */}
             <div className="service-fee-section">
-              <label className="form-label">Service Fee</label>
-              
-              {/* Recommended Option */}
-              <div 
-                className={`fee-option ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
-                onClick={() => setServiceFeeMode('recommended')}
-              >
-                <div className="fee-option-header">
-                  <span className="fee-label">Recommended ⓘ</span>
-                  <span className="fee-amount">≈ 0.0012 ETH</span>
-                </div>
-                <div className="fee-details">
-                  <span className="fee-percentage">2.00%</span>
-                  <span className="fee-value">{calculateFee().toFixed(6)}</span>
-                  <span className="fee-token">{sendToken}</span>
-                </div>
-              </div>
+              <label className="form-label">Service Fee (Provider Reward)</label>
 
-              {/* Advanced Option */}
-              <div 
-                className={`fee-option advanced ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
-                onClick={() => setServiceFeeMode('advanced')}
-              >
-                <div className="fee-option-header">
-                  <span className="fee-label">Advanced ⓘ</span>
-                  <span className="fee-amount">≈ 0.0012 ETH</span>
+              <div className="fee-row">
+                {/* Recommended */}
+                <div
+                  className={`fee-box ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
+                  onClick={() => setServiceFeeMode('recommended')}
+                >
+                  <span className="fee-title">Recommended</span>
+                  <div className="fee-content">
+                    <span className="fee-badge">2%</span>
+                    <span className="fee-amount">
+                      {getRecommendedFeeAmount()} {sendToken.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
-                <div className="fee-details">
-                  <span className="fee-percentage">
-                    {sendAmount ? ((parseFloat(customFee) || 1) / (parseFloat(sendAmount) || 1) * 100).toFixed(2) + '%' : '10.00%'}
-                  </span>
-                  <input
-                    type="number"
-                    value={customFee}
-                    onChange={(e) => setCustomFee(e.target.value)}
-                    placeholder="1"
-                    className="fee-input"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <span className="fee-token">{sendToken}</span>
+
+                {/* Custom */}
+                <div
+                  className={`fee-box ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    setServiceFeeMode('advanced')
+                    const input = e.currentTarget.querySelector('input')
+                    if (input) setTimeout(() => input.focus(), 0)
+                  }}
+                >
+                  <span className="fee-title">Custom</span>
+                  <div className="fee-content">
+                    <div className="fee-input-wrap">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={customFee}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          if (val === '') {
+                            setCustomFee('')
+                            return
+                          }
+                          const num = parseFloat(val)
+                          if (!isNaN(num) && num >= 0 && num <= 100) {
+                            setCustomFee(val)
+                          }
+                        }}
+                        placeholder="2"
+                      />
+                      <span className="percent-sign">%</span>
+                    </div>
+                    <span className="fee-amount">
+                      {getCustomFeeAmount()} {sendToken.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -990,11 +1035,17 @@ export const CreateRequest = () => {
             <div className="confirm-details">
               <div className="detail-row">
                 <span className="detail-label">From</span>
-                <span className="detail-value">🟣 {requestFrom}</span>
+                <span className="detail-value">
+                  <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
+                  {requestFrom}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">To</span>
-                <span className="detail-value">🟢 {requestTo}</span>
+                <span className="detail-value">
+                  <Image src={getChainLogo(requestTo)} alt={requestTo} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
+                  {requestTo}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Send</span>
@@ -1021,14 +1072,10 @@ export const CreateRequest = () => {
                 <span className="detail-value">{requestFrom} → {requestTo}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Network fee</span>
-                <span className="detail-value">0.0012 ETH</span>
-              </div>
-              <div className="detail-row">
                 <span className="detail-label">Service fee</span>
                 <span className="detail-value">
-                  <span className="fee-badge">{serviceFeeMode === 'recommended' ? '2.00%' : ((parseFloat(customFee) || 1) / (parseFloat(sendAmount) || 1) * 100).toFixed(2) + '%'}</span>
-                  {calculateFee().toFixed(6)} {sendToken}
+                  <span className="fee-badge-modal">{serviceFeeMode === 'recommended' ? '2.00%' : getCustomFeePercent().toFixed(2) + '%'}</span>
+                  {calculateFee().toFixed(6)} {sendToken.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -1089,16 +1136,78 @@ export const CreateRequest = () => {
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="modal-overlay">
-          <div className="status-modal">
-            <button onClick={() => setShowSuccessModal(false)} className="close-btn">✕</button>
-            <h3>Transaction Confirmed!</h3>
-            <div className="success-checkmark">✓</div>
-            <p>See your transaction history</p>
-            {hash && (
-              <div className="tx-hash">
-                <small>TX: {hash}</small>
+          <div className="success-modal">
+            <button onClick={() => setShowSuccessModal(false)} className="success-close-btn" aria-label="Close">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            {/* Animated Success Icon */}
+            <div className="success-glow-container">
+              <div className="success-glow"></div>
+              <div className="success-check-circle">
+                <svg className="success-check-svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path className="check-path" d="M4 12L9 17L20 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
+            </div>
+
+            <h3 className="success-heading">Request Live</h3>
+
+            {/* Chain Flow */}
+            <div className="chain-flow">
+              <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={22} height={22} style={{ borderRadius: '50%' }} />
+              <span className="chain-name">{requestFrom}</span>
+              <span className="flow-arrow">→</span>
+              <Image src={getChainLogo(requestTo)} alt={requestTo} width={22} height={22} style={{ borderRadius: '50%' }} />
+              <span className="chain-name">{requestTo}</span>
+            </div>
+
+            <p className="success-message">
+              <span className="status-dot"></span>
+              Awaiting provider fulfillment
+            </p>
+
+            {hash && (
+              <a
+                href={getExplorerUrl(chainId, hash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tx-hash-link"
+              >
+                <span>{hash.slice(0, 14)}...{hash.slice(-12)}</span>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 2L2 10M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
             )}
+
+            <Link
+              href="/request-pool"
+              onClick={() => setShowSuccessModal(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                width: '100%',
+                padding: '14px 20px',
+                background: '#6366f1',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                textDecoration: 'none',
+              }}
+            >
+              View in Request Pool
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
           </div>
         </div>
       )}
@@ -1172,9 +1281,6 @@ export const CreateRequest = () => {
         .request-pool-button:hover {
           border-color: #6366f1;
           background: rgba(99, 102, 241, 0.1);
-        }
-        .you-receive {
-          width: 120px;
         }
 
         .form-container {
@@ -1268,11 +1374,13 @@ export const CreateRequest = () => {
 
         .receive-address-row {
           display: flex;
-          gap: 6px;
+          gap: 12px;
+          align-items: stretch;
         }
 
         .receive-section {
-          flex: 0.35;
+          flex: 0 0 auto;
+          min-width: 160px;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -1280,10 +1388,12 @@ export const CreateRequest = () => {
 
         .amount-input-container {
           display: flex;
+          flex: 1;
           background: #1a1a1a;
           border: 1px solid #333333;
           border-radius: 8px;
           overflow: hidden;
+          box-sizing: border-box;
         }
 
         .amount-input {
@@ -1371,20 +1481,25 @@ export const CreateRequest = () => {
         }
 
         .address-section {
-          flex: 1.65;
+          flex: 1;
           display: flex;
           flex-direction: column;
           gap: 8px;
+          min-width: 0;
         }
 
         .address-input {
+          flex: 1;
           background: #1a1a1a;
           border: 1px solid #333333;
           border-radius: 8px;
           padding: 10px 14px;
           color: #ffffff;
-          font-size: 14px;
+          font-size: 13px;
+          font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
           outline: none;
+          min-width: 0;
+          box-sizing: border-box;
         }
 
         .address-input:focus {
@@ -1420,84 +1535,96 @@ export const CreateRequest = () => {
           gap: 8px;
         }
 
-        .fee-option {
+        .fee-row {
+          display: flex;
+          gap: 10px;
+        }
+
+        .fee-box {
+          flex: 1;
           background: #1a1a1a;
-          border: 1px solid #333333;
+          border: 1px solid #333;
           border-radius: 8px;
           padding: 12px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: border-color 0.15s;
         }
 
-        .fee-option:hover {
+        .fee-box:hover {
           border-color: #6366f1;
         }
 
-        .fee-option.active {
+        .fee-box.active {
           border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.1);
+          background: rgba(99, 102, 241, 0.08);
         }
 
-        .fee-option.advanced.active {
-          border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.2);
-        }
-
-        .fee-option-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .fee-title {
+          display: block;
+          color: #9ca3af;
+          font-size: 12px;
           margin-bottom: 8px;
         }
 
-        .fee-label {
-          color: #ffffff;
+        .fee-content {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .fee-badge {
+          background: #6366f1;
+          color: #fff;
+          padding: 6px 12px;
+          border-radius: 6px;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .fee-amount {
-          color: #9ca3af;
-          font-size: 12px;
+          color: #fff;
+          font-size: 13px;
         }
 
-        .fee-details {
+        .fee-input-wrap {
           display: flex;
           align-items: center;
-          gap: 12px;
+          background: #111;
+          border: 1px solid #333;
+          border-radius: 6px;
+          padding: 5px 10px;
         }
 
-        .fee-percentage {
-          background: #6366f1;
-          color: #ffffff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 600;
-          min-width: 50px;
-          text-align: center;
+        .fee-box.active .fee-input-wrap {
+          border-color: #6366f1;
         }
 
-        .fee-value {
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .fee-token {
-          color: #9ca3af;
-          font-size: 14px;
-        }
-
-        .fee-input {
+        .fee-input-wrap input {
           background: transparent;
           border: none;
-          color: #ffffff;
+          color: #fff;
           font-size: 14px;
-          font-weight: 500;
-          width: 40px;
+          font-weight: 600;
+          width: 45px;
           outline: none;
-          text-align: center;
+          text-align: right;
+          -moz-appearance: textfield;
+        }
+
+        .fee-input-wrap input::-webkit-outer-spin-button,
+        .fee-input-wrap input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .fee-input-wrap input::placeholder {
+          color: #555;
+        }
+
+        .percent-sign {
+          color: #9ca3af;
+          font-size: 14px;
+          margin-left: 2px;
         }
 
         .request-button {
@@ -1619,7 +1746,7 @@ export const CreateRequest = () => {
           gap: 8px;
         }
 
-        .fee-badge {
+        .fee-badge-modal {
           background: #6366f1;
           color: #ffffff;
           padding: 2px 6px;
@@ -1719,6 +1846,177 @@ export const CreateRequest = () => {
           font-size: 12px;
         }
 
+        /* Success Modal - Premium Refined Design */
+        .success-modal {
+          background: #0d0d0d;
+          border-radius: 16px;
+          padding: 32px 28px 28px;
+          width: 100%;
+          max-width: 360px;
+          text-align: center;
+          position: relative;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .success-close-btn {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          padding: 4px;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+        }
+        .success-close-btn:hover {
+          opacity: 1;
+        }
+        .success-close-btn svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        /* Animated Success Icon with Glow */
+        .success-glow-container {
+          position: relative;
+          width: 64px;
+          height: 64px;
+          margin: 0 auto 20px;
+        }
+
+        .success-glow {
+          position: absolute;
+          inset: -8px;
+          background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: glow-pulse 2.5s ease-in-out infinite;
+        }
+
+        .success-check-circle {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+        }
+
+        .check-path {
+          stroke-dasharray: 30;
+          stroke-dashoffset: 30;
+          animation: draw-check 0.5s ease forwards 0.2s;
+        }
+
+        @keyframes draw-check {
+          to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        .success-heading {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0 0 20px 0;
+          letter-spacing: -0.01em;
+        }
+
+        /* Chain Flow */
+        .chain-flow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .chain-name {
+          color: #e5e7eb;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .flow-arrow {
+          color: #6b7280;
+          font-size: 16px;
+          margin: 0 4px;
+        }
+
+        .success-message {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          color: #9ca3af;
+          font-size: 13px;
+          margin: 0 0 20px 0;
+          font-weight: 400;
+        }
+
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          background: #22c55e;
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        .tx-hash-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          color: #9ca3af;
+          font-size: 13px;
+          font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+          text-decoration: none;
+          margin-bottom: 20px;
+          padding: 12px 16px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
+          transition: all 0.2s ease;
+        }
+
+        .tx-hash-link:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+
+        .success-modal .pool-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          padding: 14px 20px;
+          background: #6366f1;
+          color: white !important;
+          font-size: 14px;
+          font-weight: 600;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          text-decoration: none;
+          white-space: nowrap;
+        }
+
         .approval-info {
           margin-top: 16px;
           padding: 8px 12px;
@@ -1751,6 +2049,10 @@ export const CreateRequest = () => {
           .receive-address-row {
             flex-direction: column;
             gap: 16px;
+          }
+
+          .receive-section {
+            flex: 1;
           }
 
           .arrow-container {

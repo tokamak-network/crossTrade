@@ -1,6 +1,5 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { optimismSepolia, sepolia } from '@reown/appkit/networks'
-import { defineChain } from 'viem'
+import { defineChain, http } from 'viem'
 import {env} from 'next-runtime-env'
 
 // Get projectId from https://cloud.reown.com
@@ -68,8 +67,11 @@ function createChainFromConfig(chainId: string, config: any) {
   })
 }
 
-// Merge both configs (L2_L2 takes priority if same chainId exists in both)
 const mergedChainConfig = { ...chainConfigL2L1, ...chainConfigL2L2 }
+
+export function getMergedChainConfig(): Record<string, any> {
+  return mergedChainConfig
+}
 
 // Create dynamic chain definitions from merged config
 const dynamicChains = Object.entries(mergedChainConfig).map(([chainId, config]) => 
@@ -80,8 +82,16 @@ console.log(`🔗 Loaded ${dynamicChains.length} dynamic chains for Wagmi`,
   dynamicChains.map(c => ({ id: c.id, name: c.name }))
 )
 
-// Combine with predefined chains and dynamic chains
-export const networks = [optimismSepolia, sepolia, ...dynamicChains]
+// uses only dynamic chains with our custom RPCs 
+export const networks = [...dynamicChains]
+
+// Create explicit transports for each chain to ensure wagmi uses our custom RPCs
+const transports: Record<number, ReturnType<typeof http>> = {}
+Object.entries(mergedChainConfig).forEach(([chainId, config]) => {
+  transports[parseInt(chainId)] = http(config.rpc_url)
+})
+
+console.log('Configured transports for chains:', Object.keys(transports))
 
 // Helper functions to get specific configurations
 export function getL2L2Config() {
@@ -99,17 +109,18 @@ export function getL2L1Config() {
 // Function to create networks from specific config
 export function createNetworksFromConfig(configString: string) {
   const config = JSON.parse(configString)
-  const dynamicChains = Object.entries(config).map(([chainId, chainConfig]) => 
+  const dynamicChains = Object.entries(config).map(([chainId, chainConfig]) =>
     createChainFromConfig(chainId, chainConfig)
   )
-  return [optimismSepolia, sepolia, ...dynamicChains]
+  return [...dynamicChains]
 }
 
-//Set up the Wagmi Adapter (Config)
+//Set up the Wagmi Adapter (Config) with explicit transports for fast rpc polling
 export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   projectId,
-  networks
+  networks,
+  transports
 })
 
 export const config = wagmiAdapter.wagmiConfig
