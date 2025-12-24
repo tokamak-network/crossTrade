@@ -970,77 +970,87 @@ export const CreateRequest = () => {
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="modal-overlay">
-          <div className="confirm-modal">
-            <div className="modal-header">
-              <h3>Confirm Request</h3>
-              <button onClick={() => setShowConfirmModal(false)} className="close-btn">✕</button>
-            </div>
-            
-            <div className="confirm-details">
-              <div className="detail-row">
-                <span className="detail-label">From</span>
-                <span className="detail-value">
-                  <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
-                  {requestFrom}
-                </span>
+        <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setShowConfirmModal(false)} className="modal-close-btn" aria-label="Close">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <h3 className="modal-title">Confirm Request</h3>
+
+            {/* Route Banner */}
+            <div className="route-banner">
+              <div className="route-endpoint">
+                <Image src={getChainLogo(requestFrom)} alt="" width={24} height={24} className="route-logo" />
+                <span>{requestFrom}</span>
               </div>
-              <div className="detail-row">
-                <span className="detail-label">To</span>
-                <span className="detail-value">
-                  <Image src={getChainLogo(requestTo)} alt={requestTo} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: '6px' }} />
-                  {requestTo}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Send</span>
-                <span className="detail-value">
-                  {sendAmount} <Image src={getTokenLogo(sendToken)} alt={sendToken} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle' }} /> {sendToken}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Receive</span>
-                <span className="detail-value">
-                  {currentReceiveAmount} <Image src={getTokenLogo(sendToken)} alt={sendToken} width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle' }} /> {sendToken.toUpperCase()}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">From address</span>
-                <span className="detail-value">{connectedAddress ? `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-4)}` : '0x1234...1234'}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">To address</span>
-                <span className="detail-value">{toAddress ? `${toAddress.slice(0, 6)}...${toAddress.slice(-4)}` : '0x1234...1234'}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Network</span>
-                <span className="detail-value">{requestFrom} → {requestTo}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Service fee</span>
-                <span className="detail-value">
-                  <span className="fee-badge-modal">{serviceFeeMode === 'recommended' ? '2.00%' : getCustomFeePercent().toFixed(2) + '%'}</span>
-                  {calculateFee().toFixed(6)} {sendToken.toUpperCase()}
-                </span>
+              <div className="route-arrow">→</div>
+              <div className="route-endpoint">
+                <Image src={getChainLogo(requestTo)} alt="" width={24} height={24} className="route-logo" />
+                <span>{requestTo}</span>
               </div>
             </div>
 
+            {/* Amount Display */}
+            <div className="amount-display">
+              <div className="amount-item">
+                <span className="amount-label">You send</span>
+                <span className="amount-value">{sendAmount} <span className="token">{sendToken}</span></span>
+              </div>
+              <div className="amount-divider"></div>
+              <div className="amount-item receive">
+                <span className="amount-label">You receive</span>
+                <span className="amount-value">{currentReceiveAmount} <span className="token">{sendToken}</span></span>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="confirm-details">
+              <div className="detail-row">
+                <span className="detail-label">Provider reward</span>
+                <span className="detail-value">
+                  <span className="reward-badge">{serviceFeeMode === 'recommended' ? '2%' : `${getCustomFeePercent().toFixed(2)}%`}</span>
+                  {calculateFee().toFixed(6)} {sendToken}
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">From</span>
+                <span className="detail-value mono">{connectedAddress || '-'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Recipient</span>
+                <span className="detail-value mono">{toAddress || '-'}</span>
+              </div>
+            </div>
+
+            {/* Terms */}
             <div className="terms-section">
-              <label className="checkbox-label">
+              <label className="term-row">
                 <input
                   type="checkbox"
                   checked={termsAccepted.noDeadline}
                   onChange={(e) => setTermsAccepted(prev => ({ ...prev, noDeadline: e.target.checked }))}
                 />
-                I understand there is no guaranteed deadline.
+                <span className="term-check">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4l2.5 3L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span className="term-text">No guaranteed deadline for fulfillment</span>
               </label>
-              <label className="checkbox-label">
+              <label className="term-row">
                 <input
                   type="checkbox"
                   checked={termsAccepted.canBeEdited}
                   onChange={(e) => setTermsAccepted(prev => ({ ...prev, canBeEdited: e.target.checked }))}
                 />
-                I understand the request can be edited from L1.
+                <span className="term-check">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4l2.5 3L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span className="term-text">Request can be edited from L1</span>
               </label>
             </div>
 
@@ -1053,11 +1063,11 @@ export const CreateRequest = () => {
                 const fromChainId = getChainIdByName(requestFrom)
                 const l2SourceTokenAddress = getTokenAddressForMode(fromChainId, sendToken)
                 const isNativeToken = l2SourceTokenAddress?.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
-                
-                return isNativeToken 
-                  ? 'Request' 
-                  : isTokenApproved 
-                    ? 'Request' 
+
+                return isNativeToken
+                  ? 'Create Request'
+                  : isTokenApproved
+                    ? 'Create Request'
                     : `Approve ${sendToken}`
               })()}
             </button>
@@ -1731,9 +1741,37 @@ export const CreateRequest = () => {
           border-radius: 16px;
           padding: 24px;
           width: 90%;
-          max-width: 480px;
-          max-height: 80vh;
-          overflow-y: auto;
+          max-width: 420px;
+          position: relative;
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: none;
+          border: none;
+          color: #666;
+          cursor: pointer;
+          padding: 0;
+          opacity: 0.7;
+        }
+
+        .modal-close-btn:hover {
+          opacity: 1;
+          color: #fff;
+        }
+
+        .modal-close-btn svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .modal-title {
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 600;
+          margin: 0 0 24px 0;
         }
 
         .status-modal {
@@ -1746,122 +1784,235 @@ export const CreateRequest = () => {
           max-width: 400px;
         }
 
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-        }
-
-        .modal-header h3 {
-          color: #ffffff;
-          font-size: 20px;
-          font-weight: 600;
-          margin: 0;
-        }
-
         .close-btn {
           background: none;
           border: none;
-          color: #9ca3af;
-          font-size: 20px;
+          color: #555;
           cursor: pointer;
           padding: 4px;
-          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
         }
 
         .close-btn:hover {
-          color: #ffffff;
+          color: #fff;
         }
 
-        .confirm-details {
+        /* Route Banner */
+        .route-banner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          padding: 16px 20px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          margin-bottom: 16px;
+        }
+
+        .route-endpoint {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .route-logo {
+          border-radius: 50%;
+        }
+
+        .route-arrow {
+          color: #666;
+          font-size: 16px;
+        }
+
+        /* Amount Display */
+        .amount-display {
+          display: flex;
+          margin-bottom: 16px;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .amount-item {
+          flex: 1;
+          padding: 18px 20px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          margin-bottom: 24px;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .amount-item.receive {
+          background: linear-gradient(145deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.04) 100%);
+          border-left: 1px solid rgba(34, 197, 94, 0.15);
+        }
+
+        .amount-divider {
+          display: none;
+        }
+
+        .amount-label {
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          color: #555;
+        }
+
+        .amount-item.receive .amount-label {
+          color: #22c55e;
+        }
+
+        .amount-value {
+          font-family: 'JetBrains Mono', 'SF Mono', monospace;
+          font-size: 20px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.02em;
+        }
+
+        .amount-item.receive .amount-value {
+          color: #4ade80;
+        }
+
+        .amount-value .token {
+          font-size: 14px;
+          font-weight: 500;
+          color: #666;
+          margin-left: 6px;
+        }
+
+        .amount-item.receive .amount-value .token {
+          color: rgba(74, 222, 128, 0.7);
+        }
+
+        /* Details */
+        .confirm-details {
+          margin-bottom: 16px;
+          padding: 0 4px;
         }
 
         .detail-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 0;
+          padding: 10px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .detail-row:last-child {
+          border-bottom: none;
         }
 
         .detail-label {
-          color: #9ca3af;
-          font-size: 14px;
+          color: #666;
+          font-size: 13px;
         }
 
         .detail-value {
-          color: #ffffff;
-          font-size: 14px;
+          color: #ccc;
+          font-size: 13px;
           font-weight: 500;
           display: flex;
           align-items: center;
           gap: 8px;
         }
 
-        .fee-badge-modal {
-          background: #6366f1;
-          color: #ffffff;
-          padding: 2px 6px;
-          border-radius: 4px;
+        .detail-value.mono {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          color: #888;
+        }
+
+        .reward-badge {
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+          color: #fff;
+          font-family: 'JetBrains Mono', monospace;
           font-size: 11px;
           font-weight: 600;
+          padding: 3px 8px;
+          border-radius: 5px;
         }
 
+        /* Terms */
         .terms-section {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-bottom: 24px;
-          padding: 16px;
-          background: rgba(99, 102, 241, 0.1);
-          border-radius: 8px;
+          background: rgba(251, 191, 36, 0.04);
+          border: 1px solid rgba(251, 191, 36, 0.08);
+          border-radius: 12px;
+          padding: 14px 16px;
+          margin-bottom: 20px;
         }
 
-        .checkbox-label {
+        .term-row {
           display: flex;
           align-items: center;
-          gap: 8px;
-          color: #ffffff;
-          font-size: 14px;
+          gap: 12px;
           cursor: pointer;
+          padding: 8px 0;
         }
 
-        .checkbox-label input[type="checkbox"] {
-          accent-color: #6366f1;
+        .term-row:first-child {
+          padding-top: 0;
+        }
+
+        .term-row:last-child {
+          padding-bottom: 0;
+        }
+
+        .term-row input {
+          display: none;
+        }
+
+        .term-check {
+          width: 18px;
+          height: 18px;
+          border: 1.5px solid #3a3a3a;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: all 0.2s;
+          color: transparent;
+        }
+
+        .term-row:hover .term-check {
+          border-color: #6366f1;
+        }
+
+        .term-row input:checked + .term-check {
+          background: #6366f1;
+          border-color: #6366f1;
+          color: #fff;
+        }
+
+        .term-text {
+          color: #888;
+          font-size: 12px;
+          line-height: 1.4;
         }
 
         .confirm-btn {
           width: 100%;
-          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+          background: #6366f1;
           color: #ffffff;
           border: none;
-          border-radius: 14px;
-          padding: 16px;
-          font-size: 16px;
+          border-radius: 12px;
+          padding: 14px 24px;
+          font-size: 15px;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.25s ease;
-          margin: 0;
-          box-shadow:
-            0 4px 16px rgba(99, 102, 241, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .confirm-btn:hover {
-          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
-          transform: translateY(-1px);
-          box-shadow:
-            0 6px 24px rgba(99, 102, 241, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         .confirm-btn:disabled {
-          background: linear-gradient(135deg, #3f3f46 0%, #27272a 100%);
-          box-shadow: none;
+          background: #333;
           cursor: not-allowed;
           opacity: 0.6;
         }
