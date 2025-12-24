@@ -1010,8 +1010,8 @@ export const CreateRequest = () => {
               <div className="detail-row">
                 <span className="detail-label">Provider reward</span>
                 <span className="detail-value">
-                  <span className="reward-badge">{serviceFeeMode === 'recommended' ? '2%' : `${getCustomFeePercent().toFixed(2)}%`}</span>
                   {calculateFee().toFixed(6)} {sendToken}
+                  <span className="reward-badge">{serviceFeeMode === 'recommended' ? '2%' : `${getCustomFeePercent().toFixed(2)}%`}</span>
                 </span>
               </div>
               <div className="detail-row">
@@ -1736,12 +1736,12 @@ export const CreateRequest = () => {
         }
 
         .confirm-modal {
-          background: #1a1a1a;
-          border: 1px solid #333;
+          background: #131316;
+          border: 1px solid #222;
           border-radius: 16px;
           padding: 24px;
-          width: 90%;
-          max-width: 420px;
+          width: 92%;
+          max-width: 460px;
           position: relative;
         }
 
@@ -1827,8 +1827,8 @@ export const CreateRequest = () => {
         }
 
         .route-arrow {
-          color: #666;
-          font-size: 16px;
+          color: #888;
+          font-size: 20px;
         }
 
         /* Amount Display */
@@ -1912,13 +1912,13 @@ export const CreateRequest = () => {
         }
 
         .detail-label {
-          color: #666;
-          font-size: 13px;
+          color: #888;
+          font-size: 14px;
         }
 
         .detail-value {
           color: #ccc;
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 500;
           display: flex;
           align-items: center;
@@ -1927,18 +1927,18 @@ export const CreateRequest = () => {
 
         .detail-value.mono {
           font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          color: #888;
+          font-size: 12px;
+          color: #999;
         }
 
         .reward-badge {
-          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-          color: #fff;
+          color: #22c55e;
           font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 3px 8px;
-          border-radius: 5px;
+          font-size: 12px;
+          font-weight: 500;
+          background: rgba(34, 197, 94, 0.1);
+          padding: 2px 6px;
+          border-radius: 4px;
         }
 
         /* Terms */
@@ -2000,15 +2000,19 @@ export const CreateRequest = () => {
         }
 
         .confirm-btn {
+          display: block;
           width: 100%;
           background: #6366f1;
           color: #ffffff;
           border: none;
           border-radius: 12px;
-          padding: 14px 24px;
+          padding: 14px 0;
           font-size: 15px;
           font-weight: 600;
           cursor: pointer;
+          text-align: center;
+          box-sizing: border-box;
+          margin: 0 !important;
         }
 
         .confirm-btn:disabled {
