@@ -741,134 +741,144 @@ export const CreateRequest = () => {
       <div className="content">
         <div className="header-section">
           <h1 className="page-title">Create a request</h1>
+          <span className="mode-badge" style={{
+            color: communicationMode === 'L2_L2' ? '#818cf8' : '#4ade80'
+          }}>
+            {communicationMode === 'L2_L2' ? 'L2 ↔ L2' : 'L2 → L1'}
+          </span>
           <a href="/request-pool" className="request-pool-button">
             Request Pool
           </a>
         </div>
-        
-        <div className="form-container">
-          <form onSubmit={handleSubmit} className="request-form">
-            {/* Mode Indicator */}
-            <div style={{ 
-              padding: '12px', 
-              marginBottom: '16px', 
-              borderRadius: '8px', 
-              backgroundColor: communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-              border: `1px solid ${communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>
-                {communicationMode === 'L2_L2' ? '🔄 L2 ↔ L2 Mode' : '🌉 L2 ↔ L1 Mode'}
-              </span>
-              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)' }}>
-                {communicationMode === 'L2_L2' 
-                  ? 'Cross-chain transfer between Layer 2 networks' 
-                  : 'Bridge transfer from Layer 2 to Layer 1'}
-              </span>
-            </div>
 
-            {/* Request From/To Section */}
+        <form onSubmit={handleSubmit} className="request-form">
+          {/* Card 1: Chain & Amount */}
+          <div className="form-card">
+            {/* Request From/To Section - Superbridge Style */}
             <div className="chain-selector-row">
-              <div className="chain-selector">
-                <label className="form-label">Request from</label>
-                <div className="select-wrapper">
-                  <select 
-                    value={requestFrom} 
-                    onChange={(e) => setRequestFrom(e.target.value)}
-                    className="chain-select"
-                  >
-                    <option value="" disabled>Select source chain...</option>
-                    {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
-                      // Remove duplicates by chain ID
-                      .filter((chain, index, self) => 
+              <label className="chain-box">
+                <Image
+                  src={getChainLogo(requestFrom)}
+                  alt={requestFrom || 'chain'}
+                  width={36}
+                  height={36}
+                  style={{ borderRadius: '10px', flexShrink: 0 }}
+                />
+                <div className="chain-info">
+                  <span className="chain-label">From</span>
+                  <span className="chain-name">{requestFrom || 'Select chain'}</span>
+                </div>
+                <select
+                  value={requestFrom}
+                  onChange={(e) => setRequestFrom(e.target.value)}
+                  className="chain-select-hidden"
+                >
+                  <option value="" disabled>Select chain</option>
+                  {[...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                    .filter((chain, index, self) =>
+                      index === self.findIndex(c => c.chainId === chain.chainId)
+                    )
+                    .filter(({ chainId }) => !isL1Chain(chainId))
+                    .map(({ chainId, config }) => (
+                      <option key={chainId} value={config.display_name}>
+                        {config.display_name}
+                      </option>
+                    ))
+                  }
+                </select>
+              </label>
+
+              <svg
+                className="swap-icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="#6b7280"
+                onClick={() => {
+                  if (requestFrom && requestTo) {
+                    const temp = requestFrom
+                    setRequestFrom(requestTo)
+                    setRequestTo(temp)
+                  }
+                }}
+              >
+                <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+              </svg>
+
+              <label className="chain-box">
+                <div className="chain-info" style={{ alignItems: 'flex-end' }}>
+                  <span className="chain-label">To</span>
+                  <span className="chain-name">{requestTo || 'Select chain'}</span>
+                </div>
+                <Image
+                  src={getChainLogo(requestTo)}
+                  alt={requestTo || 'chain'}
+                  width={36}
+                  height={36}
+                  style={{ borderRadius: '10px', flexShrink: 0 }}
+                />
+                <select
+                  value={requestTo}
+                  onChange={(e) => setRequestTo(e.target.value)}
+                  className="chain-select-hidden"
+                >
+                  <option value="" disabled>Select chain</option>
+                  {(() => {
+                    const allowedDestinations = getAllowedDestinationChains()
+                    return [...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
+                      .filter((chain, index, self) =>
                         index === self.findIndex(c => c.chainId === chain.chainId)
                       )
-                      // Filter out L1 chains (Ethereum) - can't initiate requests FROM L1
-                      .filter(({ chainId }) => !isL1Chain(chainId))
+                      .filter(({ config }) => config.display_name !== requestFrom)
+                      .filter(({ chainId }) => {
+                        if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
+                          return false
+                        }
+                        return true
+                      })
+                      .filter(({ chainId }) => {
+                        if (!allowedDestinations || allowedDestinations.length === 0) {
+                          return true
+                        }
+                        return allowedDestinations.includes(chainId)
+                      })
                       .map(({ chainId, config }) => (
                         <option key={chainId} value={config.display_name}>
                           {config.display_name}
                         </option>
                       ))
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div className="arrow-container">
-                <div className="arrow">→</div>
-              </div>
-
-              <div className="chain-selector">
-                <label className="form-label">Request on</label>
-                <div className="select-wrapper">
-                  <select 
-                    value={requestTo} 
-                    onChange={(e) => setRequestTo(e.target.value)}
-                    className="chain-select"
-                  >
-                    <option value="" disabled>Select destination chain...</option>
-                    {(() => {
-                      // Get allowed destination chains for the selected token
-                      const allowedDestinations = getAllowedDestinationChains()
-                      
-                      return [...getChainsFor_L2_L2(), ...getChainsFor_L2_L1()]
-                        // Remove duplicates by chain ID
-                        .filter((chain, index, self) => 
-                          index === self.findIndex(c => c.chainId === chain.chainId)
-                        )
-                        // Filter out the source chain - can't send to the same chain
-                        .filter(({ config }) => config.display_name !== requestFrom)
-                        // Filter out L1 chains if L2_L1 config is not available
-                        .filter(({ chainId }) => {
-                          if (isL1Chain(chainId) && !isL2L1ConfigAvailable()) {
-                            return false; // Hide L1 chains when L2_L1 config is unavailable
-                          }
-                          return true;
-                        })
-                        // NEW: Filter based on allowed destination chains for the selected token
-                        .filter(({ chainId }) => {
-                          // If no restrictions (empty array or old format), show all chains
-                          if (!allowedDestinations || allowedDestinations.length === 0) {
-                            return true
-                          }
-                          // Otherwise, only show chains in the destination_chains array
-                          return allowedDestinations.includes(chainId)
-                        })
-                        .map(({ chainId, config }) => (
-                          <option key={chainId} value={config.display_name}>
-                            {config.display_name}
-                          </option>
-                        ))
-                    })()}
-                  </select>
-                </div>
-              </div>
+                  })()}
+                </select>
+              </label>
             </div>
 
             {/* You Send Section */}
             <div className="amount-section">
-              <label className="form-label">You Send</label>
+              <span className="amount-label">You Send</span>
               <div className="amount-input-container">
                 <input
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   value={sendAmount}
-                  onChange={(e) => setSendAmount(e.target.value)}
-                  placeholder="10.01"
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                      setSendAmount(val)
+                    }
+                  }}
+                  placeholder="0.00"
                   className="amount-input"
                 />
-                <div className="token-selector">
-                  <div className="token-icon">
-                    <Image src={getTokenLogo(sendToken)} alt={sendToken} width={20} height={20} style={{ borderRadius: '50%' }} />
-                  </div>
-                  <select 
-                    value={sendToken} 
+                <label className="token-pill">
+                  <Image src={getTokenLogo(sendToken)} alt={sendToken} width={22} height={22} style={{ borderRadius: '50%' }} />
+                  <span className="token-name">{sendToken}</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <select
+                    value={sendToken}
                     onChange={(e) => setSendToken(e.target.value)}
-                    className="token-select"
+                    className="token-select-hidden"
                   >
                     {getAvailableTokensForMode(requestFrom).map((token) => (
                       <option key={token} value={token}>
@@ -876,120 +886,103 @@ export const CreateRequest = () => {
                       </option>
                     ))}
                   </select>
-                  <div className="dropdown-arrow">▼</div>
-                </div>
+                </label>
               </div>
-              <div className="balance-info">
-                Balance: {displayBalance} {sendToken}
-                <span 
-                  className="max-btn"
+              <div className="balance-row">
+                <span className="balance-text">Balance: {displayBalance} {sendToken}</span>
+                <span
+                  className="max-link"
                   onClick={() => {
                     if (displayBalance && displayBalance !== '0.00') {
                       setSendAmount(displayBalance)
                     }
                   }}
-                  style={{ cursor: 'pointer' }}
                 >
                   Max
                 </span>
               </div>
             </div>
 
-            {/* You Receive and To Address Section */}
-            <div className="receive-address-row">
-              <div className="receive-section">
-                <label className="form-label">You receive</label>
-                <div className="amount-input-container">
-                  <input
-                    type="number"
-                    value={currentReceiveAmount}
-                    readOnly
-                    placeholder="9.5"
-                    className="amount-input readonly"
-                  />
-                  <div className="token-display">
-                    <div className="token-icon">
-                      <Image src={getTokenLogo(sendToken)} alt={sendToken} width={20} height={20} style={{ borderRadius: '50%' }} />
-                    </div>
-                    <span className="token-text">{sendToken.toUpperCase()}</span>
-                  </div>
-                </div>
-              </div>
+            {/* To Address */}
+            <div className="address-section">
+              <span className="amount-label">To address</span>
+              <input
+                type="text"
+                value={toAddress}
+                onChange={(e) => setToAddress(e.target.value)}
+                placeholder="0x0000000000000000000000000000000000000000"
+                className="address-input"
+              />
+            </div>
+          </div>
 
-              <div className="address-section">
-                <label className="form-label">To address</label>
-                <input
-                  type="text"
-                  value={toAddress}
-                  onChange={(e) => setToAddress(e.target.value)}
-                  placeholder="0x9120...1234"
-                  className="address-input"
-                />
+          {/* Card 2: You Receive (Preview) */}
+          <div className="form-card">
+            <div className="receive-section">
+              <span className="receive-label">You receive</span>
+              <div className="receive-row">
+                <span className="receive-amount">{currentReceiveAmount || '0.00'}</span>
+                <div className="receive-token">
+                  <Image src={getTokenLogo(sendToken)} alt={sendToken} width={28} height={28} style={{ borderRadius: '50%' }} />
+                  <span className="receive-token-name">{sendToken}</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Service Fee Section */}
-            <div className="service-fee-section">
-              <label className="form-label">Service Fee (Provider Reward)</label>
-
-              <div className="fee-row">
-                {/* Recommended */}
+          {/* Card 3: Service Fee */}
+          <div className="form-card">
+            <div className="fee-section">
+              <div className="fee-header">
+                <span className="fee-label">Provider Reward</span>
+                <span className="fee-hint">Higher fee = faster fulfillment</span>
+              </div>
+              <div className="fee-options">
                 <div
-                  className={`fee-box ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
+                  className={`fee-opt ${serviceFeeMode === 'recommended' ? 'active' : ''}`}
                   onClick={() => setServiceFeeMode('recommended')}
                 >
-                  <span className="fee-title">Recommended</span>
-                  <div className="fee-content">
-                    <span className="fee-badge">2%</span>
-                    <span className="fee-amount">
-                      {getRecommendedFeeAmount()} {sendToken.toUpperCase()}
-                    </span>
-                  </div>
+                  <span className="fee-name">Standard <span className="fee-tag">Recommended</span></span>
+                  <span className="fee-val">2% <span className="fee-amt">{getRecommendedFeeAmount()} {sendToken}</span></span>
                 </div>
-
-                {/* Custom */}
                 <div
-                  className={`fee-box ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
+                  className={`fee-opt ${serviceFeeMode === 'advanced' ? 'active' : ''}`}
                   onClick={(e) => {
                     setServiceFeeMode('advanced')
                     const input = e.currentTarget.querySelector('input')
                     if (input) setTimeout(() => input.focus(), 0)
                   }}
                 >
-                  <span className="fee-title">Custom</span>
-                  <div className="fee-content">
-                    <div className="fee-input-wrap">
+                  <span className="fee-name">Custom</span>
+                  <div className="fee-val">
+                    <div className="fee-input">
                       <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
+                        type="text"
+                        inputMode="decimal"
                         value={customFee}
                         onChange={(e) => {
                           const val = e.target.value
-                          if (val === '') {
-                            setCustomFee('')
-                            return
-                          }
-                          const num = parseFloat(val)
-                          if (!isNaN(num) && num >= 0 && num <= 100) {
-                            setCustomFee(val)
+                          if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                            const num = parseFloat(val)
+                            if (val === '' || (num >= 0 && num <= 100)) {
+                              setCustomFee(val)
+                            }
                           }
                         }}
                         placeholder="2"
+                        onClick={(e) => e.stopPropagation()}
                       />
-                      <span className="percent-sign">%</span>
+                      <span>%</span>
                     </div>
-                    <span className="fee-amount">
-                      {getCustomFeeAmount()} {sendToken.toUpperCase()}
-                    </span>
+                    <span className="fee-amt">{getCustomFeeAmount()} {sendToken}</span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Request/Connect Button */}
-            <button 
+          {/* Request/Connect Button */}
+          <button 
               type={connectedAddress ? "submit" : "button"} 
               className="request-button"
               disabled={connectedAddress && (!requestFrom || !requestTo || isSameChain)}
@@ -1010,9 +1003,8 @@ export const CreateRequest = () => {
                   : isSameChain
                     ? "Cannot transfer to the same chain"
                     : "Request"}
-            </button>
-          </form>
-        </div>
+          </button>
+        </form>
 
         {/* Hidden AppKit button for programmatic wallet connection */}
         <appkit-button style={{ display: 'none' }} />
@@ -1020,7 +1012,7 @@ export const CreateRequest = () => {
       </div>
       
       <footer className="footer">
-        Copyright © 2025. All rights reserved.
+        © 2026 All rights reserved.
       </footer>
 
       {/* Confirmation Modal */}
@@ -1245,24 +1237,32 @@ export const CreateRequest = () => {
           align-items: center;
           justify-content: center;
           min-height: 100vh;
-          padding: 60px 20px;
+          padding: 40px 20px;
         }
 
         .header-section {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 24px;
-          margin-bottom: 32px;
+          gap: 16px;
+          margin-bottom: 20px;
           flex-wrap: wrap;
         }
 
         .page-title {
           color: #ffffff;
-          font-size: 28px;
+          font-size: 26px;
           font-weight: 600;
           margin: 0;
-          text-align: center;
+        }
+
+        .mode-badge {
+          font-size: 13px;
+          font-weight: 600;
+          color: #a5b4fc;
+          background: rgba(99, 102, 241, 0.1);
+          padding: 6px 12px;
+          border-radius: 20px;
         }
 
         .request-pool-button {
@@ -1296,39 +1296,86 @@ export const CreateRequest = () => {
         .request-form {
           display: flex;
           flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          max-width: 480px;
+        }
+
+        .form-card {
+          background: linear-gradient(145deg, #161618 0%, #111113 100%);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 24px;
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
           gap: 20px;
+          box-shadow:
+            0 4px 24px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .chain-selector-row {
           display: flex;
-          align-items: end;
-          gap: 16px;
+          align-items: center;
+          gap: 12px;
         }
 
-        .chain-selector {
+        .chain-box {
           flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .arrow-container {
+          min-width: 0;
+          background: #1f1f23;
+          border-radius: 16px;
+          padding: 14px 16px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          padding-bottom: 8px;
+          gap: 12px;
+          cursor: pointer;
+          position: relative;
         }
 
-        .arrow {
-          color: #9ca3af;
-          font-size: 20px;
-          font-weight: bold;
+        .chain-info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .chain-label {
+          color: #6b7280;
+          font-size: 13px;
+          font-weight: 400;
+        }
+
+        .chain-name {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 120px;
+        }
+
+        .chain-select-hidden {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer;
+        }
+
+        .swap-icon {
+          flex-shrink: 0;
+          cursor: pointer;
         }
 
         .form-label {
-          color: #9ca3af;
-          font-size: 14px;
+          color: #a1a1aa;
+          font-size: 13px;
           font-weight: 500;
+          letter-spacing: 0.01em;
         }
 
         .select-wrapper {
@@ -1337,33 +1384,37 @@ export const CreateRequest = () => {
 
         .chain-select {
           width: 100%;
-          background: #1a1a1a;
-          border: 1px solid #333333;
-          border-radius: 8px;
-          padding: 10px 14px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 14px;
+          padding: 14px 16px;
           color: #ffffff;
-          font-size: 14px;
+          font-size: 15px;
+          font-weight: 500;
           appearance: none;
           cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .chain-select:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.12);
         }
 
         .chain-select:focus {
           outline: none;
-          border-color: #6366f1;
+          border-color: rgba(99, 102, 241, 0.5);
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         .chain-select option {
           background: #1a1a1a;
           color: #ffffff;
-          padding: 10px 14px;
-        }
-
-        .chain-select option:hover {
-          background: #262626;
+          padding: 12px 16px;
         }
 
         .chain-select option:disabled {
-          color: #6b7280;
+          color: #52525b;
         }
 
         .amount-section {
@@ -1372,267 +1423,292 @@ export const CreateRequest = () => {
           gap: 8px;
         }
 
-        .receive-address-row {
+        .amount-label {
+          color: #9ca3af;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .balance-row {
           display: flex;
-          gap: 12px;
-          align-items: stretch;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 2px;
+        }
+
+        .balance-text {
+          color: #6b7280;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          font-feature-settings: 'tnum' on, 'lnum' on;
+        }
+
+        .max-link {
+          color: #818cf8;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+        .max-link:hover {
+          color: #a5b4fc;
         }
 
         .receive-section {
-          flex: 0 0 auto;
-          min-width: 160px;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 6px;
+        }
+
+        .receive-label {
+          color: #9ca3af;
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .receive-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .receive-amount {
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 26px;
+          font-weight: 600;
+          font-feature-settings: 'tnum' on, 'lnum' on;
+        }
+
+        .receive-token {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .receive-token-name {
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 600;
         }
 
         .amount-input-container {
           display: flex;
-          flex: 1;
-          background: #1a1a1a;
-          border: 1px solid #333333;
-          border-radius: 8px;
-          overflow: hidden;
-          box-sizing: border-box;
+          align-items: center;
+          justify-content: space-between;
+          background: #1f1f23;
+          border-radius: 10px 32px 32px 10px;
+          padding: 12px;
+          gap: 12px;
         }
 
         .amount-input {
           flex: 1;
           background: transparent;
           border: none;
-          padding: 10px 14px;
+          padding: 0;
           color: #ffffff;
-          font-size: 14px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 26px;
+          font-weight: 500;
+          font-feature-settings: 'tnum' on, 'lnum' on;
           outline: none;
+          min-width: 0;
         }
 
         .amount-input::placeholder {
-          color: #6b7280;
+          color: #4b5563;
         }
 
         .amount-input.readonly {
-          background: rgba(26, 26, 26, 0.5);
-          cursor: not-allowed;
+          color: #9ca3af;
+          cursor: default;
         }
 
-        .token-selector {
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          padding: 10px 6px;
-          border-left: 1px solid #333333;
-          background: #262626;
-          cursor: pointer;
-          min-width: 70px;
-        }
-
-        .token-display {
+        .token-pill {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 12px;
-          border-left: 1px solid #333333;
-          background: #262626;
-          min-width: 70px;
+          padding: 10px 14px;
+          background: #2d2d32;
+          border-radius: 24px;
+          cursor: pointer;
+          position: relative;
+          flex-shrink: 0;
         }
 
-        .token-text {
+        .token-pill:hover {
+          background: #38383e;
+        }
+
+        .token-name {
           color: #ffffff;
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 600;
         }
 
-        .token-icon {
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .token-select {
-          background: transparent;
-          border: none;
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
-          appearance: none;
+        .token-select-hidden {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
           cursor: pointer;
-          outline: none;
-        }
-
-        .token-select option {
-          background: #1a1a1a;
-          color: #ffffff;
-          padding: 10px 14px;
-        }
-
-        .token-select option:hover {
-          background: #262626;
-        }
-
-        .token-select option:disabled {
-          color: #6b7280;
-        }
-
-        .dropdown-arrow {
-          color: #9ca3af;
-          font-size: 12px;
         }
 
         .address-section {
-          flex: 1;
           display: flex;
           flex-direction: column;
           gap: 8px;
-          min-width: 0;
         }
 
         .address-input {
-          flex: 1;
-          background: #1a1a1a;
-          border: 1px solid #333333;
-          border-radius: 8px;
-          padding: 10px 14px;
+          width: 100%;
+          background: #1f1f23;
+          border: none;
+          border-radius: 10px;
+          padding: 14px 16px;
           color: #ffffff;
-          font-size: 13px;
+          font-size: 14px;
           font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
           outline: none;
-          min-width: 0;
           box-sizing: border-box;
         }
 
         .address-input:focus {
-          border-color: #6366f1;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
         }
 
         .address-input::placeholder {
-          color: #6b7280;
+          color: #4b5563;
         }
 
-        .balance-info {
+
+        .fee-section {
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .fee-header {
+          display: flex;
           align-items: center;
-          margin-top: 6px;
-          font-size: 12px;
-          color: #6b7280;
+          justify-content: space-between;
         }
 
-        .max-btn {
-          background: #6366f1;
-          color: #ffffff;
-          padding: 2px 8px;
-          border-radius: 4px;
+        .fee-label {
+          color: #9ca3af;
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .fee-hint {
+          color: #52525b;
           font-size: 11px;
-          font-weight: 600;
-          cursor: pointer;
         }
 
-        .service-fee-section {
+        .fee-options {
           display: flex;
           flex-direction: column;
           gap: 8px;
         }
 
-        .fee-row {
+        .fee-opt {
           display: flex;
-          gap: 10px;
-        }
-
-        .fee-box {
-          flex: 1;
-          background: #1a1a1a;
-          border: 1px solid #333;
-          border-radius: 8px;
-          padding: 12px;
+          align-items: center;
+          justify-content: space-between;
+          background: #18181b;
+          border: 1px solid #27272a;
+          border-radius: 12px;
+          padding: 14px 16px;
           cursor: pointer;
-          transition: border-color 0.15s;
+          transition: all 0.15s ease;
         }
 
-        .fee-box:hover {
+        .fee-opt:hover {
+          border-color: #3f3f46;
+        }
+
+        .fee-opt.active {
           border-color: #6366f1;
+          background: rgba(99, 102, 241, 0.06);
         }
 
-        .fee-box.active {
-          border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.08);
+        .fee-name {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
 
-        .fee-title {
-          display: block;
-          color: #9ca3af;
-          font-size: 12px;
-          margin-bottom: 8px;
+        .fee-tag {
+          color: #4ade80;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
         }
 
-        .fee-content {
+        .fee-val {
           display: flex;
           align-items: center;
           gap: 10px;
-        }
-
-        .fee-badge {
-          background: #6366f1;
-          color: #fff;
-          padding: 6px 12px;
-          border-radius: 6px;
-          font-size: 14px;
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 16px;
           font-weight: 600;
         }
 
-        .fee-amount {
-          color: #fff;
-          font-size: 13px;
+        .fee-amt {
+          color: #71717a;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          font-weight: 500;
         }
 
-        .fee-input-wrap {
+        .fee-input {
           display: flex;
           align-items: center;
-          background: #111;
-          border: 1px solid #333;
-          border-radius: 6px;
-          padding: 5px 10px;
+          background: #0a0a0b;
+          border: 1px solid #27272a;
+          border-radius: 8px;
+          padding: 6px 10px;
         }
 
-        .fee-box.active .fee-input-wrap {
-          border-color: #6366f1;
+        .fee-opt.active .fee-input {
+          border-color: #3f3f46;
         }
 
-        .fee-input-wrap input {
+        .fee-input input {
           background: transparent;
           border: none;
-          color: #fff;
-          font-size: 14px;
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 15px;
           font-weight: 600;
-          width: 45px;
+          width: 36px;
           outline: none;
           text-align: right;
-          -moz-appearance: textfield;
         }
 
-        .fee-input-wrap input::-webkit-outer-spin-button,
-        .fee-input-wrap input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
+        .fee-input input::placeholder {
+          color: #3f3f46;
         }
 
-        .fee-input-wrap input::placeholder {
-          color: #555;
-        }
-
-        .percent-sign {
-          color: #9ca3af;
+        .fee-input span {
+          color: #71717a;
           font-size: 14px;
-          margin-left: 2px;
         }
 
         .request-button {
-          background: #6366f1;
+          width: 100%;
+          box-sizing: border-box;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
           color: #ffffff;
           border: none;
-          border-radius: 8px;
-          padding: 16px 24px;
+          border-radius: 16px;
+          padding: 18px 0;
           font-size: 16px;
           font-weight: 600;
           cursor: pointer;
@@ -1641,18 +1717,24 @@ export const CreateRequest = () => {
         }
 
         .request-button:hover {
-          background: #5855eb;
+          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
+        }
+
+        .request-button:active {
+          background: linear-gradient(135deg, #5558e8 0%, #4338ca 100%);
+        }
+
+        .request-button:disabled {
+          background: #27272a;
+          cursor: not-allowed;
+          opacity: 0.5;
         }
 
         .footer {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: #6b7280;
-          font-size: 14px;
+          margin-top: 40px;
+          color: #52525b;
+          font-size: 12px;
           text-align: center;
-          z-index: 2;
         }
 
         /* Modal Styles */
@@ -1780,20 +1862,34 @@ export const CreateRequest = () => {
 
         .confirm-btn {
           width: 100%;
-          background: #6366f1;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
           color: #ffffff;
           border: none;
-          border-radius: 8px;
+          border-radius: 14px;
           padding: 16px;
           font-size: 16px;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.25s ease;
           margin: 0;
+          box-shadow:
+            0 4px 16px rgba(99, 102, 241, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .confirm-btn:hover {
-          background: #5855eb;
+          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
+          transform: translateY(-1px);
+          box-shadow:
+            0 6px 24px rgba(99, 102, 241, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .confirm-btn:disabled {
+          background: linear-gradient(135deg, #3f3f46 0%, #27272a 100%);
+          box-shadow: none;
+          cursor: not-allowed;
+          opacity: 0.6;
         }
 
         .status-modal h3 {
@@ -1937,12 +2033,6 @@ export const CreateRequest = () => {
           justify-content: center;
           gap: 10px;
           margin-bottom: 20px;
-        }
-
-        .chain-name {
-          color: #e5e7eb;
-          font-size: 14px;
-          font-weight: 500;
         }
 
         .flow-arrow {
