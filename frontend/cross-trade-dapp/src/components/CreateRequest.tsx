@@ -431,37 +431,6 @@ export const CreateRequest = () => {
       const connectedWallet = connectedAddress
       const recipientAddress = toAddress
 
-      console.log('🎯 Approval Parameters:', {
-        // Chain Information
-        fromChain: requestFrom,
-        fromChainId: fromChainId,
-        toChain: requestTo,
-        toChainId: toChainId,
-        
-        // Token Information
-        sendToken: sendToken,
-        receiveToken: sendToken, // Same as sendToken
-        l2SourceTokenAddress: l2SourceTokenAddress,
-        l2DestinationTokenAddress: l2DestinationTokenAddress,
-        
-        // Contract Information
-        crossTradeContract: crossTradeContractAddress,
-        
-        // Amount Information
-        sendAmount: sendAmount,
-        receiveAmount: currentReceiveAmount,
-        totalAmountWei: totalAmountWei.toString(),
-        ctAmountWei: ctAmountWei.toString(),
-        
-        // Address Information
-        connectedWallet: connectedWallet,
-        recipientAddress: recipientAddress,
-        
-        // Approval Details
-        tokenToApprove: l2SourceTokenAddress, // This is the token contract we're calling approve() on
-        spender: crossTradeContractAddress,   // This is who we're approving to spend
-        amountToApprove: totalAmountWei.toString() // This is how much we're approving
-      })
 
       // Validate that we have the required addresses
       if (!l2SourceTokenAddress || l2SourceTokenAddress === '') {
@@ -472,29 +441,11 @@ export const CreateRequest = () => {
         throw new Error('CrossTrade contract address not found')
       }
 
-      console.log(`📝 Calling approve() on ${sendToken} token contract:`, {
-        contract: l2SourceTokenAddress,
-        function: 'approve',
-        spender: crossTradeContractAddress,
-        amount: totalAmountWei.toString()
-      })
-
-      // Check if user is on the correct network
-      console.log('🌐 Network Check:', {
-        currentChainId: chainId,
-        requiredChainId: fromChainId,
-        needsSwitch: chainId !== fromChainId
-      })
-      
       if (chainId !== fromChainId) {
-        console.log('🔄 Switching to required network...')
         try {
           await switchChain({ chainId: fromChainId })
-          console.log('✅ Network switched successfully')
-          // Wait a moment for the network switch to complete
           await new Promise(resolve => setTimeout(resolve, 1000))
         } catch (switchError) {
-          console.error('❌ Failed to switch network:', switchError)
           alert(`Please manually switch to ${requestFrom} network in your wallet`)
           setIsApproving(false)
           setShowConfirmingModal(false)
@@ -502,15 +453,7 @@ export const CreateRequest = () => {
         }
       }
 
-      // Call approve on the L2 source token contract
-      console.log('🚀 About to call writeApproval with:', {
-        address: l2SourceTokenAddress,
-        chainId: fromChainId,
-        spender: crossTradeContractAddress,
-        amount: totalAmountWei.toString()
-      })
-      
-      const result = await writeApproval({
+      await writeApproval({
         address: l2SourceTokenAddress as `0x${string}`, // ERC20 token contract to call approve() on
         abi: ERC20_ABI,
         functionName: 'approve',
@@ -520,16 +463,7 @@ export const CreateRequest = () => {
           totalAmountWei // amount to approve (total send amount)
         ]
       })
-      
-      console.log('✅ writeApproval result:', result)
     } catch (error) {
-      console.error('❌ Approval failed:', error)
-      console.error('Error details:', {
-        name: (error as any)?.name,
-        message: (error as any)?.message,
-        cause: (error as any)?.cause,
-        code: (error as any)?.code
-      })
       setIsApproving(false)
       setShowConfirmingModal(false)
     }
@@ -556,23 +490,11 @@ export const CreateRequest = () => {
         throw new Error(`l2_cross_trade contract address not found for chain ${fromChainId}`)
       }
 
-      // Check if user is on the correct network for main transaction
-      console.log('🌐 Main Transaction Network Check:', {
-        currentChainId: chainId,
-        requiredChainId: fromChainId,
-        needsSwitch: chainId !== fromChainId,
-        communicationMode: communicationMode
-      })
-      
       if (chainId !== fromChainId) {
-        console.log('🔄 Switching to required network for main transaction...')
         try {
           await switchChain({ chainId: fromChainId })
-          console.log('✅ Network switched successfully')
-          // Wait a moment for the network switch to complete
           await new Promise(resolve => setTimeout(resolve, 1000))
         } catch (switchError) {
-          console.error('❌ Failed to switch network:', switchError)
           alert(`Please manually switch to ${requestFrom} network in your wallet`)
           setIsApproving(false)
           setShowConfirmingModal(false)
@@ -593,26 +515,8 @@ export const CreateRequest = () => {
       // - Parameters: _l1token, _l2token, _receiver, _totalAmount, _ctAmount, _l1chainId
       
       if (communicationMode === 'L2_L2') {
-        // L2 to L2 communication: Get L1 token address from Ethereum Sepolia
-        const l1ChainId = 11155111 // Ethereum Sepolia
-        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken) // L1 token
-
-        console.log('📝 L2_L2 Contract call parameters:', {
-          mode: 'L2_L2',
-          contractAddress,
-          l1TokenAddress,
-          l2SourceTokenAddress,
-          l2DestinationTokenAddress,
-          fromChainId,
-          toChainId,
-          totalAmount: toTokenWei(sendAmount, sendToken).toString(),
-          ctAmount: toTokenWei(currentReceiveAmount, sendToken).toString(),
-          l1ChainId,
-          abi: 'l2_cross_trade_ABI',
-          config: 'CHAIN_CONFIG_L2_L2'
-        })
-
-        // Check if source token is native (0x0000...)
+        const l1ChainId = 11155111
+        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken)
         const isNativeToken = l2SourceTokenAddress.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
         
         await writeContract({
@@ -633,28 +537,10 @@ export const CreateRequest = () => {
           value: isNativeToken ? toTokenWei(sendAmount, sendToken) : BigInt(0)
         })
       } else {
-        // L2 to L1 communication: Uses OLD L2CrossTrade.sol contract (6 params)
-        const l1ChainId = 11155111 // Ethereum Sepolia
-        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken) // L1 token from L2_L1 config
-
-        console.log('📝 L2_L1 Contract call parameters:', {
-          mode: 'L2_L1',
-          contractAddress, // From L2_L1 config (OLD contract)
-          l1TokenAddress, // From L2_L1 config
-          l2SourceTokenAddress, // From L2_L1 config (used as _l2token in OLD contract)
-          fromChainId,
-          totalAmount: toTokenWei(sendAmount, sendToken).toString(),
-          ctAmount: toTokenWei(currentReceiveAmount, sendToken).toString(),
-          l1ChainId,
-          abi: 'L2_L1_REQUEST_ABI (OLD contract - 6 params)',
-          config: 'CHAIN_CONFIG_L2_L1',
-          note: 'OLD contract: requestRegisteredToken(_l1token, _l2token, _receiver, _totalAmount, _ctAmount, _l1chainId)'
-        })
-
-        // Check if source token is native (0x0000...)
+        const l1ChainId = 11155111
+        const l1TokenAddress = getTokenAddressForMode(l1ChainId, sendToken)
         const isNativeTokenL2L1 = l2SourceTokenAddress.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
-        
-        // L2_L1 uses OLD L2CrossTrade.sol contract with 6 parameters
+
         await writeContract({
           address: contractAddress as `0x${string}`,
           abi: L2_L1_REQUEST_ABI, // OLD contract ABI (6 params)
@@ -1283,16 +1169,6 @@ export const CreateRequest = () => {
           background: rgba(99, 102, 241, 0.1);
         }
 
-        .form-container {
-          background: rgba(20, 20, 20, 0.8);
-          border: 1px solid #333333;
-          border-radius: 16px;
-          padding: 24px;
-          width: 100%;
-          max-width: 480px;
-          backdrop-filter: blur(10px);
-        }
-
         .request-form {
           display: flex;
           flex-direction: column;
@@ -1369,52 +1245,6 @@ export const CreateRequest = () => {
         .swap-icon {
           flex-shrink: 0;
           cursor: pointer;
-        }
-
-        .form-label {
-          color: #a1a1aa;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: 0.01em;
-        }
-
-        .select-wrapper {
-          position: relative;
-        }
-
-        .chain-select {
-          width: 100%;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 14px;
-          padding: 14px 16px;
-          color: #ffffff;
-          font-size: 15px;
-          font-weight: 500;
-          appearance: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .chain-select:hover {
-          background: rgba(255, 255, 255, 0.05);
-          border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .chain-select:focus {
-          outline: none;
-          border-color: rgba(99, 102, 241, 0.5);
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .chain-select option {
-          background: #1a1a1a;
-          color: #ffffff;
-          padding: 12px 16px;
-        }
-
-        .chain-select option:disabled {
-          color: #52525b;
         }
 
         .amount-section {
@@ -1518,11 +1348,6 @@ export const CreateRequest = () => {
 
         .amount-input::placeholder {
           color: #4b5563;
-        }
-
-        .amount-input.readonly {
-          color: #9ca3af;
-          cursor: default;
         }
 
         .token-pill {
@@ -1909,40 +1734,13 @@ export const CreateRequest = () => {
           margin: 0 auto 24px auto;
         }
 
-        .success-checkmark {
-          width: 48px;
-          height: 48px;
-          background: #10b981;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 24px auto;
-          color: #ffffff;
-          font-size: 24px;
-          font-weight: bold;
-        }
-
         .status-modal p {
           color: #9ca3af;
           font-size: 16px;
           margin: 0;
         }
 
-        .tx-hash {
-          margin-top: 16px;
-          padding: 8px;
-          background: #262626;
-          border-radius: 8px;
-          word-break: break-all;
-        }
-
-        .tx-hash small {
-          color: #9ca3af;
-          font-size: 12px;
-        }
-
-        /* Success Modal - Premium Refined Design */
+        /* Success Modal */
         .success-modal {
           background: #0d0d0d;
           border-radius: 16px;
@@ -2134,23 +1932,6 @@ export const CreateRequest = () => {
           .chain-selector-row {
             flex-direction: column;
             gap: 12px;
-          }
-
-          .receive-address-row {
-            flex-direction: column;
-            gap: 16px;
-          }
-
-          .receive-section {
-            flex: 1;
-          }
-
-          .arrow-container {
-            transform: rotate(90deg);
-          }
-
-          .form-container {
-            padding: 24px;
           }
 
           .page-title {

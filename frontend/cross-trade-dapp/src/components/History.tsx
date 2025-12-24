@@ -17,7 +17,7 @@ import {
   // L2_L1 ABIs
   L2_L1_PROVIDE_CT_ABI,
   L2_L1_CANCEL_CT_ABI,
-  L2_L1_EDIT_FEE_ABI
+  L2_L1_EDIT_FEE_ABI,
 } from '@/config/contracts'
 import { Navigation } from './Navigation'
 import { EditFeeModal } from './EditFeeModal'
@@ -59,6 +59,7 @@ export const History = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [expandedAddresses, setExpandedAddresses] = useState<Set<string>>(new Set())
 
   // Get all L2 chains that have l2_cross_trade contracts from both L2_L2 and L2_L1 configs
   const getL2Chains = () => {
@@ -692,322 +693,182 @@ export const History = () => {
     return `${address.slice(0, chars)}...${address.slice(-4)}`
   }
 
-  const formatHash = (hash: string) => {
-    if (!hash) return ''
-    if (hash.length <= 18) return hash
-    return `${hash.slice(0, 10)}...${hash.slice(-8)}`
-  }
-
   const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
 
-  const getExplorerUrl = (chainId: number, hash: string) => {
-    const config = CHAIN_CONFIG_L2_L2[chainId.toString()] || CHAIN_CONFIG_L2_L1[chainId.toString()]
-    return config?.block_explorer_url ? `${config.block_explorer_url}/tx/${hash}` : null
+  const handleAddressClick = (e: React.MouseEvent, key: string, address: string) => {
+    e.stopPropagation()
+    copyToClipboard(address)
+    setExpandedAddresses(prev => new Set(prev).add(key))
+    // Auto-clear "Copied" after 1.5s
+    setTimeout(() => {
+      setExpandedAddresses(prev => {
+        const next = new Set(prev)
+        next.delete(key)
+        return next
+      })
+    }, 1500)
   }
 
-  const DetailRow = ({ label, value, className = '' }: { label: string; value: React.ReactNode; className?: string }) => {
-    const valueStyle: React.CSSProperties = {
-      color: className === 'profit' ? '#34d399' : className === 'muted' ? '#9ca3af' : '#ffffff',
-      fontSize: '13px',
-      fontWeight: 500,
-      fontFamily: "'SF Mono', ui-monospace, monospace",
-      textDecoration: className === 'muted' ? 'line-through' : 'none',
-    }
+  const renderAddress = (label: string, address: string, rowKey: string) => {
+    const key = `${rowKey}-${label}`
+    const isCopied = expandedAddresses.has(key)
     return (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#9ca3af', fontSize: '13px' }}>{label}</span>
-        <span style={valueStyle}>{value}</span>
+      <div className="detail-row" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '8px 0',
+        fontSize: '13px',
+        borderBottom: '1px solid #27272a',
+      }}>
+        <span style={{
+          color: '#a1a1aa',
+          flexShrink: 0,
+          minWidth: '70px',
+        }}>{label}</span>
+        <span
+          onClick={(e) => handleAddressClick(e, key, address)}
+          title="Click to copy"
+          style={{
+            color: isCopied ? '#4ade80' : '#ffffff',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: '13px',
+            cursor: 'pointer',
+          }}
+        >
+          {isCopied ? 'Copied!' : truncateAddress(address)}
+        </span>
       </div>
     )
   }
 
-  const CopyableAddress = ({ address, label }: { address: string; label: string }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <span style={{ color: '#9ca3af', fontSize: '13px' }}>{label}</span>
-      <span
-        style={{ color: '#c4b5fd', fontSize: '13px', fontWeight: 500, fontFamily: "'SF Mono', ui-monospace, monospace", cursor: 'pointer', padding: '2px 6px', borderRadius: '4px' }}
-        onClick={(e) => { e.stopPropagation(); copyToClipboard(address) }}
-        title={address}
-      >
-        {truncateAddress(address)}
-      </span>
-    </div>
-  )
-
   return (
-    <div className="history-container">
-      {/* Navigation */}
+    <div className="page">
       <Navigation />
-      
-      <div className="geometric-background">
-        <svg className="geometric-lines" viewBox="0 0 1200 800" fill="none">
-          <path d="M50 150 L250 80 L450 200 L650 120 L850 180" stroke="rgba(99, 102, 241, 0.25)" strokeWidth="1.5"/>
-          <path d="M150 350 L350 280 L550 400 L750 320 L950 380" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1.5"/>
-          <path d="M0 550 L200 480 L400 600 L600 520 L800 580" stroke="rgba(99, 102, 241, 0.15)" strokeWidth="1.5"/>
-          <path d="M700 80 L900 150 L1100 30 L1200 100" stroke="rgba(99, 102, 241, 0.25)" strokeWidth="1.5"/>
-          <path d="M800 280 L1000 350 L1200 230" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1.5"/>
-          <path d="M650 480 L850 550 L1050 430 L1200 500" stroke="rgba(99, 102, 241, 0.15)" strokeWidth="1.5"/>
-        </svg>
-      </div>
 
-      <div className="content">
-        <h1 className="page-title">Transaction History</h1>
-        <p className="page-subtitle">View your past cross-trade requests and provides</p>
-        
-        {/* Debug info - show which chains are being queried
-        <div className="debug-info">
-          <p>Querying {l2Chains.length} L2 chains: {l2Chains.map(chain => `${chain.config.display_name} (${chain.type})`).join(', ')}</p>
+      <main>
+        <div className="header">
+          <h1>History</h1>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {(['All', 'Provide', 'Request'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                style={{
+                  background: activeFilter === f ? '#27272a' : 'transparent',
+                  border: 'none',
+                  color: activeFilter === f ? '#fff' : '#52525b',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  margin: 0,
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
-        */}
 
-        <div className="history-wrapper">
-          {!userAddress ? (
-            <div className="connect-wallet-message">
-              <p>Please connect your wallet to view transaction history</p>
-            </div>
-          ) : loading ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Loading history...</p>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <p>Error loading history: {error}</p>
-            </div>
-          ) : filteredRequests.length === 0 ? (
-            <div className="empty-state">
-              <p>No transaction history found</p>
-            </div>
-          ) : (
-            <>
-              {/* Filter Controls */}
-              <div className="filter-controls">
-                <div className="filter-section">
-                  <span className="filter-label">Type</span>
-                  <div className="filter-buttons">
-                    <button 
-                      className={`filter-btn ${activeFilter === 'All' ? 'active' : ''}`}
-                      onClick={() => setActiveFilter('All')}
-                    >
-                      All
-                    </button>
-                    <button 
-                      className={`filter-btn ${activeFilter === 'Provide' ? 'active' : ''}`}
-                      onClick={() => setActiveFilter('Provide')}
-                    >
-                      Provide
-                    </button>
-                    <button 
-                      className={`filter-btn ${activeFilter === 'Request' ? 'active' : ''}`}
-                      onClick={() => setActiveFilter('Request')}
-                    >
-                      Request
-                    </button>
+        {!userAddress ? (
+          <p className="empty">Connect your wallet to view history</p>
+        ) : loading ? (
+          <p className="empty">Loading...</p>
+        ) : error ? (
+          <p className="empty error">{error}</p>
+        ) : filteredRequests.length === 0 ? (
+          <p className="empty">No transactions yet</p>
+        ) : (
+          <>
+            {filteredRequests.map((request, index) => {
+              const data = request.data!
+              const rowKey = `${request.chainId}-${request.saleCount}-${index}`
+              const isExpanded = expandedRows.has(rowKey)
+              const tokenSymbol = getTokenSymbol(data.l2SourceToken)
+              const actualCtAmount = data.editedCtAmount || data.ctAmount
+              const amount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
+              const originalAmount = formatTokenAmount(data.ctAmount, data.l2SourceToken)
+              const totalAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
+              const hasEdited = data.editedCtAmount !== undefined && data.editedCtAmount !== data.ctAmount
+              const fromChain = request.type === 'Provide' ? getChainName(BigInt(11155111)) : request.chainName
+              const toChain = getChainName(data.l2DestinationChainId)
+              const reward = data.totalAmount - actualCtAmount
+              const rewardAmount = formatTokenAmount(reward, data.l2SourceToken)
+
+              return (
+                <div key={rowKey} className={`row ${isExpanded ? 'open' : ''}`} onClick={() => toggleRowExpanded(rowKey)}>
+                  <div className="row-main">
+                    <span className={`badge ${request.type.toLowerCase()}`}>{request.type}</span>
+
+                    <div className="token">
+                      {renderTokenIcon(tokenSymbol)}
+                      <strong>{amount}</strong>
+                      <span>{tokenSymbol}</span>
+                      {hasEdited && <em>EDITED</em>}
+                    </div>
+
+                    <div className="route">
+                      <div className="chain-from">
+                        {renderChainIcon(fromChain)}
+                        <span>{fromChain}</span>
+                      </div>
+                      <span className="arrow">→</span>
+                      <div className="chain-to">
+                        {renderChainIcon(toChain)}
+                        <span>{toChain}</span>
+                      </div>
+                    </div>
+
+                    <span className={`status ${request.status.toLowerCase()}`}>{request.status}</span>
+
+                    <div className="actions">
+                      {request.status === 'Waiting' && request.type === 'Request' && (
+                        <>
+                          <button className="btn-edit" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit</button>
+                          <button className="btn-cancel" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel</button>
+                        </>
+                      )}
+                      <svg className={`chevron ${isExpanded ? 'flip' : ''}`} viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Table */}
-              <div className="table-container">
-                <div className="table-header">
-                  <div className="header-cell expand-col"></div>
-                  <div className="header-cell type-col">Type</div>
-                  <div className="header-cell token-col">Token</div>
-                  <div className="header-cell from-col">Network From</div>
-                  <div className="header-cell to-col">Network To</div>
-                  <div className="header-cell status-col">Status</div>
-                  <div className="header-cell action-col">Action</div>
-                </div>
-
-                <div className="table-body">
-                  {filteredRequests.map((request, index) => {
-                    const data = request.data!
-                    const rowKey = `history-${request.chainId}-${request.saleCount}-${index}`
-                    const isExpanded = expandedRows.has(rowKey)
-                    const tokenSymbol = getTokenSymbol(data.l2SourceToken)
-                    const tokenIcon = renderTokenIcon(tokenSymbol)
-                    // Use edited amount if available, otherwise use original ctAmount
-                    const actualCtAmount = data.editedCtAmount || data.ctAmount
-                    const amount = formatTokenAmount(actualCtAmount, data.l2SourceToken)
-                    const originalAmount = formatTokenAmount(data.ctAmount, data.l2SourceToken)
-                    const totalAmount = formatTokenAmount(data.totalAmount, data.l2SourceToken)
-                    const hasEdited = data.editedCtAmount !== undefined && data.editedCtAmount !== data.ctAmount
-                    const fromChain = request.type === 'Provide'
-                      ? getChainName(BigInt(11155111)) // Ethereum for provides
-                      : request.chainName // Source chain from request data
-                    const toChain = getChainName(data.l2DestinationChainId)
-                    const reward = data.totalAmount - actualCtAmount
-                    const rewardAmount = formatTokenAmount(reward, data.l2SourceToken)
-
-                    return (
-                      <div key={rowKey} className={`table-row-wrapper ${isExpanded ? 'expanded' : ''}`}>
-                        <div
-                          className="table-row"
-                          onClick={() => toggleRowExpanded(rowKey)}
-                        >
-                          {/* Expand Indicator */}
-                          <div className="expand-indicator">
-                            <svg
-                              className={`chevron ${isExpanded ? 'rotated' : ''}`}
-                              width="12"
-                              height="12"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                            >
-                              <path
-                                d="M3 4.5L6 7.5L9 4.5"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-
-                          {/* Type Column */}
-                          <div className="table-cell type-col">
-                            <span className={`type-badge ${request.type.toLowerCase()}`}>
-                              {request.type}
-                            </span>
-                          </div>
-
-                          {/* Token Column */}
-                          <div className="table-cell token-col">
-                            <div className="token-info">
-                              <span className="token-icon">{tokenIcon}</span>
-                              <div className="token-details">
-                                <span className="token-amount">
-                                  {amount}
-                                  {hasEdited && <span className="edited-badge">EDITED</span>}
-                                </span>
-                                <span className="token-symbol">{tokenSymbol}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Network From Column */}
-                          <div className="table-cell from-col">
-                            <div className="network-info">
-                              <span className="network-icon">{renderChainIcon(fromChain)}</span>
-                              <span className="network-name">{fromChain}</span>
-                            </div>
-                          </div>
-
-                          {/* Network To Column */}
-                          <div className="table-cell to-col">
-                            <div className="network-info">
-                              <span className="network-icon">{renderChainIcon(toChain)}</span>
-                              <span className="network-name">{toChain}</span>
-                            </div>
-                          </div>
-
-                          {/* Status Column */}
-                          <div className="table-cell status-col">
-                            <span
-                              className="status-badge"
-                              style={{ backgroundColor: getStatusColor(request.status) }}
-                            >
-                              {request.status}
-                            </span>
-                          </div>
-
-                          {/* Action Column */}
-                          <div className="table-cell action-col">
-                            {request.status === 'Waiting' && request.type === 'Request' && (
-                              <div className="action-buttons">
-                                <button
-                                  className="edit-btn"
-                                  onClick={(e) => { e.stopPropagation(); handleEdit(request) }}
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  className="cancel-btn"
-                                  onClick={(e) => { e.stopPropagation(); handleCancel(request) }}
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                  {isExpanded && (
+                    <div className="details">
+                      <div className="detail-section">
+                        <h5>Amounts</h5>
+                        <div className="detail-row"><span>Total</span><span>{totalAmount} {tokenSymbol}</span></div>
+                        <div className="detail-row"><span>Bridge</span><span>{amount} {tokenSymbol}</span></div>
+                        {hasEdited && <div className="detail-row muted"><span>Original</span><span>{originalAmount} {tokenSymbol}</span></div>}
+                        {request.status !== 'Cancelled' && <div className="detail-row green"><span>Reward</span><span>+{rewardAmount} {tokenSymbol}</span></div>}
+                      </div>
+                      <div className="detail-section">
+                        <h5>Addresses</h5>
+                        {renderAddress('Requester', data.requester, rowKey)}
+                        {renderAddress('Receiver', data.receiver, rowKey)}
+                        {data.provider !== '0x0000000000000000000000000000000000000000' && renderAddress('Provider', data.provider, rowKey)}
+                      </div>
+                      <div className="detail-section">
+                        <h5>Transaction</h5>
+                        <div className="detail-row">
+                          <span>ID</span>
+                          <span>#{request.saleCount}</span>
                         </div>
-
-                        <div className={`expanded-details ${isExpanded ? 'show' : ''}`}>
-                          <div className="expanded-details-inner">
-                            <div className="details-grid">
-                              <div className="detail-section">
-                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Amounts</h4>
-                                <DetailRow label="Total" value={`${totalAmount} ${tokenSymbol}`} />
-                                <DetailRow label="Bridge" value={`${amount} ${tokenSymbol}`} />
-                                {hasEdited && <DetailRow label="Original" value={`${originalAmount} ${tokenSymbol}`} className="muted" />}
-                                {request.status !== 'Cancelled' && (
-                                  <DetailRow label="Reward" value={`+${rewardAmount} ${tokenSymbol}`} className="profit" />
-                                )}
-                              </div>
-
-                              <div className="detail-section">
-                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Addresses</h4>
-                                <CopyableAddress label="Requester" address={data.requester} />
-                                <CopyableAddress label="Receiver" address={data.receiver} />
-                                {data.provider.toLowerCase() !== '0x0000000000000000000000000000000000000000' && (
-                                  <CopyableAddress label="Provider" address={data.provider} />
-                                )}
-                              </div>
-
-                              <div className="detail-section">
-                                <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Transaction</h4>
-                                <DetailRow label="ID" value={`#${request.saleCount}`} />
-                                <DetailRow label="Route" value={`${request.chainName} → ${toChain}`} />
-                                <DetailRow
-                                  label="Hash"
-                                  value={
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span
-                                        style={{ color: '#c4b5fd', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px' }}
-                                        onClick={(e) => { e.stopPropagation(); copyToClipboard(data.hashValue) }}
-                                        title={data.hashValue}
-                                      >
-                                        {formatHash(data.hashValue)}
-                                      </span>
-                                      {getExplorerUrl(request.chainId, data.hashValue) && (
-                                        <a
-                                          href={getExplorerUrl(request.chainId, data.hashValue)!}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          style={{ color: '#818cf8', textDecoration: 'none', fontSize: '14px' }}
-                                          onClick={(e) => e.stopPropagation()}
-                                        >↗</a>
-                                      )}
-                                    </span>
-                                  }
-                                />
-                              </div>
-
-                              {request.status === 'Waiting' && request.type === 'Request' && (
-                                <div className="detail-section actions-section">
-                                  <h4 style={{ color: '#9ca3af', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 8px 0' }}>Actions</h4>
-                                  <div className="detail-actions">
-                                    <button className="edit-btn" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit Request</button>
-                                    <button className="cancel-btn" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel Request</button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                        <div className="detail-row">
+                          <span>Route</span>
+                          <span>{fromChain} → {toChain}</span>
                         </div>
                       </div>
-                    )
-                  })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      <footer className="footer">
-        Copyright © 2025. All rights reserved.
-      </footer>
+              )
+            })}
+          </>
+        )}
+      </main>
 
       {/* Edit Fee Modal */}
       {selectedRequest && selectedRequest.data && (
@@ -1056,565 +917,314 @@ export const History = () => {
       )}
 
       <style jsx>{`
-        .history-container {
+        .page {
           min-height: 100vh;
-          background: #0a0a0a;
-          position: relative;
-          overflow: hidden;
+          background: #09090b;
         }
 
-        .geometric-background {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 1;
+        main {
+          max-width: 960px;
+          margin: 0 auto;
+          padding: 110px 24px 60px;
         }
 
-        .geometric-lines {
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          top: 0;
-          left: 0;
-        }
-
-        .content {
-          position: relative;
-          z-index: 2;
+        .header {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          justify-content: flex-start;
-          min-height: calc(100vh - 80px);
-          padding: 40px 20px 60px 20px;
-          margin-top: 80px;
+          justify-content: space-between;
+          margin-bottom: 32px;
         }
 
-        .page-title {
-          color: #ffffff;
-          font-size: 32px;
+        h1 {
+          font-size: 22px;
           font-weight: 600;
-          margin-bottom: 12px;
-          text-align: center;
+          color: #fafafa;
+          margin: 0;
+          letter-spacing: -0.02em;
         }
 
-        .page-subtitle {
-          color: #9ca3af;
-          font-size: 16px;
-          margin-bottom: 20px;
-          text-align: center;
-          max-width: 600px;
-        }
-
-        .debug-info {
-          color: #6b7280;
-          font-size: 14px;
-          margin-bottom: 40px;
-          text-align: center;
-          padding: 8px 16px;
-          background: rgba(20, 20, 20, 0.6);
+        .tabs {
+          display: flex;
+          gap: 2px;
+          background: #18181b;
+          padding: 3px;
           border-radius: 8px;
-          border: 1px solid #333333;
+          border: 1px solid #27272a;
         }
 
-        .debug-info p {
+        .tabs :global(button) {
+          background: transparent;
+          border: none;
+          color: #71717a;
+          font-size: 13px;
+          font-weight: 500;
+          padding: 6px 14px;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+
+        .tabs :global(button:hover) {
+          color: #a1a1aa;
+          background: rgba(255,255,255,0.03);
+        }
+
+        .tabs :global(button.active) {
+          background: #27272a;
+          color: #fff;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .empty {
+          text-align: center;
+          color: #52525b;
+          padding: 80px 20px;
+          font-size: 15px;
           margin: 0;
         }
 
-        .history-wrapper {
-          width: 100%;
-          max-width: 1200px;
-        }
+        .empty.error { color: #ef4444; }
 
-        .connect-wallet-message,
-        .loading-state,
-        .error-state,
-        .empty-state {
-          text-align: center;
-          padding: 60px 20px;
-          color: #9ca3af;
-          background: rgba(20, 20, 20, 0.6);
-          border-radius: 12px;
-          border: 1px solid #333333;
-        }
-
-        .loading-spinner {
-          width: 32px;
-          height: 32px;
-          border: 3px solid #333;
-          border-top: 3px solid #6366f1;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 16px auto;
-        }
-
-        .filter-controls {
-          display: flex;
-          gap: 32px;
-          margin-bottom: 24px;
-          padding: 20px;
-          background: rgba(20, 20, 20, 0.6);
-          border-radius: 12px;
-          border: 1px solid #333333;
-        }
-
-        .filter-section {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .filter-label {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .filter-buttons {
-          display: flex;
-          gap: 8px;
-        }
-
-        .filter-btn {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          border-radius: 20px;
-          padding: 6px 16px;
-          color: #9ca3af;
-          font-size: 12px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .filter-btn:hover {
-          border-color: #6366f1;
-          color: #ffffff;
-        }
-
-        .filter-btn.active {
-          background: #6366f1;
-          border-color: #6366f1;
-          color: #ffffff;
-        }
-
-        .table-container {
-          background: rgba(20, 20, 20, 0.8);
-          border: 1px solid #333333;
+        .row {
+          background: #18181b;
           border-radius: 16px;
-          overflow: hidden;
-          backdrop-filter: blur(10px);
-        }
-
-        .table-header {
-          display: grid;
-          grid-template-columns: 32px 100px 200px 180px 180px 120px 120px;
-          gap: 16px;
-          padding: 16px 20px;
-          background: rgba(26, 26, 26, 0.5);
-          border-bottom: 1px solid #333333;
-        }
-
-        .expand-col {
-          width: 32px;
-        }
-
-        .header-cell {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-          text-align: left;
-        }
-
-        .table-body {
-          max-height: 600px;
-          overflow-y: auto;
-        }
-
-        .table-row-wrapper {
-          border-bottom: 1px solid rgba(51, 51, 51, 0.5);
-        }
-
-        .table-row-wrapper:last-child {
-          border-bottom: none;
-        }
-
-        .table-row {
-          display: grid;
-          grid-template-columns: 32px 100px 200px 180px 180px 120px 120px;
-          gap: 16px;
-          padding: 20px;
+          margin-bottom: 8px;
           cursor: pointer;
-          transition: background 0.15s ease;
+          transition: background 0.15s;
         }
 
-        .table-row:hover {
-          background: rgba(255, 255, 255, 0.02);
+        .row:hover { background: #1f1f23; }
+        .row.open { background: #1f1f23; }
+
+        .row-main {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 18px 20px;
         }
 
-        .expand-indicator {
+        .badge {
+          font-size: 11px;
+          font-weight: 700;
+          padding: 5px 10px;
+          border-radius: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .badge.provide { background: #1d4ed8; color: #93c5fd; }
+        .badge.request { background: #6d28d9; color: #c4b5fd; }
+
+        .token {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 160px;
+        }
+
+        .token strong {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 16px;
+          color: #fff;
+        }
+
+        .token span { color: #71717a; font-size: 14px; }
+
+        .token em {
+          font-style: normal;
+          font-size: 9px;
+          font-weight: 700;
+          color: #fbbf24;
+          background: rgba(251, 191, 36, 0.2);
+          padding: 2px 5px;
+          border-radius: 4px;
+          margin-left: 4px;
+        }
+
+        .route {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #4b5563;
-        }
-
-        .chevron {
-          transition: transform 0.25s ease;
-        }
-
-        .chevron.rotated {
-          transform: rotate(180deg);
-          color: #6366f1;
-        }
-
-        .edited-badge {
-          display: inline-block;
-          margin-left: 8px;
-          padding: 2px 6px;
-          background: #f59e0b;
-          color: #000;
-          font-size: 9px;
-          font-weight: 600;
-          border-radius: 3px;
-          vertical-align: middle;
-        }
-
-        .expanded-details {
-          display: grid;
-          grid-template-rows: 0fr;
-          transition: grid-template-rows 0.2s ease-out;
-        }
-
-        .expanded-details.show {
-          grid-template-rows: 1fr;
-        }
-
-        .expanded-details-inner {
-          overflow: hidden;
-        }
-
-        .details-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 32px;
-          padding: 20px 24px 24px 52px;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(17, 17, 17, 0.6);
-        }
-
-        .detail-section {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .section-title {
-          color: #9ca3af !important;
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin: 0 0 4px 0;
-        }
-
-        .detail-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .detail-label {
-          color: #9ca3af !important;
-          font-size: 13px;
-        }
-
-        .detail-value {
-          color: #fff !important;
-          font-size: 13px;
-          font-weight: 500;
-          font-family: 'SF Mono', ui-monospace, monospace;
-        }
-
-        .detail-value.muted {
-          color: #9ca3af !important;
-          text-decoration: line-through;
-        }
-
-        .detail-value.profit {
-          color: #34d399 !important;
-        }
-
-        .copyable {
-          cursor: pointer;
-          padding: 2px 6px;
-          border-radius: 4px;
-          transition: background 0.15s;
-          color: #c4b5fd !important;
-        }
-
-        .copyable:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .hash-value {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .hash-value .copyable {
-          color: #c4b5fd !important;
-        }
-
-        .explorer-link {
-          color: #6366f1;
-          text-decoration: none;
+          gap: 10px;
+          flex: 1;
+          color: #a1a1aa;
           font-size: 14px;
         }
 
-        .explorer-link:hover {
-          color: #818cf8;
-        }
-
-        .table-cell {
-          display: flex;
-          align-items: center;
-        }
-
-        .type-badge {
-          padding: 4px 12px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-        }
-
-        .type-badge.provide {
-          background: #3b82f6;
-          color: #ffffff;
-        }
-
-        .type-badge.request {
-          background: #8b5cf6;
-          color: #ffffff;
-        }
-
-        .token-info {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .token-icon {
-          font-size: 20px;
-        }
-
-        .token-details {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .token-amount {
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 600;
-        }
-
-        .token-symbol {
-          color: #9ca3af;
-          font-size: 12px;
-        }
-
-        .network-info {
+        .chain-from, .chain-to {
           display: flex;
           align-items: center;
           gap: 6px;
         }
 
-        .network-icon {
+        .route .arrow {
+          color: #52525b;
           font-size: 16px;
         }
 
-        .network-name {
-          color: #ffffff;
-          font-size: 14px;
-        }
-
-        .status-badge {
-          padding: 4px 12px;
-          border-radius: 6px;
-          color: #ffffff;
-          font-size: 12px;
+        .status {
+          font-size: 13px;
           font-weight: 600;
+          padding: 5px 12px;
+          border-radius: 20px;
         }
 
+        .status.completed { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .status.waiting { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+        .status.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 
-        .action-col {
+        .actions {
           display: flex;
-          justify-content: center;
-        }
-
-        .action-buttons {
-          display: flex;
-          gap: 8px;
           align-items: center;
+          gap: 8px;
+          margin-left: auto;
         }
 
-        .edit-btn,
-        .cancel-btn {
-          border: none;
-          border-radius: 6px;
-          padding: 6px 12px;
+        .btn-edit, .btn-cancel {
           font-size: 12px;
           font-weight: 600;
+          padding: 6px 12px;
+          border-radius: 6px;
+          border: none;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s;
         }
 
-        .edit-btn {
-          background: #6366f1;
-          color: #ffffff;
+        .btn-edit { background: #6366f1; color: #fff; }
+        .btn-edit:hover { background: #4f46e5; }
+
+        .btn-cancel { background: #27272a; color: #a1a1aa; }
+        .btn-cancel:hover { background: #ef4444; color: #fff; }
+
+        .chevron {
+          width: 16px;
+          height: 16px;
+          color: #52525b;
+          transition: transform 0.2s;
         }
 
-        .edit-btn:hover {
-          background: #5855eb;
-          transform: translateY(-1px);
+        .chevron.flip { transform: rotate(180deg); color: #6366f1; }
+
+        .details {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+          padding: 20px;
+          border-top: 1px solid #27272a;
+          background: #18181b;
+          overflow: visible;
         }
 
-        .cancel-btn {
-          background: #ef4444;
-          color: #ffffff;
+        .detail-section {
+          overflow: visible;
         }
 
-        .cancel-btn:hover {
-          background: #dc2626;
-          transform: translateY(-1px);
+        .detail-section h5 {
+          font-size: 11px;
+          font-weight: 600;
+          color: #d4d4d8;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin: 0 0 12px 0;
         }
 
-        .actions-section {
-          grid-column: span 3;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          padding-top: 16px;
-          margin-top: 8px;
-        }
-
-        .detail-actions {
+        .detail-row {
           display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
           gap: 12px;
-          margin-top: 8px;
+          padding: 8px 0;
+          font-size: 13px;
+          border-bottom: 1px solid #27272a;
+          overflow: visible;
         }
 
-        .footer {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: #6b7280;
-          font-size: 14px;
-          text-align: center;
-          z-index: 2;
+        .detail-row:last-child {
+          border-bottom: none;
         }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        .detail-row > span:first-child {
+          color: #a1a1aa;
+          flex-shrink: 0;
+          min-width: 70px;
         }
 
-        @media (max-width: 1024px) {
-          .table-header,
-          .table-row {
-            grid-template-columns: 32px 80px 150px 130px 130px 90px 100px;
-            gap: 12px;
-          }
+        .detail-row > span:last-child {
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          text-align: right;
+          overflow: visible;
+          word-break: break-all;
+        }
 
-          .details-grid {
+        .detail-row.muted span:last-child {
+          color: #71717a;
+          text-decoration: line-through;
+        }
+
+        .detail-row.green span:last-child {
+          color: #4ade80;
+        }
+
+        .addr-copy {
+          color: #ffffff;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px;
+          transition: color 0.15s;
+        }
+
+        .addr-copy:hover {
+          color: #a78bfa;
+        }
+
+        .copied-badge {
+          font-size: 11px;
+          font-weight: 600;
+          color: #4ade80;
+          background: rgba(74, 222, 128, 0.15);
+          padding: 2px 8px;
+          border-radius: 4px;
+          animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateX(-4px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(0.8); }
+          50% { transform: scale(1.05); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 900px) {
+          .details {
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            padding: 16px 20px 20px 44px;
-          }
-
-          .actions-section {
-            grid-column: span 2;
           }
         }
 
-        @media (max-width: 768px) {
-          .page-title {
-            font-size: 28px;
-          }
+        @media (max-width: 800px) {
+          .route { display: none; }
+          .token { min-width: auto; flex: 1; }
+        }
 
-          .table-header {
-            display: none;
-          }
-
-          .table-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 16px;
-          }
-
-          .expand-indicator {
-            position: absolute;
-            right: 16px;
-            top: 16px;
-          }
-
-          .table-row-wrapper {
-            position: relative;
-          }
-
-          .table-cell {
-            flex-basis: calc(50% - 6px);
-          }
-
-          .table-cell.type-col {
-            order: 1;
-          }
-
-          .table-cell.token-col {
-            order: 2;
-          }
-
-          .table-cell.from-col {
-            order: 3;
-          }
-
-          .table-cell.to-col {
-            order: 4;
-          }
-
-          .table-cell.status-col {
-            order: 5;
-          }
-
-          .table-cell.action-col {
-            order: 6;
-            flex-basis: 100%;
-            justify-content: flex-start;
-          }
-
-          .details-grid {
+        @media (max-width: 600px) {
+          main { padding: 100px 16px 40px; }
+          .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+          .row-main { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
+          .badge { order: 0; }
+          .token { order: 1; width: 100%; }
+          .status { order: 2; }
+          .actions { order: 3; width: 100%; justify-content: space-between; }
+          .details {
             grid-template-columns: 1fr;
             gap: 20px;
             padding: 16px;
-          }
-
-          .actions-section {
-            grid-column: span 1;
-          }
-
-          .detail-actions {
-            flex-direction: column;
-          }
-
-          .hash-value {
-            flex-wrap: wrap;
-            gap: 6px;
           }
         }
       `}</style>

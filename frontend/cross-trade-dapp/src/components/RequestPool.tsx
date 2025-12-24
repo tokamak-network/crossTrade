@@ -944,7 +944,7 @@ export const RequestPool = () => {
       </div>
 
       <footer className="footer">
-        Copyright © 2025. All rights reserved.
+        © 2026 All rights reserved.
       </footer>
 
       {/* Review Provide Modal */}
@@ -1063,11 +1063,12 @@ export const RequestPool = () => {
         .filter-controls {
           display: flex;
           gap: 32px;
-          margin-bottom: 24px;
-          padding: 20px;
-          background: rgba(20, 20, 20, 0.6);
-          border-radius: 12px;
-          border: 1px solid #333333;
+          margin-bottom: 16px;
+          padding: 20px 24px;
+          background: linear-gradient(145deg, #161618 0%, #111113 100%);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 20px;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
         }
 
         .filter-section {
@@ -1090,16 +1091,15 @@ export const RequestPool = () => {
         }
 
         .filter-btn {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          border-radius: 20px;
-          padding: 6px 12px;
+          background: #1f1f23;
+          border: 1px solid #27272a;
+          border-radius: 10px;
+          padding: 8px 14px;
           color: #9ca3af;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
-          height: 28px;
+          transition: all 0.15s ease;
           display: inline-flex;
           align-items: center;
         }
@@ -1107,11 +1107,12 @@ export const RequestPool = () => {
         .filter-btn:hover {
           border-color: #6366f1;
           color: #ffffff;
+          background: rgba(99, 102, 241, 0.1);
         }
 
         .filter-btn.active {
-          background: #6366f1;
-          border-color: #6366f1;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+          border-color: transparent;
           color: #ffffff;
         }
 
@@ -1122,27 +1123,25 @@ export const RequestPool = () => {
         }
 
         .filter-dropdown {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          border-radius: 20px;
-          padding: 6px 28px 6px 12px;
+          background: #1f1f23;
+          border: 1px solid #27272a;
+          border-radius: 10px;
+          padding: 8px 32px 8px 14px;
           color: #9ca3af;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
           appearance: none;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
           background-repeat: no-repeat;
-          background-position: right 8px center;
-          height: 28px;
-          display: inline-flex;
-          align-items: center;
+          background-position: right 10px center;
         }
 
         .filter-dropdown:hover {
           border-color: #6366f1;
           color: #ffffff;
+          background-color: rgba(99, 102, 241, 0.1);
         }
 
         .filter-dropdown:focus {
@@ -1152,19 +1151,12 @@ export const RequestPool = () => {
         }
 
         .filter-dropdown.active {
-          background: #6366f1;
-          border-color: #6366f1;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+          border-color: transparent;
           color: #ffffff;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
           background-repeat: no-repeat;
-          background-position: right 8px center;
-        }
-
-        .filter-dropdown.active:hover {
-          background: #5855eb;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 8px center;
+          background-position: right 10px center;
         }
 
         .filter-dropdown option {
@@ -1173,25 +1165,21 @@ export const RequestPool = () => {
           padding: 10px 14px;
         }
 
-        .filter-dropdown option:hover {
-          background: #262626;
-        }
-
         .table-container {
-          background: rgba(20, 20, 20, 0.8);
-          border: 1px solid #333333;
-          border-radius: 16px;
+          background: linear-gradient(145deg, #161618 0%, #111113 100%);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 20px;
           overflow: hidden;
-          backdrop-filter: blur(10px);
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
         }
 
         .table-header {
           display: grid;
-          grid-template-columns: 100px 1fr 1fr 100px 100px;
+          grid-template-columns: 100px 1fr 1fr 120px 100px;
           gap: 16px;
-          padding: 16px 20px;
-          background: rgba(26, 26, 26, 0.5);
-          border-bottom: 1px solid #333333;
+          padding: 16px 24px;
+          background: rgba(0, 0, 0, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .header-cell {
@@ -1208,15 +1196,15 @@ export const RequestPool = () => {
 
         .table-row {
           display: grid;
-          grid-template-columns: 100px 1fr 1fr 100px 100px;
+          grid-template-columns: 100px 1fr 1fr 120px 100px;
           gap: 16px;
-          padding: 20px;
-          border-bottom: 1px solid rgba(51, 51, 51, 0.3);
-          transition: all 0.2s ease;
+          padding: 18px 24px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          transition: all 0.15s ease;
         }
 
         .table-row:hover {
-          background: rgba(99, 102, 241, 0.05);
+          background: rgba(99, 102, 241, 0.06);
         }
 
         .table-row:last-child {
@@ -1258,8 +1246,10 @@ export const RequestPool = () => {
 
         .amount-value {
           color: #ffffff;
-          font-size: 16px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 15px;
           font-weight: 600;
+          font-feature-settings: 'tnum' on, 'lnum' on;
         }
 
         .chain-info {
@@ -1278,61 +1268,58 @@ export const RequestPool = () => {
         }
 
         .profit-badge {
-          background: #10b981;
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
           color: #ffffff;
-          padding: 2px 6px;
-          border-radius: 4px;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-family: 'JetBrains Mono', monospace;
           font-size: 11px;
           font-weight: 600;
           margin-left: 8px;
         }
 
         .provide-btn {
-          background: #2563eb;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
           color: #ffffff;
           border: none;
-          border-radius: 6px;
-          padding: 8px 16px;
-          font-size: 14px;
+          border-radius: 10px;
+          padding: 10px 18px;
+          font-size: 13px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
+          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
 
         .provide-btn:hover {
-          background: #1d4ed8;
+          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
 
         .pending-btn {
-          background: #6b7280;
-          color: #d1d5db;
-          border: none;
-          border-radius: 6px;
-          padding: 8px 16px;
-          font-size: 14px;
+          background: #27272a;
+          color: #71717a;
+          border: 1px solid #3f3f46;
+          border-radius: 10px;
+          padding: 10px 18px;
+          font-size: 13px;
           font-weight: 600;
           cursor: not-allowed;
-          transition: all 0.2s ease;
-        }
-
-        .pending-btn:hover {
-          background: #6b7280;
         }
 
         .refresh-buttons {
           display: flex;
           justify-content: center;
-          gap: 16px;
-          margin-top: 32px;
-          padding-top: 24px;
-          border-top: 1px solid #333333;
+          gap: 12px;
+          margin-top: 24px;
         }
 
         .refresh-button {
-          background: #6366f1;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
           color: #ffffff;
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           padding: 12px 24px;
           font-size: 14px;
           font-weight: 600;
@@ -1341,29 +1328,26 @@ export const RequestPool = () => {
         }
 
         .refresh-button:hover {
-          background: #5855eb;
+          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
         }
 
         .refresh-button.secondary {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          color: #ffffff;
+          background: #1f1f23;
+          border: 1px solid #27272a;
+          color: #9ca3af;
         }
 
         .refresh-button.secondary:hover {
           border-color: #6366f1;
           background: rgba(99, 102, 241, 0.1);
+          color: #ffffff;
         }
 
         .footer {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: #6b7280;
-          font-size: 14px;
+          margin-top: 40px;
+          color: #52525b;
+          font-size: 12px;
           text-align: center;
-          z-index: 2;
         }
 
         @keyframes spin {
@@ -1376,29 +1360,29 @@ export const RequestPool = () => {
             flex-direction: column;
             gap: 16px;
           }
-          
+
           .page-title {
-            font-size: 28px;
+            font-size: 24px;
           }
-          
+
           .table-header,
           .table-row {
             grid-template-columns: 80px 1fr 1fr 80px 80px;
             gap: 8px;
-            padding: 16px 12px;
+            padding: 14px 16px;
           }
-          
+
           .amount-value {
-            font-size: 14px;
+            font-size: 13px;
           }
-          
+
           .chain-name {
             display: none;
           }
-          
+
           .provide-btn,
           .pending-btn {
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: 12px;
           }
         }
@@ -1409,20 +1393,20 @@ export const RequestPool = () => {
             grid-template-columns: 1fr;
             gap: 12px;
           }
-          
+
           .table-cell {
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(51, 51, 51, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
           }
-          
+
           .table-cell:before {
             content: attr(data-label);
             color: #9ca3af;
             font-size: 12px;
             font-weight: 500;
           }
-          
+
           .header-cell {
             display: none;
           }
