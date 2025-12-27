@@ -43,6 +43,7 @@ const ERC20_ABI = [
 interface ReviewProvideModalProps {
   isOpen: boolean
   onClose: () => void
+  isOwnRequest?: boolean
   requestData: {
     saleCount: number
     chainId: number
@@ -61,7 +62,7 @@ interface ReviewProvideModalProps {
   }
 }
 
-export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvideModalProps) => {
+export const ReviewProvideModal = ({ isOpen, onClose, isOwnRequest = false, requestData }: ReviewProvideModalProps) => {
   const [riskUnderstood, setRiskUnderstood] = useState(false)
   const [approvalStep, setApprovalStep] = useState<'checking' | 'needed' | 'approving' | 'approved'>('checking')
   const [isApprovalSuccess, setIsApprovalSuccess] = useState(false)
@@ -566,44 +567,52 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
 
         {/* Actions */}
         <div className="actions">
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={riskUnderstood}
-              onChange={(e) => setRiskUnderstood(e.target.checked)}
-            />
-            <span className="custom-checkbox"></span>
-            <span>I understand the risks</span>
-          </label>
+          {isOwnRequest ? (
+            <div className="own-request-notice">
+              <span>This is your request. <a href="/history" onClick={onClose}>Manage in History →</a></span>
+            </div>
+          ) : (
+            <>
+              <label className="checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={riskUnderstood}
+                  onChange={(e) => setRiskUnderstood(e.target.checked)}
+                />
+                <span className="custom-checkbox"></span>
+                <span>I understand the risks</span>
+              </label>
 
-          <div className="btn-row">
-            {!isETH && needsApproval && (
-              <button
-                type="button"
-                className="btn btn-approve"
-                disabled={!riskUnderstood || isApprovalPending || isApprovalConfirming}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  handleApproval()
-                }}
-              >
-                {isApprovalPending ? 'Confirming...' : isApprovalConfirming ? 'Processing...' : 'Approve'}
-              </button>
-            )}
-            <button
-              type="button"
-              className={`btn btn-provide ${riskUnderstood && (!needsApproval || isETH) ? 'active' : ''}`}
-              disabled={!riskUnderstood || isPending || isConfirming || (!isETH && needsApproval)}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                handleProvideCT()
-              }}
-            >
-              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : 'Provide Liquidity'}
-            </button>
-          </div>
+              <div className="btn-row">
+                {!isETH && needsApproval && (
+                  <button
+                    type="button"
+                    className="btn btn-approve"
+                    disabled={!riskUnderstood || isApprovalPending || isApprovalConfirming}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleApproval()
+                    }}
+                  >
+                    {isApprovalPending ? 'Confirming...' : isApprovalConfirming ? 'Processing...' : 'Approve'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`btn btn-provide ${riskUnderstood && (!needsApproval || isETH) ? 'active' : ''}`}
+                  disabled={!riskUnderstood || isPending || isConfirming || (!isETH && needsApproval)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    handleProvideCT()
+                  }}
+                >
+                  {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : 'Provide Liquidity'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -982,6 +991,22 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
           display: flex;
           flex-direction: column;
           gap: 12px;
+        }
+
+        .own-request-notice {
+          text-align: center;
+          padding: 14px;
+          color: #9ca3af;
+          font-size: 14px;
+        }
+
+        .own-request-notice a {
+          color: #818cf8;
+          text-decoration: none;
+        }
+
+        .own-request-notice a:hover {
+          text-decoration: underline;
         }
 
         .checkbox-row {

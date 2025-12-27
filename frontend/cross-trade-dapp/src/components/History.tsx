@@ -55,6 +55,13 @@ export const History = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<'All' | 'Provide' | 'Request'>('All')
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Completed' | 'Waiting'>('All')
+  const [selectedToken, setSelectedToken] = useState<string>('ALL')
+  const [selectedChain, setSelectedChain] = useState<string>('ALL')
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false)
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
+  const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false)
+  const [chainDropdownOpen, setChainDropdownOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState<HistoryRequest | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -218,8 +225,8 @@ export const History = () => {
       <Image
         src={logoSrc}
         alt={chainName}
-        width={16}
-        height={16}
+        width={18}
+        height={18}
         style={{ borderRadius: '50%', objectFit: 'cover' }}
       />
     )
@@ -278,12 +285,77 @@ export const History = () => {
       <Image
         src={logoSrc}
         alt={tokenSymbol}
-        width={16}
-        height={16}
+        width={22}
+        height={22}
         style={{ borderRadius: '50%', objectFit: 'cover' }}
       />
     )
   }
+
+  // Get all unique tokens from configs
+  const getAllUniqueTokens = () => {
+    const tokenSet = new Set<string>()
+
+    Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
+      if (Array.isArray(config.tokens)) {
+        config.tokens.forEach(token => {
+          if (token.name) tokenSet.add(token.name.toUpperCase())
+        })
+      } else {
+        Object.keys(config.tokens).forEach(tokenSymbol => {
+          tokenSet.add(tokenSymbol.toUpperCase())
+        })
+      }
+    })
+
+    Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
+      if (Array.isArray(config.tokens)) {
+        config.tokens.forEach(token => {
+          if (token.name) tokenSet.add(token.name.toUpperCase())
+        })
+      } else {
+        Object.keys(config.tokens).forEach(tokenSymbol => {
+          tokenSet.add(tokenSymbol.toUpperCase())
+        })
+      }
+    })
+
+    return Array.from(tokenSet).map(symbol => ({
+      symbol,
+      logo: getTokenLogo(symbol)
+    }))
+  }
+
+  // Get all unique chains
+  const getAllUniqueChains = () => {
+    const chainMap: { [key: string]: { id: number; name: string; logo: string } } = {}
+
+    // Add L1 (Ethereum Sepolia)
+    const l1Config = CHAIN_CONFIG_L2_L2['11155111'] || CHAIN_CONFIG_L2_L1['11155111']
+    if (l1Config) {
+      chainMap['11155111'] = {
+        id: 11155111,
+        name: l1Config.display_name,
+        logo: getChainLogo(l1Config.display_name)
+      }
+    }
+
+    // Add all L2 chains
+    l2Chains.forEach(({ chainId, config }) => {
+      if (!chainMap[chainId.toString()]) {
+        chainMap[chainId.toString()] = {
+          id: chainId,
+          name: config.display_name,
+          logo: getChainLogo(config.display_name)
+        }
+      }
+    })
+
+    return Object.values(chainMap)
+  }
+
+  const allTokens = getAllUniqueTokens()
+  const allChains = getAllUniqueChains()
 
   // Helper function to get edited ctAmount from L1 contract
   const getEditedCtAmount = async (hashValue: string, contractType: 'L2_L2' | 'L2_L1'): Promise<bigint | null> => {
@@ -642,10 +714,26 @@ export const History = () => {
     }
   }, [userAddress, l2Chains.length])
 
-  const filteredRequests = historyRequests.filter(req => {
-    if (activeFilter === 'All') return true
-    return req.type === activeFilter
-  })
+  const filteredRequests = historyRequests
+    .filter(req => {
+      if (!req.data) return false
+      const typeMatch = activeFilter === 'All' || req.type === activeFilter
+      const statusMatch = statusFilter === 'All' || req.status === statusFilter
+      const tokenSymbol = getTokenSymbol(req.data.l2SourceToken)
+      const tokenMatch = selectedToken === 'ALL' || tokenSymbol === selectedToken
+
+      // Chain filter - check both source and destination chains
+      const fromChain = req.type === 'Provide' ? getChainName(BigInt(11155111)) : req.chainName
+      const toChain = getChainName(req.data.l2DestinationChainId)
+      const chainMatch = selectedChain === 'ALL' || fromChain === selectedChain || toChain === selectedChain
+
+      return typeMatch && statusMatch && tokenMatch && chainMatch
+    })
+    .sort((a, b) => {
+      // Sort: Waiting first, then Completed, then Cancelled
+      const statusOrder = { 'Waiting': 0, 'Completed': 1, 'Cancelled': 2 }
+      return statusOrder[a.status] - statusOrder[b.status]
+    })
 
   const handleEdit = (request: HistoryRequest) => {
     if (request.type !== 'Request') {
@@ -750,26 +838,193 @@ export const History = () => {
       <main>
         <div className="header">
           <h1>History</h1>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {(['All', 'Provide', 'Request'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                style={{
-                  background: activeFilter === f ? '#27272a' : 'transparent',
-                  border: 'none',
-                  color: activeFilter === f ? '#fff' : '#52525b',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  margin: 0,
-                }}
-              >
-                {f}
-              </button>
-            ))}
+        </div>
+
+        <div className="filter-row">
+          {/* Type Dropdown */}
+          <div className="dropdown-wrapper">
+            <div className="dropdown-label">Type</div>
+            <div
+              className={`dropdown-trigger ${typeDropdownOpen ? 'open' : ''}`}
+              onClick={() => {
+                setTypeDropdownOpen(!typeDropdownOpen)
+                setStatusDropdownOpen(false)
+                setTokenDropdownOpen(false)
+                setChainDropdownOpen(false)
+              }}
+            >
+              <div className="dropdown-value">
+                <span>{activeFilter === 'All' ? 'All Types' : activeFilter}</span>
+              </div>
+              <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            {typeDropdownOpen && (
+              <>
+                <div className="dropdown-backdrop" onClick={() => setTypeDropdownOpen(false)} />
+                <div className="dropdown-menu">
+                  {(['All', 'Request', 'Provide'] as const).map((type) => (
+                    <div
+                      key={type}
+                      className={`dropdown-item ${activeFilter === type ? 'selected' : ''}`}
+                      onClick={() => { setActiveFilter(type); setTypeDropdownOpen(false) }}
+                    >
+                      <span>{type === 'All' ? 'All Types' : type}</span>
+                      {activeFilter === type && <span className="check-mark">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Token Dropdown */}
+          <div className="dropdown-wrapper">
+            <div className="dropdown-label">Token</div>
+            <div
+              className={`dropdown-trigger ${tokenDropdownOpen ? 'open' : ''}`}
+              onClick={() => {
+                setTokenDropdownOpen(!tokenDropdownOpen)
+                setTypeDropdownOpen(false)
+                setStatusDropdownOpen(false)
+                setChainDropdownOpen(false)
+              }}
+            >
+              <div className="dropdown-value">
+                {selectedToken !== 'ALL' && (
+                  <Image
+                    src={getTokenLogo(selectedToken)}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="dropdown-icon"
+                  />
+                )}
+                <span>{selectedToken === 'ALL' ? 'All Tokens' : selectedToken}</span>
+              </div>
+              <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            {tokenDropdownOpen && (
+              <>
+                <div className="dropdown-backdrop" onClick={() => setTokenDropdownOpen(false)} />
+                <div className="dropdown-menu">
+                  <div
+                    className={`dropdown-item ${selectedToken === 'ALL' ? 'selected' : ''}`}
+                    onClick={() => { setSelectedToken('ALL'); setTokenDropdownOpen(false) }}
+                  >
+                    <span>All Tokens</span>
+                    {selectedToken === 'ALL' && <span className="check-mark">✓</span>}
+                  </div>
+                  {allTokens.map((token) => (
+                    <div
+                      key={token.symbol}
+                      className={`dropdown-item ${selectedToken === token.symbol ? 'selected' : ''}`}
+                      onClick={() => { setSelectedToken(token.symbol); setTokenDropdownOpen(false) }}
+                    >
+                      <Image src={token.logo} alt="" width={22} height={22} className="dropdown-item-icon" />
+                      <span>{token.symbol}</span>
+                      {selectedToken === token.symbol && <span className="check-mark">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Chain Dropdown */}
+          <div className="dropdown-wrapper">
+            <div className="dropdown-label">Chain</div>
+            <div
+              className={`dropdown-trigger ${chainDropdownOpen ? 'open' : ''}`}
+              onClick={() => {
+                setChainDropdownOpen(!chainDropdownOpen)
+                setTypeDropdownOpen(false)
+                setStatusDropdownOpen(false)
+                setTokenDropdownOpen(false)
+              }}
+            >
+              <div className="dropdown-value">
+                {selectedChain !== 'ALL' && (
+                  <Image
+                    src={allChains.find(c => c.name === selectedChain)?.logo || getChainLogo(selectedChain)}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="dropdown-icon"
+                  />
+                )}
+                <span>{selectedChain === 'ALL' ? 'All Chains' : selectedChain}</span>
+              </div>
+              <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            {chainDropdownOpen && (
+              <>
+                <div className="dropdown-backdrop" onClick={() => setChainDropdownOpen(false)} />
+                <div className="dropdown-menu">
+                  <div
+                    className={`dropdown-item ${selectedChain === 'ALL' ? 'selected' : ''}`}
+                    onClick={() => { setSelectedChain('ALL'); setChainDropdownOpen(false) }}
+                  >
+                    <span>All Chains</span>
+                    {selectedChain === 'ALL' && <span className="check-mark">✓</span>}
+                  </div>
+                  {allChains.map((chain) => (
+                    <div
+                      key={chain.id}
+                      className={`dropdown-item ${selectedChain === chain.name ? 'selected' : ''}`}
+                      onClick={() => { setSelectedChain(chain.name); setChainDropdownOpen(false) }}
+                    >
+                      <Image src={chain.logo} alt="" width={22} height={22} className="dropdown-item-icon" />
+                      <span>{chain.name}</span>
+                      {selectedChain === chain.name && <span className="check-mark">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Status Dropdown */}
+          <div className="dropdown-wrapper">
+            <div className="dropdown-label">Status</div>
+            <div
+              className={`dropdown-trigger ${statusDropdownOpen ? 'open' : ''}`}
+              onClick={() => {
+                setStatusDropdownOpen(!statusDropdownOpen)
+                setTypeDropdownOpen(false)
+                setTokenDropdownOpen(false)
+                setChainDropdownOpen(false)
+              }}
+            >
+              <div className="dropdown-value">
+                <span>{statusFilter === 'All' ? 'All Status' : statusFilter}</span>
+              </div>
+              <svg className="dropdown-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            {statusDropdownOpen && (
+              <>
+                <div className="dropdown-backdrop" onClick={() => setStatusDropdownOpen(false)} />
+                <div className="dropdown-menu">
+                  {(['All', 'Waiting', 'Completed'] as const).map((status) => (
+                    <div
+                      key={status}
+                      className={`dropdown-item ${statusFilter === status ? 'selected' : ''}`}
+                      onClick={() => { setStatusFilter(status); setStatusDropdownOpen(false) }}
+                    >
+                      <span>{status === 'All' ? 'All Status' : status}</span>
+                      {statusFilter === status && <span className="check-mark">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -782,7 +1037,7 @@ export const History = () => {
         ) : filteredRequests.length === 0 ? (
           <p className="empty">No transactions yet</p>
         ) : (
-          <>
+          <div className="history-container">
             {filteredRequests.map((request, index) => {
               const data = request.data!
               const rowKey = `${request.chainId}-${request.saleCount}-${index}`
@@ -799,66 +1054,98 @@ export const History = () => {
               const rewardAmount = formatTokenAmount(reward, data.l2SourceToken)
 
               return (
-                <div key={rowKey} className={`row ${isExpanded ? 'open' : ''}`} onClick={() => toggleRowExpanded(rowKey)}>
-                  <div className="row-main">
-                    <span className={`badge ${request.type.toLowerCase()}`}>{request.type}</span>
-
-                    <div className="token">
-                      {renderTokenIcon(tokenSymbol)}
-                      <strong>{amount}</strong>
-                      <span>{tokenSymbol}</span>
-                      {hasEdited && <em>EDITED</em>}
+                <div key={rowKey} className={`history-row ${isExpanded ? 'expanded' : ''}`}>
+                  {/* Main Row */}
+                  <div className="row-main" onClick={() => toggleRowExpanded(rowKey)}>
+                    {/* Type */}
+                    <div className={`type-badge ${request.type.toLowerCase()}`}>
+                      {request.type === 'Request' ? 'REQ' : 'PRV'}
                     </div>
 
-                    <div className="route">
-                      <div className="chain-from">
-                        {renderChainIcon(fromChain)}
+                    {/* Amount */}
+                    <div className="amount-cell">
+                      <span className="amount-number">{amount}</span>
+                      <span className="amount-symbol">{tokenSymbol}</span>
+                      {hasEdited && <span className="edited-tag">EDITED</span>}
+                    </div>
+
+                    {/* Route */}
+                    <div className="route-cell">
+                      <div className="chain-badge">
+                        <div className="chain-icon">{renderChainIcon(fromChain)}</div>
                         <span>{fromChain}</span>
                       </div>
-                      <span className="arrow">→</span>
-                      <div className="chain-to">
-                        {renderChainIcon(toChain)}
+                      <svg className="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <div className="chain-badge">
+                        <div className="chain-icon">{renderChainIcon(toChain)}</div>
                         <span>{toChain}</span>
                       </div>
                     </div>
 
-                    <span className={`status ${request.status.toLowerCase()}`}>{request.status}</span>
+                    {/* Status */}
+                    <div className={`status-text ${request.status.toLowerCase()}`}>
+                      {request.status}
+                    </div>
 
-                    <div className="actions">
-                      {request.status === 'Waiting' && request.type === 'Request' && (
-                        <>
-                          <button className="btn-edit" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit</button>
-                          <button className="btn-cancel" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel</button>
-                        </>
+                    {/* Actions */}
+                    <div className="actions-cell">
+                      {request.status === 'Waiting' && request.type === 'Request' ? (
+                        <div className="action-group">
+                          <button className="action-btn" onClick={(e) => { e.stopPropagation(); handleEdit(request) }}>Edit</button>
+                          <span className="divider"></span>
+                          <button className="action-btn danger" onClick={(e) => { e.stopPropagation(); handleCancel(request) }}>Cancel</button>
+                        </div>
+                      ) : (
+                        <button className="action-btn" onClick={(e) => { e.stopPropagation(); toggleRowExpanded(rowKey) }}>
+                          {isExpanded ? 'Hide' : 'Details'}
+                        </button>
                       )}
-                      <svg className={`chevron ${isExpanded ? 'flip' : ''}`} viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
                     </div>
                   </div>
 
+                  {/* Expanded Details */}
                   {isExpanded && (
-                    <div className="details">
-                      <div className="detail-section">
-                        <h5>Amounts</h5>
-                        <div className="detail-row"><span>Total</span><span>{totalAmount} {tokenSymbol}</span></div>
-                        <div className="detail-row"><span>Bridge</span><span>{amount} {tokenSymbol}</span></div>
-                        {hasEdited && <div className="detail-row muted"><span>Original</span><span>{originalAmount} {tokenSymbol}</span></div>}
-                        {request.status !== 'Cancelled' && <div className="detail-row green"><span>Reward</span><span>+{rewardAmount} {tokenSymbol}</span></div>}
+                    <div className="row-details">
+                      <div className="detail-card">
+                        <div className="detail-header">Amounts</div>
+                        <div className="detail-item">
+                          <span className="detail-label">Total Amount</span>
+                          <span className="detail-value">{totalAmount} {tokenSymbol}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Bridge Amount</span>
+                          <span className="detail-value">{amount} {tokenSymbol}</span>
+                        </div>
+                        {hasEdited && (
+                          <div className="detail-item muted">
+                            <span className="detail-label">Original</span>
+                            <span className="detail-value">{originalAmount} {tokenSymbol}</span>
+                          </div>
+                        )}
+                        {request.status !== 'Cancelled' && (
+                          <div className="detail-item highlight">
+                            <span className="detail-label">Reward</span>
+                            <span className="detail-value">+{rewardAmount} {tokenSymbol}</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="detail-section">
-                        <h5>Addresses</h5>
+                      <div className="detail-card">
+                        <div className="detail-header">Addresses</div>
                         {renderAddress('Requester', data.requester, rowKey)}
                         {renderAddress('Receiver', data.receiver, rowKey)}
                         {data.provider !== '0x0000000000000000000000000000000000000000' && renderAddress('Provider', data.provider, rowKey)}
                       </div>
-                      <div className="detail-section">
-                        <h5>Transaction</h5>
-                        <div className="detail-row">
-                          <span>ID</span>
-                          <span>#{request.saleCount}</span>
+                      <div className="detail-card">
+                        <div className="detail-header">Info</div>
+                        <div className="detail-item">
+                          <span className="detail-label">Request ID</span>
+                          <span className="detail-value">#{request.saleCount}</span>
                         </div>
-                        <div className="detail-row">
-                          <span>Route</span>
-                          <span>{fromChain} → {toChain}</span>
+                        <div className="detail-item">
+                          <span className="detail-label">Type</span>
+                          <span className="detail-value">{request.type}</span>
                         </div>
                       </div>
                     </div>
@@ -866,7 +1153,7 @@ export const History = () => {
                 </div>
               )
             })}
-          </>
+          </div>
         )}
       </main>
 
@@ -919,313 +1206,459 @@ export const History = () => {
       <style jsx>{`
         .page {
           min-height: 100vh;
-          background: #09090b;
+          background: #0a0a0a;
         }
 
         main {
-          max-width: 960px;
+          max-width: 1000px;
           margin: 0 auto;
-          padding: 110px 24px 60px;
+          padding: 100px 20px 60px;
         }
 
         .header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 32px;
+          margin-bottom: 24px;
         }
 
         h1 {
-          font-size: 22px;
+          font-size: 32px;
           font-weight: 600;
-          color: #fafafa;
+          color: #ffffff;
           margin: 0;
-          letter-spacing: -0.02em;
         }
 
-        .tabs {
+        /* Filter Row - matches RequestPool */
+        .filter-row {
           display: flex;
-          gap: 2px;
-          background: #18181b;
-          padding: 3px;
-          border-radius: 8px;
-          border: 1px solid #27272a;
+          gap: 16px;
+          margin-bottom: 24px;
         }
 
-        .tabs :global(button) {
-          background: transparent;
-          border: none;
-          color: #71717a;
+        .dropdown-wrapper {
+          flex: 1;
+          position: relative;
+        }
+
+        .dropdown-label {
+          color: #6b7280;
           font-size: 13px;
-          font-weight: 500;
-          padding: 6px 14px;
-          border-radius: 6px;
+          font-weight: 400;
+          margin-bottom: 8px;
+        }
+
+        .dropdown-trigger {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #1f1f23;
+          border-radius: 16px;
+          padding: 14px 16px;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.2s ease;
         }
 
-        .tabs :global(button:hover) {
-          color: #a1a1aa;
-          background: rgba(255,255,255,0.03);
-        }
-
-        .tabs :global(button.active) {
+        .dropdown-trigger:hover {
           background: #27272a;
-          color: #fff;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .dropdown-trigger.open {
+          background: #27272a;
+        }
+
+        .dropdown-value {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .dropdown-value span {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .dropdown-chevron {
+          color: #6b7280;
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .dropdown-trigger.open .dropdown-chevron {
+          transform: rotate(180deg);
+        }
+
+        .dropdown-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 99;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: #1f1f23;
+          border-radius: 16px;
+          padding: 8px;
+          z-index: 100;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          max-height: 280px;
+          overflow-y: auto;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: background 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-item.selected {
+          background: rgba(99, 102, 241, 0.12);
+        }
+
+        .dropdown-item span {
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 500;
+          flex: 1;
+        }
+
+        .check-mark {
+          color: #818cf8;
+          font-size: 16px;
+        }
+
+        .dropdown-icon,
+        .dropdown-item-icon {
+          border-radius: 50%;
+          flex-shrink: 0;
         }
 
         .empty {
           text-align: center;
-          color: #52525b;
-          padding: 80px 20px;
-          font-size: 15px;
+          color: #6b7280;
+          padding: 60px 20px;
+          font-size: 14px;
           margin: 0;
         }
 
         .empty.error { color: #ef4444; }
 
-        .row {
-          background: #18181b;
-          border-radius: 16px;
-          margin-bottom: 8px;
-          cursor: pointer;
-          transition: background 0.15s;
+        /* History Container - matches RequestPool cards-container */
+        .history-container {
+          background: linear-gradient(145deg, #161618 0%, #111113 100%);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .row:hover { background: #1f1f23; }
-        .row.open { background: #1f1f23; }
+        /* Row - matches request-card */
+        .history-row {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          transition: background 0.15s ease;
+        }
 
+        .history-row:last-child {
+          border-bottom: none;
+        }
+
+        .history-row:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .history-row.expanded {
+          background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Main Row Grid */
         .row-main {
-          display: flex;
+          display: grid;
+          grid-template-columns: 56px 140px 1fr 90px 110px;
           align-items: center;
-          gap: 16px;
-          padding: 18px 20px;
+          gap: 20px;
+          padding: 16px 24px;
+          cursor: pointer;
         }
 
-        .badge {
+        /* Type Badge */
+        .type-badge {
           font-size: 11px;
           font-weight: 700;
-          padding: 5px 10px;
+          letter-spacing: 0.5px;
+          padding: 6px 0;
           border-radius: 6px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          text-align: center;
+          width: 100%;
         }
 
-        .badge.provide { background: #1d4ed8; color: #93c5fd; }
-        .badge.request { background: #6d28d9; color: #c4b5fd; }
+        .type-badge.request {
+          color: #c4b5fd;
+          background: rgba(139, 92, 246, 0.15);
+        }
 
-        .token {
+        .type-badge.provide {
+          color: #60a5fa;
+          background: rgba(59, 130, 246, 0.12);
+        }
+
+        /* Amount Cell */
+        .amount-cell {
           display: flex;
           align-items: center;
           gap: 8px;
-          min-width: 160px;
         }
 
-        .token strong {
+        .amount-number {
           font-family: 'JetBrains Mono', monospace;
           font-size: 16px;
+          font-weight: 600;
           color: #fff;
         }
 
-        .token span { color: #71717a; font-size: 14px; }
-
-        .token em {
-          font-style: normal;
-          font-size: 9px;
-          font-weight: 700;
-          color: #fbbf24;
-          background: rgba(251, 191, 36, 0.2);
-          padding: 2px 5px;
-          border-radius: 4px;
-          margin-left: 4px;
+        .amount-symbol {
+          font-size: 13px;
+          font-weight: 500;
+          color: #71717a;
         }
 
-        .route {
+        .edited-tag {
+          font-size: 9px;
+          font-weight: 600;
+          color: #fbbf24;
+          background: rgba(251, 191, 36, 0.12);
+          padding: 2px 5px;
+          border-radius: 3px;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+        }
+
+        /* Route Cell */
+        .route-cell {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          flex: 1;
-          color: #a1a1aa;
-          font-size: 14px;
         }
 
-        .chain-from, .chain-to {
+        .chain-badge {
           display: flex;
           align-items: center;
           gap: 6px;
         }
 
-        .route .arrow {
-          color: #52525b;
-          font-size: 16px;
-        }
-
-        .status {
+        .chain-badge span {
           font-size: 13px;
-          font-weight: 600;
-          padding: 5px 12px;
-          border-radius: 20px;
+          font-weight: 400;
+          color: #a1a1aa;
+          white-space: nowrap;
         }
 
-        .status.completed { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-        .status.waiting { background: rgba(234, 179, 8, 0.15); color: #facc15; }
-        .status.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-
-        .actions {
+        .chain-icon {
+          width: 18px;
+          height: 18px;
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-left: auto;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
-        .btn-edit, .btn-cancel {
-          font-size: 12px;
-          font-weight: 600;
-          padding: 6px 12px;
-          border-radius: 6px;
-          border: none;
-          cursor: pointer;
-          transition: all 0.15s;
-        }
-
-        .btn-edit { background: #6366f1; color: #fff; }
-        .btn-edit:hover { background: #4f46e5; }
-
-        .btn-cancel { background: #27272a; color: #a1a1aa; }
-        .btn-cancel:hover { background: #ef4444; color: #fff; }
-
-        .chevron {
-          width: 16px;
-          height: 16px;
+        .arrow-icon {
           color: #52525b;
-          transition: transform 0.2s;
+          flex-shrink: 0;
         }
 
-        .chevron.flip { transform: rotate(180deg); color: #6366f1; }
+        /* Status Text */
+        .status-text {
+          font-size: 13px;
+          font-weight: 500;
+          text-align: left;
+        }
 
-        .details {
+        .status-text.completed {
+          color: #4ade80;
+        }
+
+        .status-text.waiting {
+          color: #fbbf24;
+        }
+
+        .status-text.cancelled {
+          color: #71717a;
+        }
+
+        /* Actions Cell */
+        .actions-cell {
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        /* Action Group */
+        .action-group {
+          display: flex;
+          align-items: center;
+        }
+
+        .action-group .divider {
+          width: 1px;
+          height: 12px;
+          background: #52525b;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+          background: transparent;
+          border: none;
+          padding: 0;
+          font-size: 13px;
+          font-weight: 500;
+          color: #a1a1aa;
+          cursor: pointer;
+          transition: color 0.15s;
+        }
+
+        .action-btn:hover {
+          color: #fff;
+        }
+
+        .action-btn.danger {
+          color: #f87171;
+        }
+
+        .action-btn.danger:hover {
+          color: #fca5a5;
+        }
+
+        /* Expanded Details */
+        .row-details {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 24px;
-          padding: 20px;
-          border-top: 1px solid #27272a;
-          background: #18181b;
-          overflow: visible;
+          padding: 20px 24px;
+          background: rgba(0, 0, 0, 0.3);
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .detail-section {
-          overflow: visible;
+        .detail-card {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
         }
 
-        .detail-section h5 {
+        .detail-header {
           font-size: 11px;
-          font-weight: 600;
-          color: #d4d4d8;
+          font-weight: 500;
+          color: #71717a;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin: 0 0 12px 0;
+          letter-spacing: 0.3px;
         }
 
+        .detail-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .detail-item:last-child {
+          border-bottom: none;
+        }
+
+        .detail-label {
+          font-size: 13px;
+          color: #71717a;
+        }
+
+        .detail-value {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px;
+          color: #ffffff;
+        }
+
+        .detail-item.muted .detail-value {
+          color: #52525b;
+          text-decoration: line-through;
+        }
+
+        .detail-item.highlight .detail-value {
+          color: #4ade80;
+        }
+
+        /* Legacy detail-row for addresses */
         .detail-row {
           display: flex;
           justify-content: space-between;
-          align-items: flex-start;
-          gap: 12px;
+          align-items: center;
           padding: 8px 0;
           font-size: 13px;
-          border-bottom: 1px solid #27272a;
-          overflow: visible;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .detail-row:last-child {
           border-bottom: none;
         }
 
-        .detail-row > span:first-child {
-          color: #a1a1aa;
-          flex-shrink: 0;
-          min-width: 70px;
-        }
-
-        .detail-row > span:last-child {
-          color: #ffffff;
-          font-family: 'JetBrains Mono', monospace;
-          text-align: right;
-          overflow: visible;
-          word-break: break-all;
-        }
-
-        .detail-row.muted span:last-child {
-          color: #71717a;
-          text-decoration: line-through;
-        }
-
-        .detail-row.green span:last-child {
-          color: #4ade80;
-        }
-
-        .addr-copy {
-          color: #ffffff;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 13px;
-          transition: color 0.15s;
-        }
-
-        .addr-copy:hover {
-          color: #a78bfa;
-        }
-
-        .copied-badge {
-          font-size: 11px;
-          font-weight: 600;
-          color: #4ade80;
-          background: rgba(74, 222, 128, 0.15);
-          padding: 2px 8px;
-          border-radius: 4px;
-          animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateX(-4px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes popIn {
-          0% { opacity: 0; transform: scale(0.8); }
-          50% { transform: scale(1.05); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-
+        /* Responsive */
         @media (max-width: 900px) {
-          .details {
-            grid-template-columns: repeat(2, 1fr);
+          .row-main {
+            grid-template-columns: 50px 120px 1fr 80px 110px;
+            gap: 16px;
+            padding: 14px 16px;
           }
+          .chain-badge span { font-size: 12px; }
+          .row-details { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 800px) {
-          .route { display: none; }
-          .token { min-width: auto; flex: 1; }
+        @media (max-width: 768px) {
+          .row-main {
+            grid-template-columns: 50px 1fr 75px 100px;
+            gap: 12px;
+            padding: 14px 16px;
+          }
+          .route-cell { display: none; }
+          .row-details { grid-template-columns: 1fr 1fr; gap: 16px; }
         }
 
         @media (max-width: 600px) {
-          main { padding: 100px 16px 40px; }
-          .header { flex-direction: column; gap: 16px; align-items: flex-start; }
-          .row-main { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
-          .badge { order: 0; }
-          .token { order: 1; width: 100%; }
-          .status { order: 2; }
-          .actions { order: 3; width: 100%; justify-content: space-between; }
-          .details {
-            grid-template-columns: 1fr;
-            gap: 20px;
-            padding: 16px;
+          main { padding: 90px 16px 40px; }
+          .filter-row { flex-wrap: wrap; }
+          .dropdown-wrapper { flex: 1 1 45%; }
+          .row-main {
+            grid-template-columns: 50px 1fr 70px 90px;
+            gap: 10px;
+            padding: 12px;
           }
+          .amount-number { font-size: 14px; }
+          .amount-symbol { font-size: 11px; }
+          .action-btn { font-size: 12px; }
+          .row-details { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+          .filter-row { flex-direction: column; }
+          .dropdown-wrapper { flex: 1 1 100%; }
+          .row-main {
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 14px;
+          }
+          .type-badge { grid-column: 1; }
+          .amount-cell { grid-column: 2; justify-self: end; }
+          .status-text { grid-column: 1; }
+          .actions-cell { grid-column: 2; }
         }
       `}</style>
     </div>

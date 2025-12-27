@@ -873,8 +873,9 @@ export const RequestPool = () => {
                 <div
                   key={`request-${request.contractAddress}-${request.saleCount}`}
                   className={`request-card ${isOwnRequest ? 'own-request' : ''}`}
-                  onClick={() => !isOwnRequest && handleProvide(request)}
+                  onClick={() => handleProvide(request)}
                 >
+                  {isOwnRequest && <span className="yours-badge">Your Request</span>}
                   <div className="card-send">
                     <div className="card-label">Send</div>
                     <div className="card-amount">
@@ -914,9 +915,9 @@ export const RequestPool = () => {
 
                   <div className="card-action">
                     {isOwnRequest ? (
-                      <button className="btn-yours" disabled>Yours</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleProvide(request); }} className="btn-view">View</button>
                     ) : (
-                      <button onClick={() => handleProvide(request)} className="btn-provide">Provide</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleProvide(request); }} className="btn-provide">Provide</button>
                     )}
                   </div>
                 </div>
@@ -949,6 +950,7 @@ export const RequestPool = () => {
         <ReviewProvideModal
           isOpen={isProvideModalOpen}
           onClose={handleCloseProvideModal}
+          isOwnRequest={selectedRequest.data.requester.toLowerCase() === connectedAddress?.toLowerCase()}
           requestData={{
             saleCount: selectedRequest.saleCount,
             chainId: selectedRequest.chainId,
@@ -1197,6 +1199,7 @@ export const RequestPool = () => {
         }
 
         .request-card {
+          position: relative;
           display: grid;
           grid-template-columns: 1fr 48px 1fr 90px 110px;
           align-items: center;
@@ -1216,8 +1219,18 @@ export const RequestPool = () => {
         }
 
         .request-card.own-request {
-          opacity: 0.4;
-          cursor: not-allowed;
+          border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .yours-badge {
+          position: absolute;
+          top: 0;
+          left: 0;
+          background: #a3a3a3;
+          color: #171717;
+          font-size: 9px;
+          font-weight: 600;
+          padding: 2px 6px;
         }
 
         .card-send,
@@ -1228,9 +1241,11 @@ export const RequestPool = () => {
         }
 
         .card-label {
-          color: #6b7280;
-          font-size: 12px;
+          color: #71717a;
+          font-size: 11px;
           font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
         }
 
         .card-amount {
@@ -1241,9 +1256,9 @@ export const RequestPool = () => {
 
         .card-amount span {
           font-family: 'JetBrains Mono', monospace;
-          font-size: 16px;
+          font-size: 17px;
           font-weight: 600;
-          color: #ffffff;
+          color: #fff;
         }
 
         .token-logo {
@@ -1255,19 +1270,18 @@ export const RequestPool = () => {
           display: flex;
           align-items: center;
           gap: 6px;
-          margin-top: 2px;
+          margin-top: 4px;
         }
 
         .card-chain span {
-          color: #9ca3af;
+          color: #a1a1aa;
           font-size: 13px;
           font-weight: 400;
         }
 
         .chain-prefix {
-          color: #6b7280;
+          color: #71717a;
           font-size: 12px;
-          margin-right: 2px;
         }
 
         .chain-logo {
@@ -1291,19 +1305,18 @@ export const RequestPool = () => {
         }
 
         .profit-label {
-          color: #9ca3af;
+          color: #71717a;
           font-size: 11px;
           font-weight: 500;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.3px;
         }
 
         .profit-value {
           font-family: 'JetBrains Mono', monospace;
-          font-size: 18px;
+          font-size: 17px;
           font-weight: 700;
           color: #4ade80;
-          text-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
         }
 
         .card-action {
@@ -1326,15 +1339,20 @@ export const RequestPool = () => {
           background: #15803d;
         }
 
-        .btn-yours {
-          background: rgba(39, 39, 42, 0.5);
+        .btn-view {
+          background: none;
           border: 1px solid #3f3f46;
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 12px 24px;
-          color: #52525b;
+          color: #71717a;
           font-size: 14px;
           font-weight: 500;
-          cursor: not-allowed;
+          cursor: pointer;
+        }
+
+        .btn-view:hover {
+          border-color: #52525b;
+          color: #a1a1aa;
         }
 
         .empty-cards {
@@ -1415,7 +1433,7 @@ export const RequestPool = () => {
           }
 
           .btn-provide,
-          .btn-yours {
+          .btn-view {
             padding: 10px 18px;
             font-size: 13px;
           }
@@ -1483,7 +1501,7 @@ export const RequestPool = () => {
           }
 
           .btn-provide,
-          .btn-yours {
+          .btn-view {
             padding: 10px 16px;
             font-size: 13px;
           }

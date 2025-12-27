@@ -61,6 +61,7 @@ export const CreateRequest = () => {
   const [isApproving, setIsApproving] = useState(false)
   const [approvalTxHash, setApprovalTxHash] = useState<string | undefined>()
   const [isTokenApproved, setIsTokenApproved] = useState(false) // Track if token is approved
+  const [currentTxHash, setCurrentTxHash] = useState<string | undefined>() // Track the hash we're waiting for
   const [fromDropdownOpen, setFromDropdownOpen] = useState(false)
   const [toDropdownOpen, setToDropdownOpen] = useState(false)
   const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false)
@@ -70,7 +71,10 @@ export const CreateRequest = () => {
   const NATIVE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000'
 
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
+  const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({
+    hash,
+    pollingInterval: 2000, // Poll every 2 seconds for faster detection
+  })
   const { address: connectedAddress } = useAccount()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
@@ -82,11 +86,14 @@ export const CreateRequest = () => {
     isPending: isApprovalPending,
     error: approvalError 
   } = useWriteContract()
-  const { 
-    isLoading: isApprovalConfirming, 
+  const {
+    isLoading: isApprovalConfirming,
     isSuccess: isApprovalSuccess,
-    isError: isApprovalTxError 
-  } = useWaitForTransactionReceipt({ hash: approvalHash })
+    isError: isApprovalTxError
+  } = useWaitForTransactionReceipt({
+    hash: approvalHash,
+    pollingInterval: 2000, // Poll every 2 seconds for faster detection
+  })
 
   // Helper function to get token decimals
   const getTokenDecimals = (tokenSymbol: string) => {
@@ -601,22 +608,32 @@ export const CreateRequest = () => {
     console.log('🔄 Transaction state:', { hash, isConfirming, isSuccess, txError: !!txError, writeError: !!writeError })
   }, [hash, isConfirming, isSuccess, txError, writeError])
 
-  // Handle main transaction states
+  // Track when we get a new hash from writeContract
   useEffect(() => {
-    if (isSuccess) {
+    if (hash && hash !== currentTxHash) {
+      console.log('📝 New transaction hash received:', hash)
+      setCurrentTxHash(hash)
+    }
+  }, [hash, currentTxHash])
+
+  // Handle main transaction states - only trigger success for the current transaction
+  useEffect(() => {
+    if (isSuccess && hash && hash === currentTxHash && showConfirmingModal) {
       console.log('✅ Transaction confirmed! Hash:', hash)
       setShowConfirmingModal(false)
       setShowConfirmModal(false) // Close confirm modal
       setShowSuccessModal(true)
       setIsApproving(false)
       setIsTokenApproved(false) // Reset approval state for next transaction
+      setCurrentTxHash(undefined) // Reset for next transaction
     }
-    if (txError || writeError) {
+    if ((txError || writeError) && showConfirmingModal) {
       console.error('Main transaction failed:', txError || writeError)
       setShowConfirmingModal(false)
       setIsApproving(false)
+      setCurrentTxHash(undefined)
     }
-  }, [isSuccess, txError, writeError, hash])
+  }, [isSuccess, txError, writeError, hash, currentTxHash, showConfirmingModal])
 
   return (
     <div className="create-request-container">
@@ -663,8 +680,8 @@ export const CreateRequest = () => {
                     style={{ borderRadius: '10px', flexShrink: 0 }}
                   />
                   <div className="chain-info">
-                    <span className="chain-label">From</span>
-                    <span className="chain-name">{requestFrom || 'Select chain'}</span>
+                    <span className="chain-label">Send from</span>
+                    <span className="chain-name">{requestFrom || 'Select'}</span>
                   </div>
                 </div>
                 {fromDropdownOpen && (
@@ -696,27 +713,11 @@ export const CreateRequest = () => {
                 )}
               </div>
 
-              <svg
-                className="swap-icon"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="#6b7280"
-                onClick={() => {
-                  if (requestFrom && requestTo) {
-                    // Prevent swap if it would put L1 as source
-                    const toChainId = getChainIdByName(requestTo)
-                    if (isL1Chain(toChainId)) {
-                      return // Don't swap - L1 cannot be source
-                    }
-                    const temp = requestFrom
-                    setRequestFrom(requestTo)
-                    setRequestTo(temp)
-                  }
-                }}
-              >
-                <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
-              </svg>
+              <div className="arrow-divider">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
 
               <div className="chain-dropdown-wrapper">
                 <div
@@ -728,8 +729,8 @@ export const CreateRequest = () => {
                   }}
                 >
                   <div className="chain-info" style={{ alignItems: 'flex-end' }}>
-                    <span className="chain-label">To</span>
-                    <span className="chain-name">{requestTo || 'Select chain'}</span>
+                    <span className="chain-label">Receive on</span>
+                    <span className="chain-name">{requestTo || 'Select'}</span>
                   </div>
                   <Image
                     src={getChainLogo(requestTo)}
@@ -802,15 +803,28 @@ export const CreateRequest = () => {
                 />
                 <div className="token-dropdown-wrapper">
                   <div
-                    className={`token-pill ${tokenDropdownOpen ? 'open' : ''}`}
+                    className={`token-pill ${tokenDropdownOpen ? 'open' : ''} ${getAvailableTokensForMode(requestFrom).length > 1 ? 'has-options' : ''}`}
                     onClick={() => {
-                      setTokenDropdownOpen(!tokenDropdownOpen)
-                      setFromDropdownOpen(false)
-                      setToDropdownOpen(false)
+                      if (getAvailableTokensForMode(requestFrom).length > 1) {
+                        setTokenDropdownOpen(!tokenDropdownOpen)
+                        setFromDropdownOpen(false)
+                        setToDropdownOpen(false)
+                      }
                     }}
                   >
                     <Image src={getTokenLogo(sendToken)} alt={sendToken} width={22} height={22} style={{ borderRadius: '50%' }} />
                     <span className="token-name">{sendToken}</span>
+                    {getAvailableTokensForMode(requestFrom).length > 1 && (
+                      <svg
+                        className={`token-chevron ${tokenDropdownOpen ? 'rotated' : ''}`}
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
                   </div>
                   {tokenDropdownOpen && (
                     <>
@@ -1078,22 +1092,37 @@ export const CreateRequest = () => {
       {/* Confirming Modal */}
       {showConfirmingModal && (
         <div className="modal-overlay">
-          <div className="status-modal">
-            <button onClick={() => {
-              setShowConfirmingModal(false)
-              setIsApproving(false)
-            }} className="close-btn">✕</button>
-            <h3>{isApproving ? 'Approving Token' : 'Confirming'}</h3>
-            <div className="loading-spinner"></div>
-            <p>
-              {isApproving 
-                ? `Please approve ${sendToken} spending in your wallet first.`
-                : 'Please confirm txn. If it\'s not updating, check your wallet.'
+          <div className="confirming-modal">
+            <button
+              onClick={() => {
+                setShowConfirmingModal(false)
+                setIsApproving(false)
+              }}
+              className="confirming-close-btn"
+              aria-label="Close"
+            >
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            <div className="confirming-ring">
+              <div className="ring-outer"></div>
+              <div className="ring-inner"></div>
+            </div>
+
+            <h3 className="confirming-heading">{isApproving ? 'Approving Token' : 'Confirming'}</h3>
+
+            <p className="confirming-message">
+              {isApproving
+                ? `Please approve ${sendToken.toUpperCase()} spending in your wallet.`
+                : 'Please confirm the transaction in your wallet.'
               }
             </p>
+
             {isApproving && (
-              <div className="approval-info">
-                <small>Step 1 of 2: Token approval required</small>
+              <div className="confirming-step">
+                Step 1 of 2
               </div>
             )}
           </div>
@@ -1126,7 +1155,11 @@ export const CreateRequest = () => {
             <div className="chain-flow">
               <Image src={getChainLogo(requestFrom)} alt={requestFrom} width={22} height={22} style={{ borderRadius: '50%' }} />
               <span className="chain-name">{requestFrom}</span>
-              <span className="flow-arrow">→</span>
+              <span className="flow-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
               <Image src={getChainLogo(requestTo)} alt={requestTo} width={22} height={22} style={{ borderRadius: '50%' }} />
               <span className="chain-name">{requestTo}</span>
             </div>
@@ -1392,12 +1425,14 @@ export const CreateRequest = () => {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 120px;
         }
 
-        .swap-icon {
+        .arrow-divider {
           flex-shrink: 0;
-          cursor: pointer;
+          color: #9ca3af;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .amount-section {
@@ -1518,13 +1553,17 @@ export const CreateRequest = () => {
           background: #252528;
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 24px;
-          cursor: pointer;
+          cursor: default;
           position: relative;
           flex-shrink: 0;
           transition: all 0.15s ease;
         }
 
-        .token-pill:hover {
+        .token-pill.has-options {
+          cursor: pointer;
+        }
+
+        .token-pill.has-options:hover {
           background: #2d2d32;
           border-color: rgba(255, 255, 255, 0.18);
         }
@@ -1537,6 +1576,16 @@ export const CreateRequest = () => {
           color: #ffffff;
           font-size: 15px;
           font-weight: 600;
+        }
+
+        .token-chevron {
+          color: #6b7280;
+          transition: transform 0.2s ease;
+          margin-left: 2px;
+        }
+
+        .token-chevron.rotated {
+          transform: rotate(180deg);
         }
 
         .address-section {
@@ -1552,7 +1601,7 @@ export const CreateRequest = () => {
           border-radius: 10px;
           padding: 14px 16px;
           color: #ffffff;
-          font-size: 14px;
+          font-size: 15px;
           font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
           outline: none;
           box-sizing: border-box;
@@ -1772,32 +1821,6 @@ export const CreateRequest = () => {
           font-size: 18px;
           font-weight: 600;
           margin: 0 0 24px 0;
-        }
-
-        .status-modal {
-          background: #1a1a1a;
-          border: 1px solid #333;
-          border-radius: 16px;
-          padding: 32px;
-          text-align: center;
-          width: 90%;
-          max-width: 400px;
-        }
-
-        .close-btn {
-          background: none;
-          border: none;
-          color: #555;
-          cursor: pointer;
-          padding: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 6px;
-        }
-
-        .close-btn:hover {
-          color: #fff;
         }
 
         /* Route Banner */
@@ -2021,32 +2044,9 @@ export const CreateRequest = () => {
           opacity: 0.6;
         }
 
-        .status-modal h3 {
-          color: #ffffff;
-          font-size: 24px;
-          font-weight: 600;
-          margin: 0 0 24px 0;
-        }
-
-        .loading-spinner {
-          width: 48px;
-          height: 48px;
-          border: 4px solid #333;
-          border-top: 4px solid #6366f1;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 24px auto;
-        }
-
-        .status-modal p {
-          color: #9ca3af;
-          font-size: 16px;
-          margin: 0;
-        }
-
         /* Success Modal */
         .success-modal {
-          background: #0d0d0d;
+          background: #131316;
           border-radius: 16px;
           padding: 32px 28px 28px;
           width: 100%;
@@ -2138,9 +2138,9 @@ export const CreateRequest = () => {
         }
 
         .flow-arrow {
-          color: #6b7280;
-          font-size: 16px;
-          margin: 0 4px;
+          color: #9ca3af;
+          display: flex;
+          align-items: center;
         }
 
         .success-message {
@@ -2209,17 +2209,88 @@ export const CreateRequest = () => {
           white-space: nowrap;
         }
 
-        .approval-info {
-          margin-top: 16px;
-          padding: 8px 12px;
-          background: rgba(99, 102, 241, 0.1);
-          border-radius: 6px;
-          border: 1px solid rgba(99, 102, 241, 0.3);
+        /* Confirming Modal */
+        .confirming-modal {
+          background: #131316;
+          border-radius: 16px;
+          padding: 32px 28px 28px;
+          width: 100%;
+          max-width: 360px;
+          text-align: center;
+          position: relative;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
         }
 
-        .approval-info small {
+        .confirming-close-btn {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          padding: 4px;
+          cursor: pointer;
+          opacity: 0.5;
+          transition: opacity 0.2s ease;
+        }
+
+        .confirming-close-btn:hover {
+          opacity: 1;
+        }
+
+        .confirming-close-btn svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .confirming-ring {
+          position: relative;
+          width: 56px;
+          height: 56px;
+          margin: 0 auto 28px;
+        }
+
+        .ring-outer {
+          position: absolute;
+          inset: 0;
+          border: 3px solid #252528;
+          border-radius: 50%;
+        }
+
+        .ring-inner {
+          position: absolute;
+          inset: 0;
+          border: 3px solid transparent;
+          border-top-color: #6366f1;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .confirming-heading {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0 0 12px 0;
+        }
+
+        .confirming-message {
           color: #9ca3af;
-          font-size: 12px;
+          font-size: 14px;
+          margin: 0;
+          line-height: 1.5;
+        }
+
+        .confirming-step {
+          margin-top: 16px;
+          padding: 8px 14px;
+          background: rgba(99, 102, 241, 0.1);
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          border-radius: 8px;
+          color: #a5b4fc;
+          font-size: 13px;
+          font-weight: 500;
+          display: inline-block;
         }
 
         @keyframes spin {
@@ -2236,6 +2307,10 @@ export const CreateRequest = () => {
           .chain-selector-row {
             flex-direction: column;
             gap: 12px;
+          }
+
+          .arrow-divider {
+            transform: rotate(90deg);
           }
 
           .page-title {
