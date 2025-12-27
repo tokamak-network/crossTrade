@@ -13,7 +13,6 @@ import {
   getContractAddressFor_L2_L1,
   L2_L1_EDIT_FEE_ABI
 } from '@/config/contracts'
-import { getExplorerUrl } from '@/utils/chainLogos'
 
 interface EditFeeModalProps {
   isOpen: boolean
@@ -39,7 +38,8 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   const [newFeeAmount, setNewFeeAmount] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [networkSwitching, setNetworkSwitching] = useState(false)
-  
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+
   const { address: userAddress } = useAccount()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
@@ -52,7 +52,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   const communicationMode = useMemo((): 'L2_L2' | 'L2_L1' => {
     const destinationChainId = Number(requestData.l2DestinationChainId)
     const l1ChainId = 11155111 // Ethereum Sepolia
-    
+
     // If destination is Ethereum (L1) → L2_L1, otherwise → L2_L2
     return destinationChainId === l1ChainId ? 'L2_L1' : 'L2_L2'
   }, [requestData.l2DestinationChainId])
@@ -65,7 +65,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   // Get the correct L1 contract address based on mode
   const getL1ContractAddress = () => {
     const l1ChainId = 11155111 // Ethereum Sepolia
-    
+
     if (communicationMode === 'L2_L1') {
       return getContractAddressFor_L2_L1(l1ChainId, 'l1_cross_trade')
     } else {
@@ -99,7 +99,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
         })
       }
     })
-    
+
     // Also check L2_L1 config if not found
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
@@ -127,7 +127,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
     const divisor = BigInt(10 ** decimals)
     const integerPart = amount / divisor
     const fractionalPart = amount % divisor
-    
+
     if (fractionalPart === BigInt(0)) {
       return integerPart.toString()
     } else {
@@ -140,7 +140,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   // Helper function to get token symbol from address using dynamic config
   const getTokenSymbol = (tokenAddress: string) => {
     let symbol = 'UNKNOWN'
-    
+
     // Check L2_L2 config
     Object.entries(CHAIN_CONFIG_L2_L2).forEach(([chainId, config]) => {
       // Handle both NEW array format and OLD object format
@@ -160,7 +160,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
         })
       }
     })
-    
+
     // Also check L2_L1 config if not found
     if (symbol === 'UNKNOWN') {
       Object.entries(CHAIN_CONFIG_L2_L1).forEach(([chainId, config]) => {
@@ -182,7 +182,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
         }
       })
     }
-    
+
     return symbol
   }
 
@@ -211,7 +211,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
 
     const tokenSymbol = getTokenSymbol(requestData.l2SourceToken)
     const newCtAmountWei = toTokenWei(newFeeAmount, tokenSymbol)
-    
+
     if (newCtAmountWei >= requestData.totalAmount) {
       alert('New fee amount must be less than total amount')
       return
@@ -230,7 +230,7 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
         return
       }
 
-      console.log('🟡 EditFeeModal - Edit fee:', {
+      console.log('EditFeeModal - Edit fee:', {
         mode: communicationMode,
         l1ContractAddress,
         abi: communicationMode === 'L2_L1' ? 'L2_L1_EDIT_FEE_ABI' : 'EDIT_FEE_ABI',
@@ -240,7 +240,6 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
       })
 
       // Check if we need to switch to L1 (Ethereum Sepolia)
-      // requiredChainId already defined above
       if (chainId !== requiredChainId) {
         setNetworkSwitching(true)
         try {
@@ -267,10 +266,10 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
 
       // Use mode-aware ABI and arguments
       const editFeeABI = getEditFeeABI()
-      
+
       // Build arguments based on communication mode
       let contractArgs: any
-      
+
       if (communicationMode === 'L2_L2') {
         // NEW contract (L2toL2CrossTradeL1.sol) - 11 params
         // Note: Always pass the ORIGINAL ctAmount from L2, not the edited one
@@ -302,8 +301,8 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
           requestData.hashValue as `0x${string}`
         ] as const
       }
-      
-      console.log('🟡 EditFeeModal - Edit Fee:', {
+
+      console.log('EditFeeModal - Edit Fee:', {
         mode: communicationMode,
         abi: communicationMode === 'L2_L1' ? 'L2_L1_EDIT_FEE_ABI (9 params)' : 'EDIT_FEE_ABI (11 params)',
         l1ContractAddress,
@@ -324,12 +323,10 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
     }
   }
 
-  // Handle successful transaction
-  if (isSuccess) {
-    setTimeout(() => {
-      onClose()
-      window.location.reload() // Refresh to show updated data
-    }, 2000)
+  // Handle successful transaction - show success modal
+  if (isSuccess && !showSuccessModal) {
+    setShowSuccessModal(true)
+    setIsSubmitting(false)
   }
 
   if (!isOpen) return null
@@ -341,268 +338,289 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
   const tokenSymbol = getTokenSymbol(requestData.l2SourceToken)
   const currentFee = requestData.totalAmount - actualCtAmount
   const currentFeeFormatted = formatTokenAmount(currentFee, requestData.l2SourceToken)
-  const hasBeenEdited = requestData.editedCtAmount !== undefined && requestData.editedCtAmount > BigInt(0)
+
+  // Calculate new fee if user entered amount
+  const newFee = newFeeAmount && parseFloat(newFeeAmount) > 0
+    ? (parseFloat(totalAmount) - parseFloat(newFeeAmount)).toFixed(6)
+    : null
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="edit-fee-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Close Button */}
+        <button className="close-btn" onClick={onClose} aria-label="Close">
+          <svg viewBox="0 0 12 12" fill="none">
+            <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </button>
+
+        {/* Header */}
         <div className="modal-header">
-          <h2>Edit Service Fee</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <h3>Edit Service Fee</h3>
         </div>
 
-        <div className="modal-body">
-          {/* Mode Indicator */}
-          <div style={{ 
-            padding: '10px 12px', 
-            marginBottom: '16px', 
-            borderRadius: '8px', 
-            backgroundColor: communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-            border: `1px solid ${communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span style={{ fontSize: '13px', fontWeight: '600', color: '#ffffff' }}>
-              {communicationMode === 'L2_L2' ? '🔄 L2 ↔ L2 Mode' : '🌉 L2 ↔ L1 Mode'}
-            </span>
-            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>
-              {communicationMode === 'L2_L2' 
-                ? 'Using L2_L2 edit contract' 
-                : 'Using L2_L1 edit contract'}
-            </span>
+        {/* Request Summary */}
+        <div className="summary-section">
+          <div className="summary-row">
+            <span className="label">Request</span>
+            <span className="value">#{requestData.saleCount}</span>
           </div>
-
-          <div className="info-section">
-            <div className="info-row">
-              <span className="info-label">Sale Count:</span>
-              <span className="info-value">#{requestData.saleCount}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Total Amount:</span>
-              <span className="info-value">{totalAmount} {tokenSymbol}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Current Amount (After Fee):</span>
-              <span className="info-value">{currentAmount} {tokenSymbol}</span>
-            </div>
-            {hasBeenEdited && (
-              <div className="info-row">
-                <span className="info-label">Original Amount:</span>
-                <span className="info-value">{formatTokenAmount(requestData.ctAmount, requestData.l2SourceToken)} {tokenSymbol}</span>
-              </div>
-            )}
-            <div className="info-row">
-              <span className="info-label">Current Service Fee:</span>
-              <span className="info-value">{currentFeeFormatted} {tokenSymbol}</span>
-            </div>
+          <div className="summary-row">
+            <span className="label">Total Amount</span>
+            <span className="value mono">{totalAmount} {tokenSymbol}</span>
           </div>
-
-          <div className="input-section">
-            <label htmlFor="newFee">New Amount (After Fee)</label>
-            <div className="input-wrapper">
-              <input
-                id="newFee"
-                type="number"
-                min="0"
-                step="0.000001"
-                placeholder={`Enter new amount (max: ${totalAmount})`}
-                value={newFeeAmount}
-                onChange={(e) => setNewFeeAmount(e.target.value)}
-                disabled={isSubmitting || isConfirming}
-              />
-              <span className="input-suffix">{tokenSymbol}</span>
-            </div>
-            {newFeeAmount && (
-              <div className="fee-preview">
-                New Service Fee: {parseFloat(totalAmount) - parseFloat(newFeeAmount)} {tokenSymbol}
-              </div>
-            )}
+          <div className="summary-row">
+            <span className="label">Current Amount</span>
+            <span className="value mono">{currentAmount} {tokenSymbol}</span>
           </div>
-
-          {networkSwitching && (
-            <div className="status-message switching">
-              <div className="spinner"></div>
-              <span>Switching to Ethereum Sepolia...</span>
-            </div>
-          )}
-
-          {isConfirming && (
-            <div className="status-message confirming">
-              <div className="spinner"></div>
-              <span>Confirming transaction...</span>
-            </div>
-          )}
-
-          {isSuccess && (
-            <div className="status-message success">
-              ✅ Fee updated successfully!
-              {editFeeHash && (
-                <a
-                  href={getExplorerUrl(chainId, editFeeHash)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tx-link"
-                >
-                  View on Explorer ↗
-                </a>
-              )}
-            </div>
-          )}
-
-          {(writeError || receiptError) && (
-            <div className="status-message error">
-              ❌ Error: {(writeError as any)?.message || (receiptError as any)?.message || 'Transaction failed'}
-            </div>
-          )}
+          <div className="summary-row highlight">
+            <span className="label">Current Fee</span>
+            <span className="value mono fee">{currentFeeFormatted} {tokenSymbol}</span>
+          </div>
         </div>
 
-        <div className="modal-footer">
-          <button 
-            className="cancel-btn" 
-            onClick={onClose}
-            disabled={isSubmitting || isConfirming}
-          >
+        {/* New Amount Input */}
+        <div className="input-section">
+          <label>New Amount (Provider Receives)</label>
+          <div className="input-wrapper">
+            <input
+              type="number"
+              min="0"
+              step="0.000001"
+              placeholder={totalAmount}
+              value={newFeeAmount}
+              onChange={(e) => setNewFeeAmount(e.target.value)}
+              disabled={isSubmitting || isConfirming}
+            />
+            <span className="input-suffix">{tokenSymbol}</span>
+          </div>
+        </div>
+
+        {/* New Fee Preview */}
+        {newFee && parseFloat(newFee) >= 0 && (
+          <div className="fee-preview">
+            <span className="preview-label">New Fee</span>
+            <span className="preview-value">{newFee} {tokenSymbol}</span>
+          </div>
+        )}
+
+        {/* Status Messages */}
+        {(networkSwitching || isConfirming) && (
+          <div className="status-bar processing">
+            <div className="spinner"></div>
+            <span>{networkSwitching ? 'Switching to Ethereum...' : 'Confirming transaction...'}</span>
+          </div>
+        )}
+
+        {(writeError || receiptError) && (
+          <div className="status-bar error">
+            <span>{((writeError as any)?.shortMessage || (receiptError as any)?.shortMessage) || 'Transaction failed'}</span>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="btn-row">
+          <button className="btn btn-cancel" onClick={onClose} disabled={isSubmitting || isConfirming}>
             Cancel
           </button>
-          <button 
-            className="confirm-btn"
+          <button
+            className="btn btn-primary"
             onClick={handleEditFee}
-            disabled={!newFeeAmount || isSubmitting || isConfirming || isSuccess || networkSwitching}
+            disabled={!newFeeAmount || parseFloat(newFeeAmount) <= 0 || isSubmitting || isConfirming || isSuccess || networkSwitching}
           >
-            {networkSwitching ? 'Switching Network...' : isSubmitting || isConfirming ? 'Processing...' : 'Update Fee'}
+            {networkSwitching || isSubmitting || isConfirming ? 'Processing...' : 'Update Fee'}
           </button>
         </div>
       </div>
 
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="success-modal-overlay" onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }}>
+          <div className="success-modal" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }} className="success-close-btn" aria-label="Close">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M1 11L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            <div className="success-glow-container">
+              <div className="success-glow"></div>
+              <div className="success-check-circle">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path className="check-path" d="M4 12L9 17L20 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <h3 className="success-heading">Fee Updated</h3>
+
+            <div className="success-details">
+              <span className="new-amount">{newFeeAmount} {tokenSymbol}</span>
+              <span className="new-fee">New fee: {newFee} {tokenSymbol}</span>
+            </div>
+
+            {editFeeHash && (
+              <button
+                className="tx-hash-link"
+                onClick={() => {
+                  navigator.clipboard.writeText(editFeeHash)
+                  alert('Transaction hash copied!')
+                }}
+              >
+                <span>{editFeeHash.slice(0, 14)}...{editFeeHash.slice(-12)}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </button>
+            )}
+
+            <button onClick={() => { setShowSuccessModal(false); onClose(); window.location.reload() }} className="done-btn">
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          inset: 0;
           background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(4px);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1000;
-          backdrop-filter: blur(4px);
         }
 
-        .modal-content {
-          background: #1a1a1a;
-          border: 1px solid #333333;
+        .edit-fee-modal {
+          background: #131316;
+          border: 1px solid #2a2a2e;
           border-radius: 16px;
-          width: 90%;
-          max-width: 500px;
-          max-height: 80vh;
-          overflow-y: auto;
+          padding: 24px;
+          width: 94%;
+          max-width: 400px;
+          position: relative;
         }
 
+        /* Header */
         .modal-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 24px;
-          border-bottom: 1px solid #333333;
+          margin-bottom: 24px;
         }
 
-        .modal-header h2 {
+        .modal-header h3 {
           color: #ffffff;
-          font-size: 20px;
+          font-size: 17px;
           font-weight: 600;
           margin: 0;
         }
 
         .close-btn {
+          position: absolute;
+          top: 12px;
+          right: 12px;
           background: none;
           border: none;
-          color: #9ca3af;
-          font-size: 24px;
+          color: #666;
           cursor: pointer;
           padding: 0;
-          width: 32px;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 8px;
-          transition: all 0.2s ease;
+          opacity: 0.7;
+          transition: all 0.15s;
         }
 
         .close-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
+          opacity: 1;
+          color: #fff;
         }
 
-        .modal-body {
-          padding: 24px;
+        .close-btn svg {
+          width: 16px;
+          height: 16px;
         }
 
-        .info-section {
-          background: rgba(26, 26, 26, 0.5);
-          border: 1px solid #333333;
-          border-radius: 12px;
-          padding: 16px;
-          margin-bottom: 24px;
+        /* Summary Section */
+        .summary-section {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 28px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #1f1f23;
         }
 
-        .info-row {
+        .summary-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 0;
         }
 
-        .info-row:not(:last-child) {
-          border-bottom: 1px solid rgba(51, 51, 51, 0.5);
-        }
-
-        .info-label {
-          color: #9ca3af;
+        .summary-row .label {
+          color: #71717a;
           font-size: 14px;
         }
 
-        .info-value {
-          color: #ffffff;
-          font-size: 14px;
+        .summary-row .value {
+          color: #e4e4e7;
+          font-size: 15px;
+          font-weight: 500;
+        }
+
+        .summary-row .value.mono {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 15px;
+        }
+
+        .summary-row.highlight .value.fee {
+          color: #fbbf24;
+          font-size: 16px;
           font-weight: 600;
         }
 
+        /* Input Section */
         .input-section {
-          margin-bottom: 24px;
+          margin-bottom: 20px;
         }
 
         .input-section label {
           display: block;
-          color: #9ca3af;
-          font-size: 14px;
-          margin-bottom: 8px;
+          color: #71717a;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 10px;
         }
 
         .input-wrapper {
           position: relative;
-          display: flex;
-          align-items: center;
         }
 
         .input-wrapper input {
-          flex: 1;
-          background: rgba(26, 26, 26, 0.5);
-          border: 1px solid #333333;
-          border-radius: 8px;
+          width: 100%;
+          background: #18181b;
+          border: 1px solid #27272a;
+          border-radius: 12px;
           color: #ffffff;
-          font-size: 16px;
-          padding: 12px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 18px;
+          font-weight: 500;
+          padding: 16px 18px;
           padding-right: 60px;
-          transition: all 0.2s ease;
+          transition: all 0.2s;
+        }
+
+        .input-wrapper input::placeholder {
+          color: #3f3f46;
+          font-weight: 400;
         }
 
         .input-wrapper input:focus {
           outline: none;
           border-color: #6366f1;
-          background: rgba(99, 102, 241, 0.05);
+          background: #1a1a1f;
         }
 
         .input-wrapper input:disabled {
@@ -612,131 +630,284 @@ export const EditFeeModal = ({ isOpen, onClose, requestData }: EditFeeModalProps
 
         .input-suffix {
           position: absolute;
-          right: 12px;
-          color: #9ca3af;
+          right: 18px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #71717a;
           font-size: 14px;
           font-weight: 600;
         }
 
+        /* Fee Preview */
         .fee-preview {
-          margin-top: 8px;
-          color: #f59e0b;
-          font-size: 13px;
-          font-weight: 500;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+          padding: 14px 16px;
+          background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(251, 191, 36, 0.03) 100%);
+          border: 1px solid rgba(251, 191, 36, 0.15);
+          border-radius: 10px;
         }
 
-        .status-message {
+        .preview-label {
+          color: #a1a1aa;
+          font-size: 13px;
+        }
+
+        .preview-value {
+          color: #fbbf24;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 15px;
+          font-weight: 600;
+        }
+
+        /* Status Bar */
+        .status-bar {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px;
-          border-radius: 8px;
+          gap: 10px;
+          padding: 12px 14px;
+          border-radius: 10px;
+          font-size: 13px;
           margin-bottom: 16px;
         }
 
-        .status-message.confirming {
+        .status-bar.processing {
           background: rgba(99, 102, 241, 0.1);
-          border: 1px solid #6366f1;
-          color: #6366f1;
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          color: #818cf8;
         }
 
-        .status-message.switching {
-          background: rgba(245, 158, 11, 0.1);
-          border: 1px solid #f59e0b;
-          color: #f59e0b;
-        }
-
-        .status-message.success {
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid #10b981;
-          color: #10b981;
-        }
-
-        .tx-link {
-          display: block;
-          margin-top: 8px;
-          padding: 8px 16px;
-          background: #10b981;
-          color: #ffffff;
-          text-decoration: none;
-          border-radius: 6px;
-          font-size: 13px;
-          font-weight: 500;
-          text-align: center;
-        }
-
-        .tx-link:hover {
-          background: #0d9668;
-        }
-
-        .status-message.error {
+        .status-bar.error {
           background: rgba(239, 68, 68, 0.1);
-          border: 1px solid #ef4444;
-          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          color: #f87171;
         }
 
         .spinner {
-          width: 16px;
-          height: 16px;
+          width: 14px;
+          height: 14px;
           border: 2px solid currentColor;
           border-top-color: transparent;
           border-radius: 50%;
-          animation: spin 0.8s linear infinite;
+          animation: spin 0.7s linear infinite;
         }
 
-        .modal-footer {
+        /* Buttons */
+        .btn-row {
           display: flex;
           gap: 12px;
-          padding: 24px;
-          border-top: 1px solid #333333;
         }
 
-        .cancel-btn,
-        .confirm-btn {
+        .btn {
           flex: 1;
-          padding: 12px;
-          border-radius: 8px;
+          padding: 12px 16px;
+          border-radius: 10px;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
-          border: none;
+          transition: all 0.15s;
         }
 
-        .cancel-btn {
-          background: rgba(26, 26, 26, 0.8);
-          border: 1px solid #333333;
-          color: #ffffff;
+        .btn-cancel {
+          background: #1f1f23;
+          border: 1px solid #27272a;
+          color: #a1a1aa;
         }
 
-        .cancel-btn:hover:not(:disabled) {
-          background: rgba(51, 51, 51, 0.8);
+        .btn-cancel:hover:not(:disabled) {
+          background: #27272a;
+          border-color: #3f3f46;
+          color: #e4e4e7;
         }
 
-        .confirm-btn {
+        .btn-primary {
           background: #6366f1;
+          border: none;
           color: #ffffff;
         }
 
-        .confirm-btn:hover:not(:disabled) {
-          background: #5855eb;
+        .btn-primary:hover:not(:disabled) {
+          background: #5558e3;
         }
 
-        .cancel-btn:disabled,
-        .confirm-btn:disabled {
-          opacity: 0.5;
+        .btn:disabled {
+          opacity: 0.4;
           cursor: not-allowed;
         }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        /* Success Modal */
+        .success-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1100;
         }
 
-        @media (max-width: 640px) {
-          .modal-content {
+        .success-modal {
+          background: #131316;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 16px;
+          padding: 32px 24px 28px;
+          width: 100%;
+          max-width: 360px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          position: relative;
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .success-close-btn {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: transparent;
+          border: none;
+          color: #52525b;
+          cursor: pointer;
+          padding: 6px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s;
+          width: 28px;
+          height: 28px;
+        }
+
+        .success-close-btn:hover {
+          background: #27272a;
+          color: #a1a1aa;
+        }
+
+        .success-close-btn svg {
+          width: 12px;
+          height: 12px;
+        }
+
+        .success-glow-container {
+          position: relative;
+          width: 72px;
+          height: 72px;
+          margin: 0 auto 20px;
+        }
+
+        .success-glow {
+          position: absolute;
+          inset: -8px;
+          background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .success-check-circle {
+          position: relative;
+          width: 72px;
+          height: 72px;
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+        }
+
+        .check-path {
+          stroke-dasharray: 30;
+          stroke-dashoffset: 30;
+          animation: draw-check 0.4s ease-out 0.2s forwards;
+        }
+
+        .success-heading {
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 600;
+          margin: 0 0 16px;
+        }
+
+        .success-details {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          margin-bottom: 16px;
+        }
+
+        .new-amount {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 20px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+
+        .new-fee {
+          font-size: 13px;
+          color: #71717a;
+        }
+
+        .tx-hash-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          align-self: stretch;
+          color: #9ca3af;
+          font-size: 13px;
+          font-family: 'JetBrains Mono', monospace;
+          margin-bottom: 16px;
+          padding: 12px 16px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .tx-hash-link:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+
+        .done-btn {
+          align-self: stretch;
+          padding: 14px;
+          background: #22c55e;
+          border: none;
+          border-radius: 10px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+
+        .done-btn:hover {
+          background: #16a34a;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        @keyframes draw-check {
+          to { stroke-dashoffset: 0; }
+        }
+
+        @media (max-width: 480px) {
+          .edit-fee-modal {
             width: 95%;
-            max-height: 90vh;
+            padding: 16px;
           }
         }
       `}</style>

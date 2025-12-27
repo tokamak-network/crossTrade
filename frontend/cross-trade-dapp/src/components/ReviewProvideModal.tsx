@@ -43,6 +43,7 @@ const ERC20_ABI = [
 interface ReviewProvideModalProps {
   isOpen: boolean
   onClose: () => void
+  isOwnRequest?: boolean
   requestData: {
     saleCount: number
     chainId: number
@@ -61,7 +62,7 @@ interface ReviewProvideModalProps {
   }
 }
 
-export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvideModalProps) => {
+export const ReviewProvideModal = ({ isOpen, onClose, isOwnRequest = false, requestData }: ReviewProvideModalProps) => {
   const [riskUnderstood, setRiskUnderstood] = useState(false)
   const [approvalStep, setApprovalStep] = useState<'checking' | 'needed' | 'approving' | 'approved'>('checking')
   const [isApprovalSuccess, setIsApprovalSuccess] = useState(false)
@@ -484,153 +485,134 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="review-provide-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
         <div className="modal-header">
-          <h3>Review Provide</h3>
-          <button className="close-btn" onClick={onClose}>
-            ✕
+          <div className="header-left">
+            <h3>Review Provide</h3>
+            <span className="mode-badge">{communicationMode === 'L2_L2' ? 'L2 ↔ L2' : 'L2 → L1'}</span>
+          </div>
+          <button className="close-btn" onClick={onClose} aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </button>
         </div>
 
-        <div className="provide-details">
-          {/* Mode Indicator */}
-          <div style={{ 
-            padding: '10px 12px', 
-            marginBottom: '12px', 
-            borderRadius: '8px', 
-            backgroundColor: communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-            border: `1px solid ${communicationMode === 'L2_L2' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span style={{ fontSize: '13px', fontWeight: '600', color: '#ffffff' }}>
-              {communicationMode === 'L2_L2' ? '🔄 L2 ↔ L2 Mode' : '🌉 L2 ↔ L1 Mode'}
-            </span>
-            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>
-              {communicationMode === 'L2_L2' 
-                ? 'Using L2_L2 provide contract' 
-                : 'Using L2_L1 provide contract'}
-            </span>
-          </div>
-
-          {/* Provide Chain Section */}
-          <div className="chain-section">
-            <div className="section-header">
-              <span className="section-label">Provide Chain</span>
-              <span className="help-icon">ⓘ</span>
+        {/* Trade Flow */}
+        <div className="trade-flow">
+          <div className="flow-card">
+            <span className="flow-label">You Send</span>
+            <div className="flow-amount">
+              <span className="amount">{provideAmount}</span>
+              <span className="token">{tokenSymbol}</span>
             </div>
-            <div className="amount-display">
-              <span className="amount-value">{provideAmount} {tokenSymbol}</span>
-              <div className="chain-badge">
-                <span className="chain-icon">{renderChainIcon(provideChain)}</span>
-              </div>
+            <div className="flow-chain">
+              {renderChainIcon(provideChain)}
+              <span>{provideChain}</span>
             </div>
-            <div className="chain-name-display">{provideChain}</div>
             {actualCtAmount !== requestData.ctAmount && (
-              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                Original: {formatTokenAmount(requestData.ctAmount, requestData.l2SourceToken)} {tokenSymbol}
-              </div>
+              <span className="edited-tag">Edited</span>
             )}
           </div>
 
-          {/* Reward Chain Section */}
-          <div className="chain-section">
-            <div className="section-header">
-              <span className="section-label">Reward Chain</span>
-              <span className="help-icon">ⓘ</span>
+          <div className="flow-connector">
+            <div className="arrow-dots">
+              <div className="dot-line one"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line two"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line three"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line four"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line five"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line six"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line seven"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line eight"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
+              <div className="dot-line nine"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
             </div>
-            <div className="amount-display">
-              <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
-              <div className="chain-badge">
-                <span className="chain-icon">{renderChainIcon(rewardChain)}</span>
+          </div>
+
+          <div className="flow-card receive">
+            <div className="flow-label-row">
+              <span className="flow-label">You Receive</span>
+              <span className="profit-badge">+{profitPercentage.toFixed(2)}%</span>
+            </div>
+            <div className="flow-amount">
+              <span className="amount">{rewardAmount}</span>
+              <span className="token">{tokenSymbol}</span>
+            </div>
+            <div className="flow-chain">
+              {renderChainIcon(rewardChain)}
+              <span>{rewardChain}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Details Row */}
+        <div className="details-row">
+          <div className="detail recipient">
+            <span className="detail-label">Recipient</span>
+            <span className="detail-value mono">{requestData.receiver}</span>
+          </div>
+          <div className="detail fee">
+            <span className="detail-label">Network Fee</span>
+            <span className="detail-value mono">{networkFee}</span>
+          </div>
+        </div>
+
+        {/* Warning */}
+        <div className="warning-box">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 5V8.5M8 11H8.01M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          <span>Cross Trade requests are created by external users, and liquidity is provided on Ethereum (L1). Cross Trade does not guarantee the validity of these requests or compensate for any potential loss. Verify carefully before providing.</span>
+        </div>
+
+        {/* Actions */}
+        <div className="actions">
+          {isOwnRequest ? (
+            <div className="own-request-notice">
+              <span>This is your request. <a href="/history" onClick={onClose}>Manage in History →</a></span>
+            </div>
+          ) : (
+            <>
+              <label className="checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={riskUnderstood}
+                  onChange={(e) => setRiskUnderstood(e.target.checked)}
+                />
+                <span className="custom-checkbox"></span>
+                <span>I understand the risks</span>
+              </label>
+
+              <div className="btn-row">
+                {!isETH && needsApproval && (
+                  <button
+                    type="button"
+                    className="btn btn-approve"
+                    disabled={!riskUnderstood || isApprovalPending || isApprovalConfirming}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleApproval()
+                    }}
+                  >
+                    {isApprovalPending ? 'Confirming...' : isApprovalConfirming ? 'Processing...' : 'Approve'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`btn btn-provide ${riskUnderstood && (!needsApproval || isETH) ? 'active' : ''}`}
+                  disabled={!riskUnderstood || isPending || isConfirming || (!isETH && needsApproval)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    handleProvideCT()
+                  }}
+                >
+                  {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : 'Provide Liquidity'}
+                </button>
               </div>
-            </div>
-            <div className="chain-name-display">{rewardChain}</div>
-          </div>
-
-          {/* Request Chain Section */}
-          <div className="chain-section">
-            <div className="section-header">
-              <span className="section-label">Request Chain</span>
-              <span className="help-icon">ⓘ</span>
-            </div>
-            <div className="amount-display">
-              <span className="amount-value">{rewardAmount} {tokenSymbol}</span>
-              <div className="chain-badge">
-                <span className="chain-icon">{renderChainIcon(sourceChain)}</span>
-              </div>
-            </div>
-            <div className="chain-name-display">{sourceChain}</div>
-          </div>
-
-          {/* Cross Chain Path */}
-          <div className="cross-chain-section">
-            <div className="path-row">
-              <span className="path-label">Cross Chain Path</span>
-
-              <span className="path-value">{crossChainPath}</span>
-            </div>
-            <div className="detail-row">
-              <span className="detail-label">Send to</span>
-              <span className="detail-value">{sendToAddress}</span>
-            </div>
-            <div className="detail-row">
-              <span className="detail-label">Network fee</span>
-              <span className="detail-value">{networkFee}</span>
-            </div>
-          </div>
-
-          {/* Warning */}
-          <div className="warning-section">
-            <div className="warning-icon">⚠️</div>
-            <div className="warning-text">
-              <strong>Warning</strong>
-              <p>Cross Trade requests are created by external users, and liquidity is provided on Ethereum (L1). Please note that Cross Trade does not guarantee the validity of these requests or compensate for any potential loss. Be sure to verify the request carefully before providing liquidity.</p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="action-buttons">
-            <label className="understand-checkbox">
-              <input 
-                type="checkbox" 
-                checked={riskUnderstood} 
-                onChange={(e) => setRiskUnderstood(e.target.checked)}
-              />
-              <span className="checkmark"></span>
-              I understand the risk
-            </label>
-            
-            {/* Approval Button (for ERC20 tokens only) */}
-            {!isETH && needsApproval && (
-              <button 
-                type="button"
-                className="approve-btn"
-                disabled={!riskUnderstood || isApprovalPending || isApprovalConfirming}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  handleApproval()
-                }}
-              >
-                {isApprovalPending ? 'Confirming...' : isApprovalConfirming ? 'Processing...' : 'Approve Token Spending'}
-              </button>
-            )}
-            
-            {/* Provide Button */}
-            <button 
-              type="button"
-              className={`provide-btn ${riskUnderstood && (!needsApproval || isETH) ? 'active' : ''}`}
-              disabled={!riskUnderstood || isPending || isConfirming || (!isETH && needsApproval)}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                handleProvideCT()
-              }}
-            >
-              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : 'Provide'}
-            </button>
-          </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -682,11 +664,9 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
       <style jsx>{`
         .modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(4px);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -694,323 +674,438 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         }
 
         .review-provide-modal {
-          background: #1a1a1a;
-          border: 1px solid #333;
+          background: #131316;
+          border: 1px solid #2a2a2e;
           border-radius: 16px;
           padding: 20px;
-          width: 90%;
-          max-width: 420px;
-          max-height: 85vh;
-          overflow-y: auto;
+          width: 94%;
+          max-width: 620px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
         }
 
+        /* Header */
         .modal-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
 
         .modal-header h3 {
           color: #ffffff;
-          font-size: 20px;
+          font-size: 16px;
           font-weight: 600;
           margin: 0;
+        }
+
+        .mode-badge {
+          background: rgba(99, 102, 241, 0.15);
+          color: #818cf8;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 4px 8px;
+          border-radius: 6px;
         }
 
         .close-btn {
-          background: none;
+          background: transparent;
           border: none;
-          color: #9ca3af;
-          font-size: 20px;
+          color: #52525b;
           cursor: pointer;
-          padding: 4px;
-          margin: 0;
-        }
-
-        .close-btn:hover {
-          color: #ffffff;
-        }
-
-        .provide-details {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .chain-section {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .section-label {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .help-icon {
-          color: #9ca3af;
-          font-size: 14px;
-          cursor: pointer;
-        }
-
-        .amount-display {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin: 6px 0 3px 0;
-        }
-
-        .amount-value {
-          color: #ffffff;
-          font-size: 22px;
-          font-weight: 600;
-        }
-
-        .chain-badge {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .chain-icon {
-          font-size: 16px;
-        }
-
-        .reward-symbol {
-          font-size: 14px;
-        }
-
-        .chain-name-display {
-          color: #9ca3af;
-          font-size: 14px;
-          font-weight: 500;
-          margin: 2px 0;
-        }
-
-        .amount-usd {
-          color: #9ca3af;
-          font-size: 14px;
-        }
-
-        .cross-chain-section {
-          background: rgba(26, 26, 26, 0.5);
-          border: 1px solid #333333;
-          border-radius: 12px;
-          padding: 12px;
-        }
-
-        .path-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
-        }
-
-        .path-label {
-          color: #9ca3af;
-          font-size: 14px;
-        }
-
-        .path-indicator {
-          display: flex;
-          align-items: center;
-        }
-
-        .path-badge {
-          background: #22c55e;
-          color: #ffffff;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
+          padding: 6px;
+          border-radius: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
-          font-weight: 600;
+          transition: all 0.15s;
         }
 
-        .path-value {
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
+        .close-btn:hover {
+          background: #27272a;
+          color: #a1a1aa;
         }
 
-        .detail-row {
+        /* Trade Flow */
+        .trade-flow {
           display: flex;
-          justify-content: space-between;
+          align-items: stretch;
+          gap: 0;
+          margin-bottom: 12px;
+        }
+
+        .flow-card {
+          flex: 1;
+          background: #1a1a1d;
+          border: 1px solid #27272a;
+          border-radius: 12px 0 0 12px;
+          border-right: none;
+          padding: 14px;
+          position: relative;
+        }
+
+        .flow-card.receive {
+          background: linear-gradient(135deg, #1a1a1d 0%, #14261a 100%);
+          border-color: rgba(34, 197, 94, 0.2);
+          border-radius: 0 12px 12px 0;
+          border-right: 1px solid rgba(34, 197, 94, 0.2);
+          border-left: none;
+        }
+
+        .flow-label {
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #71717a;
+          margin-bottom: 8px;
+          display: block;
+        }
+
+        .flow-card.receive .flow-label {
+          color: #22c55e;
+        }
+
+        .flow-label-row {
+          display: flex;
           align-items: center;
-          margin-bottom: 6px;
+          justify-content: space-between;
+          margin-bottom: 8px;
         }
 
-        .detail-row:last-child {
-          margin-bottom: 0;
-        }
-
-        .detail-label {
-          color: #9ca3af;
-          font-size: 14px;
-        }
-
-        .detail-value {
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .fee-usd {
-          color: #9ca3af;
-        }
-
-        .warning-section {
+        .flow-amount {
           display: flex;
-          gap: 10px;
-          background: rgba(245, 158, 11, 0.1);
-          border: 1px solid rgba(245, 158, 11, 0.3);
-          border-radius: 8px;
-          padding: 12px;
+          align-items: baseline;
+          gap: 6px;
+          margin-bottom: 10px;
         }
 
-        .warning-icon {
-          font-size: 18px;
+        .flow-amount .amount {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 20px;
+          font-weight: 600;
+          color: #ffffff;
+          font-feature-settings: 'tnum' on, 'lnum' on;
+        }
+
+        .flow-amount .token {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px;
+          font-weight: 500;
+          color: #a1a1aa;
+        }
+
+        .flow-chain {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: #71717a;
+        }
+
+        .flow-chain :global(img) {
+          width: 16px !important;
+          height: 16px !important;
+          border-radius: 50%;
+        }
+
+        .flow-connector {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #131316;
+          border-top: 1px solid #27272a;
+          border-bottom: 1px solid #27272a;
+          width: 50px;
           flex-shrink: 0;
         }
 
-        .warning-text {
+        .arrow-dots {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+          animation: arrow-move 2s infinite ease;
+        }
+
+        @keyframes arrow-move {
+          0% { transform: translateX(0); }
+          50% { transform: translateX(4px); }
+          100% { transform: translateX(0); }
+        }
+
+        .dot {
+          width: 4px;
+          height: 4px;
+          background: #6366f1;
+          border-radius: 50%;
+        }
+
+        .dot-line {
+          display: flex;
+          gap: 2px;
+        }
+
+        .dot-line.one {
+          margin-left: -16px;
+        }
+
+        .dot-line.two {
+          margin-left: -8px;
+        }
+
+        .dot-line.three {
+          margin-left: 0;
+        }
+
+        .dot-line.four {
+          margin-left: 8px;
+        }
+
+        .dot-line.five {
+          margin-left: 16px;
+        }
+
+        .dot-line.six {
+          margin-left: 8px;
+        }
+
+        .dot-line.seven {
+          margin-left: 0;
+        }
+
+        .dot-line.eight {
+          margin-left: -8px;
+        }
+
+        .dot-line.nine {
+          margin-left: -16px;
+        }
+
+        .profit-badge {
+          background: #22c55e;
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 3px 8px;
+          border-radius: 4px;
+        }
+
+        .edited-tag {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: rgba(251, 191, 36, 0.15);
+          color: #fbbf24;
+          font-size: 9px;
+          font-weight: 600;
+          padding: 2px 6px;
+          border-radius: 4px;
+          text-transform: uppercase;
+        }
+
+        /* Details Row */
+        .details-row {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+
+        .detail {
+          flex: 1;
+          background: #1a1a1d;
+          border: 1px solid #27272a;
+          border-radius: 8px;
+          padding: 10px 12px;
+        }
+
+        .detail-label {
+          display: block;
+          font-size: 10px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #52525b;
+          margin-bottom: 4px;
+        }
+
+        .detail-value {
+          display: block;
+          font-size: 12px;
+          color: #e4e4e7;
+          font-weight: 500;
+        }
+
+        .detail-value.mono {
+          font-family: 'JetBrains Mono', monospace;
+          font-feature-settings: 'tnum' on, 'lnum' on;
+        }
+
+        .detail.recipient {
+          flex: 3;
+        }
+
+        .detail.recipient .detail-value {
+          font-size: 14px;
+        }
+
+        .detail.fee {
           flex: 1;
         }
 
-        .warning-text strong {
-          color: #f59e0b;
-          font-size: 13px;
-          font-weight: 600;
-          display: block;
-          margin-bottom: 3px;
+        .detail.fee .detail-value {
+          font-size: 14px;
         }
 
-        .warning-text p {
-          color: #d1d5db;
-          font-size: 12px;
-          line-height: 1.3;
-          margin: 0;
+        /* Warning */
+        .warning-box {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(251, 191, 36, 0.08);
+          border: 1px solid rgba(251, 191, 36, 0.15);
+          border-radius: 8px;
+          padding: 10px 12px;
+          margin-bottom: 14px;
         }
 
-        .action-buttons {
+        .warning-box svg {
+          color: #fbbf24;
+          flex-shrink: 0;
+        }
+
+        .warning-box span {
+          font-size: 11px;
+          color: #a1a1aa;
+          line-height: 1.4;
+        }
+
+        /* Actions */
+        .actions {
           display: flex;
           flex-direction: column;
           gap: 12px;
-          margin-top: 6px;
         }
 
-        .understand-checkbox {
+        .own-request-notice {
+          text-align: center;
+          padding: 14px;
+          color: #9ca3af;
+          font-size: 14px;
+        }
+
+        .own-request-notice a {
+          color: #818cf8;
+          text-decoration: none;
+        }
+
+        .own-request-notice a:hover {
+          text-decoration: underline;
+        }
+
+        .checkbox-row {
           display: flex;
           align-items: center;
           gap: 10px;
           cursor: pointer;
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 600;
           user-select: none;
         }
 
-        .understand-checkbox input[type="checkbox"] {
-          position: absolute;
-          opacity: 0;
-          cursor: pointer;
+        .checkbox-row input {
+          display: none;
         }
 
-        .checkmark {
-          position: relative;
-          height: 20px;
-          width: 20px;
-          background-color: #1a1a1a;
-          border: 2px solid #333333;
+        .custom-checkbox {
+          width: 18px;
+          height: 18px;
+          border: 2px solid #3f3f46;
           border-radius: 4px;
-          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s;
+          flex-shrink: 0;
         }
 
-        .understand-checkbox:hover .checkmark {
+        .checkbox-row:hover .custom-checkbox {
           border-color: #6366f1;
         }
 
-        .understand-checkbox input:checked ~ .checkmark {
-          background-color: #6366f1;
+        .checkbox-row input:checked + .custom-checkbox {
+          background: #6366f1;
           border-color: #6366f1;
         }
 
-        .understand-checkbox input:checked ~ .checkmark:after {
-          content: "";
-          position: absolute;
-          display: block;
-          left: 6px;
-          top: 2px;
-          width: 6px;
-          height: 10px;
+        .checkbox-row input:checked + .custom-checkbox::after {
+          content: '';
+          width: 5px;
+          height: 9px;
           border: solid white;
           border-width: 0 2px 2px 0;
-          transform: rotate(45deg);
+          transform: rotate(45deg) translateY(-1px);
         }
 
-        .provide-btn {
-          background: #6b7280;
-          color: #ffffff;
+        .checkbox-row > span:last-child {
+          font-size: 13px;
+          color: #a1a1aa;
+          font-weight: 500;
+        }
+
+        .btn-row {
+          display: flex;
+          gap: 8px;
+        }
+
+        .btn {
+          flex: 1;
+          padding: 14px 16px;
           border: none;
-          border-radius: 8px;
-          padding: 12px 20px;
-          font-size: 15px;
+          border-radius: 10px;
+          font-size: 14px;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s;
         }
 
-        .provide-btn:disabled {
-          background: #374151;
-          color: #9ca3af;
+        .btn-approve {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: #ffffff;
+        }
+
+        .btn-approve:hover:not(:disabled) {
+          filter: brightness(1.1);
+        }
+
+        .btn-approve:disabled {
+          opacity: 0.5;
           cursor: not-allowed;
         }
 
-        .provide-btn:hover:not(:disabled) {
-          background: #4b5563;
-        }
-
-        /* Active state for provide button after understanding risk */
-        .provide-btn.active:not(:disabled) {
-          background: #6366f1;
-          cursor: pointer;
-        }
-
-        .provide-btn.active:hover:not(:disabled) {
-          background: #5855eb;
-        }
-
-        .approve-btn {
-          background: #f59e0b;
-          color: #ffffff;
-          border: none;
-          border-radius: 8px;
-          padding: 12px 20px;
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .approve-btn:disabled {
-          background: #fbbf24;
-          color: #92400e;
+        .btn-provide {
+          background: #27272a;
+          color: #52525b;
           cursor: not-allowed;
         }
 
-        .approve-btn:hover:not(:disabled) {
-          background: #d97706;
+        .btn-provide.active {
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+          color: #ffffff;
+          cursor: pointer;
+        }
+
+        .btn-provide.active:hover {
+          filter: brightness(1.1);
+        }
+
+        .btn-provide:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
 
         /* Success Modal */
@@ -1103,20 +1198,26 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         }
         .reward-amount {
           display: block;
-          font-size: 28px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 26px;
           font-weight: 600;
+          font-feature-settings: 'tnum' on, 'lnum' on;
           color: #ffffff;
         }
         .reward-profit {
-          display: block;
-          color: #4ade80;
-          font-size: 14px;
-          font-weight: 500;
-          margin: 8px 0;
+          display: inline-block;
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+          color: #ffffff;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 6px;
+          margin: 10px 0;
         }
         .reward-chain {
           display: block;
-          color: #6b7280;
+          color: #52525b;
           font-size: 13px;
         }
 
@@ -1145,19 +1246,22 @@ export const ReviewProvideModal = ({ isOpen, onClose, requestData }: ReviewProvi
         .done-btn {
           display: block;
           width: 100%;
-          padding: 12px;
-          background: #6366f1;
+          padding: 14px;
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
           color: white;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           cursor: pointer;
           box-sizing: border-box;
           margin: 0 auto;
+          transition: all 0.15s ease;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
         .done-btn:hover {
-          background: #5558e3;
+          background: linear-gradient(135deg, #7c7ff5 0%, #6366f1 100%);
+          box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
       `}</style>
     </div>
