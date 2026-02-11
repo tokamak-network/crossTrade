@@ -220,6 +220,17 @@ export const KNOWN_SIGNATURES: Record<string, string> = {
   "0x9dc29fac": "burn(address,uint256)",
   "0x1249c58b": "mint()",
   "0x42966c68": "burn(uint256)",
+  // ── Bridge / Cross-chain ──
+  "0xae30f6ee": "swapAndBridge(uint256,uint256,uint16,address,address,address,bytes)",
+  "0x51905636": "sendFrom(address,uint16,bytes,uint256,(address,address,bytes))",
+  "0xc1461d57": "sendToChain(uint16,bytes,uint256)",
+  "0x40d9a49e": "send(uint16,bytes,uint256,address,address,bytes)",
+  "0x6e553f65": "deposit(uint256,address)",
+  "0xc858f5f9": "bridge(uint256,uint32,uint256,bytes)",
+  "0x2d2da806": "depositTo(address)",
+  // ── Permit2 / Universal Router ──
+  "0x3593564c": "execute(bytes,bytes[],uint256)",
+  "0x24856bc3": "execute(bytes,bytes[])",
 };
 
 // Etherscan V2 API: single API key works for all chains

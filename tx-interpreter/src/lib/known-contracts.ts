@@ -168,6 +168,28 @@ export const KNOWN_EVENT_ABIS: Record<string, string> = {
   // OwnershipTransferred
   "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0":
     "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+
+  // ── LayerZero Events ──
+  // SendToChain(uint16 indexed dstChainId, address indexed from, bytes toAddress, uint256 amount)
+  "0x8d3ee0df6a4b7e82a7f20a763f1c6826e6176323e655af64f32318827d2112d4":
+    "event SendToChain(uint16 indexed dstChainId, address indexed from, bytes toAddress, uint256 amount)",
+
+  // ReceiveFromChain(uint16 indexed srcChainId, bytes srcAddress, address indexed to, uint256 amount)
+  "0x09e4c12e71535e6d37fc92a093ca64e40b212a0f83fa2b6e57e6e6c8096834be":
+    "event ReceiveFromChain(uint16 indexed srcChainId, bytes srcAddress, address indexed to, uint256 amount)",
+
+  // Packet(bytes payload) — LayerZero UltraLightNode
+  "0xe9bded5f24a4168e4f3bf44e00298c993b22376aad8c58c7dda9718a54cbea82":
+    "event Packet(bytes payload)",
+
+  // RelayerParams(bytes adapterParams, uint16 outboundProofType)
+  "0xe8d23d927749ec8e512eb885679c2977d57068839d8cca1a85685571f284b4d8":
+    "event RelayerParams(bytes adapterParams, uint16 outboundProofType)",
+
+  // ── Uniswap V3 Pool Events ──
+  // Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)
+  "0xbdbdb71d7860376ba52b25a5028beea23581364a40522f6bcfb86bb1f2dca633":
+    "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
 };
 
 // ---------- Protocol Detection ----------
@@ -306,4 +328,51 @@ export function getContractLabel(address: string): string | null {
   const known = KNOWN_CONTRACTS[address.toLowerCase()];
   if (!known) return null;
   return `${known.name} (${known.protocol})`;
+}
+
+// ---------- LayerZero Endpoint Chain ID Mapping ----------
+// LayerZero V1 uses its own chain IDs (endpoint IDs), different from EVM chain IDs.
+// This mapping allows the AI to correctly identify destination chains.
+
+export const LAYERZERO_CHAIN_IDS: Record<number, string> = {
+  101: "Ethereum",
+  102: "BNB Chain (BSC)",
+  106: "Avalanche C-Chain",
+  108: "Aptos",
+  109: "Polygon",
+  110: "Arbitrum One",
+  111: "Optimism",
+  112: "Fantom",
+  116: "Harmony",
+  126: "Moonbeam",
+  145: "Gnosis",
+  151: "Metis Andromeda",
+  158: "Polygon zkEVM",
+  165: "zkSync Era",
+  175: "Arbitrum Nova",
+  177: "Kava EVM",
+  181: "Mantle",
+  183: "Linea",
+  184: "Base",
+  195: "X Layer (OKX)",
+  196: "opBNB",
+  197: "Manta Pacific",
+  211: "Scroll",
+  214: "Scroll (alt)",
+  217: "Linea (alt)",
+  230: "Blast",
+  243: "Fraxtal",
+  // Testnets (10000+)
+  10121: "Goerli (testnet)",
+  10132: "Optimism Goerli (testnet)",
+  10143: "Arbitrum Goerli (testnet)",
+  10161: "Sepolia (testnet)",
+  10162: "BSC Testnet",
+};
+
+/**
+ * Resolve a LayerZero endpoint chain ID to a human-readable chain name.
+ */
+export function resolveLayerZeroChainId(lzChainId: number): string {
+  return LAYERZERO_CHAIN_IDS[lzChainId] || `LayerZero Chain ${lzChainId} (unknown)`;
 }

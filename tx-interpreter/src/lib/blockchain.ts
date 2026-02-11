@@ -356,7 +356,7 @@ function tryDecodeFromKnownTopic(log: ethers.Log): EventLog | null {
   }
 }
 
-// ── Token symbol via RPC ─────────────────────────────────────────────────────
+// ── Token metadata via RPC ────────────────────────────────────────────────────
 
 async function fetchTokenSymbol(
   address: string,
@@ -368,7 +368,31 @@ async function fetchTokenSymbol(
       ["function symbol() view returns (string)"],
       provider,
     );
-    return await c.symbol();
+    const sym = await Promise.race([
+      c.symbol(),
+      new Promise<null>((r) => setTimeout(() => r(null), 4000)),
+    ]);
+    return sym;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchTokenName(
+  address: string,
+  provider: ethers.JsonRpcProvider,
+): Promise<string | null> {
+  try {
+    const c = new ethers.Contract(
+      address,
+      ["function name() view returns (string)"],
+      provider,
+    );
+    const name = await Promise.race([
+      c.name(),
+      new Promise<null>((r) => setTimeout(() => r(null), 4000)),
+    ]);
+    return name;
   } catch {
     return null;
   }
@@ -506,6 +530,23 @@ function buildCallTree(
       if (decoded) {
         itxMethodName = decoded.name;
         itxDecodedInput = decoded.params;
+      }
+    }
+
+    // Infer function name for empty-input calls (pure ETH transfers)
+    if (!itxMethodName && (!itx.input || itx.input === "0x" || itx.input === "")) {
+      const hasValue = itx.value && BigInt(itx.value) > 0n;
+      if (hasValue) {
+        const knownTarget = KNOWN_CONTRACTS[targetAddr];
+        if (targetAddr === "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2") {
+          itxMethodName = "deposit"; // ETH → WETH
+        } else if (targetAddr === tx.from.toLowerCase()) {
+          itxMethodName = "refund"; // ETH back to sender
+        } else if (knownTarget?.type === "bridge") {
+          itxMethodName = "sendFee"; // ETH fee to bridge
+        } else {
+          itxMethodName = "transfer"; // generic ETH transfer
+        }
       }
     }
 
@@ -756,17 +797,35 @@ async function _fetchTrace(
     if (evt.name === "Transfer") tokenAddresses.add(evt.address.toLowerCase());
   }
 
-  // Parallel RPC calls (no Etherscan rate limit concern)
+  // Parallel RPC calls for token symbol() and name()
+  // IMPORTANT: Always prefer RPC symbol() over Etherscan ContractName, because
+  // ContractName is the Solidity class name (e.g. "OFT") not the actual token
+  // symbol (e.g. "SETH").
   await Promise.all(
     Array.from(tokenAddresses).map(async (addr) => {
       const known = KNOWN_CONTRACTS[addr];
       if (known) { tokenSymbolCache.set(addr, known.name); return; }
+
+      // Try RPC symbol() first — most accurate
+      const [sym, tokenName] = await Promise.all([
+        fetchTokenSymbol(addr, provider),
+        fetchTokenName(addr, provider),
+      ]);
+      if (sym) {
+        tokenSymbolCache.set(addr, sym);
+        // Also enrich the contractInfo so AI gets the real token name
+        const ci = contractInfos.find((c) => c.address === addr);
+        if (ci && ci.name && ci.name !== sym) {
+          ci.name = `${sym}${tokenName ? ` (${tokenName})` : ""} [contract: ${ci.name}]`;
+        }
+        return;
+      }
+
+      // Fallback to Etherscan contract name
       const ci = contractInfos.find((c) => c.address === addr);
       if (ci?.name && !PROXY_CONTRACT_NAMES.some((p) => ci.name!.includes(p))) {
-        tokenSymbolCache.set(addr, ci.name); return;
+        tokenSymbolCache.set(addr, ci.name);
       }
-      const sym = await fetchTokenSymbol(addr, provider);
-      if (sym) tokenSymbolCache.set(addr, sym);
     }),
   );
 

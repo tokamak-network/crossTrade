@@ -10,7 +10,7 @@ import {
   UserModeInterpretation,
   DevModeInterpretation,
 } from "@/lib/types";
-import { KNOWN_CONTRACTS, detectProtocols, getContractLabel } from "@/lib/known-contracts";
+import { KNOWN_CONTRACTS, detectProtocols, getContractLabel, resolveLayerZeroChainId, LAYERZERO_CHAIN_IDS } from "@/lib/known-contracts";
 import OpenAI from "openai";
 
 // ---------- LiteLLM Client (singleton) ----------
@@ -59,14 +59,53 @@ function buildProtocolContext(trace: TransactionTrace): string {
   }
 
   const protocols = detectProtocols(Array.from(allAddresses));
-  if (protocols.length === 0) return "";
+  let ctx = "";
 
-  return (
-    "\n\n🔍 DETECTED PROTOCOLS:\n" +
-    protocols
-      .map((p) => `• ${p.name} (confidence: ${p.confidence}): ${p.description}`)
-      .join("\n")
-  );
+  if (protocols.length > 0) {
+    ctx +=
+      "\n\n🔍 DETECTED PROTOCOLS:\n" +
+      protocols
+        .map((p) => `• ${p.name} (confidence: ${p.confidence}): ${p.description}`)
+        .join("\n");
+  }
+
+  // Resolve LayerZero chain IDs if present in decoded params
+  const lzChainIds = new Set<number>();
+  for (const call of trace.internalCalls) {
+    for (const p of call.decodedInput) {
+      if (/dstChainId|_dstChainId|srcChainId|chainId/i.test(p.name)) {
+        const id = parseInt(p.value, 10);
+        if (id > 0 && id < 100000) lzChainIds.add(id);
+      }
+    }
+    for (const child of call.children) {
+      for (const p of child.decodedInput) {
+        if (/dstChainId|_dstChainId|srcChainId|chainId/i.test(p.name)) {
+          const id = parseInt(p.value, 10);
+          if (id > 0 && id < 100000) lzChainIds.add(id);
+        }
+      }
+    }
+  }
+  // Also check events (SendToChain has dstChainId)
+  for (const evt of trace.events) {
+    for (const p of evt.params) {
+      if (/dstChainId|_dstChainId|srcChainId/i.test(p.name)) {
+        const id = parseInt(p.value, 10);
+        if (id > 0 && id < 100000) lzChainIds.add(id);
+      }
+    }
+  }
+
+  if (lzChainIds.size > 0) {
+    ctx += "\n\n🔗 LAYERZERO CHAIN ID RESOLUTION:\n";
+    ctx += "IMPORTANT: LayerZero uses its OWN chain IDs (endpoint IDs), NOT standard EVM chain IDs.\n";
+    for (const id of lzChainIds) {
+      ctx += `• LayerZero chain ID ${id} = ${resolveLayerZeroChainId(id)}\n`;
+    }
+  }
+
+  return ctx;
 }
 
 /** Build a contracts-involved section with human-readable labels. */
@@ -175,8 +214,10 @@ BALANCE CHANGES:
 ${balanceChanges.map((b) => `  • ${b.tokenSymbol}: ${b.change}`).join("\n") || "  None detected"}
 
 INSTRUCTIONS:
-- Identify the HIGH-LEVEL purpose (bridge, swap, stake, mint, transfer, etc.)
+- Identify the HIGH-LEVEL purpose (bridge, swap, stake, mint, transfer, lending, NFT purchase, etc.)
 - If a known protocol is detected, name it explicitly
+- Use the ACTUAL token symbol from Transfer events and balance changes — NOT Solidity contract class names. The contract name from Etherscan is the Solidity class (e.g. "OFT", "ERC20", "VaultToken") which is NOT the token's trading symbol. Always prefer the symbol from balance changes or decoded events.
+- If chain IDs are resolved in the context above, use only those resolved names — do NOT guess chain names
 - Explain each meaningful step in simple terms
 - Mention gas costs in human-readable way
 
@@ -225,11 +266,13 @@ ${flattenCalls(trace, 6)}
 
 INSTRUCTIONS:
 - Identify the exact protocol interaction and contract flow
+- Use ACTUAL token symbols from events/balance changes, never use Solidity contract class names as token names (the Etherscan ContractName field is the Solidity class, not the token symbol)
+- If chain IDs are resolved in the context above, use only those resolved chain names — do NOT guess or hallucinate chain names from numeric IDs
 - Explain each internal call and its purpose
 - Analyze gas distribution across the call tree
 - Note any security concerns (approvals, delegatecalls, reentrancy patterns)
 - Explain emitted events and what state changes they represent
-- If this is a bridge/cross-chain tx, identify the source/destination chains
+- If this is a bridge/cross-chain tx, identify the source/destination chains using any chain ID resolution provided above
 
 Respond in EXACTLY this JSON format (no markdown, no code fences):
 {
@@ -278,27 +321,35 @@ async function callAI(prompt: string, modelId: string): Promise<string> {
 // ---------- Parse AI Response ----------
 
 function parseUserModeResponse(raw: string): UserModeInterpretation {
+  // Safety: AI may return objects/arrays instead of strings for text fields
+  const str = (v: unknown): string => {
+    if (typeof v === "string") return v;
+    if (v == null) return "";
+    if (typeof v === "object") return JSON.stringify(v);
+    return String(v);
+  };
+
   try {
     const parsed = JSON.parse(raw);
     return {
-      summary: parsed.summary || "Transaction processed",
-      whatHappened: parsed.whatHappened || "Unable to determine details",
+      summary: str(parsed.summary) || "Transaction processed",
+      whatHappened: str(parsed.whatHappened) || "Unable to determine details",
       steps: Array.isArray(parsed.steps)
         ? parsed.steps.map(
             (
-              s: { stepNumber?: number; title?: string; description?: string; icon?: string },
+              s: { stepNumber?: number; title?: unknown; description?: unknown; icon?: unknown },
               i: number,
             ) => ({
               stepNumber: s.stepNumber || i + 1,
-              title: s.title || `Step ${i + 1}`,
-              description: s.description || "",
-              icon: s.icon || "📋",
+              title: str(s.title) || `Step ${i + 1}`,
+              description: str(s.description),
+              icon: str(s.icon) || "📋",
             }),
           )
         : [],
-      balanceSummary: parsed.balanceSummary || "See balance changes above",
-      status: parsed.status || "Completed",
-      warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
+      balanceSummary: str(parsed.balanceSummary) || "See balance changes above",
+      status: str(parsed.status) || "Completed",
+      warnings: Array.isArray(parsed.warnings) ? parsed.warnings.map((w: unknown) => str(w)) : [],
     };
   } catch {
     return {
@@ -313,33 +364,50 @@ function parseUserModeResponse(raw: string): UserModeInterpretation {
 }
 
 function parseDevModeResponse(raw: string): DevModeInterpretation {
+  // AI models sometimes return objects instead of strings for text fields.
+  // This helper safely converts any value to a rendered string.
+  const asString = (v: unknown): string => {
+    if (typeof v === "string") return v;
+    if (v == null) return "";
+    if (Array.isArray(v)) return v.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join("\n");
+    if (typeof v === "object") {
+      // Try to build a readable summary from the object's values
+      return Object.entries(v as Record<string, unknown>)
+        .map(([k, val]) => `${k}: ${typeof val === "string" ? val : JSON.stringify(val)}`)
+        .join("\n");
+    }
+    return String(v);
+  };
+
   try {
     const parsed = JSON.parse(raw);
     return {
-      summary: parsed.summary || "Transaction executed",
-      technicalOverview: parsed.technicalOverview || "",
-      callFlowExplanation: parsed.callFlowExplanation || "",
-      gasAnalysis: parsed.gasAnalysis || "",
-      securityNotes: Array.isArray(parsed.securityNotes) ? parsed.securityNotes : [],
+      summary: asString(parsed.summary) || "Transaction executed",
+      technicalOverview: asString(parsed.technicalOverview),
+      callFlowExplanation: asString(parsed.callFlowExplanation),
+      gasAnalysis: asString(parsed.gasAnalysis),
+      securityNotes: Array.isArray(parsed.securityNotes)
+        ? parsed.securityNotes.map((n: unknown) => asString(n))
+        : [],
       functionExplanations: Array.isArray(parsed.functionExplanations)
         ? parsed.functionExplanations.map(
             (f: {
-              contract?: string;
-              functionName?: string;
-              explanation?: string;
-              params?: string;
-              gasUsed?: string;
+              contract?: unknown;
+              functionName?: unknown;
+              explanation?: unknown;
+              params?: unknown;
+              gasUsed?: unknown;
             }) => ({
-              contract: f.contract || "",
-              functionName: f.functionName || "",
-              explanation: f.explanation || "",
-              params: f.params || "",
-              gasUsed: f.gasUsed || "",
+              contract: asString(f.contract),
+              functionName: asString(f.functionName),
+              explanation: asString(f.explanation),
+              params: asString(f.params),
+              gasUsed: asString(f.gasUsed),
             }),
           )
         : [],
-      stateChanges: parsed.stateChanges || "",
-      eventAnalysis: parsed.eventAnalysis || "",
+      stateChanges: asString(parsed.stateChanges),
+      eventAnalysis: asString(parsed.eventAnalysis),
     };
   } catch {
     return {
