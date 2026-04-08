@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN yarn install --network-timeout 300000
+RUN apk add --no-cache python3 make g++ && yarn install --network-timeout 300000
 
 COPY . .
 
