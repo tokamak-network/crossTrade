@@ -639,7 +639,7 @@ export const History = () => {
     if (userAddress && l2Chains.length > 0) {
       fetchUserHistory()
     }
-  }, [userAddress, l2Chains.length])
+  }, [userAddress, l2Chains.length, publicClient])
 
   const filteredRequests = historyRequests.filter(req => {
     if (activeFilter === 'All') return true
