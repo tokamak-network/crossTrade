@@ -381,13 +381,15 @@ export const CancelCTModal = ({ isOpen, onClose, requestData }: CancelCTModalPro
           </div>
 
           <div className="confirmation-section">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={confirmCancel}
-                onChange={(e) => setConfirmCancel(e.target.checked)}
-                disabled={isSubmitting || isConfirming}
-              />
+            <input
+              id="cancel-confirm-checkbox"
+              type="checkbox"
+              checked={confirmCancel}
+              onChange={(e) => setConfirmCancel(e.target.checked)}
+              disabled={isSubmitting || isConfirming}
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="cancel-confirm-checkbox" className="checkbox-label">
               <span className="checkmark"></span>
               I understand that this action cannot be undone
             </label>
