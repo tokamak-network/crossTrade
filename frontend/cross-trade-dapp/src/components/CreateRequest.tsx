@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useBalance, useReadContract } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId, useSwitchChain, useBalance, useReadContract, usePublicClient } from 'wagmi'
 import {
   l2_cross_trade_ABI,
   // L2_L2 specific imports
@@ -16,7 +16,6 @@ import {
   getTokenAddressFor_L2_L1,
   getContractAddressFor_L2_L1,
   getAvailableTokensFor_L2_L1,
-  getDestinationChainsFor_L2_L1,  // NEW: For filtering destination chains
   // L2_L1 ABIs
   L2_L1_REQUEST_ABI,
 } from '@/config/contracts'
@@ -71,6 +70,7 @@ export const CreateRequest = () => {
   const { address: connectedAddress } = useAccount()
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
+  const publicClient = usePublicClient()
   
   // Separate hook for approval transactions
   const { 
@@ -112,24 +112,32 @@ export const CreateRequest = () => {
     return chain?.chainId || 0
   }
 
-  // NEW: Get allowed destination chains for the selected token and source chain
+  // Get allowed destination chains for the selected token and source chain.
+  // Returns union of L2_L2 and L2_L1 allowed destinations so that L1 chains (e.g. Sepolia)
+  // appear even before the user picks a destination (when mode defaults to L2_L2).
   const getAllowedDestinationChains = (): number[] => {
     if (!requestFrom || !sendToken) return []
-    
+
     const fromChainId = getChainIdByName(requestFrom)
     if (!fromChainId) return []
-    
-    // Get destination chains from the appropriate config based on communication mode
-    let destinationChains: number[] = []
-    
-    if (communicationMode === 'L2_L2') {
-      destinationChains = getDestinationChainsFor_L2_L2(fromChainId, sendToken)
-    } else {
-      destinationChains = getDestinationChainsFor_L2_L1(fromChainId, sendToken)
+
+    // Destinations from L2_L2 config (array format, explicit destination_chains field)
+    const destL2L2 = getDestinationChainsFor_L2_L2(fromChainId, sendToken)
+
+    // If the source chain+token is available in L2_L1 config, add L1 chain IDs as destinations.
+    // L2_L1 tokens use flat-map format (no destination_chains field), so we infer reachability
+    // by checking that the token address is non-empty for the source chain in L2_L1 config.
+    let destL2L1: number[] = []
+    if (isL2L1ConfigAvailable()) {
+      const l2l1TokenAddr = getTokenAddressFor_L2_L1(fromChainId, sendToken)
+      if (l2l1TokenAddr !== undefined && l2l1TokenAddr !== '') {
+        destL2L1 = getChainsFor_L2_L1()
+          .filter(({ chainId }) => isL1Chain(chainId))
+          .map(({ chainId }) => chainId)
+      }
     }
-    
-    // If no destination_chains defined (old format or L1 chain), allow all chains
-    return destinationChains
+
+    return [...new Set([...destL2L2, ...destL2L1])]
   }
 
   // Check if a chain is L1 (Ethereum)
@@ -614,7 +622,32 @@ export const CreateRequest = () => {
 
         // Check if source token is native (0x0000...)
         const isNativeToken = l2SourceTokenAddress.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()
-        
+
+        // [DIAGNOSTIC] Simulate before sending to capture on-chain revert reason.
+        // Check browser console for '🔴 [DIAGNOSTIC]' lines when requestRegisteredToken fails.
+        try {
+          await publicClient?.simulateContract({
+            address: contractAddress as `0x${string}`,
+            abi: l2_cross_trade_ABI,
+            functionName: 'requestRegisteredToken',
+            account: connectedAddress as `0x${string}`,
+            args: [
+              l1TokenAddress as `0x${string}`,
+              l2SourceTokenAddress as `0x${string}`,
+              l2DestinationTokenAddress as `0x${string}`,
+              toAddress as `0x${string}`,
+              toTokenWei(sendAmount, sendToken),
+              toTokenWei(currentReceiveAmount, sendToken),
+              BigInt(l1ChainId),
+              BigInt(toChainId),
+            ],
+            value: isNativeToken ? toTokenWei(sendAmount, sendToken) : BigInt(0),
+          })
+          console.log('✅ [DIAGNOSTIC] simulateContract passed — no revert expected')
+        } catch (simErr) {
+          console.error('🔴 [DIAGNOSTIC] simulateContract revert reason:', simErr)
+        }
+
         await writeContract({
           address: contractAddress as `0x${string}`,
           abi: l2_cross_trade_ABI, // Same ABI for both modes (L2toL2CrossTradeL2.sol)
