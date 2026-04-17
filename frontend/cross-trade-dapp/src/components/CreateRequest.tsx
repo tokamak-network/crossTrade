@@ -881,6 +881,17 @@ export const CreateRequest = () => {
               </div>
             </div>
 
+            {/* Thanos Sepolia → new L2 direction not yet available */}
+            {requestFrom && sendToken && getAllowedDestinationChains().length === 0 && (
+              <p
+                data-testid="thanos-direction-notice"
+                className="text-sm text-gray-500 mt-2"
+              >
+                Thanos Sepolia → [your L2] direction is not yet available.
+                Only [your L2] → Thanos Sepolia bridging is supported.
+              </p>
+            )}
+
             {/* You Send Section */}
             <div className="amount-section">
               <label className="form-label">You Send</label>
