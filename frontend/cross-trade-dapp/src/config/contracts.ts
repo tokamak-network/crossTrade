@@ -157,8 +157,18 @@ export const getAvailableTokensFor_L2_L2 = (chainName: string) => {
   
   // Old format: object with key-value pairs
   return Object.entries(config.tokens)
-    .filter(([symbol, address]) => address && address !== '')
+    .filter(([_symbol, address]) => address && address !== '')
     .map(([symbol]) => symbol);
+};
+
+// Check if a source chain has any L2_L2 destinations configured (across all tokens)
+export const hasAnyL2L2Destinations = (sourceChainId: number): boolean => {
+  const config = getChainConfigFor_L2_L2(sourceChainId);
+  if (!config) return false;
+  if (Array.isArray(config.tokens)) {
+    return config.tokens.some(t => (t as { destination_chains?: number[] }).destination_chains?.length ?? 0 > 0);
+  }
+  return false;
 };
 
 // NEW: Get destination chains for a specific token on a source chain
@@ -240,7 +250,7 @@ export const getAvailableTokensFor_L2_L1 = (chainName: string) => {
   
   // Old format: object with key-value pairs
   return Object.entries(config.tokens)
-    .filter(([symbol, address]) => address && address !== '')
+    .filter(([_symbol, address]) => address && address !== '')
     .map(([symbol]) => symbol);
 };
 

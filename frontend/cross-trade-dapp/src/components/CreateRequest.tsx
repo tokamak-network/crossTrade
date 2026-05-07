@@ -7,6 +7,7 @@ import {
   l2_cross_trade_ABI,
   // L2_L2 specific imports
   getChainsFor_L2_L2,
+  hasAnyL2L2Destinations,
   getTokenAddressFor_L2_L2,
   getContractAddressFor_L2_L2,
   getAvailableTokensFor_L2_L2,
@@ -882,7 +883,7 @@ export const CreateRequest = () => {
             </div>
 
             {/* Thanos Sepolia → new L2 direction not yet available */}
-            {requestFrom && sendToken && getAllowedDestinationChains().length === 0 && (
+            {requestFrom && !hasAnyL2L2Destinations(getChainIdByName(requestFrom)) && (
               <p
                 data-testid="thanos-direction-notice"
                 className="text-sm text-gray-500 mt-2"
