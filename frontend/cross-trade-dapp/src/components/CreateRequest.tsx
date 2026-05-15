@@ -70,7 +70,7 @@ export const CreateRequest = () => {
   const { isLoading: isConfirming, isSuccess, isError: txError } = useWaitForTransactionReceipt({ hash })
   const { address: connectedAddress } = useAccount()
   const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
+  const { switchChainAsync } = useSwitchChain()
   const publicClient = usePublicClient()
   
   // Separate hook for approval transactions
@@ -244,20 +244,25 @@ export const CreateRequest = () => {
     // Note: receiveToken is always the same as sendToken, no need to reset separately
   }, [requestFrom, requestTo, sendToken])
 
-  // NEW: Reset destination chain if it's not in the allowed destinations for the current token
+  // Reset destination chain if it's not in the allowed destinations for the current token
   useEffect(() => {
     if (!requestFrom || !requestTo || !sendToken) return
-    
+
     const allowedDestinations = getAllowedDestinationChains()
-    
-    // If there are destination restrictions
-    if (allowedDestinations && allowedDestinations.length > 0) {
-      const toChainId = getChainIdByName(requestTo)
-      
-      // If current destination is not in allowed list, reset it
-      if (toChainId && !allowedDestinations.includes(toChainId)) {
+
+    if (!allowedDestinations || allowedDestinations.length === 0) {
+      // Source chain in L2_L2 config with empty destination_chains means no allowed destinations
+      const fromChainId = getChainIdByName(requestFrom)
+      const isSourceInL2L2Config = fromChainId > 0 && getChainsFor_L2_L2().some(c => c.chainId === fromChainId)
+      if (isSourceInL2L2Config) {
         setRequestTo('')
       }
+      return
+    }
+
+    const toChainId = getChainIdByName(requestTo)
+    if (toChainId && !allowedDestinations.includes(toChainId)) {
+      setRequestTo('')
     }
   }, [requestFrom, sendToken, requestTo])
 
@@ -498,7 +503,7 @@ export const CreateRequest = () => {
       if (chainId !== fromChainId) {
         console.log('🔄 Switching to required network...')
         try {
-          await switchChain({ chainId: fromChainId })
+          await switchChainAsync({ chainId: fromChainId })
           console.log('✅ Network switched successfully')
           // Wait a moment for the network switch to complete
           await new Promise(resolve => setTimeout(resolve, 1000))
@@ -576,7 +581,7 @@ export const CreateRequest = () => {
       if (chainId !== fromChainId) {
         console.log('🔄 Switching to required network for main transaction...')
         try {
-          await switchChain({ chainId: fromChainId })
+          await switchChainAsync({ chainId: fromChainId })
           console.log('✅ Network switched successfully')
           // Wait a moment for the network switch to complete
           await new Promise(resolve => setTimeout(resolve, 1000))
@@ -862,13 +867,14 @@ export const CreateRequest = () => {
                           }
                           return true;
                         })
-                        // NEW: Filter based on allowed destination chains for the selected token
+                        // Filter based on allowed destination chains for the selected token
                         .filter(({ chainId }) => {
-                          // If no restrictions (empty array or old format), show all chains
                           if (!allowedDestinations || allowedDestinations.length === 0) {
-                            return true
+                            // Source chain in L2_L2 config with empty destination_chains means no allowed destinations
+                            const fromChainId = requestFrom ? getChainIdByName(requestFrom) : 0
+                            const isSourceInL2L2Config = fromChainId > 0 && getChainsFor_L2_L2().some(c => c.chainId === fromChainId)
+                            return !isSourceInL2L2Config
                           }
-                          // Otherwise, only show chains in the destination_chains array
                           return allowedDestinations.includes(chainId)
                         })
                         .map(({ chainId, config }) => (
