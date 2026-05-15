@@ -315,10 +315,15 @@ export const RequestPool = () => {
       throw new Error(`No RPC URL configured for chain ${chainId}`)
     }
 
+    const nativeConfig = configL2L2 || configL2L1
     const chainConfig = defineChain({
       id: chainId,
-      name: `Chain ${chainId}`,
-      nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+      name: nativeConfig?.display_name || nativeConfig?.name || `Chain ${chainId}`,
+      nativeCurrency: {
+        name: nativeConfig?.native_token_name || 'ETH',
+        symbol: nativeConfig?.native_token_symbol || 'ETH',
+        decimals: 18,
+      },
       rpcUrls: {
         default: { http: [rpcUrl] }
       }
